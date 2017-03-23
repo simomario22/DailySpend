@@ -7,14 +7,23 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C5316BF61E78D80F00BC2918 /* AddExpenseTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5316BF51E78D80F00BC2918 /* AddExpenseTableViewCell.swift */; };
+		C5316C291E7B240D00BC2918 /* Date+Arithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5316C281E7B240D00BC2918 /* Date+Arithmetic.swift */; };
 		C5781D9B1E6E2060006BBC03 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5781D9A1E6E2060006BBC03 /* AppDelegate.swift */; };
-		C5781D9D1E6E2060006BBC03 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5781D9C1E6E2060006BBC03 /* ViewController.swift */; };
 		C5781DA01E6E2060006BBC03 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C5781D9E1E6E2060006BBC03 /* Main.storyboard */; };
 		C5781DA31E6E2060006BBC03 /* DailySpend.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C5781DA11E6E2060006BBC03 /* DailySpend.xcdatamodeld */; };
 		C5781DA51E6E2060006BBC03 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C5781DA41E6E2060006BBC03 /* Assets.xcassets */; };
 		C5781DA81E6E2060006BBC03 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C5781DA61E6E2060006BBC03 /* LaunchScreen.storyboard */; };
 		C5781DB31E6E2060006BBC03 /* DailySpendTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5781DB21E6E2060006BBC03 /* DailySpendTests.swift */; };
 		C5781DBE1E6E2060006BBC03 /* DailySpendUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5781DBD1E6E2060006BBC03 /* DailySpendUITests.swift */; };
+		C5781DCC1E6E23B2006BBC03 /* TodayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5781DCB1E6E23B2006BBC03 /* TodayViewController.swift */; };
+		C5CF5F641E7BB68600C35539 /* cal.png in Resources */ = {isa = PBXBuildFile; fileRef = C5CF5F5E1E7BB68600C35539 /* cal.png */; };
+		C5CF5F651E7BB68600C35539 /* cal@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5CF5F5F1E7BB68600C35539 /* cal@2x.png */; };
+		C5CF5F661E7BB68600C35539 /* cal@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5CF5F601E7BB68600C35539 /* cal@3x.png */; };
+		C5CF5F671E7BB68600C35539 /* today.png in Resources */ = {isa = PBXBuildFile; fileRef = C5CF5F611E7BB68600C35539 /* today.png */; };
+		C5CF5F681E7BB68600C35539 /* today@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5CF5F621E7BB68600C35539 /* today@2x.png */; };
+		C5CF5F691E7BB68600C35539 /* today@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5CF5F631E7BB68600C35539 /* today@3x.png */; };
+		C5FEDA021E832BDC00D9019A /* ReviewMonthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5FEDA011E832BDC00D9019A /* ReviewMonthViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,9 +44,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C5316BF51E78D80F00BC2918 /* AddExpenseTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddExpenseTableViewCell.swift; sourceTree = "<group>"; };
+		C5316C281E7B240D00BC2918 /* Date+Arithmetic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Date+Arithmetic.swift"; sourceTree = "<group>"; };
 		C5781D971E6E2060006BBC03 /* DailySpend.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DailySpend.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C5781D9A1E6E2060006BBC03 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		C5781D9C1E6E2060006BBC03 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		C5781D9F1E6E2060006BBC03 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		C5781DA21E6E2060006BBC03 /* DailySpend.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DailySpend.xcdatamodel; sourceTree = "<group>"; };
 		C5781DA41E6E2060006BBC03 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -49,6 +59,14 @@
 		C5781DB91E6E2060006BBC03 /* DailySpendUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DailySpendUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C5781DBD1E6E2060006BBC03 /* DailySpendUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailySpendUITests.swift; sourceTree = "<group>"; };
 		C5781DBF1E6E2060006BBC03 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C5781DCB1E6E23B2006BBC03 /* TodayViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TodayViewController.swift; sourceTree = "<group>"; };
+		C5CF5F5E1E7BB68600C35539 /* cal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cal.png; sourceTree = "<group>"; };
+		C5CF5F5F1E7BB68600C35539 /* cal@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cal@2x.png"; sourceTree = "<group>"; };
+		C5CF5F601E7BB68600C35539 /* cal@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cal@3x.png"; sourceTree = "<group>"; };
+		C5CF5F611E7BB68600C35539 /* today.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = today.png; sourceTree = "<group>"; };
+		C5CF5F621E7BB68600C35539 /* today@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "today@2x.png"; sourceTree = "<group>"; };
+		C5CF5F631E7BB68600C35539 /* today@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "today@3x.png"; sourceTree = "<group>"; };
+		C5FEDA011E832BDC00D9019A /* ReviewMonthViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReviewMonthViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,6 +94,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C5316C2A1E7B241200BC2918 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				C5316C281E7B240D00BC2918 /* Date+Arithmetic.swift */,
+			);
+			name = Extensions;
+			sourceTree = "<group>";
+		};
 		C5781D8E1E6E2060006BBC03 = {
 			isa = PBXGroup;
 			children = (
@@ -100,12 +126,16 @@
 			isa = PBXGroup;
 			children = (
 				C5781D9A1E6E2060006BBC03 /* AppDelegate.swift */,
-				C5781D9C1E6E2060006BBC03 /* ViewController.swift */,
+				C5781DCB1E6E23B2006BBC03 /* TodayViewController.swift */,
+				C5316C2A1E7B241200BC2918 /* Extensions */,
 				C5781D9E1E6E2060006BBC03 /* Main.storyboard */,
+				C5FEDA011E832BDC00D9019A /* ReviewMonthViewController.swift */,
+				C5316BF51E78D80F00BC2918 /* AddExpenseTableViewCell.swift */,
 				C5781DA41E6E2060006BBC03 /* Assets.xcassets */,
 				C5781DA61E6E2060006BBC03 /* LaunchScreen.storyboard */,
 				C5781DA91E6E2060006BBC03 /* Info.plist */,
 				C5781DA11E6E2060006BBC03 /* DailySpend.xcdatamodeld */,
+				C5CF5F6A1E7BB68B00C35539 /* Images */,
 			);
 			path = DailySpend;
 			sourceTree = "<group>";
@@ -126,6 +156,19 @@
 				C5781DBF1E6E2060006BBC03 /* Info.plist */,
 			);
 			path = DailySpendUITests;
+			sourceTree = "<group>";
+		};
+		C5CF5F6A1E7BB68B00C35539 /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				C5CF5F5E1E7BB68600C35539 /* cal.png */,
+				C5CF5F5F1E7BB68600C35539 /* cal@2x.png */,
+				C5CF5F601E7BB68600C35539 /* cal@3x.png */,
+				C5CF5F611E7BB68600C35539 /* today.png */,
+				C5CF5F621E7BB68600C35539 /* today@2x.png */,
+				C5CF5F631E7BB68600C35539 /* today@3x.png */,
+			);
+			name = Images;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -236,8 +279,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				C5781DA81E6E2060006BBC03 /* LaunchScreen.storyboard in Resources */,
+				C5CF5F671E7BB68600C35539 /* today.png in Resources */,
+				C5CF5F681E7BB68600C35539 /* today@2x.png in Resources */,
 				C5781DA51E6E2060006BBC03 /* Assets.xcassets in Resources */,
+				C5CF5F661E7BB68600C35539 /* cal@3x.png in Resources */,
+				C5CF5F691E7BB68600C35539 /* today@3x.png in Resources */,
+				C5CF5F641E7BB68600C35539 /* cal.png in Resources */,
 				C5781DA01E6E2060006BBC03 /* Main.storyboard in Resources */,
+				C5CF5F651E7BB68600C35539 /* cal@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -262,8 +311,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C5781D9D1E6E2060006BBC03 /* ViewController.swift in Sources */,
+				C5316BF61E78D80F00BC2918 /* AddExpenseTableViewCell.swift in Sources */,
+				C5FEDA021E832BDC00D9019A /* ReviewMonthViewController.swift in Sources */,
+				C5781DCC1E6E23B2006BBC03 /* TodayViewController.swift in Sources */,
 				C5781DA31E6E2060006BBC03 /* DailySpend.xcdatamodeld in Sources */,
+				C5316C291E7B240D00BC2918 /* Date+Arithmetic.swift in Sources */,
 				C5781D9B1E6E2060006BBC03 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -509,6 +561,7 @@
 				C5781DC41E6E2060006BBC03 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		C5781DC51E6E2060006BBC03 /* Build configuration list for PBXNativeTarget "DailySpendTests" */ = {
 			isa = XCConfigurationList;
@@ -517,6 +570,7 @@
 				C5781DC71E6E2060006BBC03 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		C5781DC81E6E2060006BBC03 /* Build configuration list for PBXNativeTarget "DailySpendUITests" */ = {
 			isa = XCConfigurationList;
@@ -525,6 +579,7 @@
 				C5781DCA1E6E2060006BBC03 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
