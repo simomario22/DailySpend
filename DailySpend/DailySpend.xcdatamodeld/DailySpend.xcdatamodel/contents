@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="11759" systemVersion="16D32" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="Day" representedClassName="Day" syncable="YES" codeGenerationType="class">
+    <entity name="Day" representedClassName="Day" syncable="YES">
         <attribute name="actualSpend" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="baseTargetSpend" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
@@ -8,13 +8,13 @@
         <relationship name="expenses" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Expense" inverseName="day" inverseEntity="Expense" syncable="YES"/>
         <relationship name="month" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Month" inverseName="days" inverseEntity="Month" syncable="YES"/>
     </entity>
-    <entity name="DayAdjustment" representedClassName="DayAdjustment" syncable="YES" codeGenerationType="class">
+    <entity name="DayAdjustment" representedClassName="DayAdjustment" syncable="YES">
         <attribute name="amount" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="dateAffected" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="reason" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="day" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Day" inverseName="adjustments" inverseEntity="Day" syncable="YES"/>
     </entity>
-    <entity name="Expense" representedClassName="Expense" syncable="YES" codeGenerationType="class">
+    <entity name="Expense" representedClassName="Expense" syncable="YES">
         <attribute name="amount" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="expDate" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="expDescription" optional="YES" attributeType="String" syncable="YES"/>
@@ -22,7 +22,7 @@
         <attribute name="recordedDate" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <relationship name="day" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Day" inverseName="expenses" inverseEntity="Day" syncable="YES"/>
     </entity>
-    <entity name="Month" representedClassName="Month" syncable="YES" codeGenerationType="class">
+    <entity name="Month" representedClassName="Month" syncable="YES">
         <attribute name="actualSpend" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="baseDailyTargetSpend" optional="YES" attributeType="Double" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="daysInMonth" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
@@ -31,7 +31,7 @@
         <relationship name="adjustments" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MonthAdjustment" inverseName="month" inverseEntity="MonthAdjustment" syncable="YES"/>
         <relationship name="days" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Day" inverseName="month" inverseEntity="Day" syncable="YES"/>
     </entity>
-    <entity name="MonthAdjustment" representedClassName="MonthAdjustment" syncable="YES" codeGenerationType="class">
+    <entity name="MonthAdjustment" representedClassName="MonthAdjustment" syncable="YES">
         <attribute name="amount" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="dateEffective" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="reason" optional="YES" attributeType="String" syncable="YES"/>
