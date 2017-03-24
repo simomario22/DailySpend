@@ -290,6 +290,7 @@
 				TargetAttributes = {
 					C5781D961E6E2060006BBC03 = {
 						CreatedOnToolsVersion = 8.2.1;
+						DevelopmentTeam = UUMJ98B7G3;
 						ProvisioningStyle = Automatic;
 					};
 					C5781DAD1E6E2060006BBC03 = {
@@ -533,6 +534,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = UUMJ98B7G3;
 				INFOPLIST_FILE = DailySpend/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = joshsherick.DailySpend;
@@ -545,6 +547,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = UUMJ98B7G3;
 				INFOPLIST_FILE = DailySpend/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = joshsherick.DailySpend;
