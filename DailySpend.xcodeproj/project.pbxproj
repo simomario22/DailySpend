@@ -9,8 +9,19 @@
 /* Begin PBXBuildFile section */
 		C5316BF61E78D80F00BC2918 /* AddExpenseTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5316BF51E78D80F00BC2918 /* AddExpenseTableViewCell.swift */; };
 		C5316C291E7B240D00BC2918 /* Date+Arithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5316C281E7B240D00BC2918 /* Date+Arithmetic.swift */; };
+		C538FAB91E85696200295062 /* FuckXcode.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C538FAB71E85696200295062 /* FuckXcode.storyboard */; };
+		C53E7C071E855F1B007E13BB /* DeleteMeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C53E7C061E855F1B007E13BB /* DeleteMeViewController.swift */; };
+		C56500161E837F37009D64F0 /* Month+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C565000C1E837F37009D64F0 /* Month+CoreDataClass.swift */; };
+		C56500171E837F37009D64F0 /* Month+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C565000D1E837F37009D64F0 /* Month+CoreDataProperties.swift */; };
+		C56500181E837F37009D64F0 /* DayAdjustment+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C565000E1E837F37009D64F0 /* DayAdjustment+CoreDataClass.swift */; };
+		C56500191E837F37009D64F0 /* DayAdjustment+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C565000F1E837F37009D64F0 /* DayAdjustment+CoreDataProperties.swift */; };
+		C565001A1E837F37009D64F0 /* Day+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56500101E837F37009D64F0 /* Day+CoreDataClass.swift */; };
+		C565001B1E837F37009D64F0 /* Day+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56500111E837F37009D64F0 /* Day+CoreDataProperties.swift */; };
+		C565001C1E837F37009D64F0 /* Expense+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56500121E837F37009D64F0 /* Expense+CoreDataClass.swift */; };
+		C565001D1E837F37009D64F0 /* Expense+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56500131E837F37009D64F0 /* Expense+CoreDataProperties.swift */; };
+		C565001E1E837F37009D64F0 /* MonthAdjustment+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56500141E837F37009D64F0 /* MonthAdjustment+CoreDataClass.swift */; };
+		C565001F1E837F37009D64F0 /* MonthAdjustment+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56500151E837F37009D64F0 /* MonthAdjustment+CoreDataProperties.swift */; };
 		C5781D9B1E6E2060006BBC03 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5781D9A1E6E2060006BBC03 /* AppDelegate.swift */; };
-		C5781DA01E6E2060006BBC03 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C5781D9E1E6E2060006BBC03 /* Main.storyboard */; };
 		C5781DA31E6E2060006BBC03 /* DailySpend.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C5781DA11E6E2060006BBC03 /* DailySpend.xcdatamodeld */; };
 		C5781DA51E6E2060006BBC03 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C5781DA41E6E2060006BBC03 /* Assets.xcassets */; };
 		C5781DA81E6E2060006BBC03 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C5781DA61E6E2060006BBC03 /* LaunchScreen.storyboard */; };
@@ -23,6 +34,9 @@
 		C5CF5F671E7BB68600C35539 /* today.png in Resources */ = {isa = PBXBuildFile; fileRef = C5CF5F611E7BB68600C35539 /* today.png */; };
 		C5CF5F681E7BB68600C35539 /* today@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5CF5F621E7BB68600C35539 /* today@2x.png */; };
 		C5CF5F691E7BB68600C35539 /* today@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5CF5F631E7BB68600C35539 /* today@3x.png */; };
+		C5DD5A831E83B383008F7FC6 /* CurrentDayTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5DD5A821E83B383008F7FC6 /* CurrentDayTableViewCell.swift */; };
+		C5DD5A851E83B4AC008F7FC6 /* InitialSpendViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5DD5A841E83B4AC008F7FC6 /* InitialSpendViewController.swift */; };
+		C5EE62A31E85769700CAEEE7 /* String+CharacterSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5EE62A21E85769700CAEEE7 /* String+CharacterSet.swift */; };
 		C5FEDA021E832BDC00D9019A /* ReviewMonthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5FEDA011E832BDC00D9019A /* ReviewMonthViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -46,9 +60,20 @@
 /* Begin PBXFileReference section */
 		C5316BF51E78D80F00BC2918 /* AddExpenseTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddExpenseTableViewCell.swift; sourceTree = "<group>"; };
 		C5316C281E7B240D00BC2918 /* Date+Arithmetic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Date+Arithmetic.swift"; sourceTree = "<group>"; };
+		C538FAB81E85696200295062 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/FuckXcode.storyboard; sourceTree = "<group>"; };
+		C53E7C061E855F1B007E13BB /* DeleteMeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeleteMeViewController.swift; sourceTree = "<group>"; };
+		C565000C1E837F37009D64F0 /* Month+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Month+CoreDataClass.swift"; path = "DailySpend/Month+CoreDataClass.swift"; sourceTree = "<group>"; };
+		C565000D1E837F37009D64F0 /* Month+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Month+CoreDataProperties.swift"; path = "DailySpend/Month+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		C565000E1E837F37009D64F0 /* DayAdjustment+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "DayAdjustment+CoreDataClass.swift"; path = "DailySpend/DayAdjustment+CoreDataClass.swift"; sourceTree = "<group>"; };
+		C565000F1E837F37009D64F0 /* DayAdjustment+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "DayAdjustment+CoreDataProperties.swift"; path = "DailySpend/DayAdjustment+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		C56500101E837F37009D64F0 /* Day+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Day+CoreDataClass.swift"; path = "DailySpend/Day+CoreDataClass.swift"; sourceTree = "<group>"; };
+		C56500111E837F37009D64F0 /* Day+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Day+CoreDataProperties.swift"; path = "DailySpend/Day+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		C56500121E837F37009D64F0 /* Expense+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Expense+CoreDataClass.swift"; path = "DailySpend/Expense+CoreDataClass.swift"; sourceTree = "<group>"; };
+		C56500131E837F37009D64F0 /* Expense+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Expense+CoreDataProperties.swift"; path = "DailySpend/Expense+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		C56500141E837F37009D64F0 /* MonthAdjustment+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "MonthAdjustment+CoreDataClass.swift"; path = "DailySpend/MonthAdjustment+CoreDataClass.swift"; sourceTree = "<group>"; };
+		C56500151E837F37009D64F0 /* MonthAdjustment+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "MonthAdjustment+CoreDataProperties.swift"; path = "DailySpend/MonthAdjustment+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		C5781D971E6E2060006BBC03 /* DailySpend.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DailySpend.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C5781D9A1E6E2060006BBC03 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		C5781D9F1E6E2060006BBC03 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		C5781DA21E6E2060006BBC03 /* DailySpend.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DailySpend.xcdatamodel; sourceTree = "<group>"; };
 		C5781DA41E6E2060006BBC03 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C5781DA71E6E2060006BBC03 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -66,6 +91,9 @@
 		C5CF5F611E7BB68600C35539 /* today.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = today.png; sourceTree = "<group>"; };
 		C5CF5F621E7BB68600C35539 /* today@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "today@2x.png"; sourceTree = "<group>"; };
 		C5CF5F631E7BB68600C35539 /* today@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "today@3x.png"; sourceTree = "<group>"; };
+		C5DD5A821E83B383008F7FC6 /* CurrentDayTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrentDayTableViewCell.swift; sourceTree = "<group>"; };
+		C5DD5A841E83B4AC008F7FC6 /* InitialSpendViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InitialSpendViewController.swift; sourceTree = "<group>"; };
+		C5EE62A21E85769700CAEEE7 /* String+CharacterSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+CharacterSet.swift"; sourceTree = "<group>"; };
 		C5FEDA011E832BDC00D9019A /* ReviewMonthViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReviewMonthViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -98,8 +126,27 @@
 			isa = PBXGroup;
 			children = (
 				C5316C281E7B240D00BC2918 /* Date+Arithmetic.swift */,
+				C5EE62A21E85769700CAEEE7 /* String+CharacterSet.swift */,
 			);
 			name = Extensions;
+			sourceTree = "<group>";
+		};
+		C56500201E837F3A009D64F0 /* CoreData Classes */ = {
+			isa = PBXGroup;
+			children = (
+				C565000C1E837F37009D64F0 /* Month+CoreDataClass.swift */,
+				C565000D1E837F37009D64F0 /* Month+CoreDataProperties.swift */,
+				C565000E1E837F37009D64F0 /* DayAdjustment+CoreDataClass.swift */,
+				C565000F1E837F37009D64F0 /* DayAdjustment+CoreDataProperties.swift */,
+				C56500101E837F37009D64F0 /* Day+CoreDataClass.swift */,
+				C56500111E837F37009D64F0 /* Day+CoreDataProperties.swift */,
+				C56500121E837F37009D64F0 /* Expense+CoreDataClass.swift */,
+				C56500131E837F37009D64F0 /* Expense+CoreDataProperties.swift */,
+				C56500141E837F37009D64F0 /* MonthAdjustment+CoreDataClass.swift */,
+				C56500151E837F37009D64F0 /* MonthAdjustment+CoreDataProperties.swift */,
+			);
+			name = "CoreData Classes";
+			path = ..;
 			sourceTree = "<group>";
 		};
 		C5781D8E1E6E2060006BBC03 = {
@@ -127,14 +174,18 @@
 			children = (
 				C5781D9A1E6E2060006BBC03 /* AppDelegate.swift */,
 				C5781DCB1E6E23B2006BBC03 /* TodayViewController.swift */,
+				C538FAB71E85696200295062 /* FuckXcode.storyboard */,
 				C5316C2A1E7B241200BC2918 /* Extensions */,
-				C5781D9E1E6E2060006BBC03 /* Main.storyboard */,
+				C5DD5A841E83B4AC008F7FC6 /* InitialSpendViewController.swift */,
+				C53E7C061E855F1B007E13BB /* DeleteMeViewController.swift */,
 				C5FEDA011E832BDC00D9019A /* ReviewMonthViewController.swift */,
 				C5316BF51E78D80F00BC2918 /* AddExpenseTableViewCell.swift */,
+				C5DD5A821E83B383008F7FC6 /* CurrentDayTableViewCell.swift */,
 				C5781DA41E6E2060006BBC03 /* Assets.xcassets */,
 				C5781DA61E6E2060006BBC03 /* LaunchScreen.storyboard */,
 				C5781DA91E6E2060006BBC03 /* Info.plist */,
 				C5781DA11E6E2060006BBC03 /* DailySpend.xcdatamodeld */,
+				C56500201E837F3A009D64F0 /* CoreData Classes */,
 				C5CF5F6A1E7BB68B00C35539 /* Images */,
 			);
 			path = DailySpend;
@@ -284,8 +335,8 @@
 				C5781DA51E6E2060006BBC03 /* Assets.xcassets in Resources */,
 				C5CF5F661E7BB68600C35539 /* cal@3x.png in Resources */,
 				C5CF5F691E7BB68600C35539 /* today@3x.png in Resources */,
+				C538FAB91E85696200295062 /* FuckXcode.storyboard in Resources */,
 				C5CF5F641E7BB68600C35539 /* cal.png in Resources */,
-				C5781DA01E6E2060006BBC03 /* Main.storyboard in Resources */,
 				C5CF5F651E7BB68600C35539 /* cal@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -311,12 +362,26 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C565001E1E837F37009D64F0 /* MonthAdjustment+CoreDataClass.swift in Sources */,
 				C5316BF61E78D80F00BC2918 /* AddExpenseTableViewCell.swift in Sources */,
+				C5DD5A831E83B383008F7FC6 /* CurrentDayTableViewCell.swift in Sources */,
 				C5FEDA021E832BDC00D9019A /* ReviewMonthViewController.swift in Sources */,
+				C565001F1E837F37009D64F0 /* MonthAdjustment+CoreDataProperties.swift in Sources */,
+				C53E7C071E855F1B007E13BB /* DeleteMeViewController.swift in Sources */,
+				C56500171E837F37009D64F0 /* Month+CoreDataProperties.swift in Sources */,
+				C5EE62A31E85769700CAEEE7 /* String+CharacterSet.swift in Sources */,
 				C5781DCC1E6E23B2006BBC03 /* TodayViewController.swift in Sources */,
+				C565001A1E837F37009D64F0 /* Day+CoreDataClass.swift in Sources */,
+				C5DD5A851E83B4AC008F7FC6 /* InitialSpendViewController.swift in Sources */,
+				C56500181E837F37009D64F0 /* DayAdjustment+CoreDataClass.swift in Sources */,
+				C56500191E837F37009D64F0 /* DayAdjustment+CoreDataProperties.swift in Sources */,
 				C5781DA31E6E2060006BBC03 /* DailySpend.xcdatamodeld in Sources */,
+				C565001B1E837F37009D64F0 /* Day+CoreDataProperties.swift in Sources */,
 				C5316C291E7B240D00BC2918 /* Date+Arithmetic.swift in Sources */,
+				C565001C1E837F37009D64F0 /* Expense+CoreDataClass.swift in Sources */,
 				C5781D9B1E6E2060006BBC03 /* AppDelegate.swift in Sources */,
+				C565001D1E837F37009D64F0 /* Expense+CoreDataProperties.swift in Sources */,
+				C56500161E837F37009D64F0 /* Month+CoreDataClass.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -352,12 +417,12 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		C5781D9E1E6E2060006BBC03 /* Main.storyboard */ = {
+		C538FAB71E85696200295062 /* FuckXcode.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				C5781D9F1E6E2060006BBC03 /* Base */,
+				C538FAB81E85696200295062 /* Base */,
 			);
-			name = Main.storyboard;
+			name = FuckXcode.storyboard;
 			sourceTree = "<group>";
 		};
 		C5781DA61E6E2060006BBC03 /* LaunchScreen.storyboard */ = {

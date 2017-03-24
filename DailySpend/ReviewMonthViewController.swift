@@ -20,9 +20,9 @@ class ReviewMonthViewController: UIViewController {
     /*
      * Sets and format currency labels and message based on currency labels.
      */
-    func setAndFormatLabels(spentAmount spent: Double,
-                            goalAmount goal: Double,
-                            underOverAmount underOver: Double,
+    func setAndFormatLabels(spentAmount spent: Decimal,
+                            goalAmount goal: Decimal,
+                            underOverAmount underOver: Decimal,
                             dayInMonth day: Date) {
         let dateFormatter = DateFormatter()
         monthLabel.text = dateFormatter.monthSymbols[day.month - 1] + " \(day.year)"
@@ -32,7 +32,7 @@ class ReviewMonthViewController: UIViewController {
         
         goalAmount.text = currencyFormatter.string(from: goal as NSNumber)
         spentAmount.text = currencyFormatter.string(from: spent as NSNumber)
-        underOverAmount.text = currencyFormatter.string(from: Double.abs(underOver) as NSNumber)
+        underOverAmount.text = currencyFormatter.string(from: Decimal.abs(underOver) as NSNumber)
         
         if underOver < 0 {
             underOverLabel.text = "Over goal"

@@ -24,18 +24,18 @@
                                 <rect key="frame" x="0.0" y="28" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="g7X-1V-JkW" id="Q6L-0M-hmw">
-                                    <rect key="frame" x="0.0" y="0.0" width="342" height="43"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="342" height="43.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Tue, 3/14" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="TlK-d4-LCB">
-                                            <rect key="frame" x="15" y="11" width="71" height="21"/>
+                                            <rect key="frame" x="15" y="12" width="71" height="20.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="$14.50" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="awP-xv-Iez">
-                                            <rect key="frame" x="287" y="11" width="53" height="21"/>
+                                            <rect key="frame" x="287" y="12" width="53" height="20.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <color key="textColor" red="0.00087780210890000003" green="0.70302380180000001" blue="0.0013618606979999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -94,18 +94,18 @@
                                 <rect key="frame" x="0.0" y="187" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="w0A-72-8an" id="n27-jy-PDM">
-                                    <rect key="frame" x="0.0" y="0.0" width="342" height="43"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="342" height="43.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Groceries" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="zF8-Rl-bQZ">
-                                            <rect key="frame" x="15" y="11" width="75" height="21"/>
+                                            <rect key="frame" x="15" y="12" width="74.5" height="20.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="$14" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="79A-8d-du1">
-                                            <rect key="frame" x="311" y="11" width="29" height="21"/>
+                                            <rect key="frame" x="311" y="12" width="29" height="20.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
@@ -503,7 +503,7 @@
         <!--DailySpend-->
         <scene sceneID="srT-b1-kZQ">
             <objects>
-                <viewController id="fpX-aY-Hly" sceneMemberID="viewController">
+                <viewController id="fpX-aY-Hly" customClass="InitialSpendViewController" customModule="DailySpend" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="xdJ-qm-Kn3"/>
                         <viewControllerLayoutGuide type="bottom" id="aQE-vK-ajQ"/>
@@ -517,6 +517,9 @@
                                 <nil key="textColor"/>
                                 <fontDescription key="fontDescription" style="UICTFontTextStyleTitle1"/>
                                 <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
+                                <connections>
+                                    <action selector="monthlyChanged:" destination="fpX-aY-Hly" eventType="editingChanged" id="SGW-O7-C7c"/>
+                                </connections>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Monthly" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UWX-6F-VaX">
                                 <rect key="frame" x="81.5" y="72" width="62" height="21"/>
@@ -535,6 +538,9 @@
                                 <nil key="textColor"/>
                                 <fontDescription key="fontDescription" style="UICTFontTextStyleTitle1"/>
                                 <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
+                                <connections>
+                                    <action selector="dailyChanged:" destination="fpX-aY-Hly" eventType="editingChanged" id="eCn-qR-6rE"/>
+                                </connections>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="This number should reflect ??" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XCB-tF-XiO">
                                 <rect key="frame" x="16" y="215" width="343" height="76"/>
@@ -563,7 +569,17 @@
                             <constraint firstItem="aD3-rS-YsJ" firstAttribute="top" secondItem="UWX-6F-VaX" secondAttribute="bottom" constant="8" id="zvm-8q-yKt"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="DailySpend" id="1NT-6d-vve"/>
+                    <navigationItem key="navigationItem" title="DailySpend" id="1NT-6d-vve">
+                        <barButtonItem key="rightBarButtonItem" title="Save" id="Vur-Zv-Q8S">
+                            <connections>
+                                <action selector="save:" destination="fpX-aY-Hly" id="0OI-FB-Ky6"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="dailyField" destination="9ee-XY-S1w" id="X8C-47-NRS"/>
+                        <outlet property="monthlyField" destination="aD3-rS-YsJ" id="G7a-Q0-eJq"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5B9-Kl-uVx" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -572,7 +588,7 @@
         <!--Navigation Controller-->
         <scene sceneID="XaJ-ET-CLj">
             <objects>
-                <navigationController storyboardIdentifier="InitialSpend" id="lNH-JV-BBM" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="InitialSpend" useStoryboardIdentifierAsRestorationIdentifier="YES" id="lNH-JV-BBM" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="uEk-kV-4fs">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -617,6 +633,6 @@
         <image name="today.png" width="25" height="25"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Img-4j-klQ"/>
+        <segue reference="SEL-Rc-OCe"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -10,9 +10,10 @@ import UIKit
 import CoreData
 
 class TodayViewController : UITableViewController {
-    let standardCellHeight = 44
-    let currentDayHeight = 115
-    let addExpenseHeight = 213
+    let standardCellHeight: CGFloat = 44
+    let currentDayHeight: CGFloat = 115
+    let addExpenseHeight: CGFloat = 213
+    let addExpenseMinPxVisible: CGFloat = 70
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
@@ -21,98 +22,25 @@ class TodayViewController : UITableViewController {
     
     // Required for unwind segue
     @IBAction override func prepare(for segue: UIStoryboardSegue, sender: Any?) {}
-    
-    func totalAdjustments(day: Day) -> Double {
-        var total: Double = 0
-        for dayAdjustment in day.adjustments as! Set<DayAdjustment> {
-            total += dayAdjustment.amount
-        }
-        
-        for monthAdjustment in day.month?.adjustments as! Set<MonthAdjustment> {
-            let date = day.date! as Date
-            let dateEffective = monthAdjustment.dateEffective! as Date
-            if date > dateEffective  {
-                // This affects this day.
-                let daysAcross = date.daysInMonth - dateEffective.day + 1
-                // This is the amount of this adjustment that effects this day.
-                total += monthAdjustment.amount / Double(daysAcross)
-            }
-        }
-        return total
-    }
-    
-    func totalAdjustments(month: Month) -> Double {
-        var total: Double = 0
-        for monthAdjustment in month.adjustments as! Set<MonthAdjustment> {
-            total += monthAdjustment.amount
-        }
-        
-        for day in month.days as! Set<Day> {
-            for dayAdjustment in day.adjustments as! Set<DayAdjustment> {
-                total += dayAdjustment.amount
-            }
-        }
-        return total
-    }
-    
-    /*
-     * Return the month object that a day is in, or nil if it doesn't exist.
-     */
-    func getMonth(dateInMonth day: Date) -> Month? {
-        let month = day.month
-        let year = day.year
-        // Fetch all months equal to the month and year
-        let fetchRequest: NSFetchRequest<Month> = Month.fetchRequest()
-        fetchRequest.predicate =
-            NSCompoundPredicate(type: .and,
-                                subpredicates: [NSPredicate(format: "month == %d, ", month),
-                                                NSPredicate(format: "year == %d, ", year)])
-        var monthResults: [Month] = []
-        monthResults = try! context.fetch(fetchRequest)
-        if monthResults.count < 1 {
-            // No month exists.
-            return nil
-        } else if monthResults.count > 1 {
-            // Multiple months exist.
-            fatalError("Error: multiple months exist for \(month)/\(year)")
-        }
-        return monthResults[0]
-    }
-    
+
     /*
      * Present the review dialog for a given month.
      */
     func reviewMonth(_ month: Month, completion: (() -> Void)?) {
-        let storyboard = UIStoryboard(name: "MainStoryboard", bundle: nil)
+        let storyboard = UIStoryboard(name: "FuckXcode", bundle: nil)
         let navController = storyboard.instantiateViewController(withIdentifier: "ReviewMonth") as! UINavigationController
         let viewController = navController.visibleViewController as! ReviewMonthViewController
         
         
-        let goal = month.targetSpend + totalAdjustments(month: month)
-        viewController.setAndFormatLabels(spentAmount: month.actualSpend,
+        let goal = month.targetSpend! + month.totalAdjustments()
+        viewController.setAndFormatLabels(spentAmount: month.actualSpend!,
                                           goalAmount: goal,
-                                          underOverAmount: goal - month.actualSpend,
-                                          dayInMonth: month.month! as Date)
+                                          underOverAmount: goal - month.actualSpend!,
+                                          dayInMonth: month.month!)
         
-        viewController.modalPresentationStyle = .fullScreen
-        viewController.modalTransitionStyle = .coverVertical
-        self.present(viewController, animated: true, completion: completion)
-    }
-    
-    /*
-     * Create and return a month.
-     */
-    func createMonth(dateInMonth date: Date) -> Month {
-        let dailySpend = UserDefaults.standard.double(forKey: "dailyTargetSpend")
-        
-        let month = Month(context: context)
-        month.month = date as NSDate?
-        month.daysInMonth = Int64(date.daysInMonth)
-        month.baseDailyTargetSpend = dailySpend
-        month.targetSpend = month.baseDailyTargetSpend * Double(month.daysInMonth)
-        month.actualSpend = 0
-        
-        return month
+        navController.modalPresentationStyle = .fullScreen
+        navController.modalTransitionStyle = .coverVertical
+        self.present(navController, animated: true, completion: completion)
     }
     
     /*
@@ -124,26 +52,37 @@ class TodayViewController : UITableViewController {
     func createDays(from: Date, to: Date) {
         var currentDate = from
         while (currentDate.beginningOfDay != to.beginningOfDay) {
-            if let month = getMonth(dateInMonth: currentDate) {
+            if let month = Month.get(context: context, dateInMonth: currentDate) {
                 // Create the day
-                let day = Day(context: context)
-                day.date = currentDate as NSDate
-                day.month = month
-                day.baseTargetSpend = day.month!.baseDailyTargetSpend
-                day.actualSpend = 0
-                
+                Day.create(context: context, date: currentDate, month: month)
                 currentDate = currentDate.add(days: 1)
             } else {
                 // This month doesn't yet exist.
                 // Create and review the previous month, then call this function again.
-                _ = createMonth(dateInMonth: currentDate)
-                reviewMonth(getMonth(dateInMonth: currentDate.subtract(months: 1))!, completion: {
+                _ = Month.create(context: context, dateInMonth: currentDate)
+                reviewMonth(Month.get(context:context,
+                                      dateInMonth: currentDate.subtract(months: 1))!,
+                                      completion: {
                     self.createDays(from: currentDate, to: to)
                 })
             }
-
         }
-        
+    }
+    
+    /*
+     * Calculates the number of on-screen spots for expenses (including "see
+     * additional" spots) while keeping addExpenseMinPxVisible pixels visible in
+     * the addExpense cell
+     */
+    func numExpenseSpots() -> Int {
+        let topHeight = UIApplication.shared.statusBarFrame.height + self.navigationController!.navigationBar.frame.height
+        let windowFrameHeight = tableView.frame.height
+        let visibleHeight = windowFrameHeight - topHeight;
+
+        let maxExpenses = Int((visibleHeight - currentDayHeight - addExpenseMinPxVisible)
+            .truncatingRemainder(dividingBy: standardCellHeight))
+        let totalExpenses = daysThisMonth.count > 0 ? daysThisMonth.last!.expenses!.count : 0
+        return min(totalExpenses, maxExpenses)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -153,7 +92,71 @@ class TodayViewController : UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "Spending"
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        if UserDefaults.standard.double(forKey: "dailyTargetSpend") == 0 {
+
+            let storyboard = UIStoryboard(name: "FuckXcode", bundle: nil)
+            let navController = storyboard.instantiateViewController(withIdentifier: "InitialSpend")
+            
+            navController.modalPresentationStyle = .fullScreen
+            navController.modalTransitionStyle = .coverVertical
+            self.present(navController, animated: true, completion: nil)
+            return
+        }
+
         
+        // Create days up to today.
+        let latestDayFetchReq: NSFetchRequest<Day> = Day.fetchRequest()
+        let latestDaySortDesc = NSSortDescriptor(key: "date_", ascending: false)
+        latestDayFetchReq.sortDescriptors?.append(latestDaySortDesc)
+        latestDayFetchReq.fetchLimit = 1
+        let latestDayResults = try! context.fetch(latestDayFetchReq)
+        
+        if (latestDayResults.count < 1) {
+            // To satisfy requirement of createDays, create month for today
+            _ = Month.create(context: context, dateInMonth: Date())
+        }
+        
+        // Start from one after the latest created date (or today) and go to
+        // today
+        let from = latestDayResults.count < 1 ? Date() : latestDayResults[0].date!.add(days: 1)
+        let to = Date().add(days: 1)
+        createDays(from: from, to: to)
+
+        // Populate daysThisMonth and months
+        let thisMonth = Date().month
+        let thisYear = Date().year
+        
+        // Fetch all days this month
+        let daysThisMonthFetchReq: NSFetchRequest<Day> = Day.fetchRequest()
+        let daysThisMonthSortDesc = NSSortDescriptor(key: "date_", ascending: true)
+        daysThisMonthFetchReq.sortDescriptors?.append(daysThisMonthSortDesc)
+        daysThisMonthFetchReq.predicate =
+            NSCompoundPredicate(type: .and,
+                                subpredicates: [NSPredicate(format: "month_.month_ == %d, ", thisMonth),
+                                                NSPredicate(format: "month_.year_ == %d, ", thisYear)])
+        daysThisMonth = try! context.fetch(daysThisMonthFetchReq)
+        
+        // Fetch all previous months
+        let monthsFetchReq: NSFetchRequest<Month> = Month.fetchRequest()
+        let monthSortDesc = NSSortDescriptor(key: "month_", ascending: true)
+        let yearSortDesc = NSSortDescriptor(key: "year_", ascending: true)
+        monthsFetchReq.sortDescriptors! += [monthSortDesc, yearSortDesc]
+        monthsFetchReq.predicate =
+            NSCompoundPredicate(type: .and,
+                                subpredicates: [NSPredicate(format: "month_ != %d, ", thisMonth),
+                                                NSPredicate(format: "year_ != %d, ", thisYear)])
+        months = try! context.fetch(monthsFetchReq)
+        
+        self.tableView.reloadData()
+        
+        let locationOfTodayCell = months.count + daysThisMonth.count - 1
+        self.tableView.scrollToRow(at: IndexPath(row: locationOfTodayCell, section: 0),
+                                   at: .top, animated: true)
     }
     
     override func didReceiveMemoryWarning() {
@@ -166,79 +169,43 @@ class TodayViewController : UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        return 2
+        return months.count + daysThisMonth.count + numExpenseSpots() + 1
     }
     
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.row == 0 {
-            return tableView.dequeueReusableCell(withIdentifier: "currentDay", for: indexPath)
-        }
-        else if indexPath.row == 1 {
-            return tableView.dequeueReusableCell(withIdentifier: "addExpense", for: indexPath)
-        } else {
-            return UITableViewCell()
-        }
+        let lastPrevDayCell = months.count + daysThisMonth.count - 2
+        let currentDayCell = lastPrevDayCell + 1
+        let lastExpenseCell = currentDayCell + numExpenseSpots()
         
+        if indexPath.row <= lastPrevDayCell {
+            return tableView.dequeueReusableCell(withIdentifier: "previousDay", for: indexPath)
+        } else if indexPath.row <= currentDayCell {
+            return tableView.dequeueReusableCell(withIdentifier: "currentDay", for: indexPath)
+        } else if indexPath.row <= lastExpenseCell {
+            return tableView.dequeueReusableCell(withIdentifier: "expense", for: indexPath)
+        } else {
+            return tableView.dequeueReusableCell(withIdentifier: "addExpense", for: indexPath)
+        }
     }
 
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let topHeight = UIApplication.shared.statusBarFrame.height + self.navigationController!.navigationBar.frame.height
-        let windowFrameHeight = tableView.frame.height
-        let visibleHeight = windowFrameHeight - topHeight;
-        return 44;
+        let lastPrevDayCell = months.count + daysThisMonth.count - 2
+        let currentDayCell = lastPrevDayCell + 1
+        let lastExpenseCell = currentDayCell + numExpenseSpots()
+        if indexPath.row <= lastPrevDayCell {
+            return standardCellHeight
+        } else if indexPath.row <= currentDayCell {
+            return currentDayHeight
+        } else if indexPath.row <= lastExpenseCell {
+            return standardCellHeight
+        } else {
+            return addExpenseHeight
+        }
         
     }
     
     override func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         return nil
     }
-    
-    
-    
-    /*
-     // Override to support conditional editing of the table view.
-     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-     // Return false if you do not want the specified item to be editable.
-     return true
-     }
-     */
-    
-    /*
-     // Override to support editing the table view.
-     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-     if editingStyle == .delete {
-     // Delete the row from the data source
-     tableView.deleteRows(at: [indexPath], with: .fade)
-     } else if editingStyle == .insert {
-     // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-     }
-     }
-     */
-    
-    /*
-     // Override to support rearranging the table view.
-     override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-     
-     }
-     */
-    
-    /*
-     // Override to support conditional rearranging of the table view.
-     override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-     // Return false if you do not want the item to be re-orderable.
-     return true
-     }
-     */
-    
-    /*
-     // MARK: - Navigation
-     
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-     // Get the new view controller using segue.destinationViewController.
-     // Pass the selected object to the new view controller.
-     }
-     */
 }
