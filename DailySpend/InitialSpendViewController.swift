@@ -12,6 +12,10 @@ class InitialSpendViewController: UIViewController {
 
     @IBOutlet weak var monthlyField: UITextField!
     @IBOutlet weak var dailyField: UITextField!
+    
+    
+    var dayConstraint: NSLayoutConstraint?
+    var monthConstraint: NSLayoutConstraint?
         
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,36 +27,58 @@ class InitialSpendViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    let maxFontSize: CGFloat = 28
-    
+
     func fixFrames() {
-        dailyField.invalidateIntrinsicContentSize()
-        monthlyField.invalidateIntrinsicContentSize()
-        monthlyField.font = monthlyField.font!.withSize(maxFontSize)
-        dailyField.font = monthlyField.font!.withSize(maxFontSize)
+        // Calculate the maximum width the text fields can have without overlap.
+        let midMonthX = (monthlyField.frame.origin.x * 2 + monthlyField.frame.width) / 2
+        let midDayX = (dailyField.frame.origin.x * 2 + dailyField.frame.width) / 2
+        let center = (midMonthX + midDayX) / 2
+        let maxWidth = (center - 5 - midMonthX) * 2
 
-        var endMonthX = monthlyField.frame.origin.x + monthlyField.frame.width
-        var begDayX = dailyField.frame.origin.x
-        let meetingPoint = begDayX - endMonthX
+        // Determine max font size that can fit in the space available.
+        var fontSize: CGFloat = 28
+        let minFontSize: CGFloat = 8
         
-        while(endMonthX > begDayX - 10) {
-            // We're within the 10pt margin, make font sizes smaller
-            let currentFontSize = monthlyField.font!.pointSize
-            monthlyField.font = monthlyField.font!.withSize(currentFontSize * 0.9)
-            dailyField.font = monthlyField.font!.withSize(currentFontSize * 0.9)
-            dailyField.invalidateIntrinsicContentSize()
-            monthlyField.invalidateIntrinsicContentSize()
-
-            print("New font size: \(currentFontSize * 0.9)")
-            
-            endMonthX = monthlyField.frame.origin.x + monthlyField.frame.width
-            begDayX = dailyField.frame.origin.x
-
+        var attr = [NSFontAttributeName: monthlyField.font!.withSize(fontSize)]
+        var width = monthlyField.text!.size(attributes: attr).width
+        
+        while width > maxWidth && fontSize > minFontSize {
+            fontSize -= 1
+            attr = [NSFontAttributeName: monthlyField.font!.withSize(fontSize)]
+            width = monthlyField.text!.size(attributes: attr).width
         }
+        monthlyField.font = monthlyField.font!.withSize(fontSize)
+        dailyField.font = dailyField.font!.withSize(fontSize)
+
+        // Update widths of text fields (with constraints).
+        if dayConstraint != nil {
+            self.view.removeConstraint(dayConstraint!)
+        }
+        if monthConstraint != nil {
+            self.view.removeConstraint(monthConstraint!)
+        }
+
+        dayConstraint = NSLayoutConstraint(item: dailyField,
+                                          attribute: .width,
+                                          relatedBy: .equal,
+                                          toItem: nil,
+                                          attribute: .notAnAttribute,
+                                          multiplier: 1,
+                                          constant: maxWidth)
+        
+        monthConstraint = NSLayoutConstraint(item: monthlyField,
+                                            attribute: .width,
+                                            relatedBy: .equal,
+                                            toItem: nil,
+                                            attribute: .notAnAttribute,
+                                            multiplier: 1,
+                                            constant: maxWidth)
+        
+        self.view.addConstraints([dayConstraint!, monthConstraint!])
     }
     
     func parseValidAmount(currencyString: String, maxSize: Int) -> Double {
-        let nonNumbers = CharacterSet(charactersIn: "01234567890").inverted
+        let nonNumbers = CharacterSet(charactersIn: "0123456789").inverted
         var s = currencyString.removeCharactersWhichAreActuallyUnicodeScalarsSoBeCareful(in: nonNumbers)
         let length = s.lengthOfBytes(using: .ascii)
         if length == 0 {
