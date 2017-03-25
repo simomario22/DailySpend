@@ -14,7 +14,7 @@ class AddExpenseTableViewCell: UITableViewCell {
     @IBOutlet weak var descriptionField: UITextField!
     @IBOutlet weak var dateButton: UIButton!
     @IBOutlet weak var notesButton: UIButton!
-    
+        
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

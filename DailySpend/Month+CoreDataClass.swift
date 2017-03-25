@@ -35,15 +35,13 @@ public class Month: NSManagedObject {
     /*
      * Return the month object that a day is in, or nil if it doesn't exist.
      */
-    class func get(context: NSManagedObjectContext, dateInMonth day: Date) -> Month? {
-        let month = day.month
-        let year = day.year
+    class func get(context: NSManagedObjectContext, dateInMonth date: Date) -> Month? {
+        
+        let month = date.month
+        let year = date.year
         // Fetch all months equal to the month and year
         let fetchRequest: NSFetchRequest<Month> = Month.fetchRequest()
-        fetchRequest.predicate =
-            NSCompoundPredicate(type: .and,
-                                subpredicates: [NSPredicate(format: "month_ == %d, ", month),
-                                                NSPredicate(format: "year_ == %d, ", year)])
+        fetchRequest.predicate = NSPredicate(format: "month_ == %@", Date.firstDayOfMonth(dayInMonth: date) as CVarArg)
         var monthResults: [Month] = []
         monthResults = try! context.fetch(fetchRequest)
         if monthResults.count < 1 {
@@ -63,11 +61,8 @@ public class Month: NSManagedObject {
         let dailySpend = Decimal(UserDefaults.standard.double(forKey: "dailyTargetSpend"))
         
         let month = Month(context: context)
-        month.month = date
-        month.daysInMonth = date.daysInMonth
-        month.baseDailyTargetSpend = dailySpend
-        month.targetSpend = month.baseDailyTargetSpend! * Decimal(month.daysInMonth)
-        month.actualSpend = 0
+        month.month = Date.firstDayOfMonth(dayInMonth: date)
+        month.dailyBaseTargetSpend = dailySpend
         
         return month
     }
@@ -75,40 +70,32 @@ public class Month: NSManagedObject {
     
     
     // Accessor functions (for Swift 3 classes)
-    public var actualSpend: Decimal? {
-        get {
-            return actualSpend_ as Decimal?
+    public var actualSpend: Decimal {
+        var totalSpend: Decimal = 0
+        for day in days! {
+            totalSpend += day.actualSpend
         }
-        set {
-            if newValue == nil {
-                actualSpend_ = NSDecimalNumber(decimal: newValue!)
-            } else {
-                actualSpend_ = nil
-            }
-        }
+        return totalSpend as Decimal
     }
-    public var baseDailyTargetSpend: Decimal? {
+    
+    public var dailyBaseTargetSpend: Decimal? {
         get {
-            return baseDailyTargetSpend_ as Decimal?
+            return dailyBaseTargetSpend_ as Decimal?
         }
         set {
             if newValue != nil {
-                baseDailyTargetSpend_ = NSDecimalNumber(decimal: newValue!)
+                dailyBaseTargetSpend_ = NSDecimalNumber(decimal: newValue!)
             } else {
-                baseDailyTargetSpend_ = nil
+                dailyBaseTargetSpend_ = nil
             }
         }
     }
     
     
     public var daysInMonth: Int {
-        get {
-            return Int(daysInMonth_)
-        }
-        set {
-            daysInMonth_ = Int64(newValue)
-        }
+        return month!.daysInMonth
     }
+    
     public var month: Date? {
         get {
             return month_ as Date?
@@ -122,17 +109,12 @@ public class Month: NSManagedObject {
         }
     }
     
-    public var targetSpend: Decimal? {
-        get {
-            return targetSpend_ as Decimal?
-        }
-        set {
-            if newValue != nil {
-                targetSpend_ = NSDecimalNumber(decimal: newValue!)
-            } else {
-                targetSpend_ = nil
-            }
-        }
+    public var baseTargetSpend: Decimal {
+        return dailyBaseTargetSpend! * Decimal(daysInMonth)
+    }
+    
+    public var fullTargetSpend: Decimal {
+        return baseTargetSpend + totalAdjustments()
     }
     
     public var adjustments: Set<MonthAdjustment>? {

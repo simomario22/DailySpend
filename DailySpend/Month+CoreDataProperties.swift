@@ -16,11 +16,8 @@ extension Month {
         return NSFetchRequest<Month>(entityName: "Month");
     }
 
-    @NSManaged public var actualSpend_: NSDecimalNumber?
-    @NSManaged public var baseDailyTargetSpend_: NSDecimalNumber?
-    @NSManaged public var daysInMonth_: Int64
     @NSManaged public var month_: NSDate?
-    @NSManaged public var targetSpend_: NSDecimalNumber?
+    @NSManaged public var dailyBaseTargetSpend_: NSDecimalNumber?
     @NSManaged public var adjustments_: NSSet?
     @NSManaged public var days_: NSSet?
 

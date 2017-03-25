@@ -18,7 +18,7 @@ public class MonthAdjustment: NSManagedObject {
             return amount_ as Decimal?
         }
         set {
-            if newValue == nil {
+            if newValue != nil {
                 amount_ = NSDecimalNumber(decimal: newValue!)
             } else {
                 amount_ = nil

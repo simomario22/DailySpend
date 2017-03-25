@@ -14,6 +14,8 @@ class TodayViewController : UITableViewController {
     let currentDayHeight: CGFloat = 115
     let addExpenseHeight: CGFloat = 213
     let addExpenseMinPxVisible: CGFloat = 70
+    let heightOfTodaysSpendingLabel: CGFloat = 21
+
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
@@ -32,10 +34,9 @@ class TodayViewController : UITableViewController {
         let viewController = navController.visibleViewController as! ReviewMonthViewController
         
         
-        let goal = month.targetSpend! + month.totalAdjustments()
-        viewController.setAndFormatLabels(spentAmount: month.actualSpend!,
-                                          goalAmount: goal,
-                                          underOverAmount: goal - month.actualSpend!,
+        viewController.setAndFormatLabels(spentAmount: month.actualSpend,
+                                          goalAmount: month.fullTargetSpend,
+                                          underOverAmount: month.fullTargetSpend - month.actualSpend,
                                           dayInMonth: month.month!)
         
         navController.modalPresentationStyle = .fullScreen
@@ -128,28 +129,20 @@ class TodayViewController : UITableViewController {
         createDays(from: from, to: to)
 
         // Populate daysThisMonth and months
-        let thisMonth = Date().month
-        let thisYear = Date().year
+        let today = Date()
         
         // Fetch all days this month
         let daysThisMonthFetchReq: NSFetchRequest<Day> = Day.fetchRequest()
         let daysThisMonthSortDesc = NSSortDescriptor(key: "date_", ascending: true)
         daysThisMonthFetchReq.sortDescriptors?.append(daysThisMonthSortDesc)
-        daysThisMonthFetchReq.predicate =
-            NSCompoundPredicate(type: .and,
-                                subpredicates: [NSPredicate(format: "month_.month_ == %d, ", thisMonth),
-                                                NSPredicate(format: "month_.year_ == %d, ", thisYear)])
+        daysThisMonthFetchReq.predicate = NSPredicate(format: "month_.month_ == %@", Date.firstDayOfMonth(dayInMonth: today) as CVarArg)
         daysThisMonth = try! context.fetch(daysThisMonthFetchReq)
         
         // Fetch all previous months
         let monthsFetchReq: NSFetchRequest<Month> = Month.fetchRequest()
         let monthSortDesc = NSSortDescriptor(key: "month_", ascending: true)
-        let yearSortDesc = NSSortDescriptor(key: "year_", ascending: true)
-        monthsFetchReq.sortDescriptors! += [monthSortDesc, yearSortDesc]
-        monthsFetchReq.predicate =
-            NSCompoundPredicate(type: .and,
-                                subpredicates: [NSPredicate(format: "month_ != %d, ", thisMonth),
-                                                NSPredicate(format: "year_ != %d, ", thisYear)])
+        monthsFetchReq.sortDescriptors?.append(monthSortDesc)
+        monthsFetchReq.predicate = NSPredicate(format: "month_ != %@", Date.firstDayOfMonth(dayInMonth: today) as CVarArg)
         months = try! context.fetch(monthsFetchReq)
         
         self.tableView.reloadData()
@@ -181,7 +174,16 @@ class TodayViewController : UITableViewController {
         if indexPath.row <= lastPrevDayCell {
             return tableView.dequeueReusableCell(withIdentifier: "previousDay", for: indexPath)
         } else if indexPath.row <= currentDayCell {
-            return tableView.dequeueReusableCell(withIdentifier: "currentDay", for: indexPath)
+            let currentDay = tableView.dequeueReusableCell(withIdentifier: "currentDay", for: indexPath) as! CurrentDayTableViewCell
+            if let today = daysThisMonth.last {
+                let dailyLeft = today.fullTargetSpend - today.actualSpend
+                let monthlyLeft = today.month!.fullTargetSpend - today.month!.actualSpend
+                
+                currentDay.setAndFormatLabels(dailySpendLeft: dailyLeft,
+                                              monthlySpendLeft: monthlyLeft,
+                                              expensesToday: today.expenses!.count > 0)
+            }
+            return currentDay
         } else if indexPath.row <= lastExpenseCell {
             return tableView.dequeueReusableCell(withIdentifier: "expense", for: indexPath)
         } else {
@@ -196,7 +198,11 @@ class TodayViewController : UITableViewController {
         if indexPath.row <= lastPrevDayCell {
             return standardCellHeight
         } else if indexPath.row <= currentDayCell {
-            return currentDayHeight
+            if daysThisMonth.last == nil || daysThisMonth.last!.expenses!.count == 0 {
+                return currentDayHeight - heightOfTodaysSpendingLabel
+            } else {
+                return currentDayHeight
+            }
         } else if indexPath.row <= lastExpenseCell {
             return standardCellHeight
         } else {

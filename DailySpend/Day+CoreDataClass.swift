@@ -37,7 +37,7 @@ public class Day: NSManagedObject {
      */
     class func get(context: NSManagedObjectContext, date: Date) -> Day? {
         let fetchRequest: NSFetchRequest<Day> = Day.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "date_ == %@, ", date.beginningOfDay as CVarArg)
+        fetchRequest.predicate = NSPredicate(format: "date_ == %@", date.beginningOfDay as CVarArg)
         var dayResults: [Day] = []
         dayResults = try! context.fetch(fetchRequest)
         if dayResults.count < 1 {
@@ -52,24 +52,18 @@ public class Day: NSManagedObject {
     
     class func create(context: NSManagedObjectContext, date: Date, month: Month) {
         let day = Day(context: context)
-        day.date = date
+        day.date = date.beginningOfDay
         day.month = month
-        day.baseTargetSpend = day.month!.baseDailyTargetSpend
-        day.actualSpend = 0
+        day.baseTargetSpend = day.month!.dailyBaseTargetSpend
     }
     
     // Accessor functions (for Swift 3 classes)
-    public var actualSpend: Decimal? {
-        get {
-            return actualSpend_ as Decimal?
+    public var actualSpend: Decimal {
+        var totalSpend: Decimal = 0
+        for expense in expenses! {
+           totalSpend += expense.amount!
         }
-        set {
-            if newValue == nil {
-                actualSpend_ = NSDecimalNumber(decimal: newValue!)
-            } else {
-                actualSpend_ = nil
-            }
-        }
+        return totalSpend
     }
     
     public var baseTargetSpend: Decimal? {
@@ -77,12 +71,16 @@ public class Day: NSManagedObject {
             return baseTargetSpend_ as Decimal?
         }
         set {
-            if newValue == nil {
+            if newValue != nil {
                 baseTargetSpend_ = NSDecimalNumber(decimal: newValue!)
             } else {
                 baseTargetSpend_ = nil
             }
         }
+    }
+    
+    public var fullTargetSpend: Decimal {
+        return baseTargetSpend! + totalAdjustments()
     }
     
     public var date: Date? {

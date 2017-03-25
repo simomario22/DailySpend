@@ -52,4 +52,17 @@ extension Date {
         return Calendar(identifier: .gregorian).startOfDay(for: self)
     }
     
+    static func firstDayOfMonth(dayInMonth date: Date) -> Date {
+        let cal = Calendar(identifier: .gregorian)
+        let compSet: Set<Calendar.Component> = [.year, .month, .day]
+        
+        var comp = cal.dateComponents(compSet, from: date)
+        comp.setValue(1, for: .day)
+        comp.setValue(0, for: .hour)
+        comp.setValue(0, for: .minute)
+        comp.setValue(0, for: .second)
+        comp.setValue(0, for: .nanosecond)
+        return cal.date(from: comp)!
+    }
+    
 }

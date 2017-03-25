@@ -116,6 +116,7 @@ class InitialSpendViewController: UIViewController {
             self.present(alert, animated: true, completion: nil)
         } else {
             UserDefaults.standard.set(dailyAmount, forKey: "dailyTargetSpend")
+            self.dismiss(animated: true, completion: nil)
         }
     }
 }
