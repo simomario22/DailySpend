@@ -9,7 +9,7 @@
 import UIKit
 import CoreData
 
-class TodayViewController : UITableViewController {
+class TodayViewController : UITableViewController, AddExpenseTableViewCellDelegate, TableViewCellDelegate {
     let standardCellHeight: CGFloat = 44
     let currentDayHeight: CGFloat = 115
     let addExpenseHeight: CGFloat = 213
@@ -21,6 +21,7 @@ class TodayViewController : UITableViewController {
     
     var daysThisMonth: [Day] = []
     var months: [Month] = []
+    var addingExpense = false
     
     // Required for unwind segue
     @IBAction override func prepare(for segue: UIStoryboardSegue, sender: Any?) {}
@@ -86,6 +87,25 @@ class TodayViewController : UITableViewController {
         return min(totalExpenses, maxExpenses)
     }
     
+    func fetchMonthsAndDays() {
+        // Populate daysThisMonth and months
+        let today = Date()
+        
+        // Fetch all days this month
+        let daysThisMonthFetchReq: NSFetchRequest<Day> = Day.fetchRequest()
+        let daysThisMonthSortDesc = NSSortDescriptor(key: "date_", ascending: true)
+        daysThisMonthFetchReq.sortDescriptors?.append(daysThisMonthSortDesc)
+        daysThisMonthFetchReq.predicate = NSPredicate(format: "month_.month_ == %@", Date.firstDayOfMonth(dayInMonth: today) as CVarArg)
+        daysThisMonth = try! context.fetch(daysThisMonthFetchReq)
+        
+        // Fetch all previous months
+        let monthsFetchReq: NSFetchRequest<Month> = Month.fetchRequest()
+        let monthSortDesc = NSSortDescriptor(key: "month_", ascending: true)
+        monthsFetchReq.sortDescriptors?.append(monthSortDesc)
+        monthsFetchReq.predicate = NSPredicate(format: "month_ != %@", Date.firstDayOfMonth(dayInMonth: today) as CVarArg)
+        months = try! context.fetch(monthsFetchReq)
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
     }
@@ -128,22 +148,7 @@ class TodayViewController : UITableViewController {
         let to = Date().add(days: 1)
         createDays(from: from, to: to)
 
-        // Populate daysThisMonth and months
-        let today = Date()
-        
-        // Fetch all days this month
-        let daysThisMonthFetchReq: NSFetchRequest<Day> = Day.fetchRequest()
-        let daysThisMonthSortDesc = NSSortDescriptor(key: "date_", ascending: true)
-        daysThisMonthFetchReq.sortDescriptors?.append(daysThisMonthSortDesc)
-        daysThisMonthFetchReq.predicate = NSPredicate(format: "month_.month_ == %@", Date.firstDayOfMonth(dayInMonth: today) as CVarArg)
-        daysThisMonth = try! context.fetch(daysThisMonthFetchReq)
-        
-        // Fetch all previous months
-        let monthsFetchReq: NSFetchRequest<Month> = Month.fetchRequest()
-        let monthSortDesc = NSSortDescriptor(key: "month_", ascending: true)
-        monthsFetchReq.sortDescriptors?.append(monthSortDesc)
-        monthsFetchReq.predicate = NSPredicate(format: "month_ != %@", Date.firstDayOfMonth(dayInMonth: today) as CVarArg)
-        months = try! context.fetch(monthsFetchReq)
+        fetchMonthsAndDays()
         
         self.tableView.reloadData()
         
@@ -155,10 +160,6 @@ class TodayViewController : UITableViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
-    }
-    
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -187,7 +188,13 @@ class TodayViewController : UITableViewController {
         } else if indexPath.row <= lastExpenseCell {
             return tableView.dequeueReusableCell(withIdentifier: "expense", for: indexPath)
         } else {
-            return tableView.dequeueReusableCell(withIdentifier: "addExpense", for: indexPath)
+//            let addExpense = tableView.dequeueReusableCell(withIdentifier: "addExpense", for: indexPath) as! AddExpenseTableViewCell
+//            addExpense.delegate = self
+//            return addExpense
+            let cell = tableView.dequeueReusableCell(withIdentifier: "asdf", for: indexPath) as! TableViewCell
+            cell.delegate = self
+            cell.rowPosition = indexPath.row
+            return cell
         }
     }
 
@@ -206,12 +213,86 @@ class TodayViewController : UITableViewController {
         } else if indexPath.row <= lastExpenseCell {
             return standardCellHeight
         } else {
-            return addExpenseHeight
+//            if addingExpense {
+//                let topHeight = UIApplication.shared.statusBarFrame.height + self.navigationController!.navigationBar.frame.height
+//                let windowFrameHeight = tableView.frame.height
+//                let visibleHeight = windowFrameHeight - topHeight;
+//                print("visibleHeight:\(visibleHeight)")
+//                return visibleHeight
+//            } else {
+//                return addExpenseHeight
+//            }
+            if addingExpense {
+                return self.view.bounds.height
+            } else {
+                return 213
+            }
         }
         
     }
     
     override func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         return nil
+    }
+    
+    func didBeginEditing(sender: AddExpenseTableViewCell) {
+        print("didBeginEditing")
+        addingExpense = true
+        
+        self.tableView.isScrollEnabled = false
+
+        self.tableView.beginUpdates()
+        self.tableView.endUpdates()
+
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Save", style: .done, target: self, action: #selector(rightBarButtonPressed(sender:)))
+        self.navigationItem.leftBarButtonItem?.isEnabled = false
+        
+        let locationOfExpenseCell = months.count + daysThisMonth.count + numExpenseSpots()
+        print("locationOfExpenseCell:\(locationOfExpenseCell)")
+        
+        self.tableView.scrollToRow(at: IndexPath(row: locationOfExpenseCell, section: 0),
+                                   at: .top, animated: true)
+    }
+    
+    func rightBarButtonPressed(sender: UIBarButtonItem) {
+        let buttonTitle = sender.title!
+        NotificationCenter.default.post(name: NSNotification.Name.init("Pressed\(buttonTitle)Button"), object: UIApplication.shared)
+        if buttonTitle == "Done" {
+            sender.title! = "Save"
+        }
+    }
+    
+    func didOpenNotes(sender: AddExpenseTableViewCell) {
+        self.navigationItem.rightBarButtonItem?.title = "Done"
+    }
+    
+    func completedExpense(sender: AddExpenseTableViewCell, expense: Expense) {
+        print("completedExpense")
+        self.navigationItem.leftBarButtonItem?.isEnabled = true
+        self.navigationItem.rightBarButtonItem = nil
+        addingExpense = false
+        self.tableView.beginUpdates()
+        self.tableView.endUpdates()
+        fetchMonthsAndDays()
+        self.tableView.reloadData()
+        
+        let locationOfTodayCell = months.count + daysThisMonth.count - 1
+        self.tableView.scrollToRow(at: IndexPath(row: locationOfTodayCell, section: 0),
+                                   at: .top, animated: true)
+    }
+    
+    func invalidFields(sender: AddExpenseTableViewCell) {
+        let alert = UIAlertController(title: "Invalid Fields", message: "Please enter valid values for amount, description, and date.", preferredStyle: UIAlertControllerStyle.alert)
+        alert.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.default, handler: nil))
+        
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    func didBeginEditingg(sender: TableViewCell) {
+        print("didbeginediting!")
+        addingExpense = true
+        tableView.beginUpdates()
+        tableView.endUpdates()
+        tableView.scrollToRow(at: IndexPath(row: 1, section: 0), at: .top, animated: false)
     }
 }

@@ -61,7 +61,7 @@ public class Month: NSManagedObject {
         let dailySpend = Decimal(UserDefaults.standard.double(forKey: "dailyTargetSpend"))
         
         let month = Month(context: context)
-        month.month = Date.firstDayOfMonth(dayInMonth: date)
+        month.month = date
         month.dailyBaseTargetSpend = dailySpend
         
         return month
@@ -102,7 +102,7 @@ public class Month: NSManagedObject {
         }
         set {
             if newValue != nil {
-                month_ = newValue! as NSDate
+                month_ = Date.firstDayOfMonth(dayInMonth: newValue!) as NSDate
             } else {
                 month_ = nil
             }

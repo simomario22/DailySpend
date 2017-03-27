@@ -19,4 +19,23 @@ extension String {
         }
         return withoutChars
     }
+    
+    func parseValidAmount(maxLength: Int?) -> Double {
+        let nonNumbers = CharacterSet(charactersIn: "0123456789").inverted
+        var s = self.removeCharactersWhichAreActuallyUnicodeScalarsSoBeCareful(in: nonNumbers)
+        let length = s.lengthOfBytes(using: .ascii)
+        if length == 0 {
+            s = "0"
+        } else if maxLength != nil && length > maxLength! {
+            s = s.substring(to: s.index(s.endIndex, offsetBy: maxLength! - length))
+        }
+        
+        return Double(s)! / 100
+    }
+    
+    static func formatAsCurrency(amount: Double) -> String? {
+        let currencyFormatter = NumberFormatter()
+        currencyFormatter.numberStyle = .currency
+        return currencyFormatter.string(from: amount as NSNumber)
+    }
 }

@@ -28,6 +28,11 @@ class InitialSpendViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
 
+    
+    /*
+     * Fix the frames of the money fields so that everything is visible, and
+     * possibly make the font smaller.
+     */
     func fixFrames() {
         // Calculate the maximum width the text fields can have without overlap.
         let midMonthX = (monthlyField.frame.origin.x * 2 + monthlyField.frame.width) / 2
@@ -76,40 +81,22 @@ class InitialSpendViewController: UIViewController {
         
         self.view.addConstraints([dayConstraint!, monthConstraint!])
     }
-    
-    func parseValidAmount(currencyString: String, maxSize: Int) -> Double {
-        let nonNumbers = CharacterSet(charactersIn: "0123456789").inverted
-        var s = currencyString.removeCharactersWhichAreActuallyUnicodeScalarsSoBeCareful(in: nonNumbers)
-        let length = s.lengthOfBytes(using: .ascii)
-        if length == 0 {
-            s = "0"
-        } else if length > maxSize {
-            s = s.substring(to: s.index(s.endIndex, offsetBy: maxSize - length))
-        }
-        
-        return Double(s)! / 100
-    }
-    
-    func formatAsCurrency(amount: Double) -> String? {
-        let currencyFormatter = NumberFormatter()
-        currencyFormatter.numberStyle = .currency
-        return currencyFormatter.string(from: amount as NSNumber)
-    }
+
 
     @IBAction func valueChanged(_ sender: UITextField) {
-        let amount = parseValidAmount(currencyString: sender.text!, maxSize: 8)
+        let amount = sender.text!.parseValidAmount(maxLength: 8)
         
         let dailyAmount = sender.tag == 2 ? amount : amount / 30
         let monthlyAmount = sender.tag == 1 ? amount : amount * 30
         
-        dailyField.text = formatAsCurrency(amount: dailyAmount)
-        monthlyField.text = formatAsCurrency(amount: monthlyAmount)
+        dailyField.text = String.formatAsCurrency(amount: dailyAmount)
+        monthlyField.text = String.formatAsCurrency(amount: monthlyAmount)
         fixFrames()
     }
     
     
     @IBAction func save(_ sender: UIBarButtonItem) {
-        let dailyAmount = parseValidAmount(currencyString: dailyField.text!, maxSize: 8)
+        let dailyAmount = dailyField.text!.parseValidAmount(maxLength: 8)
         if dailyAmount == 0 {
             let alert = UIAlertController(title: "Can't have 0 spend", message: "You need to pick a spend greater than 0.", preferredStyle: UIAlertControllerStyle.alert)
             alert.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.default, handler: nil))

@@ -32,7 +32,7 @@ public class Expense: NSManagedObject {
         }
         set {
             if newValue != nil {
-                date_ = newValue! as NSDate
+                date_ = newValue!.beginningOfDay as NSDate
             } else {
                 date_ = nil
             }
