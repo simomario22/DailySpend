@@ -84,6 +84,7 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
         title = "Spending"
         tableView.delegate = self
         tableView.dataSource = self
+        tableView.tableFooterView = UIView()
     }
     
     override func didReceiveMemoryWarning() {
@@ -360,11 +361,13 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
         let buttonTitle = sender.title!
         NotificationCenter.default.post(name: NSNotification.Name.init("Pressed\(buttonTitle)Button"), object: UIApplication.shared)
         if buttonTitle == "Done" {
+            self.navigationItem.leftBarButtonItem?.isEnabled = true
             sender.title! = "Save"
         }
     }
     
     func didOpenNotes(sender: AddExpenseTableViewCell) {
+        self.navigationItem.leftBarButtonItem?.isEnabled = false
         self.navigationItem.rightBarButtonItem?.title = "Done"
     }
     

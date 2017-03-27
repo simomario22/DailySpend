@@ -256,6 +256,8 @@ class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
     
     func resetView() {
         currentlyEditing = false
+        selectedDate = nil
+        notes = nil
 
         self.amountField.resignFirstResponder()
         self.descriptionField.resignFirstResponder()
