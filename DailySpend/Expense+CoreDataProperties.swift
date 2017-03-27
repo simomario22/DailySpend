@@ -17,10 +17,9 @@ extension Expense {
     }
 
     @NSManaged public var amount_: NSDecimalNumber?
-    @NSManaged public var date_: NSDate?
     @NSManaged public var shortDescription_: String?
     @NSManaged public var notes_: String?
-    @NSManaged public var recordedDate_: NSDate?
+    @NSManaged public var dateCreated_: NSDate?
     @NSManaged public var day_: Day?
 
 }

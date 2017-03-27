@@ -20,5 +20,6 @@ extension MonthAdjustment {
     @NSManaged public var dateEffective_: NSDate?
     @NSManaged public var reason_: String?
     @NSManaged public var month_: Month?
+    @NSManaged public var dateCreated_: NSDate?
 
 }

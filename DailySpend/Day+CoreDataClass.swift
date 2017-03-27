@@ -11,7 +11,7 @@ import CoreData
 
 @objc(Day)
 public class Day: NSManagedObject {
-    
+
     // Helper functions
     func totalAdjustments() -> Decimal {
         var total: Decimal = 0
@@ -50,11 +50,14 @@ public class Day: NSManagedObject {
         return dayResults[0]
     }
     
-    class func create(context: NSManagedObjectContext, date: Date, month: Month) {
+    class func create(context: NSManagedObjectContext, date: Date, month: Month) -> Day {
         let day = Day(context: context)
         day.date = date.beginningOfDay
         day.month = month
         day.baseTargetSpend = day.month!.dailyBaseTargetSpend
+        day.dateCreated = Date()
+        
+        return day
     }
     
     // Accessor functions (for Swift 3 classes)
@@ -75,6 +78,19 @@ public class Day: NSManagedObject {
                 baseTargetSpend_ = NSDecimalNumber(decimal: newValue!)
             } else {
                 baseTargetSpend_ = nil
+            }
+        }
+    }
+    
+    public var dateCreated: Date? {
+        get {
+            return dateCreated_ as Date?
+        }
+        set {
+            if newValue != nil {
+                dateCreated_ = newValue! as NSDate
+            } else {
+                dateCreated_ = nil
             }
         }
     }

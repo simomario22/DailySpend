@@ -9,18 +9,24 @@
 import UIKit
 
 class CurrentDayTableViewCell: UITableViewCell {
+    
+    let redColor = UIColor(colorLiteralRed: 179.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 1)
 
-    @IBOutlet weak var spendLeftLabel: UILabel!
+    @IBOutlet weak var spendLeftLabel: UICountingLabel!
     @IBOutlet weak var monthlySpendLeftLabel: UILabel!
     @IBOutlet weak var todaysSpendingLabel: UILabel!
     
+    let currencyFormatter = NumberFormatter()
+    
     func setAndFormatLabels(dailySpendLeft: Decimal,
+                            previousDailySpendLeft: Decimal,
                             monthlySpendLeft: Decimal,
                             expensesToday: Bool) {
         let currencyFormatter = NumberFormatter()
         currencyFormatter.numberStyle = .currency
         
-        spendLeftLabel.text = currencyFormatter.string(from: dailySpendLeft as NSNumber)
+        spendLeftLabel.count(from: CGFloat(previousDailySpendLeft.doubleValue),
+                             to: CGFloat(dailySpendLeft.doubleValue))
         let monthFormat = currencyFormatter.string(from: monthlySpendLeft as NSNumber)
         monthlySpendLeftLabel.text = "\(monthFormat!) left to spend this month"
         
@@ -34,6 +40,16 @@ class CurrentDayTableViewCell: UITableViewCell {
     }
     
     override func awakeFromNib() {
+        currencyFormatter.numberStyle = .currency
+
+        spendLeftLabel.formatBlock = { (value: CGFloat) -> String? in
+            if (value < 0) {
+                self.spendLeftLabel.textColor = self.redColor
+            } else {
+                self.spendLeftLabel.textColor = UIColor.black
+            }
+            return self.currencyFormatter.string(from: value as NSNumber)
+        }
         super.awakeFromNib()
         // Initialization code
     }

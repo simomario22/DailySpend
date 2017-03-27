@@ -17,6 +17,7 @@ extension DayAdjustment {
     }
 
     @NSManaged public var amount_: NSDecimalNumber?
+    @NSManaged public var dateCreated_: NSDate?
     @NSManaged public var dateAffected_: NSDate?
     @NSManaged public var reason_: String?
     @NSManaged public var day_: Day?

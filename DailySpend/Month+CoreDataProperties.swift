@@ -17,6 +17,7 @@ extension Month {
     }
 
     @NSManaged public var month_: NSDate?
+    @NSManaged public var dateCreated_: NSDate?
     @NSManaged public var dailyBaseTargetSpend_: NSDecimalNumber?
     @NSManaged public var adjustments_: NSSet?
     @NSManaged public var days_: NSSet?

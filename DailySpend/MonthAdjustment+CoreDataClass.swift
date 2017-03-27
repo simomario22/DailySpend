@@ -39,6 +39,19 @@ public class MonthAdjustment: NSManagedObject {
         }
     }
     
+    public var dateCreated: Date? {
+        get {
+            return dateCreated_ as Date?
+        }
+        set {
+            if newValue != nil {
+                dateCreated_ = newValue! as NSDate
+            } else {
+                dateCreated_ = nil
+            }
+        }
+    }
+    
     public var reason: String? {
         get {
             return reason_

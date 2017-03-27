@@ -7,10 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C518B59A1E88C7F0009CA4BB /* Decimal+DoubleValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C518B5991E88C7F0009CA4BB /* Decimal+DoubleValue.swift */; };
+		C518B59F1E88D669009CA4BB /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = C518B59C1E88D669009CA4BB /* LICENSE */; };
+		C518B5A01E88D669009CA4BB /* UICountingLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = C518B59E1E88D669009CA4BB /* UICountingLabel.m */; };
 		C5316BF61E78D80F00BC2918 /* AddExpenseTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5316BF51E78D80F00BC2918 /* AddExpenseTableViewCell.swift */; };
 		C5316C291E7B240D00BC2918 /* Date+Arithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5316C281E7B240D00BC2918 /* Date+Arithmetic.swift */; };
 		C538FAB91E85696200295062 /* FuckXcode.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C538FAB71E85696200295062 /* FuckXcode.storyboard */; };
-		C54089981E88A63E006C343E /* TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54089961E88A63E006C343E /* TableViewCell.swift */; };
 		C56500161E837F37009D64F0 /* Month+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C565000C1E837F37009D64F0 /* Month+CoreDataClass.swift */; };
 		C56500171E837F37009D64F0 /* Month+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C565000D1E837F37009D64F0 /* Month+CoreDataProperties.swift */; };
 		C56500181E837F37009D64F0 /* DayAdjustment+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C565000E1E837F37009D64F0 /* DayAdjustment+CoreDataClass.swift */; };
@@ -58,10 +60,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C518B5991E88C7F0009CA4BB /* Decimal+DoubleValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Decimal+DoubleValue.swift"; sourceTree = "<group>"; };
+		C518B59B1E88D668009CA4BB /* DailySpend-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "DailySpend-Bridging-Header.h"; sourceTree = "<group>"; };
+		C518B59C1E88D669009CA4BB /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		C518B59D1E88D669009CA4BB /* UICountingLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICountingLabel.h; sourceTree = "<group>"; };
+		C518B59E1E88D669009CA4BB /* UICountingLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICountingLabel.m; sourceTree = "<group>"; };
 		C5316BF51E78D80F00BC2918 /* AddExpenseTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddExpenseTableViewCell.swift; sourceTree = "<group>"; };
 		C5316C281E7B240D00BC2918 /* Date+Arithmetic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Date+Arithmetic.swift"; sourceTree = "<group>"; };
 		C538FAB81E85696200295062 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/FuckXcode.storyboard; sourceTree = "<group>"; };
-		C54089961E88A63E006C343E /* TableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableViewCell.swift; sourceTree = "<group>"; };
 		C565000C1E837F37009D64F0 /* Month+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Month+CoreDataClass.swift"; path = "DailySpend/Month+CoreDataClass.swift"; sourceTree = "<group>"; };
 		C565000D1E837F37009D64F0 /* Month+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Month+CoreDataProperties.swift"; path = "DailySpend/Month+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		C565000E1E837F37009D64F0 /* DayAdjustment+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "DayAdjustment+CoreDataClass.swift"; path = "DailySpend/DayAdjustment+CoreDataClass.swift"; sourceTree = "<group>"; };
@@ -127,6 +133,7 @@
 			children = (
 				C5316C281E7B240D00BC2918 /* Date+Arithmetic.swift */,
 				C5EE62A21E85769700CAEEE7 /* String+CharacterSet.swift */,
+				C518B5991E88C7F0009CA4BB /* Decimal+DoubleValue.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -179,7 +186,6 @@
 				C5DD5A841E83B4AC008F7FC6 /* InitialSpendViewController.swift */,
 				C5FEDA011E832BDC00D9019A /* ReviewMonthViewController.swift */,
 				C5316BF51E78D80F00BC2918 /* AddExpenseTableViewCell.swift */,
-				C54089961E88A63E006C343E /* TableViewCell.swift */,
 				C5DD5A821E83B383008F7FC6 /* CurrentDayTableViewCell.swift */,
 				C5781DA41E6E2060006BBC03 /* Assets.xcassets */,
 				C5781DA61E6E2060006BBC03 /* LaunchScreen.storyboard */,
@@ -187,6 +193,10 @@
 				C5781DA11E6E2060006BBC03 /* DailySpend.xcdatamodeld */,
 				C56500201E837F3A009D64F0 /* CoreData Classes */,
 				C5CF5F6A1E7BB68B00C35539 /* Images */,
+				C518B59C1E88D669009CA4BB /* LICENSE */,
+				C518B59D1E88D669009CA4BB /* UICountingLabel.h */,
+				C518B59E1E88D669009CA4BB /* UICountingLabel.m */,
+				C518B59B1E88D668009CA4BB /* DailySpend-Bridging-Header.h */,
 			);
 			path = DailySpend;
 			sourceTree = "<group>";
@@ -291,6 +301,7 @@
 					C5781D961E6E2060006BBC03 = {
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = UUMJ98B7G3;
+						LastSwiftMigration = 0820;
 						ProvisioningStyle = Automatic;
 					};
 					C5781DAD1E6E2060006BBC03 = {
@@ -334,6 +345,7 @@
 				C5CF5F671E7BB68600C35539 /* today.png in Resources */,
 				C5CF5F681E7BB68600C35539 /* today@2x.png in Resources */,
 				C5781DA51E6E2060006BBC03 /* Assets.xcassets in Resources */,
+				C518B59F1E88D669009CA4BB /* LICENSE in Resources */,
 				C5CF5F661E7BB68600C35539 /* cal@3x.png in Resources */,
 				C5CF5F691E7BB68600C35539 /* today@3x.png in Resources */,
 				C538FAB91E85696200295062 /* FuckXcode.storyboard in Resources */,
@@ -368,18 +380,19 @@
 				C5DD5A831E83B383008F7FC6 /* CurrentDayTableViewCell.swift in Sources */,
 				C5FEDA021E832BDC00D9019A /* ReviewMonthViewController.swift in Sources */,
 				C565001F1E837F37009D64F0 /* MonthAdjustment+CoreDataProperties.swift in Sources */,
-				C54089981E88A63E006C343E /* TableViewCell.swift in Sources */,
 				C56500171E837F37009D64F0 /* Month+CoreDataProperties.swift in Sources */,
 				C5EE62A31E85769700CAEEE7 /* String+CharacterSet.swift in Sources */,
 				C5781DCC1E6E23B2006BBC03 /* TodayViewController.swift in Sources */,
 				C565001A1E837F37009D64F0 /* Day+CoreDataClass.swift in Sources */,
 				C5DD5A851E83B4AC008F7FC6 /* InitialSpendViewController.swift in Sources */,
+				C518B59A1E88C7F0009CA4BB /* Decimal+DoubleValue.swift in Sources */,
 				C56500181E837F37009D64F0 /* DayAdjustment+CoreDataClass.swift in Sources */,
 				C56500191E837F37009D64F0 /* DayAdjustment+CoreDataProperties.swift in Sources */,
 				C5781DA31E6E2060006BBC03 /* DailySpend.xcdatamodeld in Sources */,
 				C565001B1E837F37009D64F0 /* Day+CoreDataProperties.swift in Sources */,
 				C5316C291E7B240D00BC2918 /* Date+Arithmetic.swift in Sources */,
 				C565001C1E837F37009D64F0 /* Expense+CoreDataClass.swift in Sources */,
+				C518B5A01E88D669009CA4BB /* UICountingLabel.m in Sources */,
 				C5781D9B1E6E2060006BBC03 /* AppDelegate.swift in Sources */,
 				C565001D1E837F37009D64F0 /* Expense+CoreDataProperties.swift in Sources */,
 				C56500161E837F37009D64F0 /* Month+CoreDataClass.swift in Sources */,
@@ -534,11 +547,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = UUMJ98B7G3;
 				INFOPLIST_FILE = DailySpend/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = joshsherick.DailySpend;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "DailySpend/DailySpend-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
@@ -547,11 +563,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = UUMJ98B7G3;
 				INFOPLIST_FILE = DailySpend/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = joshsherick.DailySpend;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "DailySpend/DailySpend-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;

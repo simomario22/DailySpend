@@ -63,7 +63,8 @@ public class Month: NSManagedObject {
         let month = Month(context: context)
         month.month = date
         month.dailyBaseTargetSpend = dailySpend
-        
+        month.dateCreated = Date()
+
         return month
     }
     
@@ -105,6 +106,19 @@ public class Month: NSManagedObject {
                 month_ = Date.firstDayOfMonth(dayInMonth: newValue!) as NSDate
             } else {
                 month_ = nil
+            }
+        }
+    }
+    
+    public var dateCreated: Date? {
+        get {
+            return dateCreated_ as Date?
+        }
+        set {
+            if newValue != nil {
+                dateCreated_ = newValue! as NSDate
+            } else {
+                dateCreated_ = nil
             }
         }
     }

@@ -21,8 +21,15 @@ extension String {
     }
     
     func parseValidAmount(maxLength: Int?) -> Double {
+        var negative = false
+        if self.characters.count > 0 &&
+            self.characters[self.startIndex] == "-" &&
+            self.components(separatedBy: "-").count == 1 {
+            negative = true
+        }
         let nonNumbers = CharacterSet(charactersIn: "0123456789").inverted
         var s = self.removeCharactersWhichAreActuallyUnicodeScalarsSoBeCareful(in: nonNumbers)
+        
         let length = s.lengthOfBytes(using: .ascii)
         if length == 0 {
             s = "0"
@@ -30,7 +37,7 @@ extension String {
             s = s.substring(to: s.index(s.endIndex, offsetBy: maxLength! - length))
         }
         
-        return Double(s)! / 100
+        return (Double(s)! / 100) * (negative ? -1 : 1)
     }
     
     static func formatAsCurrency(amount: Double) -> String? {

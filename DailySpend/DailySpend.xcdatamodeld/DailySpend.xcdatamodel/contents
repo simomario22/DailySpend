@@ -3,6 +3,7 @@
     <entity name="Day" representedClassName="Day" syncable="YES">
         <attribute name="baseTargetSpend_" optional="YES" attributeType="Decimal" defaultValueString="0.0" syncable="YES"/>
         <attribute name="date_" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="dateCreated_" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <relationship name="adjustments_" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="DayAdjustment" inverseName="day_" inverseEntity="DayAdjustment" syncable="YES"/>
         <relationship name="expenses_" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Expense" inverseName="day_" inverseEntity="Expense" syncable="YES"/>
         <relationship name="month_" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Month" inverseName="days_" inverseEntity="Month" syncable="YES"/>
@@ -10,34 +11,36 @@
     <entity name="DayAdjustment" representedClassName="DayAdjustment" syncable="YES">
         <attribute name="amount_" optional="YES" attributeType="Decimal" defaultValueString="0.0" syncable="YES"/>
         <attribute name="dateAffected_" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="dateCreated_" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="reason_" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="day_" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Day" inverseName="adjustments_" inverseEntity="Day" syncable="YES"/>
     </entity>
     <entity name="Expense" representedClassName="Expense" syncable="YES">
         <attribute name="amount_" optional="YES" attributeType="Decimal" defaultValueString="0.0" syncable="YES"/>
-        <attribute name="date_" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="dateCreated_" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="notes_" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="recordedDate_" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="shortDescription_" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="day_" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Day" inverseName="expenses_" inverseEntity="Day" syncable="YES"/>
     </entity>
     <entity name="Month" representedClassName="Month" syncable="YES">
         <attribute name="dailyBaseTargetSpend_" optional="YES" attributeType="Decimal" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="dateCreated_" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="month_" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <relationship name="adjustments_" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MonthAdjustment" inverseName="month_" inverseEntity="MonthAdjustment" syncable="YES"/>
         <relationship name="days_" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Day" inverseName="month_" inverseEntity="Day" syncable="YES"/>
     </entity>
     <entity name="MonthAdjustment" representedClassName="MonthAdjustment" syncable="YES">
         <attribute name="amount_" optional="YES" attributeType="Decimal" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="dateCreated_" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="dateEffective_" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="reason_" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="month_" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Month" inverseName="adjustments_" inverseEntity="Month" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Day" positionX="-63" positionY="27" width="128" height="120"/>
-        <element name="DayAdjustment" positionX="198" positionY="27" width="128" height="103"/>
-        <element name="Expense" positionX="-263" positionY="11" width="128" height="135"/>
-        <element name="Month" positionX="-54" positionY="-198" width="128" height="105"/>
-        <element name="MonthAdjustment" positionX="196" positionY="-168" width="128" height="103"/>
+        <element name="Day" positionX="-63" positionY="27" width="128" height="135"/>
+        <element name="DayAdjustment" positionX="198" positionY="27" width="128" height="120"/>
+        <element name="Expense" positionX="-263" positionY="11" width="128" height="120"/>
+        <element name="Month" positionX="-54" positionY="-198" width="128" height="120"/>
+        <element name="MonthAdjustment" positionX="196" positionY="-168" width="128" height="120"/>
     </elements>
 </model>

@@ -26,32 +26,19 @@ public class Expense: NSManagedObject {
         }
     }
     
-    public var date: Date? {
+    public var dateCreated: Date? {
         get {
-            return date_ as Date?
+            return dateCreated_ as Date?
         }
         set {
             if newValue != nil {
-                date_ = newValue!.beginningOfDay as NSDate
+                dateCreated_ = newValue! as NSDate
             } else {
-                date_ = nil
+                dateCreated_ = nil
             }
         }
     }
-    
-    public var recordedDate: Date? {
-        get {
-            return recordedDate_ as Date?
-        }
-        set {
-            if newValue != nil {
-                recordedDate_ = newValue! as NSDate
-            } else {
-                recordedDate_ = nil
-            }
-        }
-    }
-    
+
     public var shortDescription: String? {
         get {
             return shortDescription_
