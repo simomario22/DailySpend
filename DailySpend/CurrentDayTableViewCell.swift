@@ -13,7 +13,6 @@ class CurrentDayTableViewCell: UITableViewCell {
     let redColor = UIColor(colorLiteralRed: 179.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 1)
 
     @IBOutlet weak var spendLeftLabel: UICountingLabel!
-    @IBOutlet weak var monthlySpendLeftLabel: UILabel!
     @IBOutlet weak var todaysSpendingLabel: UILabel!
     
     let currencyFormatter = NumberFormatter()
@@ -27,9 +26,7 @@ class CurrentDayTableViewCell: UITableViewCell {
         
         spendLeftLabel.count(from: CGFloat(previousDailySpendLeft.doubleValue),
                              to: CGFloat(dailySpendLeft.doubleValue))
-        let monthFormat = currencyFormatter.string(from: monthlySpendLeft as NSNumber)
-        monthlySpendLeftLabel.text = "\(monthFormat!) left to spend this month"
-        
+    
         if expensesToday {
             todaysSpendingLabel.isHidden = false
             self.separatorInset = UIEdgeInsetsMake(0, 0, 0, self.bounds.size.width);

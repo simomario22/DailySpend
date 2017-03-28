@@ -277,7 +277,6 @@ class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
             self.notesButton.setTitle("Notes", for: .normal)
             self.notesButton.setTitleColor(self.greyColor, for: .normal)
             
-            
             self.datePicker.frame = self.datePicker.frame.offsetBy(dx: 0, dy: self.datePicker.frame.height)
             self.dismissButton.frame = self.dismissButton.frame.offsetBy(dx: 0, dy: self.datePicker.frame.height)
             self.dismissButton.backgroundColor = UIColor.init(colorLiteralRed: 0, green: 0, blue: 0, alpha: 0)

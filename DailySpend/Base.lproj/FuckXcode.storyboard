@@ -51,11 +51,11 @@
                                             </subviews>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="currentDay" rowHeight="115" id="WR3-6T-zP4" customClass="CurrentDayTableViewCell" customModule="DailySpend" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="72" width="375" height="115"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="currentDay" rowHeight="105" id="WR3-6T-zP4" customClass="CurrentDayTableViewCell" customModule="DailySpend" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="72" width="375" height="105"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="WR3-6T-zP4" id="mCW-dH-eas">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="115"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="104"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="$0.00" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mwL-6Y-rxj" customClass="UICountingLabel">
@@ -70,14 +70,8 @@
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="$0 left this month" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="g09-Y1-lqu">
-                                                    <rect key="frame" x="141" y="64" width="94" height="14"/>
-                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleCaption2"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Today's Spending" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Tpz-j7-vkK">
-                                                    <rect key="frame" x="120" y="87" width="136" height="21"/>
+                                                    <rect key="frame" x="120" y="71" width="136" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
@@ -87,22 +81,19 @@
                                             <constraints>
                                                 <constraint firstItem="mwL-6Y-rxj" firstAttribute="centerX" secondItem="mCW-dH-eas" secondAttribute="centerX" id="Ogf-GL-YQN"/>
                                                 <constraint firstItem="Tpz-j7-vkK" firstAttribute="centerX" secondItem="mCW-dH-eas" secondAttribute="centerX" id="Sqi-70-5yj"/>
-                                                <constraint firstItem="g09-Y1-lqu" firstAttribute="top" secondItem="Bn8-Cg-Mlb" secondAttribute="bottom" constant="0.5" id="Tvh-QR-K2l"/>
-                                                <constraint firstItem="g09-Y1-lqu" firstAttribute="centerX" secondItem="mCW-dH-eas" secondAttribute="centerX" id="cip-Ce-5RH"/>
+                                                <constraint firstItem="Tpz-j7-vkK" firstAttribute="top" secondItem="Bn8-Cg-Mlb" secondAttribute="bottom" constant="8" id="abE-Ep-dAR"/>
                                                 <constraint firstAttribute="topMargin" secondItem="mwL-6Y-rxj" secondAttribute="top" id="dIP-Ym-1qm"/>
-                                                <constraint firstItem="Tpz-j7-vkK" firstAttribute="top" secondItem="g09-Y1-lqu" secondAttribute="bottom" constant="9.5" id="dbk-Yx-adK"/>
                                                 <constraint firstItem="Bn8-Cg-Mlb" firstAttribute="centerX" secondItem="mCW-dH-eas" secondAttribute="centerX" id="s0q-su-R8c"/>
                                                 <constraint firstItem="Bn8-Cg-Mlb" firstAttribute="top" secondItem="mwL-6Y-rxj" secondAttribute="bottom" constant="1" id="s5L-tr-re2"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
-                                            <outlet property="monthlySpendLeftLabel" destination="g09-Y1-lqu" id="6Tf-Xe-k0d"/>
                                             <outlet property="spendLeftLabel" destination="mwL-6Y-rxj" id="A7H-g5-mlf"/>
                                             <outlet property="todaysSpendingLabel" destination="Tpz-j7-vkK" id="zhK-mO-Bph"/>
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="expense" textLabel="zF8-Rl-bQZ" detailTextLabel="79A-8d-du1" style="IBUITableViewCellStyleValue1" id="w0A-72-8an">
-                                        <rect key="frame" x="0.0" y="187" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="177" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="w0A-72-8an" id="n27-jy-PDM">
                                             <rect key="frame" x="0.0" y="0.0" width="342" height="43.5"/>
@@ -127,7 +118,7 @@
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="addExpense" rowHeight="213" id="Re8-S4-vOu" customClass="AddExpenseTableViewCell" customModule="DailySpend" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="231" width="375" height="213"/>
+                                        <rect key="frame" x="0.0" y="221" width="375" height="213"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Re8-S4-vOu" id="xnj-G8-kh6">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="213"/>
