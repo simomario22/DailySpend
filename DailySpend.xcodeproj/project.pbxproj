@@ -30,6 +30,9 @@
 		C5781DB31E6E2060006BBC03 /* DailySpendTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5781DB21E6E2060006BBC03 /* DailySpendTests.swift */; };
 		C5781DBE1E6E2060006BBC03 /* DailySpendUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5781DBD1E6E2060006BBC03 /* DailySpendUITests.swift */; };
 		C5781DCC1E6E23B2006BBC03 /* TodayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5781DCB1E6E23B2006BBC03 /* TodayViewController.swift */; };
+		C5BA55B31E8D92C800256E7A /* InitialAdjustmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5BA55B21E8D92C800256E7A /* InitialAdjustmentViewController.swift */; };
+		C5BA55B51E8DAB0E00256E7A /* ReviewTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5BA55B41E8DAB0E00256E7A /* ReviewTableViewCell.swift */; };
+		C5BA55B71E8DB17800256E7A /* ExpenseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5BA55B61E8DB17800256E7A /* ExpenseViewController.swift */; };
 		C5CF5F641E7BB68600C35539 /* cal.png in Resources */ = {isa = PBXBuildFile; fileRef = C5CF5F5E1E7BB68600C35539 /* cal.png */; };
 		C5CF5F651E7BB68600C35539 /* cal@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5CF5F5F1E7BB68600C35539 /* cal@2x.png */; };
 		C5CF5F661E7BB68600C35539 /* cal@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5CF5F601E7BB68600C35539 /* cal@3x.png */; };
@@ -39,7 +42,6 @@
 		C5DD5A831E83B383008F7FC6 /* CurrentDayTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5DD5A821E83B383008F7FC6 /* CurrentDayTableViewCell.swift */; };
 		C5DD5A851E83B4AC008F7FC6 /* InitialSpendViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5DD5A841E83B4AC008F7FC6 /* InitialSpendViewController.swift */; };
 		C5EE62A31E85769700CAEEE7 /* String+CharacterSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5EE62A21E85769700CAEEE7 /* String+CharacterSet.swift */; };
-		C5FEDA021E832BDC00D9019A /* ReviewMonthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5FEDA011E832BDC00D9019A /* ReviewMonthViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -91,6 +93,9 @@
 		C5781DBD1E6E2060006BBC03 /* DailySpendUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailySpendUITests.swift; sourceTree = "<group>"; };
 		C5781DBF1E6E2060006BBC03 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C5781DCB1E6E23B2006BBC03 /* TodayViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TodayViewController.swift; sourceTree = "<group>"; };
+		C5BA55B21E8D92C800256E7A /* InitialAdjustmentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InitialAdjustmentViewController.swift; sourceTree = "<group>"; };
+		C5BA55B41E8DAB0E00256E7A /* ReviewTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReviewTableViewCell.swift; sourceTree = "<group>"; };
+		C5BA55B61E8DB17800256E7A /* ExpenseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpenseViewController.swift; sourceTree = "<group>"; };
 		C5CF5F5E1E7BB68600C35539 /* cal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cal.png; sourceTree = "<group>"; };
 		C5CF5F5F1E7BB68600C35539 /* cal@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cal@2x.png"; sourceTree = "<group>"; };
 		C5CF5F601E7BB68600C35539 /* cal@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cal@3x.png"; sourceTree = "<group>"; };
@@ -100,7 +105,6 @@
 		C5DD5A821E83B383008F7FC6 /* CurrentDayTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrentDayTableViewCell.swift; sourceTree = "<group>"; };
 		C5DD5A841E83B4AC008F7FC6 /* InitialSpendViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InitialSpendViewController.swift; sourceTree = "<group>"; };
 		C5EE62A21E85769700CAEEE7 /* String+CharacterSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+CharacterSet.swift"; sourceTree = "<group>"; };
-		C5FEDA011E832BDC00D9019A /* ReviewMonthViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReviewMonthViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -182,21 +186,20 @@
 				C5781D9A1E6E2060006BBC03 /* AppDelegate.swift */,
 				C5781DCB1E6E23B2006BBC03 /* TodayViewController.swift */,
 				C538FAB71E85696200295062 /* FuckXcode.storyboard */,
-				C5316C2A1E7B241200BC2918 /* Extensions */,
 				C5DD5A841E83B4AC008F7FC6 /* InitialSpendViewController.swift */,
-				C5FEDA011E832BDC00D9019A /* ReviewMonthViewController.swift */,
+				C5BA55B21E8D92C800256E7A /* InitialAdjustmentViewController.swift */,
+				C5BA55B61E8DB17800256E7A /* ExpenseViewController.swift */,
+				C5BA55B41E8DAB0E00256E7A /* ReviewTableViewCell.swift */,
 				C5316BF51E78D80F00BC2918 /* AddExpenseTableViewCell.swift */,
 				C5DD5A821E83B383008F7FC6 /* CurrentDayTableViewCell.swift */,
+				C5316C2A1E7B241200BC2918 /* Extensions */,
+				C56500201E837F3A009D64F0 /* CoreData Classes */,
 				C5781DA41E6E2060006BBC03 /* Assets.xcassets */,
 				C5781DA61E6E2060006BBC03 /* LaunchScreen.storyboard */,
 				C5781DA91E6E2060006BBC03 /* Info.plist */,
 				C5781DA11E6E2060006BBC03 /* DailySpend.xcdatamodeld */,
-				C56500201E837F3A009D64F0 /* CoreData Classes */,
 				C5CF5F6A1E7BB68B00C35539 /* Images */,
-				C518B59C1E88D669009CA4BB /* LICENSE */,
-				C518B59D1E88D669009CA4BB /* UICountingLabel.h */,
-				C518B59E1E88D669009CA4BB /* UICountingLabel.m */,
-				C518B59B1E88D668009CA4BB /* DailySpend-Bridging-Header.h */,
+				C5BA55B81E8DC47600256E7A /* UICountingLabel */,
 			);
 			path = DailySpend;
 			sourceTree = "<group>";
@@ -217,6 +220,17 @@
 				C5781DBF1E6E2060006BBC03 /* Info.plist */,
 			);
 			path = DailySpendUITests;
+			sourceTree = "<group>";
+		};
+		C5BA55B81E8DC47600256E7A /* UICountingLabel */ = {
+			isa = PBXGroup;
+			children = (
+				C518B59C1E88D669009CA4BB /* LICENSE */,
+				C518B59D1E88D669009CA4BB /* UICountingLabel.h */,
+				C518B59E1E88D669009CA4BB /* UICountingLabel.m */,
+				C518B59B1E88D668009CA4BB /* DailySpend-Bridging-Header.h */,
+			);
+			name = UICountingLabel;
 			sourceTree = "<group>";
 		};
 		C5CF5F6A1E7BB68B00C35539 /* Images */ = {
@@ -378,12 +392,13 @@
 				C565001E1E837F37009D64F0 /* MonthAdjustment+CoreDataClass.swift in Sources */,
 				C5316BF61E78D80F00BC2918 /* AddExpenseTableViewCell.swift in Sources */,
 				C5DD5A831E83B383008F7FC6 /* CurrentDayTableViewCell.swift in Sources */,
-				C5FEDA021E832BDC00D9019A /* ReviewMonthViewController.swift in Sources */,
 				C565001F1E837F37009D64F0 /* MonthAdjustment+CoreDataProperties.swift in Sources */,
 				C56500171E837F37009D64F0 /* Month+CoreDataProperties.swift in Sources */,
 				C5EE62A31E85769700CAEEE7 /* String+CharacterSet.swift in Sources */,
+				C5BA55B31E8D92C800256E7A /* InitialAdjustmentViewController.swift in Sources */,
 				C5781DCC1E6E23B2006BBC03 /* TodayViewController.swift in Sources */,
 				C565001A1E837F37009D64F0 /* Day+CoreDataClass.swift in Sources */,
+				C5BA55B71E8DB17800256E7A /* ExpenseViewController.swift in Sources */,
 				C5DD5A851E83B4AC008F7FC6 /* InitialSpendViewController.swift in Sources */,
 				C518B59A1E88C7F0009CA4BB /* Decimal+DoubleValue.swift in Sources */,
 				C56500181E837F37009D64F0 /* DayAdjustment+CoreDataClass.swift in Sources */,
@@ -395,6 +410,7 @@
 				C518B5A01E88D669009CA4BB /* UICountingLabel.m in Sources */,
 				C5781D9B1E6E2060006BBC03 /* AppDelegate.swift in Sources */,
 				C565001D1E837F37009D64F0 /* Expense+CoreDataProperties.swift in Sources */,
+				C5BA55B51E8DAB0E00256E7A /* ReviewTableViewCell.swift in Sources */,
 				C56500161E837F37009D64F0 /* Month+CoreDataClass.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

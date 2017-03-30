@@ -124,7 +124,24 @@ public class Month: NSManagedObject {
     }
     
     public var baseTargetSpend: Decimal {
-        return dailyBaseTargetSpend! * Decimal(daysInMonth)
+        
+        var earliestDay = daysInMonth + 1
+        for day in days! {
+            if day.date!.day < earliestDay {
+                earliestDay = day.date!.day
+            }
+        }
+        
+        if (earliestDay == 1 || earliestDay > daysInMonth) {
+            // This is either a complete month or we're not sure yet
+            // If we're not sure yet we'll make the assumption that it is complete
+            return dailyBaseTargetSpend! * Decimal(daysInMonth)
+        } else {
+            // This month started in the middle, so the baseTargetSpend 
+            // should exclude the days before we started
+            return dailyBaseTargetSpend! * Decimal(daysInMonth - earliestDay)
+            
+        }
     }
     
     public var fullTargetSpend: Decimal {

@@ -99,7 +99,7 @@ class InitialSpendViewController: UIViewController {
         let dailyAmount = dailyField.text!.parseValidAmount(maxLength: 8)
         if dailyAmount == 0 {
             let alert = UIAlertController(title: "Can't have 0 spend", message: "You need to pick a spend greater than 0.", preferredStyle: UIAlertControllerStyle.alert)
-            alert.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.default, handler: nil))
+            alert.addAction(UIAlertAction(title: "Okay", style: .default, handler: nil))
             self.present(alert, animated: true, completion: nil)
         } else {
             UserDefaults.standard.set(dailyAmount, forKey: "dailyTargetSpend")

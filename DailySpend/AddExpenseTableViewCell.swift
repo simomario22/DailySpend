@@ -88,7 +88,6 @@ class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
 
     }
     
-    
     @IBAction func editedAmount(_ sender: UITextField) {
         let amount = sender.text!.parseValidAmount(maxLength: 8)
         sender.text = String.formatAsCurrency(amount: amount)
@@ -185,6 +184,7 @@ class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
         
         notesTextView.text = notes ?? ""
         notesTextView.isEditable = true
+        notesTextView.font = UIFont.systemFont(ofSize: 17)
         notesTextView.frame = CGRect(x: 0,
                                      y: bounds.size.height,
                                      width: bounds.size.width,

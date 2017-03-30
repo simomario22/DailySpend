@@ -36,8 +36,7 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
         super.viewWillAppear(animated)
         if UserDefaults.standard.double(forKey: "dailyTargetSpend") == 0 {
             
-            let storyboard = UIStoryboard(name: "FuckXcode", bundle: nil)
-            let navController = storyboard.instantiateViewController(withIdentifier: "InitialSpend")
+            let navController = storyboard!.instantiateViewController(withIdentifier: "InitialSpend")
             
             navController.modalPresentationStyle = .fullScreen
             navController.modalTransitionStyle = .coverVertical
@@ -49,7 +48,7 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
         let latestDayFetchReq: NSFetchRequest<Day> = Day.fetchRequest()
         let latestDaySortDesc = NSSortDescriptor(key: "date_", ascending: false)
         latestDayFetchReq.sortDescriptors = [latestDaySortDesc]
-        latestDayFetchReq.fetchLimit = 10
+        latestDayFetchReq.fetchLimit = 1
         let latestDayResults = try! context.fetch(latestDayFetchReq)
         
         if (latestDayResults.count < 1) {
@@ -98,19 +97,9 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
      * Present the review dialog for a given month.
      */
     func reviewMonth(_ month: Month, completion: (() -> Void)?) {
-        let storyboard = UIStoryboard(name: "FuckXcode", bundle: nil)
-        let navController = storyboard.instantiateViewController(withIdentifier: "ReviewMonth") as! UINavigationController
-        let viewController = navController.visibleViewController as! ReviewMonthViewController
-        
-        
-        viewController.setAndFormatLabels(spentAmount: month.actualSpend,
-                                          goalAmount: month.fullTargetSpend,
-                                          underOverAmount: month.fullTargetSpend - month.actualSpend,
-                                          dayInMonth: month.month!)
-        
-        navController.modalPresentationStyle = .fullScreen
-        navController.modalTransitionStyle = .coverVertical
-        self.present(navController, animated: true, completion: completion)
+        if (false){
+            var x = 2;
+        }
     }
     
     /*
@@ -141,22 +130,37 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
         }
     }
     
+    var maxExpenseSpots: Int {
+        let topHeight = UIApplication.shared.statusBarFrame.height + self.navigationController!.navigationBar.frame.height
+        let windowFrameHeight = tableView.frame.height
+        let visibleHeight = windowFrameHeight - topHeight;
+        
+        // Let's do something simple like integer division. Oh, what a joy.
+        return Int(floor(Double(visibleHeight - currentDayHeight - addExpenseMinPxVisible) / Double(standardCellHeight)))
+    }
+    
     /*
      * Calculates the number of on-screen spots for expenses (including "see
      * additional" spots) while keeping addExpenseMinPxVisible pixels visible in
      * the addExpense cell
      */
-    func numExpenseSpots() -> Int {
-        let topHeight = UIApplication.shared.statusBarFrame.height + self.navigationController!.navigationBar.frame.height
-        let windowFrameHeight = tableView.frame.height
-        let visibleHeight = windowFrameHeight - topHeight;
-
-        // Let's do something simple like integer division. Oh, what a joy.
-        let maxExpenses = Int(floor(Double(visibleHeight - currentDayHeight - addExpenseMinPxVisible) / Double(standardCellHeight)))
+    var numExpenseSpots: Int {
         let totalExpenses = daysThisMonth.count > 0 ? daysThisMonth.last!.expenses!.count : 0
-        return min(totalExpenses, maxExpenses)
+        return min(totalExpenses, maxExpenseSpots)
     }
     
+    var lastPrevDayCellIndex: Int {
+        return months.count + daysThisMonth.count - 2
+    }
+    
+    var currentDayCellIndex: Int {
+        return lastPrevDayCellIndex + 1
+    }
+    
+    var lastExpenseCellIndex: Int {
+        return currentDayCellIndex + numExpenseSpots
+    }
+
     func fetchMonthsAndDays() {
         // Populate daysThisMonth and months
         let today = Date()
@@ -184,15 +188,12 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
     /* Table view data source methods */
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return months.count + daysThisMonth.count + numExpenseSpots() + 1
+        return months.count + daysThisMonth.count + numExpenseSpots + 1
     }
     
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let lastPrevDayCellIndex = months.count + daysThisMonth.count - 2
-        let currentDayCellIndex = lastPrevDayCellIndex + 1
-        let lastExpenseCellIndex = currentDayCellIndex + numExpenseSpots()
-        
+
         if indexPath.row <= lastPrevDayCellIndex {
             let prevDayCell = tableView.dequeueReusableCell(withIdentifier: "previousDay", for: indexPath)
             if indexPath.row < months.count {
@@ -240,12 +241,10 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
             let expenseCell = tableView.dequeueReusableCell(withIdentifier: "expense", for: indexPath)
             let expenses = daysThisMonth.last!.expenses!.sorted(by: { $0.dateCreated! < $1.dateCreated! })
 
-            print("count\(expenses.count), spots\(numExpenseSpots())")
-            print("lastCell\(lastExpenseCellIndex), row\(indexPath.row)")
-            if indexPath.row == lastExpenseCellIndex && expenses.count > numExpenseSpots() {
-                expenseCell.textLabel!.text = "\(expenses.count - numExpenseSpots() + 1) more"
+            if indexPath.row == lastExpenseCellIndex && expenses.count > numExpenseSpots {
+                expenseCell.textLabel!.text = "\(expenses.count - numExpenseSpots + 1) more"
                 var total: Decimal = 0
-                for expense in expenses.suffix(from: numExpenseSpots() - 1) {
+                for expense in expenses.suffix(from: numExpenseSpots - 1) {
                     total += expense.amount!
                 }
                 expenseCell.detailTextLabel?.text = String.formatAsCurrency(amount: total.doubleValue)
@@ -264,9 +263,6 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let lastPrevDayCellIndex = months.count + daysThisMonth.count - 2
-        let currentDayCellIndex = lastPrevDayCellIndex + 1
-        let lastExpenseCellIndex = currentDayCellIndex + numExpenseSpots()
         if indexPath.row <= lastPrevDayCellIndex {
             return standardCellHeight
         } else if indexPath.row <= currentDayCellIndex {
@@ -291,12 +287,9 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
     }
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        let lastPrevDayCellIndex = months.count + daysThisMonth.count - 2
-        let currentDayCellIndex = lastPrevDayCellIndex + 1
-        let lastExpenseCellIndex = currentDayCellIndex + numExpenseSpots()
         if indexPath.row > currentDayCellIndex &&
             indexPath.row <= lastExpenseCellIndex -
-                (daysThisMonth.last!.expenses!.count > numExpenseSpots() ? 1 : 0) {
+                (daysThisMonth.last!.expenses!.count > numExpenseSpots ? 1 : 0) {
             return true
         } else {
             return false
@@ -305,30 +298,29 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            let lastPrevDayCellIndex = months.count + daysThisMonth.count - 2
-            let currentDayCellIndex = lastPrevDayCellIndex + 1
-            let lastExpenseCellIndex = currentDayCellIndex + numExpenseSpots()
-
             let today = daysThisMonth.last!
             let expenses = today.expenses!.sorted(by: { $0.dateCreated! < $1.dateCreated! })
             let index = indexPath.row - (currentDayCellIndex + 1)
             let expense = expenses[index]
             expense.day = nil
             
-            context.delete(expenses[index])
+            context.delete(expense)
             appDelegate.saveContext()
-
-            if daysThisMonth.last!.expenses!.count <= numExpenseSpots() {
-                tableView.deleteRows(at: [indexPath], with: .automatic)
+            tableView.beginUpdates()
+            if today.expenses!.count < maxExpenseSpots {
+                tableView.deleteRows(at: [indexPath], with: .none)
+            } else {
+                var indexPaths: [IndexPath] = []
+                for i in (currentDayCellIndex + 1)...(currentDayCellIndex + numExpenseSpots) {
+                     indexPaths.append(IndexPath(row: i, section: 0))
+                }
+                self.tableView.reloadRows(at: indexPaths, with: .none)
             }
             
-            var indexPaths: [IndexPath] = []
-            for i in (currentDayCellIndex + 1)...lastExpenseCellIndex {
-                 indexPaths.append(IndexPath(row: i, section: 0))
-            }
-            
-            self.tableView.reloadRows(at: indexPaths, with: .none)
-
+            // Reload current day cell.
+            let path = IndexPath(row: currentDayCellIndex, section: 0)
+            self.tableView.reloadRows(at: [path], with: .none)
+            tableView.endUpdates()
         }
     }
     
@@ -350,7 +342,7 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
         adjustBarButton = self.navigationItem.leftBarButtonItem
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .done, target: self, action: #selector(cancelAddingExpense(sender:)))
         
-        let locationOfAddExpenseCell = months.count + daysThisMonth.count + numExpenseSpots()
+        let locationOfAddExpenseCell = months.count + daysThisMonth.count + numExpenseSpots
         
         self.tableView.scrollToRow(at: IndexPath(row: locationOfAddExpenseCell, section: 0),
                                    at: .top, animated: true)
@@ -394,17 +386,15 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
         addingExpense = false
         self.tableView.beginUpdates()
         if expense.day!.date!.beginningOfDay == Date().beginningOfDay &&
-            daysThisMonth.last!.expenses!.count <= numExpenseSpots() {
+            daysThisMonth.last!.expenses!.count <= numExpenseSpots {
             // The number of rows has changed, so we need to insert them.
             let locationOfNewRow = months.count + daysThisMonth.count + daysThisMonth.last!.expenses!.count - 1
             self.tableView.insertRows(at: [IndexPath(row: locationOfNewRow, section: 0)], with: .bottom)
         }
-        if daysThisMonth.last!.expenses!.count > numExpenseSpots() {
-            let lastPrevDayCellIndex = months.count + daysThisMonth.count - 2
-            let currentDayCellIndex = lastPrevDayCellIndex + 1
-            let lastExpenseCellIndex = currentDayCellIndex + numExpenseSpots()
+        if daysThisMonth.last!.expenses!.count > numExpenseSpots {
             tableView.reloadRows(at: [IndexPath(row: lastExpenseCellIndex, section: 0)], with: .none)
         }
+        tableView.reloadRows(at: [IndexPath(row: currentDayCellIndex, section: 0)], with: .none)
         self.tableView.endUpdates()
         
         let locationOfTodayCell = months.count + daysThisMonth.count - 1
