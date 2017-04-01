@@ -88,9 +88,6 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
         // Dispose of any resources that can be recreated.
     }
     
-    
-    
-    
     /* Methods for managment of CoreData */
     
     /*
@@ -227,14 +224,19 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
         } else if indexPath.row <= currentDayCellIndex {
             let currentDayCell = tableView.dequeueReusableCell(withIdentifier: "currentDay", for: indexPath) as! CurrentDayTableViewCell
             if let today = daysThisMonth.last {
-                let dailyLeft = today.fullTargetSpend - today.actualSpend
-                let monthlyLeft = today.month!.fullTargetSpend - today.month!.actualSpend
+                var dailySpend: Decimal = 0
+                for day in daysThisMonth {
+                    dailySpend += day.baseTargetSpend!
+                    dailySpend += day.totalAdjustments()
+                    for expense in day.expenses! {
+                        dailySpend -= expense.amount!
+                    }
+                }
                 
-                currentDayCell.setAndFormatLabels(dailySpendLeft: dailyLeft,
+                currentDayCell.setAndFormatLabels(dailySpendLeft: dailySpend,
                                                   previousDailySpendLeft: previousDailySpendLeft,
-                                                  monthlySpendLeft: monthlyLeft,
                                                   expensesToday: today.expenses!.count > 0)
-                previousDailySpendLeft = dailyLeft
+                previousDailySpendLeft = dailySpend
             }
             return currentDayCell
         } else if indexPath.row <= lastExpenseCellIndex {
@@ -328,9 +330,7 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
     }
     
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        if indexPath.row < currentDayCellIndex ||
-            (indexPath.row > currentDayCellIndex &&
-            indexPath.row <= lastExpenseCellIndex) {
+        if indexPath.row <= lastExpenseCellIndex {
             // Previous day and expense cells are selectable.
             return indexPath
         } else {
@@ -351,7 +351,8 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
             let expenseVC = storyboard!.instantiateViewController(withIdentifier: "Expense") as! ExpenseViewController
             expenseVC.expense = expenses[index]
             self.navigationController?.pushViewController(expenseVC, animated: true)
-        } else if bonusExpenses && indexPath.row == lastExpenseCellIndex {
+        } else if bonusExpenses && indexPath.row == lastExpenseCellIndex ||
+                  indexPath.row == currentDayCellIndex {
             // Bonus expense selected
             // Show today.
             let reviewVC = storyboard!.instantiateViewController(withIdentifier: "Review") as! ReviewTableViewController

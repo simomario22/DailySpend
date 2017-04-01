@@ -19,7 +19,6 @@ class CurrentDayTableViewCell: UITableViewCell {
     
     func setAndFormatLabels(dailySpendLeft: Decimal,
                             previousDailySpendLeft: Decimal,
-                            monthlySpendLeft: Decimal,
                             expensesToday: Bool) {
         let currencyFormatter = NumberFormatter()
         currencyFormatter.numberStyle = .currency

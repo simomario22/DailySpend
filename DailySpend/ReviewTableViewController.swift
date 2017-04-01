@@ -31,12 +31,18 @@ class ReviewTableViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        tableView.tableFooterView = UIView()
+
 
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        tableView.reloadData()
     }
 
     override func didReceiveMemoryWarning() {
@@ -98,7 +104,7 @@ class ReviewTableViewController: UITableViewController {
                 if day!.adjustments!.isEmpty {
                     let expenses = day!.expenses!.sorted(by: { $0.dateCreated! < $1.dateCreated! })
                     cell.textLabel!.text = expenses[row].shortDescription
-                    cell.detailTextLabel!.text = String(describing: expenses[row].amount)
+                    cell.detailTextLabel!.text = String.formatAsCurrency(amount: expenses[row].amount!.doubleValue)
                 } else {
                     var total: Decimal = 0.0
                     for adjustment in day!.adjustments! {
@@ -183,13 +189,7 @@ class ReviewTableViewController: UITableViewController {
                 return true
             }
         case .Months:
-            if indexPath.section == 0 {
-                return false
-            } else if indexPath.section == 1 {
-                return month!.adjustments!.isEmpty
-            } else {
-                return true
-            }
+            return false
         case .DayAdjustments:
             return true
         case .MonthAdjustments:
@@ -197,7 +197,6 @@ class ReviewTableViewController: UITableViewController {
         }
     }
 
-    
     // Override to support editing the table view.
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
@@ -207,19 +206,119 @@ class ReviewTableViewController: UITableViewController {
                 let expense = expenses[indexPath.row]
                 expense.day = nil
                 context.delete(expense)
+                tableView.deleteRows(at: [indexPath], with: .automatic)
             case .Months:
-                let days = month!.days!.sorted(by: { $0.date! < $1.date! })
-                let day = days[indexPath.row]
-                day.month = nil
-                context.delete(day)
+                fatalError()
             case .DayAdjustments:
                 dayAdjustments![indexPath.row].day = nil
                 context.delete(dayAdjustments![indexPath.row])
+                tableView.deleteRows(at: [indexPath], with: .automatic)
             case .MonthAdjustments:
                 monthAdjustments![indexPath.row].month = nil
                 context.delete(monthAdjustments![indexPath.row])
+                tableView.deleteRows(at: [indexPath], with: .automatic)
             }
             appDelegate.saveContext()
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        switch mode! {
+        case .Days:
+            if indexPath.section == 0 {
+                return nil
+            } else {
+                return indexPath
+            }
+        case .Months:
+            if indexPath.section == 0 {
+                return nil
+            } else {
+                return indexPath
+            }
+        case .DayAdjustments:
+            return indexPath
+        case .MonthAdjustments:
+            return indexPath
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        let reviewCellHeight: CGFloat = 146
+        let standardCellHeight: CGFloat = 44
+        switch mode! {
+        case .Days:
+            if indexPath.section == 0 {
+                return reviewCellHeight
+            } else {
+                return standardCellHeight
+            }
+        case .Months:
+            if indexPath.section == 0 {
+                return reviewCellHeight
+            } else {
+                return standardCellHeight
+            }
+        case .DayAdjustments,
+             .MonthAdjustments:
+            return standardCellHeight
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let section = indexPath.section
+        let row = indexPath.row
+        switch mode! {
+        case .Days:
+            if section == 1 {
+                if day!.adjustments!.isEmpty {
+                    let expenseVC = storyboard!.instantiateViewController(withIdentifier: "Expense") as! ExpenseViewController
+                    let expenses = day!.expenses!.sorted(by: { $0.dateCreated! < $1.dateCreated! })
+                    expenseVC.expense = expenses[row]
+                    navigationController?.pushViewController(expenseVC, animated: true)
+                } else {
+                    let reviewVC = storyboard!.instantiateViewController(withIdentifier: "Review") as! ReviewTableViewController
+                    let adjustments = day!.adjustments!.sorted(by: { $0.dateCreated! < $1.dateCreated! })
+                    reviewVC.dayAdjustments = adjustments
+                    reviewVC.mode = .DayAdjustments
+                    navigationController?.pushViewController(reviewVC, animated: true)
+                }
+            } else {
+                let expenseVC = storyboard!.instantiateViewController(withIdentifier: "Expense") as! ExpenseViewController
+                let expenses = day!.expenses!.sorted(by: { $0.dateCreated! < $1.dateCreated! })
+                expenseVC.expense = expenses[row]
+                navigationController?.pushViewController(expenseVC, animated: true)
+            }
+        case .Months:
+            if section == 1 {
+                if month!.adjustments!.isEmpty {
+                    let reviewVC = storyboard!.instantiateViewController(withIdentifier: "Review") as! ReviewTableViewController
+                    let days = month!.days!.sorted(by: { $0.date! < $1.date! })
+                    reviewVC.day = days[row]
+                    reviewVC.mode = .Days
+                    navigationController?.pushViewController(reviewVC, animated: true)
+                } else {
+                    let reviewVC = storyboard!.instantiateViewController(withIdentifier: "Review") as! ReviewTableViewController
+                    let adjustments = month!.adjustments!.sorted(by: { $0.dateCreated! < $1.dateCreated! })
+                    reviewVC.monthAdjustments = adjustments
+                    reviewVC.mode = .MonthAdjustments
+                    navigationController?.pushViewController(reviewVC, animated: true)
+                }
+            } else {
+                let reviewVC = storyboard!.instantiateViewController(withIdentifier: "Review") as! ReviewTableViewController
+                let days = month!.days!.sorted(by: { $0.date! < $1.date! })
+                reviewVC.day = days[row]
+                reviewVC.mode = .Days
+                navigationController?.pushViewController(reviewVC, animated: true)
+            }
+        case .DayAdjustments:
+            let adjustmentVC = storyboard!.instantiateViewController(withIdentifier: "AdjustmentDay") as! DayAdjustmentViewController
+            adjustmentVC.dayAdjustment = dayAdjustments![indexPath.row]
+            navigationController?.pushViewController(adjustmentVC, animated: true)
+        case .MonthAdjustments:
+            let adjustmentVC = storyboard!.instantiateViewController(withIdentifier: "AdjustmentMonth") as! MonthAdjustmentViewController
+            adjustmentVC.monthAdjustment = monthAdjustments![indexPath.row]
+            navigationController?.pushViewController(adjustmentVC, animated: true)
         }
     }
 }

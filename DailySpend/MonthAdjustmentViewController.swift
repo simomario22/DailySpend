@@ -60,7 +60,7 @@ class MonthAdjustmentViewController: UIViewController {
     }
     
     func cancel() {
-        self.dismiss(animated: true, completion: nil)
+        self.tabBarController?.dismiss(animated: true, completion: nil)
     }
     
     func save() {
@@ -93,7 +93,7 @@ class MonthAdjustmentViewController: UIViewController {
         if let navController = self.navigationController {
             navController.popViewController(animated: true)
         } else {
-            self.dismiss(animated: true, completion: nil)
+            self.tabBarController?.dismiss(animated: true, completion: nil)
         }
     }
     

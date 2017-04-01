@@ -52,7 +52,7 @@ class DayAdjustmentViewController: UIViewController {
     }
     
     func cancel() {
-        self.dismiss(animated: true, completion: nil)
+        self.tabBarController?.dismiss(animated: true, completion: nil)
     }
     
     func save() {
@@ -80,7 +80,7 @@ class DayAdjustmentViewController: UIViewController {
         if let navController = self.navigationController {
             navController.popViewController(animated: true)
         } else {
-            self.dismiss(animated: true, completion: nil)
+            self.tabBarController?.dismiss(animated: true, completion: nil)
         }
     }
     
