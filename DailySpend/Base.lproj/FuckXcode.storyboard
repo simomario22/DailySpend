@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12118" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="G5v-Vy-ekD">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12118" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="G5v-Vy-ekD">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -357,7 +357,7 @@
         <!--Day Adjust-->
         <scene sceneID="TqH-b3-FTw">
             <objects>
-                <viewController id="87K-Eq-eGD" userLabel="Day Adjust" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="AdjustmentDay" useStoryboardIdentifierAsRestorationIdentifier="YES" id="87K-Eq-eGD" userLabel="Day Adjust" customClass="DayAdjustmentViewController" customModule="DailySpend" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Nff-wt-Ufx"/>
                         <viewControllerLayoutGuide type="bottom" id="KWA-3F-1Dq"/>
@@ -389,9 +389,7 @@
                                 <rect key="frame" x="159" y="192" width="57" height="35"/>
                                 <fontDescription key="fontDescription" style="UICTFontTextStyleTitle1"/>
                                 <inset key="contentEdgeInsets" minX="0.0" minY="0.0" maxX="0.0" maxY="1"/>
-                                <state key="normal" title="Date">
-                                    <color key="titleColor" red="0.75294117650000003" green="0.75294117650000003" blue="0.77647058820000003" alpha="1" colorSpace="calibratedRGB"/>
-                                </state>
+                                <state key="normal" title="Date"/>
                             </button>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="$0.00" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Gm5-hK-mMe">
                                 <rect key="frame" x="148" y="108" width="79" height="34"/>
@@ -416,6 +414,13 @@
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="Day" image="today.png" id="O5g-Z6-3UT"/>
+                    <connections>
+                        <outlet property="addDeductControl" destination="swP-jf-53Y" id="et0-F3-3ab"/>
+                        <outlet property="additionalAmountLabel" destination="uDr-iw-HzT" id="gev-y7-F7U"/>
+                        <outlet property="amountField" destination="Gm5-hK-mMe" id="77Z-nf-qg7"/>
+                        <outlet property="dateButton" destination="5ap-eK-tJu" id="PQp-3O-Z0b"/>
+                        <outlet property="reasonField" destination="sFn-Lb-DSr" id="5cG-Ul-SxK"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Tcl-en-jhK" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -424,7 +429,7 @@
         <!--Month Adjust-->
         <scene sceneID="7no-Yz-Yt6">
             <objects>
-                <viewController id="jMT-Gm-LyP" userLabel="Month Adjust" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="AdjustmentMonth" useStoryboardIdentifierAsRestorationIdentifier="YES" id="jMT-Gm-LyP" userLabel="Month Adjust" customClass="MonthAdjustmentViewController" customModule="DailySpend" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="A5o-nS-UCu"/>
                         <viewControllerLayoutGuide type="bottom" id="piy-DT-rKc"/>
@@ -444,6 +449,9 @@
                                 <nil key="textColor"/>
                                 <fontDescription key="fontDescription" style="UICTFontTextStyleTitle1"/>
                                 <textInputTraits key="textInputTraits" keyboardType="numberPad" returnKeyType="next"/>
+                                <connections>
+                                    <action selector="amountChanged:" destination="jMT-Gm-LyP" eventType="editingChanged" id="8VI-py-ZZD"/>
+                                </connections>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Recur in subsequent months?" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Z04-p1-XYx">
                                 <rect key="frame" x="16" y="235" width="228" height="21"/>
@@ -465,9 +473,7 @@
                                 <rect key="frame" x="99.5" y="192" width="176" height="35"/>
                                 <fontDescription key="fontDescription" style="UICTFontTextStyleTitle1"/>
                                 <inset key="contentEdgeInsets" minX="0.0" minY="0.0" maxX="0.0" maxY="1"/>
-                                <state key="normal" title="Date Received">
-                                    <color key="titleColor" red="0.75294117650000003" green="0.75294117650000003" blue="0.77647058820000003" alpha="1" colorSpace="calibratedRGB"/>
-                                </state>
+                                <state key="normal" title="Date Received"/>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="This additional amount will be distributed over the remaining days in this month." textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2xo-RT-bjQ">
                                 <rect key="frame" x="16" y="269" width="343" height="20.5"/>
@@ -496,6 +502,15 @@
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="Month" image="cal.png" id="dbS-W9-TdW"/>
+                    <connections>
+                        <outlet property="addDeductControl" destination="7Jn-EN-1O5" id="8AC-9y-NMz"/>
+                        <outlet property="additionalAmountLabel" destination="2xo-RT-bjQ" id="v3p-4g-O3Q"/>
+                        <outlet property="amountField" destination="0X8-hP-l5E" id="Aee-al-QUT"/>
+                        <outlet property="dateReceivedButton" destination="xx2-WO-Qys" id="CM7-zU-0VD"/>
+                        <outlet property="reasonField" destination="UbA-Ho-MQQ" id="wZm-vb-thY"/>
+                        <outlet property="recurLabel" destination="Z04-p1-XYx" id="0NG-55-MkF"/>
+                        <outlet property="recurSwitch" destination="NNn-5w-q7E" id="t7n-nD-Jwt"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="BcJ-3t-llO" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -748,7 +763,7 @@
         <!--Adjust Goal-->
         <scene sceneID="2FR-JS-ENO">
             <objects>
-                <tabBarController id="INw-O5-o79" sceneMemberID="viewController">
+                <tabBarController storyboardIdentifier="AdjustmentTab" id="INw-O5-o79" sceneMemberID="viewController">
                     <navigationItem key="navigationItem" title="Adjust Goal" id="0KU-yW-0K0">
                         <barButtonItem key="leftBarButtonItem" title="Cancel" id="AKb-Rt-eF8">
                             <connections>

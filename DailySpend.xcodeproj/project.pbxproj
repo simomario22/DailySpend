@@ -23,6 +23,8 @@
 		C565001D1E837F37009D64F0 /* Expense+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56500131E837F37009D64F0 /* Expense+CoreDataProperties.swift */; };
 		C565001E1E837F37009D64F0 /* MonthAdjustment+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56500141E837F37009D64F0 /* MonthAdjustment+CoreDataClass.swift */; };
 		C565001F1E837F37009D64F0 /* MonthAdjustment+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56500151E837F37009D64F0 /* MonthAdjustment+CoreDataProperties.swift */; };
+		C57095231E8F86A200004709 /* MonthAdjustmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C57095221E8F86A200004709 /* MonthAdjustmentViewController.swift */; };
+		C57095251E8F86AE00004709 /* DayAdjustmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C57095241E8F86AE00004709 /* DayAdjustmentViewController.swift */; };
 		C5781D9B1E6E2060006BBC03 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5781D9A1E6E2060006BBC03 /* AppDelegate.swift */; };
 		C5781DA31E6E2060006BBC03 /* DailySpend.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C5781DA11E6E2060006BBC03 /* DailySpend.xcdatamodeld */; };
 		C5781DA51E6E2060006BBC03 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C5781DA41E6E2060006BBC03 /* Assets.xcassets */; };
@@ -81,6 +83,8 @@
 		C56500131E837F37009D64F0 /* Expense+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Expense+CoreDataProperties.swift"; path = "DailySpend/Expense+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		C56500141E837F37009D64F0 /* MonthAdjustment+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "MonthAdjustment+CoreDataClass.swift"; path = "DailySpend/MonthAdjustment+CoreDataClass.swift"; sourceTree = "<group>"; };
 		C56500151E837F37009D64F0 /* MonthAdjustment+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "MonthAdjustment+CoreDataProperties.swift"; path = "DailySpend/MonthAdjustment+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		C57095221E8F86A200004709 /* MonthAdjustmentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MonthAdjustmentViewController.swift; sourceTree = "<group>"; };
+		C57095241E8F86AE00004709 /* DayAdjustmentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DayAdjustmentViewController.swift; sourceTree = "<group>"; };
 		C5781D971E6E2060006BBC03 /* DailySpend.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DailySpend.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C5781D9A1E6E2060006BBC03 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C5781DA21E6E2060006BBC03 /* DailySpend.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DailySpend.xcdatamodel; sourceTree = "<group>"; };
@@ -188,6 +192,8 @@
 				C5781D9A1E6E2060006BBC03 /* AppDelegate.swift */,
 				C5781DCB1E6E23B2006BBC03 /* TodayViewController.swift */,
 				C538FAB71E85696200295062 /* FuckXcode.storyboard */,
+				C57095221E8F86A200004709 /* MonthAdjustmentViewController.swift */,
+				C57095241E8F86AE00004709 /* DayAdjustmentViewController.swift */,
 				C5DD5A841E83B4AC008F7FC6 /* InitialSpendViewController.swift */,
 				C5BA55B61E8DB17800256E7A /* ExpenseViewController.swift */,
 				C5BFEA781E8F0BDC00528878 /* ReviewTableViewController.swift */,
@@ -407,12 +413,14 @@
 				C56500171E837F37009D64F0 /* Month+CoreDataProperties.swift in Sources */,
 				C5EE62A31E85769700CAEEE7 /* String+CharacterSet.swift in Sources */,
 				C5BA55B31E8D92C800256E7A /* InitialAdjustmentViewController.swift in Sources */,
+				C57095231E8F86A200004709 /* MonthAdjustmentViewController.swift in Sources */,
 				C5781DCC1E6E23B2006BBC03 /* TodayViewController.swift in Sources */,
 				C565001A1E837F37009D64F0 /* Day+CoreDataClass.swift in Sources */,
 				C5BA55B71E8DB17800256E7A /* ExpenseViewController.swift in Sources */,
 				C5DD5A851E83B4AC008F7FC6 /* InitialSpendViewController.swift in Sources */,
 				C518B59A1E88C7F0009CA4BB /* Decimal+DoubleValue.swift in Sources */,
 				C56500181E837F37009D64F0 /* DayAdjustment+CoreDataClass.swift in Sources */,
+				C57095251E8F86AE00004709 /* DayAdjustmentViewController.swift in Sources */,
 				C56500191E837F37009D64F0 /* DayAdjustment+CoreDataProperties.swift in Sources */,
 				C5781DA31E6E2060006BBC03 /* DailySpend.xcdatamodeld in Sources */,
 				C565001B1E837F37009D64F0 /* Day+CoreDataProperties.swift in Sources */,

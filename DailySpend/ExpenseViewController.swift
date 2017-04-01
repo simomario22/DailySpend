@@ -53,10 +53,7 @@ class ExpenseViewController: UIViewController, UITextViewDelegate {
         notesTextView.removeConstraints(notesTextView.constraints)
 
     }
-    override func viewDidAppear(_ animated: Bool) {
 
-    }
-    
     @IBAction func fixFrames() {
         let maxWidth = self.view.bounds.width - 20
 
