@@ -33,6 +33,7 @@
 		C5BA55B31E8D92C800256E7A /* InitialAdjustmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5BA55B21E8D92C800256E7A /* InitialAdjustmentViewController.swift */; };
 		C5BA55B51E8DAB0E00256E7A /* ReviewTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5BA55B41E8DAB0E00256E7A /* ReviewTableViewCell.swift */; };
 		C5BA55B71E8DB17800256E7A /* ExpenseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5BA55B61E8DB17800256E7A /* ExpenseViewController.swift */; };
+		C5BFEA791E8F0BDC00528878 /* ReviewTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5BFEA781E8F0BDC00528878 /* ReviewTableViewController.swift */; };
 		C5CF5F641E7BB68600C35539 /* cal.png in Resources */ = {isa = PBXBuildFile; fileRef = C5CF5F5E1E7BB68600C35539 /* cal.png */; };
 		C5CF5F651E7BB68600C35539 /* cal@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5CF5F5F1E7BB68600C35539 /* cal@2x.png */; };
 		C5CF5F661E7BB68600C35539 /* cal@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5CF5F601E7BB68600C35539 /* cal@3x.png */; };
@@ -96,6 +97,7 @@
 		C5BA55B21E8D92C800256E7A /* InitialAdjustmentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InitialAdjustmentViewController.swift; sourceTree = "<group>"; };
 		C5BA55B41E8DAB0E00256E7A /* ReviewTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReviewTableViewCell.swift; sourceTree = "<group>"; };
 		C5BA55B61E8DB17800256E7A /* ExpenseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpenseViewController.swift; sourceTree = "<group>"; };
+		C5BFEA781E8F0BDC00528878 /* ReviewTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReviewTableViewController.swift; sourceTree = "<group>"; };
 		C5CF5F5E1E7BB68600C35539 /* cal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cal.png; sourceTree = "<group>"; };
 		C5CF5F5F1E7BB68600C35539 /* cal@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cal@2x.png"; sourceTree = "<group>"; };
 		C5CF5F601E7BB68600C35539 /* cal@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cal@3x.png"; sourceTree = "<group>"; };
@@ -187,8 +189,8 @@
 				C5781DCB1E6E23B2006BBC03 /* TodayViewController.swift */,
 				C538FAB71E85696200295062 /* FuckXcode.storyboard */,
 				C5DD5A841E83B4AC008F7FC6 /* InitialSpendViewController.swift */,
-				C5BA55B21E8D92C800256E7A /* InitialAdjustmentViewController.swift */,
 				C5BA55B61E8DB17800256E7A /* ExpenseViewController.swift */,
+				C5BFEA781E8F0BDC00528878 /* ReviewTableViewController.swift */,
 				C5BA55B41E8DAB0E00256E7A /* ReviewTableViewCell.swift */,
 				C5316BF51E78D80F00BC2918 /* AddExpenseTableViewCell.swift */,
 				C5DD5A821E83B383008F7FC6 /* CurrentDayTableViewCell.swift */,
@@ -198,6 +200,7 @@
 				C5781DA61E6E2060006BBC03 /* LaunchScreen.storyboard */,
 				C5781DA91E6E2060006BBC03 /* Info.plist */,
 				C5781DA11E6E2060006BBC03 /* DailySpend.xcdatamodeld */,
+				C5BFEA7A1E8F43E300528878 /* Unused */,
 				C5CF5F6A1E7BB68B00C35539 /* Images */,
 				C5BA55B81E8DC47600256E7A /* UICountingLabel */,
 			);
@@ -231,6 +234,14 @@
 				C518B59B1E88D668009CA4BB /* DailySpend-Bridging-Header.h */,
 			);
 			name = UICountingLabel;
+			sourceTree = "<group>";
+		};
+		C5BFEA7A1E8F43E300528878 /* Unused */ = {
+			isa = PBXGroup;
+			children = (
+				C5BA55B21E8D92C800256E7A /* InitialAdjustmentViewController.swift */,
+			);
+			name = Unused;
 			sourceTree = "<group>";
 		};
 		C5CF5F6A1E7BB68B00C35539 /* Images */ = {
@@ -408,6 +419,7 @@
 				C5316C291E7B240D00BC2918 /* Date+Arithmetic.swift in Sources */,
 				C565001C1E837F37009D64F0 /* Expense+CoreDataClass.swift in Sources */,
 				C518B5A01E88D669009CA4BB /* UICountingLabel.m in Sources */,
+				C5BFEA791E8F0BDC00528878 /* ReviewTableViewController.swift in Sources */,
 				C5781D9B1E6E2060006BBC03 /* AppDelegate.swift in Sources */,
 				C565001D1E837F37009D64F0 /* Expense+CoreDataProperties.swift in Sources */,
 				C5BA55B51E8DAB0E00256E7A /* ReviewTableViewCell.swift in Sources */,

@@ -23,6 +23,8 @@ class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
     var selectedDate: Date?
     var notes: String?
     var keyboardHeight: CGFloat?
+    var descriptionConstraint: NSLayoutConstraint?
+
     
     let datePicker = UIDatePicker()
     let dismissButton = UIButton()
@@ -54,6 +56,37 @@ class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         checkForFirstEdit()
         return true
+    }
+    
+    @IBAction func fixFrames() {
+        let maxWidth = self.bounds.width - 20
+        
+        // Determine max font size that can fit in the space available.
+        var fontSize: CGFloat = 28
+        let minFontSize: CGFloat = 17
+        
+        let font = UIFont.systemFont(ofSize: fontSize, weight: UIFontWeightLight)
+        var attr = [NSFontAttributeName: font]
+        var width = descriptionField.text!.size(attributes: attr).width
+        
+        while width > maxWidth && fontSize > minFontSize {
+            fontSize -= 1
+            attr = [NSFontAttributeName: UIFont.systemFont(ofSize: fontSize, weight: UIFontWeightLight)]
+            width = descriptionField.text!.size(attributes: attr).width
+        }
+        descriptionField.font = UIFont.systemFont(ofSize: fontSize, weight: UIFontWeightLight)
+        
+        // Update widths of text fields (with constraints).
+        if descriptionConstraint == nil {
+            descriptionConstraint = NSLayoutConstraint(item: descriptionField,
+                                                       attribute: .width,
+                                                       relatedBy: .equal,
+                                                       toItem: nil,
+                                                       attribute: .notAnAttribute,
+                                                       multiplier: 1,
+                                                       constant: maxWidth)
+            self.addConstraint(descriptionConstraint!)
+        }
     }
     
     
@@ -138,12 +171,6 @@ class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
         self.descriptionField.resignFirstResponder()
         
         // Animate slide up.
-        UIView.beginAnimations(nil, context: nil)
-        UIView.setAnimationDuration(0.5)
-        UIView.setAnimationCurve(.easeInOut)
-        
-        UIView.commitAnimations()
-        // Animate slide up.
         UIView.animate(withDuration: 0.5, animations: {
             self.datePicker.frame = self.datePicker.frame.offsetBy(dx: 0, dy: -self.datePicker.frame.height)
             self.dismissButton.frame = self.dismissButton.frame.offsetBy(dx: 0, dy: -self.datePicker.frame.height)
@@ -185,6 +212,7 @@ class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
         notesTextView.text = notes ?? ""
         notesTextView.isEditable = true
         notesTextView.font = UIFont.systemFont(ofSize: 17)
+        notesTextView.backgroundColor = UIColor.init(colorLiteralRed: 245.0/255.0, green: 245.0/255.0, blue: 245.0/255.0, alpha: 1)
         notesTextView.frame = CGRect(x: 0,
                                      y: bounds.size.height,
                                      width: bounds.size.width,

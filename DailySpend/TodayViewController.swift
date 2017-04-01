@@ -287,9 +287,12 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
     }
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        let bonusExpenses = daysThisMonth.last == nil ?
+                false :
+                daysThisMonth.last!.expenses!.count > numExpenseSpots
+        
         if indexPath.row > currentDayCellIndex &&
-            indexPath.row <= lastExpenseCellIndex -
-                (daysThisMonth.last!.expenses!.count > numExpenseSpots ? 1 : 0) {
+            indexPath.row <= lastExpenseCellIndex - (bonusExpenses ? 1 : 0) {
             return true
         } else {
             return false
@@ -325,7 +328,52 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
     }
     
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        return nil
+        if indexPath.row < currentDayCellIndex ||
+            (indexPath.row > currentDayCellIndex &&
+            indexPath.row <= lastExpenseCellIndex) {
+            // Previous day and expense cells are selectable.
+            return indexPath
+        } else {
+            return nil
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let bonusExpenses = daysThisMonth.last == nil ?
+                false :
+                daysThisMonth.last!.expenses!.count > numExpenseSpots
+        
+        if indexPath.row > currentDayCellIndex &&
+            indexPath.row <= lastExpenseCellIndex - (bonusExpenses ? 1 : 0) {
+            // Expense (not bonus expense) selected
+            let expenses = daysThisMonth.last!.expenses!.sorted(by: { $0.dateCreated! < $1.dateCreated! })
+            let index = indexPath.row - (currentDayCellIndex + 1)
+            let expenseVC = storyboard!.instantiateViewController(withIdentifier: "Expense") as! ExpenseViewController
+            expenseVC.expense = expenses[index]
+            self.navigationController?.pushViewController(expenseVC, animated: true)
+        } else if bonusExpenses && indexPath.row == lastExpenseCellIndex {
+            // Bonus expense selected
+            // Show today.
+            let reviewVC = storyboard!.instantiateViewController(withIdentifier: "Review") as! ReviewTableViewController
+            reviewVC.day = daysThisMonth.last!
+            reviewVC.mode = .Days
+            self.navigationController?.pushViewController(reviewVC, animated: true)
+        } else if indexPath.row < currentDayCellIndex {
+            if indexPath.row < months.count {
+                // Month selected
+                let reviewVC = storyboard!.instantiateViewController(withIdentifier: "Review") as! ReviewTableViewController
+                reviewVC.month = months[indexPath.row]
+                reviewVC.mode = .Months
+                self.navigationController?.pushViewController(reviewVC, animated: true)
+            } else {
+                // Day selected
+                let index = indexPath.row - months.count
+                let reviewVC = storyboard!.instantiateViewController(withIdentifier: "Review") as! ReviewTableViewController
+                reviewVC.day = daysThisMonth[index]
+                reviewVC.mode = .Days
+                self.navigationController?.pushViewController(reviewVC, animated: true)
+            }
+        }
     }
     
     /* Add Expense TableView Cell delegate methods */
@@ -404,7 +452,7 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
     
     func invalidFields(sender: AddExpenseTableViewCell) {
         let alert = UIAlertController(title: "Invalid Fields", message: "Please enter valid values for amount, description, and date.", preferredStyle: UIAlertControllerStyle.alert)
-        alert.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.default, handler: nil))
+        alert.addAction(UIAlertAction(title: "Okay", style: .default, handler: nil))
         
         self.present(alert, animated: true, completion: nil)
     }
@@ -429,7 +477,7 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
             dateFormatter.timeStyle = .full
             
             print("\(humanReadableMonthName) - \(dateFormatter.string(from: month.month!))")
-            print("month.dailyBaseTargetSpend: \(month.dailyBaseTargetSpend)")
+            print("month.dailyBaseTargetSpend: \(month.dailyBaseTargetSpend!)")
             print("month.dateCreated: \(dateFormatter.string(from: month.dateCreated!))")
             
             
@@ -439,10 +487,10 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
                 print("\tNo MonthAdjustments.")
             }
             for monthAdjustment in month.adjustments!.sorted(by: {$0.dateCreated! < $1.dateCreated!}) {
-                print("\tmonthAdjustment.amount: \(monthAdjustment.amount)")
-                print("\tmonthAdjustment.dateCreated: \(monthAdjustment.dateCreated)")
-                print("\tmonthAdjustment.dateEffective: \(monthAdjustment.dateEffective)")
-                print("\tmonthAdjustment.reason: \(monthAdjustment.reason)")
+                print("\tmonthAdjustment.amount: \(monthAdjustment.amount!)")
+                print("\tmonthAdjustment.dateCreated: \(monthAdjustment.dateCreated!)")
+                print("\tmonthAdjustment.dateEffective: \(monthAdjustment.dateEffective!)")
+                print("\tmonthAdjustment.reason: \(monthAdjustment.reason!)")
                 print("")
             }
             
@@ -453,7 +501,7 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
                 print("\tNo Days.")
             }
             for day in month.days!.sorted(by: {$0.date! < $1.date!}) {
-                print("\tday.baseTargetSpend: \(day.baseTargetSpend)")
+                print("\tday.baseTargetSpend: \(day.baseTargetSpend!)")
                 print("\tday.date: \(dateFormatter.string(from: day.date!))")
                 print("\tday.dateCreated: \(dateFormatter.string(from: day.dateCreated!))")
                 
@@ -464,10 +512,10 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
                     print("\t\tNo DayAdjustments.")
                 }
                 for dayAdjustment in day.adjustments!.sorted(by: {$0.dateCreated! < $1.dateCreated!}) {
-                    print("\t\tdayAdjustment.amount: \(dayAdjustment.amount)")
+                    print("\t\tdayAdjustment.amount: \(dayAdjustment.amount!)")
                     print("\t\tdayAdjustment.dateAffected: \(dateFormatter.string(from: dayAdjustment.dateAffected!))")
                     print("\t\tdayAdjustment.dateCreated: \(dateFormatter.string(from: dayAdjustment.dateCreated!))")
-                    print("\t\tdayAdjustment.reason: \(dayAdjustment.reason)")
+                    print("\t\tdayAdjustment.reason: \(dayAdjustment.reason!)")
                     print("")
                 }
                 
@@ -478,10 +526,10 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
                     print("\t\tNo Expenses.")
                 }
                 for expense in day.expenses!.sorted(by: {$0.dateCreated! < $1.dateCreated!}) {
-                    print("\t\texpense.amount: \(expense.amount)")
+                    print("\t\texpense.amount: \(expense.amount!)")
                     print("\t\texpense.dateCreated: \(dateFormatter.string(from: expense.dateCreated!))")
-                    print("\t\texpense.notes: \(expense.notes)")
-                    print("\t\texpense.shortDescription: \(expense.shortDescription)")
+                    print("\t\texpense.notes: \(expense.notes ?? "")")
+                    print("\t\texpense.shortDescription: \(expense.shortDescription!)")
                     print("")
                 }
                 print("")
