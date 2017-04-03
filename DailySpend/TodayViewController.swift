@@ -74,8 +74,7 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
         
         self.tableView.reloadData()
         
-        let locationOfTodayCell = months.count + daysThisMonth.count - 1
-        self.tableView.scrollToRow(at: IndexPath(row: locationOfTodayCell, section: 0),
+        self.tableView.scrollToRow(at: IndexPath(row: currentDayCellIndex, section: 0),
                                    at: .top, animated: true)
     }
     
@@ -398,8 +397,7 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
         self.tableView.beginUpdates()
         self.tableView.endUpdates()
         
-        let locationOfTodayCell = months.count + daysThisMonth.count - 1
-        self.tableView.scrollToRow(at: IndexPath(row: locationOfTodayCell, section: 0),
+        self.tableView.scrollToRow(at: IndexPath(row: currentDayCellIndex, section: 0),
                                    at: .top, animated: true)
     }
     
@@ -417,27 +415,29 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
         self.navigationItem.rightBarButtonItem?.title = "Done"
     }
     
-    func completedExpense(sender: AddExpenseTableViewCell, expense: Expense) {
+    func completedExpense(sender: AddExpenseTableViewCell, expense: Expense, reloadFull: Bool) {
         self.tableView.isScrollEnabled = true
         self.navigationItem.leftBarButtonItem?.isEnabled = true
         self.navigationItem.rightBarButtonItem = self.adjustBarButton
         self.navigationItem.leftBarButtonItem = nil
         addingExpense = false
-        self.tableView.beginUpdates()
-        if expense.day!.date!.beginningOfDay == Date().beginningOfDay &&
-            daysThisMonth.last!.expenses!.count <= numExpenseSpots {
-            // The number of rows has changed, so we need to insert them.
-            let locationOfNewRow = months.count + daysThisMonth.count + daysThisMonth.last!.expenses!.count - 1
-            self.tableView.insertRows(at: [IndexPath(row: locationOfNewRow, section: 0)], with: .bottom)
+        if reloadFull {
+            viewWillAppear(false)
+        } else {
+            self.tableView.beginUpdates()
+            if expense.day!.date!.beginningOfDay == Date().beginningOfDay &&
+                daysThisMonth.last!.expenses!.count <= numExpenseSpots {
+                // The number of rows has changed, so we need to insert them.
+                let locationOfNewRow = months.count + daysThisMonth.count + daysThisMonth.last!.expenses!.count - 1
+                self.tableView.insertRows(at: [IndexPath(row: locationOfNewRow, section: 0)], with: .bottom)
+            }
+            if daysThisMonth.last!.expenses!.count > numExpenseSpots {
+                tableView.reloadRows(at: [IndexPath(row: lastExpenseCellIndex, section: 0)], with: .none)
+            }
+            tableView.reloadRows(at: [IndexPath(row: currentDayCellIndex, section: 0)], with: .none)
+            self.tableView.endUpdates()
         }
-        if daysThisMonth.last!.expenses!.count > numExpenseSpots {
-            tableView.reloadRows(at: [IndexPath(row: lastExpenseCellIndex, section: 0)], with: .none)
-        }
-        tableView.reloadRows(at: [IndexPath(row: currentDayCellIndex, section: 0)], with: .none)
-        self.tableView.endUpdates()
-        
-        let locationOfTodayCell = months.count + daysThisMonth.count - 1
-        self.tableView.scrollToRow(at: IndexPath(row: locationOfTodayCell, section: 0),
+        self.tableView.scrollToRow(at: IndexPath(row: currentDayCellIndex, section: 0),
                                    at: .top, animated: true)
     }
     

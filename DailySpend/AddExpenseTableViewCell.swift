@@ -143,16 +143,16 @@ class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
         checkForFirstEdit()
         
         // Find earliest day.
-        let earliestDayFetchReq: NSFetchRequest<Day> = Day.fetchRequest()
-        let earliestDaySortDesc = NSSortDescriptor(key: "date_", ascending: true)
-        earliestDayFetchReq.sortDescriptors = [earliestDaySortDesc]
-        earliestDayFetchReq.fetchLimit = 1
-        let earliestDayResults = try! context.fetch(earliestDayFetchReq)
-        
-        
-        // Set up date picker.
-        let earliestDate = earliestDayResults[0].date
-        datePicker.minimumDate = earliestDate
+//        let earliestDayFetchReq: NSFetchRequest<Day> = Day.fetchRequest()
+//        let earliestDaySortDesc = NSSortDescriptor(key: "date_", ascending: true)
+//        earliestDayFetchReq.sortDescriptors = [earliestDaySortDesc]
+//        earliestDayFetchReq.fetchLimit = 1
+//        let earliestDayResults = try! context.fetch(earliestDayFetchReq)
+//        
+//        
+//        // Set up date picker.
+//        let earliestDate = earliestDayResults[0].date
+        datePicker.minimumDate = nil
         datePicker.maximumDate = Date()
         datePicker.setDate(selectedDate ?? Date(), animated: false)
         datePicker.datePickerMode = .date
@@ -270,6 +270,19 @@ class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
             selectedDate == nil {
             delegate?.invalidFields(sender: self)
         } else {
+            // Create days up to today.
+            let earliestDayFetchReq: NSFetchRequest<Day> = Day.fetchRequest()
+            let earliestDaySortDesc = NSSortDescriptor(key: "date_", ascending: true)
+            earliestDayFetchReq.sortDescriptors = [earliestDaySortDesc]
+            earliestDayFetchReq.fetchLimit = 1
+            let earliestDayResults = try! context.fetch(earliestDayFetchReq)
+            let needsNewDays = selectedDate!.beginningOfDay < earliestDayResults[0].date!.beginningOfDay
+            if needsNewDays {
+                // Create from the selectedDate to the begininng of the day on
+                let from = selectedDate!
+                let to = earliestDayResults[0].date!
+                delegate!.createDays(from: from, to: to)
+            }
             let expense = Expense(context: context)
             expense.amount = Decimal(amountField.text!.parseValidAmount(maxLength: 8))
             expense.shortDescription = shortDescription
@@ -278,7 +291,7 @@ class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
             expense.day = Day.get(context: context, date: selectedDate!)
             appDelegate.saveContext()
 
-            delegate?.completedExpense(sender: self, expense: expense)
+            delegate?.completedExpense(sender: self, expense: expense, reloadFull: needsNewDays)
             self.resetView()
         }
     }
@@ -323,6 +336,7 @@ class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
 protocol AddExpenseTableViewCellDelegate: class {
     func didBeginEditing(sender: AddExpenseTableViewCell)
     func didOpenNotes(sender: AddExpenseTableViewCell)
-    func completedExpense(sender: AddExpenseTableViewCell, expense: Expense)
+    func completedExpense(sender: AddExpenseTableViewCell, expense: Expense, reloadFull: Bool)
     func invalidFields(sender: AddExpenseTableViewCell)
+    func createDays(from: Date, to: Date)
 }
