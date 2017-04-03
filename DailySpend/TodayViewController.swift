@@ -32,6 +32,10 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
     @IBAction override func prepare(for segue: UIStoryboardSegue, sender: Any?) {}
     
 
+    func willEnterForeground() {
+        viewWillAppear(false)
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if UserDefaults.standard.double(forKey: "dailyTargetSpend") == 0 {
@@ -81,6 +85,7 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
         tableView.delegate = self
         tableView.dataSource = self
         tableView.tableFooterView = UIView()
+        NotificationCenter.default.addObserver(self, selector: #selector(willEnterForeground), name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
     }
     
     override func didReceiveMemoryWarning() {

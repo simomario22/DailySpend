@@ -32,7 +32,21 @@ class ReviewTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.tableFooterView = UIView()
+        
+        switch mode! {
+        case .Days:
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "E, M/d"
+            self.navigationItem.title = dateFormatter.string(from: day!.date!)
+        case .Months:
+            let monthName = DateFormatter().monthSymbols[month!.month!.month - 1]
+            let monthAndYearName = monthName + " \(month!.month!.year)"
 
+            self.navigationItem.title = monthAndYearName
+        case .DayAdjustments,
+             .MonthAdjustments:
+            self.navigationItem.title = "Adjustments"
+        }
 
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
