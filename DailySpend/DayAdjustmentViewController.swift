@@ -31,24 +31,56 @@ class DayAdjustmentViewController: UIViewController {
         super.viewDidLoad()
         if dayAdjustment != nil {
             setAddDeductSegment(negOrPos: dayAdjustment!.amount!)
-            amountField.text = String.formatAsCurrency(amount: dayAdjustment!.amount!.doubleValue)
+            amountField.text = String.formatAsCurrency(amount: abs(dayAdjustment!.amount!.doubleValue))
             reasonField.text = dayAdjustment!.reason
             selectedDate = dayAdjustment!.dateAffected
             setDateLabel(date: selectedDate!)
             additionalAmountLabel.isHidden = true
+            fixFrames()
         } else {
+            addDeductControl.selectedSegmentIndex = 1
             selectedDate = Date()
             setDateLabel(date: selectedDate!)
         }
-        
-        // Set right bar button item
+                
         let saveButton = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(save))
-        navigationItem.rightBarButtonItem = saveButton
-        
-        if self.navigationController == nil {
+
+        if let tabBarCtrl = tabBarController {
+            // Set right bar button item
+            tabBarCtrl.navigationItem.rightBarButtonItem = saveButton
+            
             let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancel))
-            self.navigationItem.leftBarButtonItem = cancelButton
+            navigationItem.rightBarButtonItem = saveButton
+            tabBarCtrl.navigationItem.leftBarButtonItem = cancelButton
+        } else {
+            navigationItem.rightBarButtonItem = saveButton
         }
+        let resignAllButton = UIButton()
+        resignAllButton.backgroundColor = UIColor.init(colorLiteralRed: 0, green: 0, blue: 0, alpha: 0)
+        resignAllButton.frame = view.bounds
+        resignAllButton.addTarget(self, action: #selector(resignResponders), for: UIControlEvents.touchUpInside)
+        
+        self.view.insertSubview(resignAllButton, at: 0)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        let saveButton = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(save))
+        
+        if let tabBarCtrl = tabBarController {
+            // Set right bar button item
+            tabBarCtrl.navigationItem.rightBarButtonItem = saveButton
+            
+            let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancel))
+            navigationItem.rightBarButtonItem = saveButton
+            tabBarCtrl.navigationItem.leftBarButtonItem = cancelButton
+        } else {
+            navigationItem.rightBarButtonItem = saveButton
+        }
+    }
+    
+    func resignResponders() {
+        self.amountField.resignFirstResponder()
+        self.reasonField.resignFirstResponder()
     }
     
     func cancel() {
@@ -56,7 +88,8 @@ class DayAdjustmentViewController: UIViewController {
     }
     
     func save() {
-        let amount = amountField.text!.parseValidAmount(maxLength: 8)
+        let posNeg: Decimal = addDeductControl.selectedSegmentIndex == 1 ? 1 : -1
+        let amount = Decimal(amountField.text!.parseValidAmount(maxLength: 8)) * posNeg
         let reason = reasonField.text!
         if amount == 0 ||
             reason.characters.count == 0 ||
@@ -69,18 +102,16 @@ class DayAdjustmentViewController: UIViewController {
             if (dayAdjustment == nil) {
                 dayAdjustment = DayAdjustment(context: context)
             }
-            let posNeg: Decimal = addDeductControl.selectedSegmentIndex == 0 ? 1 : -1
-            dayAdjustment!.amount = posNeg * Decimal(amountField.text!.parseValidAmount(maxLength: 8))
+            dayAdjustment!.amount = amount
             dayAdjustment!.reason = reason
+            dayAdjustment!.dateCreated = dayAdjustment!.dateCreated ?? Date()
             dayAdjustment!.dateAffected = selectedDate
             dayAdjustment!.day = Day.get(context: context, date: selectedDate!)
             
             appDelegate.saveContext()
-        }
-        if let navController = self.navigationController {
-            navController.popViewController(animated: true)
-        } else {
-            self.tabBarController?.dismiss(animated: true, completion: nil)
+            
+            tabBarController?.navigationController?.dismiss(animated: true, completion: nil)
+            navigationController?.popViewController(animated: true)
         }
     }
     

@@ -13,6 +13,9 @@
 		C5316BF61E78D80F00BC2918 /* AddExpenseTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5316BF51E78D80F00BC2918 /* AddExpenseTableViewCell.swift */; };
 		C5316C291E7B240D00BC2918 /* Date+Arithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5316C281E7B240D00BC2918 /* Date+Arithmetic.swift */; };
 		C538FAB91E85696200295062 /* FuckXcode.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C538FAB71E85696200295062 /* FuckXcode.storyboard */; };
+		C53BCAA71E9203BC000B5EE1 /* cal_recur.png in Resources */ = {isa = PBXBuildFile; fileRef = C53BCAA41E9203BC000B5EE1 /* cal_recur.png */; };
+		C53BCAA81E9203BC000B5EE1 /* cal_recur@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C53BCAA51E9203BC000B5EE1 /* cal_recur@2x.png */; };
+		C53BCAA91E9203BC000B5EE1 /* cal_recur@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C53BCAA61E9203BC000B5EE1 /* cal_recur@3x.png */; };
 		C56500161E837F37009D64F0 /* Month+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C565000C1E837F37009D64F0 /* Month+CoreDataClass.swift */; };
 		C56500171E837F37009D64F0 /* Month+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C565000D1E837F37009D64F0 /* Month+CoreDataProperties.swift */; };
 		C56500181E837F37009D64F0 /* DayAdjustment+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C565000E1E837F37009D64F0 /* DayAdjustment+CoreDataClass.swift */; };
@@ -73,6 +76,9 @@
 		C5316BF51E78D80F00BC2918 /* AddExpenseTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddExpenseTableViewCell.swift; sourceTree = "<group>"; };
 		C5316C281E7B240D00BC2918 /* Date+Arithmetic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Date+Arithmetic.swift"; sourceTree = "<group>"; };
 		C538FAB81E85696200295062 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/FuckXcode.storyboard; sourceTree = "<group>"; };
+		C53BCAA41E9203BC000B5EE1 /* cal_recur.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cal_recur.png; sourceTree = "<group>"; };
+		C53BCAA51E9203BC000B5EE1 /* cal_recur@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cal_recur@2x.png"; sourceTree = "<group>"; };
+		C53BCAA61E9203BC000B5EE1 /* cal_recur@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cal_recur@3x.png"; sourceTree = "<group>"; };
 		C565000C1E837F37009D64F0 /* Month+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Month+CoreDataClass.swift"; path = "DailySpend/Month+CoreDataClass.swift"; sourceTree = "<group>"; };
 		C565000D1E837F37009D64F0 /* Month+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Month+CoreDataProperties.swift"; path = "DailySpend/Month+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		C565000E1E837F37009D64F0 /* DayAdjustment+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "DayAdjustment+CoreDataClass.swift"; path = "DailySpend/DayAdjustment+CoreDataClass.swift"; sourceTree = "<group>"; };
@@ -259,6 +265,9 @@
 				C5CF5F611E7BB68600C35539 /* today.png */,
 				C5CF5F621E7BB68600C35539 /* today@2x.png */,
 				C5CF5F631E7BB68600C35539 /* today@3x.png */,
+				C53BCAA41E9203BC000B5EE1 /* cal_recur.png */,
+				C53BCAA51E9203BC000B5EE1 /* cal_recur@2x.png */,
+				C53BCAA61E9203BC000B5EE1 /* cal_recur@3x.png */,
 			);
 			name = Images;
 			sourceTree = "<group>";
@@ -373,15 +382,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				C5781DA81E6E2060006BBC03 /* LaunchScreen.storyboard in Resources */,
+				C53BCAA91E9203BC000B5EE1 /* cal_recur@3x.png in Resources */,
 				C5CF5F671E7BB68600C35539 /* today.png in Resources */,
 				C5CF5F681E7BB68600C35539 /* today@2x.png in Resources */,
 				C5781DA51E6E2060006BBC03 /* Assets.xcassets in Resources */,
 				C518B59F1E88D669009CA4BB /* LICENSE in Resources */,
+				C53BCAA81E9203BC000B5EE1 /* cal_recur@2x.png in Resources */,
 				C5CF5F661E7BB68600C35539 /* cal@3x.png in Resources */,
 				C5CF5F691E7BB68600C35539 /* today@3x.png in Resources */,
 				C538FAB91E85696200295062 /* FuckXcode.storyboard in Resources */,
 				C5CF5F641E7BB68600C35539 /* cal.png in Resources */,
 				C5CF5F651E7BB68600C35539 /* cal@2x.png in Resources */,
+				C53BCAA71E9203BC000B5EE1 /* cal_recur.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

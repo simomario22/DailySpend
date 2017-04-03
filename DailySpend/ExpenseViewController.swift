@@ -52,8 +52,18 @@ class ExpenseViewController: UIViewController, UITextViewDelegate {
         originalNotesFrame = self.notesTextView.frame
         notesTextView.removeConstraints(notesTextView.constraints)
 
+        let resignAllButton = UIButton()
+        resignAllButton.backgroundColor = UIColor.init(colorLiteralRed: 0, green: 0, blue: 0, alpha: 0)
+        resignAllButton.frame = view.bounds
+        resignAllButton.addTarget(self, action: #selector(resignResponders), for: UIControlEvents.touchUpInside)
+        
+        self.view.insertSubview(resignAllButton, at: 0)
     }
-
+    
+    func resignResponders() {
+        self.amountField.resignFirstResponder()
+        self.descriptionField.resignFirstResponder()
+    }
     @IBAction func fixFrames() {
         let maxWidth = self.view.bounds.width - 20
 

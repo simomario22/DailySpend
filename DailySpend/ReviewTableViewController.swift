@@ -41,7 +41,7 @@ class ReviewTableViewController: UITableViewController {
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         tableView.reloadData()
     }
 
@@ -111,7 +111,7 @@ class ReviewTableViewController: UITableViewController {
                         total += adjustment.amount!
                     }
                     cell.textLabel!.text = "Adjustments"
-                    cell.detailTextLabel!.text = String(describing: total)
+                    cell.detailTextLabel!.text = String.formatAsCurrency(amount: total.doubleValue)
                 }
                 return cell
             } else {
@@ -119,7 +119,7 @@ class ReviewTableViewController: UITableViewController {
 
                 let expenses = day!.expenses!.sorted(by: { $0.dateCreated! < $1.dateCreated! })
                 cell.textLabel!.text = expenses[row].shortDescription
-                cell.detailTextLabel!.text = String(describing: expenses[row].amount)
+                cell.detailTextLabel!.text = String.formatAsCurrency(amount: expenses[row].amount!.doubleValue)
                 
                 return cell
             }
@@ -149,7 +149,7 @@ class ReviewTableViewController: UITableViewController {
                         total += adjustment.amount!
                     }
                     cell.textLabel!.text = "Adjustments"
-                    cell.detailTextLabel!.text = String(describing: total)
+                    cell.detailTextLabel!.text = String.formatAsCurrency(amount: total.doubleValue)
                 }
                 return cell
             } else {
@@ -167,12 +167,12 @@ class ReviewTableViewController: UITableViewController {
         case .DayAdjustments:
             let cell = tableView.dequeueReusableCell(withIdentifier: "detail", for: indexPath)
             cell.textLabel!.text = dayAdjustments![row].reason
-            cell.detailTextLabel!.text = String(describing: dayAdjustments![row].amount)
+            cell.detailTextLabel!.text = String.formatAsCurrency(amount: dayAdjustments![row].amount!.doubleValue)
             return cell
         case .MonthAdjustments:
             let cell = tableView.dequeueReusableCell(withIdentifier: "detail", for: indexPath)
             cell.textLabel!.text = monthAdjustments![row].reason
-            cell.detailTextLabel!.text = String(describing: monthAdjustments![row].amount)
+            cell.detailTextLabel!.text = String.formatAsCurrency(amount: monthAdjustments![row].amount!.doubleValue)
             return cell
         }
     }
@@ -212,10 +212,12 @@ class ReviewTableViewController: UITableViewController {
             case .DayAdjustments:
                 dayAdjustments![indexPath.row].day = nil
                 context.delete(dayAdjustments![indexPath.row])
+                dayAdjustments!.remove(at: indexPath.row)
                 tableView.deleteRows(at: [indexPath], with: .automatic)
             case .MonthAdjustments:
                 monthAdjustments![indexPath.row].month = nil
                 context.delete(monthAdjustments![indexPath.row])
+                monthAdjustments!.remove(at: indexPath.row)
                 tableView.deleteRows(at: [indexPath], with: .automatic)
             }
             appDelegate.saveContext()

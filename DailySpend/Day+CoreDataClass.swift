@@ -22,7 +22,7 @@ public class Day: NSManagedObject {
         for monthAdjustment in self.month!.adjustments! {
             let date = self.date! as Date
             let dateEffective = monthAdjustment.dateEffective! as Date
-            if date > dateEffective  {
+            if date.beginningOfDay >= dateEffective.beginningOfDay  {
                 // This affects this day.
                 let daysAcross = date.daysInMonth - dateEffective.day + 1
                 // This is the amount of this adjustment that effects this day.

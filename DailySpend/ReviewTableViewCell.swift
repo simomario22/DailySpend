@@ -43,5 +43,8 @@ class ReviewTableViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        spentAmountLabel.font = UIFont.systemFont(ofSize: 22, weight: UIFontWeightLight)
+        goalAmountLabel.font = UIFont.systemFont(ofSize: 22, weight: UIFontWeightLight)
+        overUnderLabel.font = UIFont.systemFont(ofSize: 22, weight: UIFontWeightLight)
     }
 }

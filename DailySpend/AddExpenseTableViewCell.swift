@@ -28,6 +28,7 @@ class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
     
     let datePicker = UIDatePicker()
     let dismissButton = UIButton()
+    let resignAllButton = UIButton()
     let notesTextView = UITextView()
 
     @IBOutlet weak var amountField: UITextField!
@@ -35,6 +36,7 @@ class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
     @IBOutlet weak var dateButton: UIButton!
     @IBOutlet weak var notesButton: UIButton!
     @IBOutlet weak var addExpenseLabel: UILabel!
+
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -88,12 +90,11 @@ class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
             self.addConstraint(descriptionConstraint!)
         }
     }
-    
+
     
     @IBAction func checkForFirstEdit() {
         if currentlyEditing == false {
             delegate?.didBeginEditing(sender: self)
-            
             UIView.animate(withDuration: 0.5, animations: {
                 // Set date label to today.
                 self.selectedDate = Date()

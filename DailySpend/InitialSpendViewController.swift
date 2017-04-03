@@ -13,6 +13,7 @@ class InitialSpendViewController: UIViewController {
     @IBOutlet weak var monthlyField: UITextField!
     @IBOutlet weak var dailyField: UITextField!
     
+    @IBOutlet weak var effectLabel: UILabel!
     
     var dayConstraint: NSLayoutConstraint?
     var monthConstraint: NSLayoutConstraint?
@@ -21,6 +22,31 @@ class InitialSpendViewController: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        let resignAllButton = UIButton()
+        resignAllButton.backgroundColor = UIColor.init(colorLiteralRed: 0, green: 0, blue: 0, alpha: 0)
+        resignAllButton.frame = view.bounds
+        resignAllButton.addTarget(self, action: #selector(resignResponders), for: UIControlEvents.touchUpInside)
+        
+        self.view.insertSubview(resignAllButton, at: 0)
+        
+        if tabBarController == nil {
+            effectLabel.isHidden = true
+        } else {
+            let dailyTargetSpend = UserDefaults.standard.double(forKey: "dailyTargetSpend")
+            self.dailyField.text = String.formatAsCurrency(amount: dailyTargetSpend)
+            self.monthlyField.text = String.formatAsCurrency(amount: dailyTargetSpend * 30)
+            fixFrames()
+        }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        let saveButton = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(save(_:)))
+        self.tabBarController?.navigationItem.rightBarButtonItem = saveButton
+    }
+    
+    func resignResponders() {
+        self.monthlyField.resignFirstResponder()
+        self.dailyField.resignFirstResponder()
     }
 
     override func didReceiveMemoryWarning() {
@@ -103,7 +129,10 @@ class InitialSpendViewController: UIViewController {
             self.present(alert, animated: true, completion: nil)
         } else {
             UserDefaults.standard.set(dailyAmount, forKey: "dailyTargetSpend")
+            monthlyField.resignFirstResponder()
+            dailyField.resignFirstResponder()
             self.dismiss(animated: true, completion: nil)
+            self.tabBarController?.navigationController?.dismiss(animated: true, completion: nil)
         }
     }
 }

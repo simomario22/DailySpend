@@ -12,6 +12,7 @@ class CurrentDayTableViewCell: UITableViewCell {
     
     let redColor = UIColor(colorLiteralRed: 179.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 1)
 
+    @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var spendLeftLabel: UICountingLabel!
     @IBOutlet weak var todaysSpendingLabel: UILabel!
     
@@ -20,9 +21,13 @@ class CurrentDayTableViewCell: UITableViewCell {
     func setAndFormatLabels(dailySpendLeft: Decimal,
                             previousDailySpendLeft: Decimal,
                             expensesToday: Bool) {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "E, M/d"
+        
         let currencyFormatter = NumberFormatter()
         currencyFormatter.numberStyle = .currency
         
+        self.dateLabel.text = dateFormatter.string(from: Date())
         spendLeftLabel.count(from: CGFloat(previousDailySpendLeft.doubleValue),
                              to: CGFloat(dailySpendLeft.doubleValue))
     

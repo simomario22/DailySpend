@@ -11,7 +11,7 @@ import CoreData
 
 class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
     let standardCellHeight: CGFloat = 44
-    let currentDayHeight: CGFloat = 105
+    let currentDayHeight: CGFloat = 130
     let addExpenseHeight: CGFloat = 213
     let addExpenseMinPxVisible: CGFloat = 70
     let heightOfTodaysSpendingLabel: CGFloat = 21
@@ -89,16 +89,7 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
     }
     
     /* Methods for managment of CoreData */
-    
-    /*
-     * Present the review dialog for a given month.
-     */
-    func reviewMonth(_ month: Month, completion: (() -> Void)?) {
-        if (false){
-            var x = 2;
-        }
-    }
-    
+
     /*
      * Creates consecutive days in data store inclusive of beginning date and
      * exclusive of ending date
@@ -118,11 +109,6 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
                 // Create and review the previous month, then call this function again.
                 _ = Month.create(context: context, dateInMonth: currentDate)
                 appDelegate.saveContext()
-                reviewMonth(Month.get(context:context,
-                                      dateInMonth: currentDate.subtract(months: 1))!,
-                                      completion: {
-                    self.createDays(from: currentDate, to: to)
-                })
             }
         }
     }
@@ -173,7 +159,7 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
         let monthsFetchReq: NSFetchRequest<Month> = Month.fetchRequest()
         let monthSortDesc = NSSortDescriptor(key: "month_", ascending: true)
         monthsFetchReq.sortDescriptors = [monthSortDesc]
-        monthsFetchReq.predicate = NSPredicate(format: "month_ != %@", Date.firstDayOfMonth(dayInMonth: today) as CVarArg)
+        //monthsFetchReq.predicate = NSPredicate(format: "month_ != %@", Date.firstDayOfMonth(dayInMonth: today) as CVarArg)
         months = try! context.fetch(monthsFetchReq)
     }
     
@@ -386,10 +372,10 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
 
         self.tableView.beginUpdates()
         self.tableView.endUpdates()
-
+        
+        adjustBarButton = self.navigationItem.rightBarButtonItem
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Save", style: .done, target: self, action: #selector(rightBarButtonPressed(sender:)))
-        adjustBarButton = self.navigationItem.leftBarButtonItem
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .done, target: self, action: #selector(cancelAddingExpense(sender:)))
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelAddingExpense(sender:)))
         
         let locationOfAddExpenseCell = months.count + daysThisMonth.count + numExpenseSpots
         
@@ -401,9 +387,8 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
         NotificationCenter.default.post(name: NSNotification.Name.init("PressedCancelButton"), object: UIApplication.shared)
 
         self.tableView.isScrollEnabled = true
-        self.navigationItem.leftBarButtonItem = adjustBarButton
-        adjustBarButton = nil
-        self.navigationItem.rightBarButtonItem = nil
+        self.navigationItem.leftBarButtonItem = nil
+        self.navigationItem.rightBarButtonItem = adjustBarButton
         addingExpense = false
         self.tableView.beginUpdates()
         self.tableView.endUpdates()
@@ -430,8 +415,8 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
     func completedExpense(sender: AddExpenseTableViewCell, expense: Expense) {
         self.tableView.isScrollEnabled = true
         self.navigationItem.leftBarButtonItem?.isEnabled = true
-        self.navigationItem.leftBarButtonItem = self.adjustBarButton
-        self.navigationItem.rightBarButtonItem = nil
+        self.navigationItem.rightBarButtonItem = self.adjustBarButton
+        self.navigationItem.leftBarButtonItem = nil
         addingExpense = false
         self.tableView.beginUpdates()
         if expense.day!.date!.beginningOfDay == Date().beginningOfDay &&
@@ -489,8 +474,8 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
             }
             for monthAdjustment in month.adjustments!.sorted(by: {$0.dateCreated! < $1.dateCreated!}) {
                 print("\tmonthAdjustment.amount: \(monthAdjustment.amount!)")
-                print("\tmonthAdjustment.dateCreated: \(monthAdjustment.dateCreated!)")
-                print("\tmonthAdjustment.dateEffective: \(monthAdjustment.dateEffective!)")
+                print("\tmonthAdjustment.dateCreated: \(dateFormatter.string(from: monthAdjustment.dateCreated!))")
+                print("\tmonthAdjustment.dateEffective: \(dateFormatter.string(from: monthAdjustment.dateEffective!))")
                 print("\tmonthAdjustment.reason: \(monthAdjustment.reason!)")
                 print("")
             }
@@ -507,7 +492,7 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
                 print("\tday.dateCreated: \(dateFormatter.string(from: day.dateCreated!))")
                 
                 
-                if (day.expenses!.count > 0) {
+                if (day.adjustments!.count > 0) {
                     print("\t\tDayAdjustments:")
                 } else {
                     print("\t\tNo DayAdjustments.")

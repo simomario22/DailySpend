@@ -12,13 +12,10 @@ import CoreData
 class MonthAdjustmentViewController: UIViewController {
     
     @IBOutlet weak var addDeductControl: UISegmentedControl!
-    
     @IBOutlet weak var amountField: UITextField!
     @IBOutlet weak var reasonField: UITextField!
     @IBOutlet weak var dateReceivedButton: UIButton!
-    @IBOutlet weak var recurSwitch: UISwitch!
     @IBOutlet weak var additionalAmountLabel: UILabel!
-    @IBOutlet weak var recurLabel: UILabel!
     
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
@@ -31,40 +28,58 @@ class MonthAdjustmentViewController: UIViewController {
     var selectedDate: Date?
     var monthAdjustment: MonthAdjustment?
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         if monthAdjustment != nil {
             setAddDeductSegment(negOrPos: monthAdjustment!.amount!)
-            amountField.text = String.formatAsCurrency(amount: monthAdjustment!.amount!.doubleValue)
+            amountField.text = String.formatAsCurrency(amount: abs(monthAdjustment!.amount!.doubleValue))
             reasonField.text = monthAdjustment!.reason
             selectedDate = monthAdjustment!.dateEffective
             setDateLabel(date: selectedDate!)
-            recurSwitch.isOn = false
-            recurSwitch.isHidden = true
-            recurLabel.isHidden = true
             additionalAmountLabel.isHidden = true
+            fixFrames()
         } else {
+            addDeductControl.selectedSegmentIndex = 1
             selectedDate = Date()
             setDateLabel(date: selectedDate!)
         }
+
         
-        // Set right bar button item
+        let resignAllButton = UIButton()
+        resignAllButton.backgroundColor = UIColor.init(colorLiteralRed: 0, green: 0, blue: 0, alpha: 0)
+        resignAllButton.frame = view.bounds
+        resignAllButton.addTarget(self, action: #selector(resignResponders), for: UIControlEvents.touchUpInside)
+        
+        self.view.insertSubview(resignAllButton, at: 0)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
         let saveButton = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(save))
-        navigationItem.rightBarButtonItem = saveButton
         
-        if self.navigationController == nil {
+        if let tabBarCtrl = tabBarController {
+            // Set right bar button item
+            tabBarCtrl.navigationItem.rightBarButtonItem = saveButton
+            
             let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancel))
-            self.navigationItem.leftBarButtonItem = cancelButton
+            navigationItem.rightBarButtonItem = saveButton
+            tabBarCtrl.navigationItem.leftBarButtonItem = cancelButton
+        } else {
+            navigationItem.rightBarButtonItem = saveButton
         }
     }
     
+    func resignResponders() {
+        self.amountField.resignFirstResponder()
+        self.reasonField.resignFirstResponder()
+    }
+
     func cancel() {
         self.tabBarController?.dismiss(animated: true, completion: nil)
     }
     
     func save() {
-        let amount = amountField.text!.parseValidAmount(maxLength: 8)
+        let posNeg: Decimal = addDeductControl.selectedSegmentIndex == 1 ? 1 : -1
+        let amount = Decimal(amountField.text!.parseValidAmount(maxLength: 8)) * posNeg
         let reason = reasonField.text!
         if amount == 0 ||
             reason.characters.count == 0 ||
@@ -77,23 +92,16 @@ class MonthAdjustmentViewController: UIViewController {
             if (monthAdjustment == nil) {
                 monthAdjustment = MonthAdjustment(context: context)
             }
-            let posNeg: Decimal = addDeductControl.selectedSegmentIndex == 0 ? 1 : -1
-            monthAdjustment!.amount = posNeg * Decimal(amountField.text!.parseValidAmount(maxLength: 8))
+            monthAdjustment!.amount = amount
             monthAdjustment!.reason = reason
+            monthAdjustment!.dateCreated = monthAdjustment!.dateCreated ?? Date()
             monthAdjustment!.dateEffective = selectedDate
             monthAdjustment!.month = Month.get(context: context, dateInMonth: selectedDate!)
-            
-            if recurSwitch.isOn {
-                var dailyTargetSpend = UserDefaults.standard.double(forKey: "dailyTargetSpend")
-                UserDefaults.standard.set(dailyTargetSpend += amount, forKey: "dailyTargetSpend")
-            }
-            
+
             appDelegate.saveContext()
-        }
-        if let navController = self.navigationController {
-            navController.popViewController(animated: true)
-        } else {
-            self.tabBarController?.dismiss(animated: true, completion: nil)
+            
+            tabBarController?.navigationController?.dismiss(animated: true, completion: nil)
+            navigationController?.popViewController(animated: true)
         }
     }
     

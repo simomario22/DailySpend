@@ -139,7 +139,7 @@ public class Month: NSManagedObject {
         } else {
             // This month started in the middle, so the baseTargetSpend 
             // should exclude the days before we started
-            return dailyBaseTargetSpend! * Decimal(daysInMonth - earliestDay)
+            return dailyBaseTargetSpend! * Decimal(daysInMonth - earliestDay + 1)
             
         }
     }
