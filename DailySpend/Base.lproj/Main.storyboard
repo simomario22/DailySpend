@@ -274,17 +274,19 @@
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="$200.00" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4aA-hP-LJr">
-                                            <rect key="frame" x="144" y="101" width="87" height="27"/>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LxS-72-U2Q">
+                                            <rect key="frame" x="144" y="99" width="87" height="28"/>
                                             <fontDescription key="fontDescription" style="UICTFontTextStyleTitle2"/>
-                                            <color key="textColor" red="0.70196078429999997" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
+                                            <inset key="contentEdgeInsets" minX="0.0" minY="1" maxX="0.0" maxY="0.0"/>
+                                            <state key="normal" title="$200.00"/>
+                                        </button>
                                     </subviews>
                                     <constraints>
                                         <constraint firstItem="t4e-yz-ORV" firstAttribute="centerX" secondItem="lTK-7e-iYW" secondAttribute="centerX" id="1Z2-7s-6mh"/>
+                                        <constraint firstItem="LxS-72-U2Q" firstAttribute="top" secondItem="ZNt-7v-xWG" secondAttribute="bottom" constant="6" id="4dI-uS-aLA"/>
                                         <constraint firstAttribute="topMargin" secondItem="lTK-7e-iYW" secondAttribute="top" id="4fz-IN-I6q"/>
                                         <constraint firstItem="ZNt-7v-xWG" firstAttribute="centerX" secondItem="sp6-ZM-PNH" secondAttribute="centerX" id="Bzh-Rq-fs5"/>
+                                        <constraint firstItem="LxS-72-U2Q" firstAttribute="centerX" secondItem="ZNt-7v-xWG" secondAttribute="centerX" id="D7z-s4-EyZ"/>
                                         <constraint firstItem="4wg-JR-KUl" firstAttribute="centerX" secondItem="E8A-SF-I1p" secondAttribute="centerX" id="FeN-6e-c8H"/>
                                         <constraint firstAttribute="topMargin" secondItem="E8A-SF-I1p" secondAttribute="top" id="Hf1-jX-vVz"/>
                                         <constraint firstItem="4wg-JR-KUl" firstAttribute="top" secondItem="E8A-SF-I1p" secondAttribute="bottom" constant="8" id="YCk-Z3-Bcw"/>
@@ -292,14 +294,12 @@
                                         <constraint firstItem="ZNt-7v-xWG" firstAttribute="top" secondItem="4wg-JR-KUl" secondAttribute="bottom" constant="8" id="gaE-hf-Fpe"/>
                                         <constraint firstItem="lTK-7e-iYW" firstAttribute="trailing" secondItem="sp6-ZM-PNH" secondAttribute="trailing" multiplier="2:3" constant="10" id="j1Q-30-9FW"/>
                                         <constraint firstItem="t4e-yz-ORV" firstAttribute="top" secondItem="lTK-7e-iYW" secondAttribute="bottom" constant="8" id="o2H-2J-Ml6"/>
-                                        <constraint firstItem="4aA-hP-LJr" firstAttribute="top" secondItem="ZNt-7v-xWG" secondAttribute="bottom" constant="8" id="sxS-gh-iuK"/>
-                                        <constraint firstItem="4aA-hP-LJr" firstAttribute="centerX" secondItem="ZNt-7v-xWG" secondAttribute="centerX" id="vrB-Gs-4R5"/>
                                     </constraints>
                                 </tableViewCellContentView>
                                 <connections>
                                     <outlet property="backgroundView" destination="sp6-ZM-PNH" id="YAg-Ma-B2M"/>
                                     <outlet property="goalAmountLabel" destination="t4e-yz-ORV" id="GZA-wP-U83"/>
-                                    <outlet property="overUnderAmountLabel" destination="4aA-hP-LJr" id="3XT-18-Tu6"/>
+                                    <outlet property="overUnderAmountButton" destination="LxS-72-U2Q" id="RRy-qQ-tt0"/>
                                     <outlet property="overUnderLabel" destination="ZNt-7v-xWG" id="itN-dT-TYZ"/>
                                     <outlet property="spentAmountLabel" destination="4wg-JR-KUl" id="Sgd-Xr-gJU"/>
                                 </connections>
@@ -345,7 +345,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iHO-Pq-Yx5" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2327" y="206"/>
+            <point key="canvasLocation" x="2325.5999999999999" y="205.54722638680661"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="Vrc-nh-LVo">
@@ -844,7 +844,7 @@
         <image name="today.png" width="25" height="25"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="SEL-Rc-OCe"/>
+        <segue reference="M5R-Ca-GRb"/>
         <segue reference="ljn-bW-His"/>
     </inferredMetricsTieBreakers>
 </document>

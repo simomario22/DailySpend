@@ -158,6 +158,8 @@ class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
         datePicker.datePickerMode = .date
         datePicker.frame = CGRect(x: 0, y: bounds.size.height,
                                   width: bounds.size.width, height: datePicker.intrinsicContentSize.height)
+        datePicker.removeTarget(self, action: #selector(datePickerChanged(sender:)), for: .valueChanged)
+        datePicker.addTarget(self, action: #selector(datePickerChanged(sender:)), for: .valueChanged)
         
         
         dismissButton.backgroundColor = UIColor.init(colorLiteralRed: 0, green: 0, blue: 0, alpha: 0)
@@ -179,9 +181,12 @@ class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
         })
     }
     
-    func dismissDatePicker() {
+    func datePickerChanged(sender: UIDatePicker) {
         selectedDate = datePicker.date
-        
+
+    }
+    
+    func dismissDatePicker() {
         // Set label
         if selectedDate?.beginningOfDay == Date().beginningOfDay {
             dateButton.setTitle("Today", for: .normal)

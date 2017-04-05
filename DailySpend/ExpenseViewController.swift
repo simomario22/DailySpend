@@ -198,6 +198,8 @@ class ExpenseViewController: UIViewController, UITextViewDelegate {
         datePicker.maximumDate = Date()
         datePicker.setDate(selectedDate ?? Date(), animated: false)
         datePicker.datePickerMode = .date
+        datePicker.removeTarget(self, action: #selector(datePickerChanged(sender:)), for: .valueChanged)
+        datePicker.addTarget(self, action: #selector(datePickerChanged(sender:)), for: .valueChanged)
         datePicker.frame = CGRect(x: 0, y: view.bounds.size.height,
                                   width: view.bounds.size.width,
                                   height: datePicker.intrinsicContentSize.height)
@@ -219,6 +221,11 @@ class ExpenseViewController: UIViewController, UITextViewDelegate {
             self.dismissButton.frame = self.dismissButton.frame.offsetBy(dx: 0, dy: -self.datePicker.frame.height)
             self.dismissButton.backgroundColor = UIColor.init(colorLiteralRed: 0, green: 0, blue: 0, alpha: 0.1)
         })
+    }
+    
+    func datePickerChanged(sender: UIDatePicker) {
+        selectedDate = datePicker.date
+        
     }
     
     func dismissDatePicker() {

@@ -111,7 +111,30 @@ class ReviewTableViewController: UITableViewController {
         case .Days:
             if section == 0 {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "review", for: indexPath) as! ReviewTableViewCell
-                cell.setAndFormatLabels(spentAmount: day!.actualSpend, goalAmount: day!.fullTargetSpend)
+                let isFirstDayOfMonth: Bool = {
+                    if day!.date!.day == 1 {
+                        // This is the first day of the month.
+                        return true
+                    }
+                    for checkDay in day!.month!.days! {
+                        if checkDay.date!.beginningOfDay < day!.date!.beginningOfDay {
+                            // There's a day earlier than this one
+                            // so this day is not the earliest
+                            return false
+                        }
+                    }
+                    // There are no days earlier than this one, so today is not the earliest.
+                    return true
+                }()
+                var previousDay: Day?
+                if !isFirstDayOfMonth {
+                    previousDay = Day.get(context: context, date: day!.date!.subtract(days: 1))
+                }
+                let isLastDayOfMonth = day!.date!.day == day!.month!.month!.daysInMonth
+                cell.setAndFormatLabels(spentAmount: day!.actualSpend,
+                                        goalAmount: day!.fullTargetSpend,
+                                        carryFromYesterday: isFirstDayOfMonth ? 0 : previousDay?.leftToCarry,
+                                        lastDayOfMonth: isLastDayOfMonth)
                 return cell
             } else if section == 1 {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "detail", for: indexPath)

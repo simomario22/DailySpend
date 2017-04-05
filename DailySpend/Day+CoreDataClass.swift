@@ -99,6 +99,20 @@ public class Day: NSManagedObject {
         return baseTargetSpend! + totalAdjustments()
     }
     
+    public var leftToCarry: Decimal {
+        var dailySpend: Decimal = 0
+        for day in month!.days! {
+            if day.date! <= date! {
+                dailySpend += day.baseTargetSpend!
+                dailySpend += day.totalAdjustments()
+                for expense in day.expenses! {
+                    dailySpend -= expense.amount!
+                }
+            }
+        }
+        return dailySpend
+    }
+    
     public var date: Date? {
         get {
             return date_ as Date?

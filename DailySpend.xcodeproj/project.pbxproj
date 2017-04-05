@@ -599,7 +599,7 @@
 				DEVELOPMENT_TEAM = 9QAA23LAQ9;
 				INFOPLIST_FILE = DailySpend/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.joshsherick.DailySpend;
+				PRODUCT_BUNDLE_IDENTIFIER = com.joshsherick.DailySpendTesting;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "DailySpend/DailySpend-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -615,7 +615,7 @@
 				DEVELOPMENT_TEAM = 9QAA23LAQ9;
 				INFOPLIST_FILE = DailySpend/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.joshsherick.DailySpend;
+				PRODUCT_BUNDLE_IDENTIFIER = com.joshsherick.DailySpendTesting;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "DailySpend/DailySpend-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
