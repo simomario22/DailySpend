@@ -51,7 +51,9 @@ public class Day: NSManagedObject {
      */
     class func get(context: NSManagedObjectContext, date: Date) -> Day? {
         let fetchRequest: NSFetchRequest<Day> = Day.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "date_ == %@", date.beginningOfDay as CVarArg)
+        let pred = NSPredicate(format: "date_ == %@",
+                               date.beginningOfDay as CVarArg)
+        fetchRequest.predicate = pred
         var dayResults: [Day] = []
         dayResults = try! context.fetch(fetchRequest)
         if dayResults.count < 1 {
@@ -64,7 +66,8 @@ public class Day: NSManagedObject {
         return dayResults[0]
     }
     
-    class func create(context: NSManagedObjectContext, date: Date, month: Month) -> Day {
+    class func create(context: NSManagedObjectContext,
+                      date: Date, month: Month) -> Day {
         let day = Day(context: context)
         day.date = date.beginningOfDay
         day.month = month
@@ -159,6 +162,14 @@ public class Day: NSManagedObject {
         }
     }
     
+    public var sortedAdjustments: [DayAdjustment]? {
+        if let adj = adjustments {
+            return adj.sorted(by: { $0.dateCreated! < $1.dateCreated! })
+        } else {
+            return nil
+        }
+    }
+    
     public var adjustments: Set<DayAdjustment>? {
         get {
             return adjustments_ as! Set?
@@ -169,6 +180,14 @@ public class Day: NSManagedObject {
             } else {
                 adjustments_ = nil
             }
+        }
+    }
+    
+    public var sortedExpenses: [Expense]? {
+        if let exp = expenses {
+            return exp.sorted(by: { $0.dateCreated! < $1.dateCreated! })
+        } else {
+            return nil
         }
     }
     

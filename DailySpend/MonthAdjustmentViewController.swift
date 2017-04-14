@@ -32,7 +32,8 @@ class MonthAdjustmentViewController: UIViewController {
         super.viewDidLoad()
         if monthAdjustment != nil {
             setAddDeductSegment(negOrPos: monthAdjustment!.amount!)
-            amountField.text = String.formatAsCurrency(amount: abs(monthAdjustment!.amount!.doubleValue))
+            let absAmount = abs(monthAdjustment!.amount!.doubleValue)
+            amountField.text = String.formatAsCurrency(amount: absAmount)
             reasonField.text = monthAdjustment!.reason
             selectedDate = monthAdjustment!.dateEffective
             setDateLabel(date: selectedDate!)
@@ -46,21 +47,27 @@ class MonthAdjustmentViewController: UIViewController {
 
         
         let resignAllButton = UIButton()
-        resignAllButton.backgroundColor = UIColor.init(colorLiteralRed: 0, green: 0, blue: 0, alpha: 0)
+        resignAllButton.backgroundColor = UIColor.clear
         resignAllButton.frame = view.bounds
-        resignAllButton.addTarget(self, action: #selector(resignResponders), for: UIControlEvents.touchUpInside)
+        resignAllButton.addTarget(self,
+                                  action: #selector(resignResponders),
+                                  for: UIControlEvents.touchUpInside)
         
         self.view.insertSubview(resignAllButton, at: 0)
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        let saveButton = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(save))
+        let saveButton = UIBarButtonItem(barButtonSystemItem: .save,
+                                         target: self,
+                                         action: #selector(save))
         
         if let tabBarCtrl = tabBarController {
             // Set right bar button item
             tabBarCtrl.navigationItem.rightBarButtonItem = saveButton
             
-            let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancel))
+            let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel,
+                                               target: self,
+                                               action: #selector(cancel))
             navigationItem.rightBarButtonItem = saveButton
             tabBarCtrl.navigationItem.leftBarButtonItem = cancelButton
         } else {
@@ -84,10 +91,13 @@ class MonthAdjustmentViewController: UIViewController {
         if amount == 0 ||
             reason.characters.count == 0 ||
             selectedDate == nil {
+            let message = "Please enter valid values for amount, reaons, and date received."
             let alert = UIAlertController(title: "Invalid Fields",
-                                          message: "Please enter valid values for amount, reaons, and date received.",
+                                          message: message,
                                           preferredStyle: UIAlertControllerStyle.alert)
-            alert.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.default, handler: nil))
+            alert.addAction(UIAlertAction(title: "Okay",
+                                          style: UIAlertActionStyle.default,
+                                          handler: nil))
             
             self.present(alert, animated: true, completion: nil)
         } else {
@@ -109,12 +119,9 @@ class MonthAdjustmentViewController: UIViewController {
             
             func fromDayAdjustmentsReview() -> Bool {
                 let navCtrlCount = self.navigationController!.viewControllers.count
-                let revCtrl = self.navigationController!.viewControllers[navCtrlCount - 2] as! ReviewTableViewController
-                if revCtrl.mode == .DayAdjustments {
-                    return true
-                } else {
-                    return false
-                }
+                let vc = self.navigationController!.viewControllers[navCtrlCount - 2]
+                let reviewController = vc as! ReviewTableViewController
+                return reviewController.mode == .DayAdjustments
             }
             
             
@@ -132,12 +139,14 @@ class MonthAdjustmentViewController: UIViewController {
                 }
                 var vcs = navigationController!.viewControllers
                 let day = dayTry!
-                let reviewDayVC = storyboard!.instantiateViewController(withIdentifier: "Review") as! ReviewTableViewController
+                let vc = storyboard!.instantiateViewController(withIdentifier: "Review")
+                let reviewDayVC = vc as! ReviewTableViewController
                 reviewDayVC.day = day
                 reviewDayVC.mode = .Days
                 
-                let adjustments = day.adjustments!.sorted(by: { $0.dateCreated! < $1.dateCreated! })
-                let reviewAdjustmentsVC = storyboard!.instantiateViewController(withIdentifier: "Review") as! ReviewTableViewController
+                let adjustments = day.sortedAdjustments!
+                let vc2 = storyboard!.instantiateViewController(withIdentifier: "Review")
+                let reviewAdjustmentsVC = vc2 as! ReviewTableViewController
                 reviewAdjustmentsVC.day = day
                 reviewAdjustmentsVC.dayAdjustments = adjustments
                 reviewAdjustmentsVC.monthAdjustments = day.relevantMonthAdjustments
@@ -148,7 +157,8 @@ class MonthAdjustmentViewController: UIViewController {
                 vcs[vcs.count - 3] = reviewDayVC
                 if vcs[vcs.count - 4] is ReviewTableViewController {
                     // The user has three levels of VCs in this nav controller.
-                    let reviewMonthVC = storyboard!.instantiateViewController(withIdentifier: "Review") as! ReviewTableViewController
+                    let vc3 = storyboard!.instantiateViewController(withIdentifier: "Review")
+                    let reviewMonthVC = vc3 as! ReviewTableViewController
                     reviewMonthVC.month = day.month!
                     reviewMonthVC.mode = .Months
                     vcs[vcs.count - 4] = reviewMonthVC
@@ -187,7 +197,8 @@ class MonthAdjustmentViewController: UIViewController {
         
         while width > maxWidth && fontSize > minFontSize {
             fontSize -= 1
-            attr = [NSFontAttributeName: UIFont.systemFont(ofSize: fontSize, weight: UIFontWeightLight)]
+            attr = [NSFontAttributeName: UIFont.systemFont(ofSize: fontSize,
+                                                           weight: UIFontWeightLight)]
             width = reasonField.text!.size(attributes: attr).width
         }
         reasonField.font = UIFont.systemFont(ofSize: fontSize, weight: UIFontWeightLight)
@@ -248,16 +259,22 @@ class MonthAdjustmentViewController: UIViewController {
         datePicker.maximumDate = Date()
         datePicker.setDate(selectedDate ?? Date(), animated: false)
         datePicker.datePickerMode = .date
-        datePicker.removeTarget(self, action: #selector(datePickerChanged(sender:)), for: .valueChanged)
-        datePicker.addTarget(self, action: #selector(datePickerChanged(sender:)), for: .valueChanged)
+        datePicker.removeTarget(self,
+                                action: #selector(datePickerChanged(sender:)),
+                                for: .valueChanged)
+        datePicker.addTarget(self,
+                             action: #selector(datePickerChanged(sender:)),
+                             for: .valueChanged)
         datePicker.frame = CGRect(x: 0, y: view.bounds.size.height,
                                   width: view.bounds.size.width,
                                   height: datePicker.intrinsicContentSize.height)
         
         
-        dismissButton.backgroundColor = UIColor.init(colorLiteralRed: 0, green: 0, blue: 0, alpha: 0)
+        dismissButton.backgroundColor = UIColor.clear
         dismissButton.frame = view.bounds
-        dismissButton.addTarget(self, action: #selector(dismissDatePicker), for: UIControlEvents.touchUpInside)
+        dismissButton.addTarget(self,
+                                action: #selector(dismissDatePicker),
+                                for: UIControlEvents.touchUpInside)
         
         self.view.addSubview(dismissButton)
         self.view.addSubview(datePicker)
@@ -266,15 +283,20 @@ class MonthAdjustmentViewController: UIViewController {
         self.reasonField.resignFirstResponder()
         
         // Animate slide up.
-        UIView.animate(withDuration: 0.5, animations: {
+        UIView.animate(withDuration: 0.2, animations: {
             var tabBarHeight: CGFloat = 0
             if let tabCtrl = self.tabBarController {
                 tabBarHeight = tabCtrl.tabBar.bounds.size.height
             }
             let offset = -self.datePicker.frame.height - tabBarHeight
-            self.datePicker.frame = self.datePicker.frame.offsetBy(dx: 0, dy: offset)
-            self.dismissButton.frame = self.dismissButton.frame.offsetBy(dx: 0, dy: offset)
-            self.dismissButton.backgroundColor = UIColor.init(colorLiteralRed: 0, green: 0, blue: 0, alpha: 0.1)
+            let dPFrame = self.datePicker.frame.offsetBy(dx: 0, dy: offset)
+            let dBFrame = self.dismissButton.frame.offsetBy(dx: 0, dy: offset)
+            self.datePicker.frame = dPFrame
+            self.dismissButton.frame = dBFrame
+            self.dismissButton.backgroundColor = UIColor.init(colorLiteralRed: 0,
+                                                              green: 0,
+                                                              blue: 0,
+                                                              alpha: 0.1)
         })
     }
     
@@ -286,10 +308,11 @@ class MonthAdjustmentViewController: UIViewController {
         setDateLabel(date: selectedDate!)
         
         // Animate slide down.
-        UIView.animate(withDuration: 0.5, animations: {
-            self.datePicker.frame = self.datePicker.frame.offsetBy(dx: 0, dy: self.datePicker.frame.height)
-            self.dismissButton.frame = self.dismissButton.frame.offsetBy(dx: 0, dy: self.datePicker.frame.height)
-            self.dismissButton.backgroundColor = UIColor.init(colorLiteralRed: 0, green: 0, blue: 0, alpha: 0)
+        UIView.animate(withDuration: 0.2, animations: {
+            let dpHeight = self.datePicker.frame.height
+            self.datePicker.frame = self.datePicker.frame.offsetBy(dx: 0, dy: dpHeight)
+            self.dismissButton.frame = self.dismissButton.frame.offsetBy(dx: 0, dy: dpHeight)
+            self.dismissButton.backgroundColor = UIColor.clear
         }, completion:  { (finished: Bool) in
             self.datePicker.removeFromSuperview()
             self.dismissButton.removeFromSuperview()

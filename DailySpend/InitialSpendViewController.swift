@@ -23,9 +23,11 @@ class InitialSpendViewController: UIViewController {
 
         // Do any additional setup after loading the view.
         let resignAllButton = UIButton()
-        resignAllButton.backgroundColor = UIColor.init(colorLiteralRed: 0, green: 0, blue: 0, alpha: 0)
+        resignAllButton.backgroundColor = UIColor.clear
         resignAllButton.frame = view.bounds
-        resignAllButton.addTarget(self, action: #selector(resignResponders), for: UIControlEvents.touchUpInside)
+        resignAllButton.addTarget(self,
+                                  action: #selector(resignResponders),
+                                  for: UIControlEvents.touchUpInside)
         
         self.view.insertSubview(resignAllButton, at: 0)
         
@@ -40,7 +42,9 @@ class InitialSpendViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        let saveButton = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(save(_:)))
+        let saveButton = UIBarButtonItem(barButtonSystemItem: .save,
+                                         target: self,
+                                         action: #selector(save(_:)))
         self.tabBarController?.navigationItem.rightBarButtonItem = saveButton
     }
     
@@ -124,7 +128,10 @@ class InitialSpendViewController: UIViewController {
     @IBAction func save(_ sender: UIBarButtonItem) {
         let dailyAmount = dailyField.text!.parseValidAmount(maxLength: 8)
         if dailyAmount == 0 {
-            let alert = UIAlertController(title: "Can't have 0 spend", message: "You need to pick a spend greater than 0.", preferredStyle: UIAlertControllerStyle.alert)
+            let message = "You need to pick a spend greater than 0."
+            let alert = UIAlertController(title: "Can't have 0 spend",
+                                          message: message,
+                                          preferredStyle: UIAlertControllerStyle.alert)
             alert.addAction(UIAlertAction(title: "Okay", style: .default, handler: nil))
             self.present(alert, animated: true, completion: nil)
         } else {

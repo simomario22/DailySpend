@@ -15,8 +15,14 @@ class ReviewTableViewCell: UITableViewCell {
     @IBOutlet weak var overUnderLabel: UILabel!
     @IBOutlet weak var overUnderAmountButton: UIButton!
     
-    let redColor = UIColor(colorLiteralRed: 179.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 1)
-    let greenColor = UIColor(colorLiteralRed: 0.0/255.0, green: 179.0/255.0, blue: 0.0/255.0, alpha: 1)
+    let redColor = UIColor(colorLiteralRed: 179.0/255.0,
+                           green: 0.0/255.0,
+                           blue: 0.0/255.0,
+                           alpha: 1)
+    let greenColor = UIColor(colorLiteralRed: 0.0/255.0,
+                             green: 179.0/255.0,
+                             blue: 0.0/255.0,
+                             alpha: 1)
     
     // Necessary since we can't have closures for button press events :(
     var currencyFormatter: NumberFormatter!
@@ -24,7 +30,17 @@ class ReviewTableViewCell: UITableViewCell {
     var overUnder: Decimal!
     var todayCarry: Decimal!
     var alreadyHighlighted = false
-
+    
+    var overUnderAbsNS: NSNumber {
+        return Decimal.abs(overUnder) as NSNumber
+    }
+    var yesterdayNS: NSNumber {
+        return yesterdayCarry as NSNumber
+    }
+    var todayNS: NSNumber {
+        return todayCarry as NSNumber
+    }
+    
     /*
      * Sets and format currency labels and message based on currency labels.
      */
@@ -48,13 +64,18 @@ class ReviewTableViewCell: UITableViewCell {
             let color = todayCarry < 0 ? redColor : greenColor
             overUnderAmountButton.setTitleColor(color, for: .normal)
             
-            overUnderLabel.text = lastDay ? "Left over this month" : "Carried To Tomorrow"
+            overUnderLabel.text = lastDay ?
+                                 "Left over this month" : "Carried To Tomorrow"
             
             let formattedString = currencyFormatter.string(from: todayCarry as NSNumber)!
             overUnderAmountButton.setTitle(formattedString, for: .normal)
             
-            overUnderAmountButton.removeTarget(self, action: #selector(setCarryLabel), for: .touchUpInside)
-            overUnderAmountButton.addTarget(self, action: #selector(setCarryLabel), for: .touchUpInside)
+            overUnderAmountButton.removeTarget(self,
+                                               action: #selector(setCarryLabel),
+                                               for: .touchUpInside)
+            overUnderAmountButton.addTarget(self,
+                                            action: #selector(setCarryLabel),
+                                            for: .touchUpInside)
             overUnderAmountButton.isUserInteractionEnabled = true
             if !alreadyHighlighted {
                 // Animate to show that this is a button
@@ -76,7 +97,7 @@ class ReviewTableViewCell: UITableViewCell {
                 alreadyHighlighted = true
             }
         } else {
-            let formattedString = currencyFormatter.string(from: Decimal.abs(overUnder) as NSNumber)!
+            let formattedString = currencyFormatter.string(from: overUnderAbsNS)!
             overUnderAmountButton.setTitle(formattedString, for: .normal)
             if overUnder < 0 {
                 overUnderLabel.text = "Over goal"
@@ -91,12 +112,16 @@ class ReviewTableViewCell: UITableViewCell {
     
     func setCarryLabel() {
         // Create strings.
-        let yesterdayCarryString = currencyFormatter.string(from: yesterdayCarry as NSNumber)!
-        let overUnderString = currencyFormatter.string(from: Decimal.abs(overUnder) as NSNumber)!
-        let todayCarryString = currencyFormatter.string(from: todayCarry as NSNumber)!
+        let yesterdayCarryString = currencyFormatter.string(from: yesterdayNS)!
+        let overUnderString = currencyFormatter.string(from: overUnderAbsNS)!
+        let todayCarryString = currencyFormatter.string(from: todayNS)!
         
         let plusOrMinus = overUnder! < 0 ? " - " : " + "
-        let equationString = yesterdayCarryString + plusOrMinus + overUnderString + " = " + todayCarryString
+        let equationString = yesterdayCarryString +
+                             plusOrMinus +
+                             overUnderString +
+                             " = " +
+                             todayCarryString
         let attributedText = NSMutableAttributedString(string: equationString)
         
         let addAttribute = {(color: UIColor, start: Int, len: Int) in
@@ -133,9 +158,12 @@ class ReviewTableViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
-        spentAmountLabel.font = UIFont.systemFont(ofSize: 22, weight: UIFontWeightLight)
-        goalAmountLabel.font = UIFont.systemFont(ofSize: 22, weight: UIFontWeightLight)
-        overUnderAmountButton.titleLabel!.font = UIFont.systemFont(ofSize: 22, weight: UIFontWeightLight)
+        
+        let font = UIFont.systemFont(ofSize: 22,
+                                     weight: UIFontWeightLight)
+        spentAmountLabel.font = font
+        goalAmountLabel.font = font
+        overUnderAmountButton.titleLabel!.font = font
         self.selectionStyle = .none
     }
 }

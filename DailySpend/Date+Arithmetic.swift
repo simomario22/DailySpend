@@ -17,9 +17,13 @@ extension Date {
         let cal = Calendar(identifier: .gregorian)
         
         // Get interval for days
-        var interval = self.timeIntervalSince(cal.date(byAdding: .day, value: days, to: self)!)
+        var interval = self.timeIntervalSince(cal.date(byAdding: .day,
+                                                       value: days,
+                                                       to: self)!)
         // Get interval for months
-        interval += self.timeIntervalSince(cal.date(byAdding: .month, value: months, to: self)!)
+        interval += self.timeIntervalSince(cal.date(byAdding: .month,
+                                                    value: months,
+                                                    to: self)!)
         
         // Add interval to a copy of self
         var date = self

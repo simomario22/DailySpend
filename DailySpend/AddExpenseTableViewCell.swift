@@ -42,11 +42,23 @@ class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
         super.awakeFromNib()
         amountField.delegate = self
         descriptionField.delegate = self
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChangeFrame),
-                                               name:NSNotification.Name.UIKeyboardWillChangeFrame, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(dismissNotes), name: NSNotification.Name.init(rawValue: "PressedDoneButton"), object: UIApplication.shared)
-        NotificationCenter.default.addObserver(self, selector: #selector(processAndSend), name: NSNotification.Name.init(rawValue: "PressedSaveButton"), object: UIApplication.shared)
-        NotificationCenter.default.addObserver(self, selector: #selector(resetView), name: NSNotification.Name.init(rawValue: "PressedCancelButton"), object: UIApplication.shared)
+        let nc = NotificationCenter.default
+        nc.addObserver(self,
+                       selector: #selector(keyboardWillChangeFrame),
+                       name:NSNotification.Name.UIKeyboardWillChangeFrame,
+                       object: nil)
+        nc.addObserver(self,
+                       selector: #selector(dismissNotes),
+                       name: NSNotification.Name.init(rawValue: "PressedDoneButton"),
+                       object: UIApplication.shared)
+        nc.addObserver(self,
+                       selector: #selector(processAndSend),
+                       name: NSNotification.Name.init(rawValue: "PressedSaveButton"),
+                       object: UIApplication.shared)
+        nc.addObserver(self,
+                       selector: #selector(resetView),
+                       name: NSNotification.Name.init(rawValue: "PressedCancelButton"),
+                       object: UIApplication.shared)
 
     }
     
@@ -73,10 +85,12 @@ class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
         
         while width > maxWidth && fontSize > minFontSize {
             fontSize -= 1
-            attr = [NSFontAttributeName: UIFont.systemFont(ofSize: fontSize, weight: UIFontWeightLight)]
+            attr = [NSFontAttributeName: UIFont.systemFont(ofSize: fontSize,
+                                                           weight: UIFontWeightLight)]
             width = descriptionField.text!.size(attributes: attr).width
         }
-        descriptionField.font = UIFont.systemFont(ofSize: fontSize, weight: UIFontWeightLight)
+        descriptionField.font = UIFont.systemFont(ofSize: fontSize,
+                                                  weight: UIFontWeightLight)
         
         // Update widths of text fields (with constraints).
         if descriptionConstraint == nil {
@@ -109,7 +123,8 @@ class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
     }
     
     func keyboardWillChangeFrame(notification: NSNotification) {
-        if let frame = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+        let key = notification.userInfo?[UIKeyboardFrameEndUserInfoKey]
+        if let frame = (key as? NSValue)?.cgRectValue {
             keyboardHeight = frame.size.height
             
             // Animate height change.
@@ -142,29 +157,27 @@ class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
     @IBAction func editDate(_ sender: UIButton?) {
         checkForFirstEdit()
         
-        // Find earliest day.
-//        let earliestDayFetchReq: NSFetchRequest<Day> = Day.fetchRequest()
-//        let earliestDaySortDesc = NSSortDescriptor(key: "date_", ascending: true)
-//        earliestDayFetchReq.sortDescriptors = [earliestDaySortDesc]
-//        earliestDayFetchReq.fetchLimit = 1
-//        let earliestDayResults = try! context.fetch(earliestDayFetchReq)
-//        
-//        
-//        // Set up date picker.
-//        let earliestDate = earliestDayResults[0].date
         datePicker.minimumDate = nil
         datePicker.maximumDate = Date()
         datePicker.setDate(selectedDate ?? Date(), animated: false)
         datePicker.datePickerMode = .date
-        datePicker.frame = CGRect(x: 0, y: bounds.size.height,
-                                  width: bounds.size.width, height: datePicker.intrinsicContentSize.height)
-        datePicker.removeTarget(self, action: #selector(datePickerChanged(sender:)), for: .valueChanged)
-        datePicker.addTarget(self, action: #selector(datePickerChanged(sender:)), for: .valueChanged)
+        datePicker.frame = CGRect(x: 0,
+                                  y: bounds.size.height,
+                                  width: bounds.size.width,
+                                  height: datePicker.intrinsicContentSize.height)
+        datePicker.removeTarget(self,
+                                action: #selector(datePickerChanged(sender:)),
+                                for: .valueChanged)
+        datePicker.addTarget(self,
+                             action: #selector(datePickerChanged(sender:)),
+                             for: .valueChanged)
         
         
-        dismissButton.backgroundColor = UIColor.init(colorLiteralRed: 0, green: 0, blue: 0, alpha: 0)
+        dismissButton.backgroundColor = UIColor.clear
         dismissButton.frame = bounds
-        dismissButton.addTarget(self, action: #selector(dismissDatePicker), for: UIControlEvents.touchUpInside)
+        dismissButton.addTarget(self,
+                                action: #selector(dismissDatePicker),
+                                for: UIControlEvents.touchUpInside)
         
         self.addSubview(dismissButton)
         
@@ -174,10 +187,16 @@ class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
         self.descriptionField.resignFirstResponder()
         
         // Animate slide up.
-        UIView.animate(withDuration: 0.5, animations: {
-            self.datePicker.frame = self.datePicker.frame.offsetBy(dx: 0, dy: -self.datePicker.frame.height)
-            self.dismissButton.frame = self.dismissButton.frame.offsetBy(dx: 0, dy: -self.datePicker.frame.height)
-            self.dismissButton.backgroundColor = UIColor.init(colorLiteralRed: 0, green: 0, blue: 0, alpha: 0.1)
+        UIView.animate(withDuration: 0.2, animations: {
+            let dPHeight = self.datePicker.frame.height
+            let dPFrame = self.datePicker.frame.offsetBy(dx: 0, dy: -dPHeight)
+            let dBFrame = self.dismissButton.frame.offsetBy(dx: 0, dy: -dPHeight)
+            self.datePicker.frame = dPFrame
+            self.dismissButton.frame = dBFrame
+            self.dismissButton.backgroundColor = UIColor.init(colorLiteralRed: 0,
+                                                              green: 0,
+                                                              blue: 0,
+                                                              alpha: 0.1)
         })
     }
     
@@ -188,9 +207,10 @@ class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
     
     func dismissDatePicker() {
         // Set label
-        if selectedDate?.beginningOfDay == Date().beginningOfDay {
+        let selectedBegOfDay = selectedDate?.beginningOfDay
+        if selectedBegOfDay == Date().beginningOfDay {
             dateButton.setTitle("Today", for: .normal)
-        } else if selectedDate?.beginningOfDay == Date().subtract(days: 1).beginningOfDay {
+        } else if selectedBegOfDay == Date().subtract(days: 1).beginningOfDay {
             dateButton.setTitle("Yesterday", for: .normal)
             
         } else {
@@ -202,9 +222,12 @@ class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
         
         // Animate slide down.
         UIView.animate(withDuration: 0.5, animations: {
-            self.datePicker.frame = self.datePicker.frame.offsetBy(dx: 0, dy: self.datePicker.frame.height)
-            self.dismissButton.frame = self.dismissButton.frame.offsetBy(dx: 0, dy: self.datePicker.frame.height)
-            self.dismissButton.backgroundColor = UIColor.init(colorLiteralRed: 0, green: 0, blue: 0, alpha: 0)
+            let dPHeight = self.datePicker.frame.height
+            let dPFrame = self.datePicker.frame.offsetBy(dx: 0, dy: dPHeight)
+            let dBFrame = self.dismissButton.frame.offsetBy(dx: 0, dy: dPHeight)
+            self.datePicker.frame = dPFrame
+            self.dismissButton.frame = dBFrame
+            self.dismissButton.backgroundColor = UIColor.clear
         }, completion:  { (finished: Bool) in
             self.datePicker.removeFromSuperview()
             self.dismissButton.removeFromSuperview()
@@ -218,16 +241,23 @@ class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
         notesTextView.text = notes ?? ""
         notesTextView.isEditable = true
         notesTextView.font = UIFont.systemFont(ofSize: 17)
-        notesTextView.backgroundColor = UIColor.init(colorLiteralRed: 245.0/255.0, green: 245.0/255.0, blue: 245.0/255.0, alpha: 1)
+        let grey = UIColor(colorLiteralRed: 245.0/255.0,
+                           green: 245.0/255.0,
+                           blue: 245.0/255.0,
+                           alpha: 1)
+        notesTextView.backgroundColor = grey
+        let height = bounds.size.height - (keyboardHeight ?? 216)
         notesTextView.frame = CGRect(x: 0,
                                      y: bounds.size.height,
                                      width: bounds.size.width,
-                                     height: bounds.size.height - (keyboardHeight ?? 216) )
+                                     height: height)
         self.addSubview(notesTextView)
         
         // Animate slide up.
         UIView.animate(withDuration: 0.5, animations: {
-            self.notesTextView.frame = self.notesTextView.frame.offsetBy(dx: 0, dy: -self.bounds.size.height)
+            let boundsHeight = self.bounds.size.height
+            let frame = self.notesTextView.frame.offsetBy(dx: 0, dy: -boundsHeight)
+            self.notesTextView.frame = frame
         }, completion: { (completed: Bool) in
             self.notesTextView.becomeFirstResponder()
         })
@@ -239,9 +269,12 @@ class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
 
     func dismissNotes() {
         notes = notesTextView.text!
-        if let tenCharIndex = notes!.index(notes!.startIndex, offsetBy: 11, limitedBy: notes!.endIndex) {
+        if let tenCharIndex = notes!.index(notes!.startIndex,
+                                           offsetBy: 11,
+                                           limitedBy: notes!.endIndex) {
             UIView.animate(withDuration: 0.5, animations: {
-                self.notesButton.setTitle(self.notes!.substring(to: tenCharIndex) + "...", for: .normal)
+                let title = self.notes!.substring(to: tenCharIndex) + "..."
+                self.notesButton.setTitle(title, for: .normal)
                 self.notesButton.setTitleColor(UIColor.black, for: .normal)
             })
 
@@ -261,7 +294,9 @@ class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
         
         // Animate slide down.
         UIView.animate(withDuration: 0.5, animations: {
-            self.notesTextView.frame = self.notesTextView.frame.offsetBy(dx: 0, dy: self.bounds.height)
+            let height = self.bounds.height
+            let frame = self.notesTextView.frame.offsetBy(dx: 0, dy: height)
+            self.notesTextView.frame = frame
         }, completion:  { (finished: Bool) in
             self.notesTextView.removeFromSuperview()
         })
@@ -281,7 +316,8 @@ class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
             earliestDayFetchReq.sortDescriptors = [earliestDaySortDesc]
             earliestDayFetchReq.fetchLimit = 1
             let earliestDayResults = try! context.fetch(earliestDayFetchReq)
-            let needsNewDays = selectedDate!.beginningOfDay < earliestDayResults[0].date!.beginningOfDay
+            let earliestDay = earliestDayResults[0].date!
+            let needsNewDays = selectedDate!.beginningOfDay < earliestDay.beginningOfDay
             if needsNewDays {
                 // Create from the selectedDate to the begininng of the day on
                 let from = selectedDate!
@@ -297,7 +333,9 @@ class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
             expense.day = Day.get(context: context, date: selectedDate!)
             appDelegate.saveContext()
 
-            delegate?.completedExpense(sender: self, expense: expense, reloadFull: needsNewDays)
+            delegate?.completedExpense(sender: self,
+                                       expense: expense,
+                                       reloadFull: needsNewDays)
             self.resetView()
         }
     }
@@ -325,11 +363,16 @@ class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
             self.notesButton.setTitle("Notes", for: .normal)
             self.notesButton.setTitleColor(self.greyColor, for: .normal)
             
-            self.datePicker.frame = self.datePicker.frame.offsetBy(dx: 0, dy: self.datePicker.frame.height)
-            self.dismissButton.frame = self.dismissButton.frame.offsetBy(dx: 0, dy: self.datePicker.frame.height)
-            self.dismissButton.backgroundColor = UIColor.init(colorLiteralRed: 0, green: 0, blue: 0, alpha: 0)
+            let dPHeight = self.datePicker.frame.height
+            let dPFrame = self.datePicker.frame.offsetBy(dx: 0, dy: dPHeight)
+            let dBFrame = self.dismissButton.frame.offsetBy(dx: 0, dy: dPHeight)
+            self.datePicker.frame = dPFrame
+            self.dismissButton.frame = dBFrame
+            self.dismissButton.backgroundColor = UIColor.clear
             
-            self.notesTextView.frame = self.notesTextView.frame.offsetBy(dx: 0, dy: self.bounds.height)
+            let height = self.bounds.height
+            let frame = self.notesTextView.frame.offsetBy(dx: 0, dy: height)
+            self.notesTextView.frame = frame
         }, completion:  { (finished: Bool) in
             self.datePicker.removeFromSuperview()
             self.dismissButton.removeFromSuperview()
@@ -342,6 +385,8 @@ class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
 protocol AddExpenseTableViewCellDelegate: class {
     func didBeginEditing(sender: AddExpenseTableViewCell)
     func didOpenNotes(sender: AddExpenseTableViewCell)
-    func completedExpense(sender: AddExpenseTableViewCell, expense: Expense, reloadFull: Bool)
+    func completedExpense(sender: AddExpenseTableViewCell,
+                          expense: Expense,
+                          reloadFull: Bool)
     func invalidFields(sender: AddExpenseTableViewCell)
 }

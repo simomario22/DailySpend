@@ -41,7 +41,9 @@ public class Month: NSManagedObject {
         let year = date.year
         // Fetch all months equal to the month and year
         let fetchRequest: NSFetchRequest<Month> = Month.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "month_ == %@", Date.firstDayOfMonth(dayInMonth: date) as CVarArg)
+        let pred = NSPredicate(format: "month_ == %@",
+                             Date.firstDayOfMonth(dayInMonth: date) as CVarArg)
+        fetchRequest.predicate = pred
         var monthResults: [Month] = []
         monthResults = try! context.fetch(fetchRequest)
         if monthResults.count < 1 {
@@ -57,8 +59,10 @@ public class Month: NSManagedObject {
     /*
      * Create and return a month.
      */
-    class func create(context: NSManagedObjectContext, dateInMonth date: Date) -> Month {
-        let dailySpend = Decimal(UserDefaults.standard.double(forKey: "dailyTargetSpend"))
+    class func create(context: NSManagedObjectContext,
+                      dateInMonth date: Date) -> Month {
+        let defaults = UserDefaults.standard
+        let dailySpend = Decimal(defaults.double(forKey: "dailyTargetSpend"))
         
         let month = Month(context: context)
         month.month = date
@@ -148,6 +152,14 @@ public class Month: NSManagedObject {
         return baseTargetSpend + totalAdjustments()
     }
     
+    public var sortedAdjustments: [MonthAdjustment]? {
+        if let adj = adjustments {
+            return adj.sorted(by: { $0.dateCreated! < $1.dateCreated! })
+        } else {
+            return nil
+        }
+    }
+    
     public var adjustments: Set<MonthAdjustment>? {
         get {
             return adjustments_ as! Set?
@@ -158,6 +170,14 @@ public class Month: NSManagedObject {
             } else {
                 adjustments_ = nil
             }
+        }
+    }
+    
+    public var sortedDays: [Day]? {
+        if let days = days {
+            return days.sorted(by: { $0.date! < $1.date! })
+        } else {
+            return nil
         }
     }
     

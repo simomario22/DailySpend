@@ -34,11 +34,16 @@ class ExpenseViewController: UIViewController, UITextViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChangeFrame),
-                                               name:NSNotification.Name.UIKeyboardWillChangeFrame, object: nil)
-        
+        let nc = NotificationCenter.default
+        nc.addObserver(self,
+                       selector: #selector(keyboardWillChangeFrame),
+                       name:NSNotification.Name.UIKeyboardWillChangeFrame,
+                       object: nil)
+
         // Set right bar button item
-        let saveButton = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(save))
+        let saveButton = UIBarButtonItem(barButtonSystemItem: .save,
+                                         target: self,
+                                         action: #selector(save))
         navigationItem.rightBarButtonItem = saveButton
         
         // Set expense data if someone set it on this object
@@ -53,9 +58,11 @@ class ExpenseViewController: UIViewController, UITextViewDelegate {
         notesTextView.removeConstraints(notesTextView.constraints)
 
         let resignAllButton = UIButton()
-        resignAllButton.backgroundColor = UIColor.init(colorLiteralRed: 0, green: 0, blue: 0, alpha: 0)
+        resignAllButton.backgroundColor = UIColor.clear
         resignAllButton.frame = view.bounds
-        resignAllButton.addTarget(self, action: #selector(resignResponders), for: UIControlEvents.touchUpInside)
+        resignAllButton.addTarget(self,
+                                  action: #selector(resignResponders),
+                                  for: UIControlEvents.touchUpInside)
         
         self.view.insertSubview(resignAllButton, at: 0)
     }
@@ -92,10 +99,12 @@ class ExpenseViewController: UIViewController, UITextViewDelegate {
         
         while width > maxWidth && fontSize > minFontSize {
             fontSize -= 1
-            attr = [NSFontAttributeName: UIFont.systemFont(ofSize: fontSize, weight: UIFontWeightLight)]
+            attr = [NSFontAttributeName: UIFont.systemFont(ofSize: fontSize,
+                                                           weight: UIFontWeightLight)]
             width = descriptionField.text!.size(attributes: attr).width
         }
-        descriptionField.font = UIFont.systemFont(ofSize: fontSize, weight: UIFontWeightLight)
+        descriptionField.font = UIFont.systemFont(ofSize: fontSize,
+                                                  weight: UIFontWeightLight)
         
         // Update widths of text fields (with constraints).
         if descriptionConstraint == nil {
@@ -137,18 +146,23 @@ class ExpenseViewController: UIViewController, UITextViewDelegate {
     }
 
     @IBAction func editNotes() {
-        let topHeight = UIApplication.shared.statusBarFrame.height + self.navigationController!.navigationBar.frame.height
+        let topHeight = UIApplication.shared.statusBarFrame.height +
+                        self.navigationController!.navigationBar.frame.height
         
         // Set right bar button item
-        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismissNotes))
+        let doneButton = UIBarButtonItem(barButtonSystemItem: .done,
+                                         target: self,
+                                         action: #selector(dismissNotes))
         navigationItem.rightBarButtonItem = doneButton
         
         // Animate slide up.
         UIView.animate(withDuration: 0.1, animations: {
+            let width = self.view.bounds.size.width
+            let height = self.view.bounds.size.height - (self.keyboardHeight ?? 216)
             let newFrame = CGRect(x: 0,
                                   y: topHeight,
-                                  width: self.view.bounds.size.width,
-                                  height: self.view.bounds.size.height - (self.keyboardHeight ?? 216) )
+                                  width: width,
+                                  height:  height)
             self.notesTextView.frame = newFrame
         }, completion: { (completed: Bool) in
             self.notesTextView.becomeFirstResponder()
@@ -165,20 +179,24 @@ class ExpenseViewController: UIViewController, UITextViewDelegate {
             self.notesTextView.resignFirstResponder()
             
             // Set right bar button item
-            let saveButton = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(self.save))
+            let saveButton = UIBarButtonItem(barButtonSystemItem: .save,
+                                             target: self,
+                                             action: #selector(self.save))
             self.navigationItem.rightBarButtonItem = saveButton
         })
     }
     
     func keyboardWillChangeFrame(notification: NSNotification) {
-        if let frame = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+        let key = notification.userInfo?[UIKeyboardFrameEndUserInfoKey]
+        if let frame = (key as? NSValue)?.cgRectValue {
             keyboardHeight = frame.size.height
             
             // Animate height change.
             UIView.beginAnimations(nil, context: nil)
             UIView.setAnimationDuration(0.5)
             UIView.setAnimationCurve(.easeInOut)
-            notesTextView.frame.size.height = view.bounds.height - self.keyboardHeight!
+            notesTextView.frame.size.height = view.bounds.height -
+                                                self.keyboardHeight!
             UIView.commitAnimations()
         }
     }
@@ -198,16 +216,23 @@ class ExpenseViewController: UIViewController, UITextViewDelegate {
         datePicker.maximumDate = Date()
         datePicker.setDate(selectedDate ?? Date(), animated: false)
         datePicker.datePickerMode = .date
-        datePicker.removeTarget(self, action: #selector(datePickerChanged(sender:)), for: .valueChanged)
-        datePicker.addTarget(self, action: #selector(datePickerChanged(sender:)), for: .valueChanged)
-        datePicker.frame = CGRect(x: 0, y: view.bounds.size.height,
+        datePicker.removeTarget(self,
+                                action: #selector(datePickerChanged(sender:)),
+                                for: .valueChanged)
+        datePicker.addTarget(self,
+                             action: #selector(datePickerChanged(sender:)),
+                             for: .valueChanged)
+        datePicker.frame = CGRect(x: 0,
+                                  y: view.bounds.size.height,
                                   width: view.bounds.size.width,
                                   height: datePicker.intrinsicContentSize.height)
         
         
-        dismissButton.backgroundColor = UIColor.init(colorLiteralRed: 0, green: 0, blue: 0, alpha: 0)
+        dismissButton.backgroundColor = UIColor.clear
         dismissButton.frame = view.bounds
-        dismissButton.addTarget(self, action: #selector(dismissDatePicker), for: UIControlEvents.touchUpInside)
+        dismissButton.addTarget(self,
+                                action: #selector(dismissDatePicker),
+                                for: UIControlEvents.touchUpInside)
         
         self.view.addSubview(dismissButton)
         self.view.addSubview(datePicker)
@@ -217,9 +242,16 @@ class ExpenseViewController: UIViewController, UITextViewDelegate {
         
         // Animate slide up.
         UIView.animate(withDuration: 0.5, animations: {
-            self.datePicker.frame = self.datePicker.frame.offsetBy(dx: 0, dy: -self.datePicker.frame.height)
-            self.dismissButton.frame = self.dismissButton.frame.offsetBy(dx: 0, dy: -self.datePicker.frame.height)
-            self.dismissButton.backgroundColor = UIColor.init(colorLiteralRed: 0, green: 0, blue: 0, alpha: 0.1)
+            let dpHeight = self.datePicker.frame.height
+            let dPFrame = self.datePicker.frame.offsetBy(dx: 0, dy: -dpHeight)
+            let dBFrame = self.dismissButton.frame.offsetBy(dx: 0, dy: -dpHeight)
+            self.datePicker.frame = dPFrame
+            self.dismissButton.frame = dBFrame
+            let bgColor = UIColor.init(colorLiteralRed: 0,
+                                       green: 0,
+                                       blue: 0,
+                                       alpha: 0.1)
+            self.dismissButton.backgroundColor = bgColor
         })
     }
     
@@ -234,9 +266,12 @@ class ExpenseViewController: UIViewController, UITextViewDelegate {
         
         // Animate slide down.
         UIView.animate(withDuration: 0.5, animations: {
-            self.datePicker.frame = self.datePicker.frame.offsetBy(dx: 0, dy: self.datePicker.frame.height)
-            self.dismissButton.frame = self.dismissButton.frame.offsetBy(dx: 0, dy: self.datePicker.frame.height)
-            self.dismissButton.backgroundColor = UIColor.init(colorLiteralRed: 0, green: 0, blue: 0, alpha: 0)
+            let dPHeight = self.datePicker.frame.height
+            let dPFrame = self.datePicker.frame.offsetBy(dx: 0, dy: dPHeight)
+            let dBFrame = self.dismissButton.frame.offsetBy(dx: 0, dy: dPHeight)
+            self.datePicker.frame = dPFrame
+            self.dismissButton.frame = dBFrame
+            self.dismissButton.backgroundColor = UIColor.clear
         }, completion:  { (finished: Bool) in
             self.datePicker.removeFromSuperview()
             self.dismissButton.removeFromSuperview()
@@ -256,14 +291,20 @@ class ExpenseViewController: UIViewController, UITextViewDelegate {
         if amount == 0 ||
             shortDescription.characters.count == 0 ||
             selectedDate == nil {
-            let alert = UIAlertController(title: "Invalid Fields", message: "Please enter valid values for amount, description, and date.", preferredStyle: UIAlertControllerStyle.alert)
-            alert.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.default, handler: nil))
+            let message = "Please enter valid values for amount, description, and date."
+            let alert = UIAlertController(title: "Invalid Fields",
+                                          message: message,
+                                          preferredStyle: UIAlertControllerStyle.alert)
+            alert.addAction(UIAlertAction(title: "Okay",
+                                          style: UIAlertActionStyle.default,
+                                          handler: nil))
             
             self.present(alert, animated: true, completion: nil)
         } else {
             let navVCCount = navigationController!.viewControllers.count
+            let prevVC = navigationController!.viewControllers[navVCCount - 2]
             let shouldChangePopVC =
-                navigationController!.viewControllers[navVCCount - 2] is ReviewTableViewController &&
+                prevVC is ReviewTableViewController &&
                 expense != nil &&
                 selectedDate!.beginningOfDay != expense!.day!.date!.beginningOfDay
             
@@ -273,7 +314,8 @@ class ExpenseViewController: UIViewController, UITextViewDelegate {
             earliestDayFetchReq.sortDescriptors = [earliestDaySortDesc]
             earliestDayFetchReq.fetchLimit = 1
             let earliestDayResults = try! context.fetch(earliestDayFetchReq)
-            let needsNewDays = selectedDate!.beginningOfDay < earliestDayResults[0].date!.beginningOfDay
+            let earliestDay = earliestDayResults[0].date!
+            let needsNewDays = selectedDate!.beginningOfDay < earliestDay.beginningOfDay
             if needsNewDays {
                 // Create from the selectedDate to the begininng of the day on
                 let from = selectedDate!
@@ -295,12 +337,14 @@ class ExpenseViewController: UIViewController, UITextViewDelegate {
                 if let day = Day.get(context: context, date: selectedDate!) {
                     var vcs = navigationController!.viewControllers
                     
-                    let reviewDayVC = storyboard!.instantiateViewController(withIdentifier: "Review") as! ReviewTableViewController
+                    let vc = storyboard!.instantiateViewController(withIdentifier: "Review")
+                    let vc2 = storyboard!.instantiateViewController(withIdentifier: "Review")
+                    let reviewDayVC = vc as! ReviewTableViewController
                     reviewDayVC.day = day
                     reviewDayVC.mode = .Days
                     
-                    let adjustments = day.adjustments!.sorted(by: { $0.dateCreated! < $1.dateCreated! })
-                    let reviewAdjustmentsVC = storyboard!.instantiateViewController(withIdentifier: "Review") as! ReviewTableViewController
+                    let adjustments = day.sortedAdjustments!
+                    let reviewAdjustmentsVC = vc2 as! ReviewTableViewController
                     reviewAdjustmentsVC.day = day
                     reviewAdjustmentsVC.dayAdjustments = adjustments
                     reviewAdjustmentsVC.monthAdjustments = day.relevantMonthAdjustments
@@ -310,7 +354,8 @@ class ExpenseViewController: UIViewController, UITextViewDelegate {
                     vcs[vcs.count - 2] = reviewDayVC
                     if vcs[vcs.count - 3] is ReviewTableViewController {
                         // The user has three levels of VCs in this nav controller.
-                        let reviewMonthVC = storyboard!.instantiateViewController(withIdentifier: "Review") as! ReviewTableViewController
+                        let vc3 = storyboard!.instantiateViewController(withIdentifier: "Review")
+                        let reviewMonthVC = vc3 as! ReviewTableViewController
                         reviewMonthVC.month = day.month!
                         reviewMonthVC.mode = .Months
                         vcs[vcs.count - 3] = reviewMonthVC

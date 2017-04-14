@@ -10,7 +10,10 @@ import UIKit
 
 class CurrentDayTableViewCell: UITableViewCell {
     
-    let redColor = UIColor(colorLiteralRed: 179.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 1)
+    let redColor = UIColor(colorLiteralRed: 179.0/255.0,
+                           green: 0.0/255.0,
+                           blue: 0.0/255.0,
+                           alpha: 1)
 
     @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var spendLeftLabel: UICountingLabel!
