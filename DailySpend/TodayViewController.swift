@@ -12,10 +12,26 @@ import CoreData
 class TodayViewController : UIViewController,
 AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
     let standardCellHeight: CGFloat = 44
-    let currentDayHeight: CGFloat = 130
-    let addExpenseHeight: CGFloat = 213
     let addExpenseMinPxVisible: CGFloat = 70
-    let heightOfTodaysSpendingLabel: CGFloat = 21
+    var currentDayHeight: CGFloat {
+        let baseHeight: CGFloat = 130
+        let heightOfTodaysSpendingLabel: CGFloat = 21
+        if daysThisMonth.last == nil ||
+            daysThisMonth.last!.expenses!.count == 0 {
+            return baseHeight - heightOfTodaysSpendingLabel
+        } else {
+            return baseHeight
+        }
+        
+    }
+    var addExpenseHeight: CGFloat {
+        let baseHeight: CGFloat = 213
+        if addingExpense {
+            return visibleHeight
+        } else {
+            return baseHeight
+        }
+    }
 
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
@@ -94,14 +110,15 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
         
         fetchMonthsAndDays()
         
-        printAllCoreData()
+        let bundleID = Bundle.main.bundleIdentifier
+        if bundleID == "com.joshsherick.DailySpendTesting" {
+            // Print all core data if testing.
+            printAllCoreData()
+        }
         
         self.tableView.reloadData()
         
-        
-        let currentDayPath = IndexPath(row: currentDayCellIndex, section: 0)
-        self.tableView.scrollToRow(at: currentDayPath,
-                                   at: .top, animated: true)
+
     }
     
     override func viewDidLoad() {
@@ -115,6 +132,11 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
                        selector: #selector(willEnterForeground),
                        name: NSNotification.Name.UIApplicationWillEnterForeground,
                        object: nil)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.0001) {
+            let currentDayPath = IndexPath(row: self.lastExpenseCellIndex + 1, section: 0)
+            self.tableView.scrollToRow(at: currentDayPath,
+                                       at: .top, animated: false)
+        }
     }
     
     override func didReceiveMemoryWarning() {
@@ -147,17 +169,19 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
         months = try! context.fetch(monthsFetchReq)
     }
     
+    var visibleHeight: CGFloat {
+        let topHeight = UIApplication.shared.statusBarFrame.height +
+            self.navigationController!.navigationBar.frame.height
+        let windowFrameHeight = tableView.frame.height
+        return windowFrameHeight - topHeight;
+    }
+    
     /*
      * Calculates the number of on-screen spots for expenses (including "see
      * additional" spots) while keeping addExpenseMinPxVisible pixels visible in
      * the addExpense cell
      */
     var maxExpenseSpots: Int {
-        let topHeight = UIApplication.shared.statusBarFrame.height +
-                        self.navigationController!.navigationBar.frame.height
-        let windowFrameHeight = tableView.frame.height
-        let visibleHeight = windowFrameHeight - topHeight;
-        
         // Let's do something simple like integer division. Oh, what a joy.
         let spaceForExpenses = visibleHeight - currentDayHeight - addExpenseMinPxVisible
         return Int(floor(Double(spaceForExpenses) / Double(standardCellHeight)))
@@ -168,8 +192,8 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
      * number of expenses.
      */
     var numExpenseSpots: Int {
-        let totalExpenses = daysThisMonth.count > 0 ?
-                            daysThisMonth.last!.expenses!.count : 0
+        let totalExpenses = daysThisMonth.last == nil ?
+                            0 : daysThisMonth.last!.expenses!.count
         return min(totalExpenses, maxExpenseSpots)
     }
     
@@ -189,12 +213,19 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
         return lastExpenseCellIndex + 1
     }
     
-
+    var heightUsed: CGFloat {
+        let expensesHeight = CGFloat(numExpenseSpots) * standardCellHeight
+        return currentDayHeight + expensesHeight + addExpenseHeight
+    }
+    
     
     /* Table view data source methods */
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return months.count + daysThisMonth.count + numExpenseSpots + 1
+        return months.count +
+              daysThisMonth.count +
+              numExpenseSpots +
+              2
     }
     
     
@@ -263,14 +294,18 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
                 expenseCell.textLabel?.text = primaryText
                 expenseCell.detailTextLabel?.text = detailText
             }
-            
             return expenseCell
-        } else {
+        } else if indexPath.row == lastExpenseCellIndex + 1 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "addExpense",
                                                      for: indexPath)
             let addExpenseCell = cell as! AddExpenseTableViewCell
             addExpenseCell.delegate = self
             return addExpenseCell
+        } else {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "blank",
+                                                     for: indexPath)
+            cell.isUserInteractionEnabled = false
+            return cell
         }
     }
 
@@ -279,24 +314,13 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
         if indexPath.row <= lastPrevDayCellIndex {
             return standardCellHeight
         } else if indexPath.row <= currentDayCellIndex {
-            if daysThisMonth.last == nil ||
-               daysThisMonth.last!.expenses!.count == 0 {
-                return currentDayHeight - heightOfTodaysSpendingLabel
-            } else {
-                return currentDayHeight
-            }
+            return currentDayHeight
         } else if indexPath.row <= lastExpenseCellIndex {
             return standardCellHeight
+        } else if indexPath.row == lastExpenseCellIndex + 1 {
+            return addExpenseHeight
         } else {
-            if addingExpense {
-                let topHeight = UIApplication.shared.statusBarFrame.height +
-                                navigationController!.navigationBar.frame.height
-                let windowFrameHeight = tableView.frame.height
-                let visibleHeight = windowFrameHeight - topHeight;
-                return visibleHeight
-            } else {
-                return addExpenseHeight
-            }
+            return heightUsed < visibleHeight ? visibleHeight - heightUsed : 0
         }
         
     }
