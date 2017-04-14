@@ -69,7 +69,7 @@ class ReviewTableViewController: UITableViewController {
     override func numberOfSections(in tableView: UITableView) -> Int {
         switch mode! {
         case .Days:
-            return day!.adjustments!.isEmpty ? 2 : 3
+            return day!.adjustments!.isEmpty && day!.relevantMonthAdjustments.isEmpty ? 2 : 3
         case .Months:
             return month!.adjustments!.isEmpty ? 2 : 3
         case .DayAdjustments,
@@ -84,7 +84,8 @@ class ReviewTableViewController: UITableViewController {
             if section == 0 {
                 return 1
             } else if section == 1 {
-                return day!.adjustments!.isEmpty ? day!.expenses!.count : 1
+                return day!.adjustments!.isEmpty && day!.relevantMonthAdjustments.isEmpty ?
+                        day!.expenses!.count : 1
             } else {
                 return day!.expenses!.count
             }
@@ -97,7 +98,7 @@ class ReviewTableViewController: UITableViewController {
                 return month!.days!.count
             }
         case .DayAdjustments:
-            return dayAdjustments!.count
+            return dayAdjustments!.count + monthAdjustments!.count
         case .MonthAdjustments:
             return monthAdjustments!.count
         }
@@ -138,17 +139,13 @@ class ReviewTableViewController: UITableViewController {
                 return cell
             } else if section == 1 {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "detail", for: indexPath)
-                if day!.adjustments!.isEmpty {
+                if day!.adjustments!.isEmpty && day!.relevantMonthAdjustments.isEmpty {
                     let expenses = day!.expenses!.sorted(by: { $0.dateCreated! < $1.dateCreated! })
                     cell.textLabel!.text = expenses[row].shortDescription
                     cell.detailTextLabel!.text = String.formatAsCurrency(amount: expenses[row].amount!.doubleValue)
                 } else {
-                    var total: Decimal = 0.0
-                    for adjustment in day!.adjustments! {
-                        total += adjustment.amount!
-                    }
                     cell.textLabel!.text = "Adjustments"
-                    cell.detailTextLabel!.text = String.formatAsCurrency(amount: total.doubleValue)
+                    cell.detailTextLabel!.text = String.formatAsCurrency(amount: day!.totalAdjustments().doubleValue)
                 }
                 return cell
             } else {
@@ -202,10 +199,26 @@ class ReviewTableViewController: UITableViewController {
                 return cell
             }
         case .DayAdjustments:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "detail", for: indexPath)
-            cell.textLabel!.text = dayAdjustments![row].reason
-            cell.detailTextLabel!.text = String.formatAsCurrency(amount: dayAdjustments![row].amount!.doubleValue)
-            return cell
+            if indexPath.row < dayAdjustments!.count {
+                let cell = tableView.dequeueReusableCell(withIdentifier: "detail", for: indexPath)
+                cell.textLabel!.text = dayAdjustments![row].reason
+                cell.detailTextLabel!.text = String.formatAsCurrency(amount: dayAdjustments![row].amount!.doubleValue)
+                return cell
+            } else {
+                let index = row - dayAdjustments!.count
+                let monthAdjustment = monthAdjustments![index]
+                let cell = tableView.dequeueReusableCell(withIdentifier: "detail", for: indexPath)
+                
+                let monthName = DateFormatter().monthSymbols[day!.month!.month!.month - 1]
+                cell.textLabel!.text = monthAdjustment.reason! + " (\(monthName))"
+                
+                // This is the amount of this adjustment that affects this day.
+                let daysAcross = day!.date!.daysInMonth - monthAdjustment.dateEffective!.day + 1
+                let applicableAmount = monthAdjustment.amount! / Decimal(daysAcross)
+
+                cell.detailTextLabel!.text = String.formatAsCurrency(amount: applicableAmount.doubleValue)
+                return cell
+            }
         case .MonthAdjustments:
             let cell = tableView.dequeueReusableCell(withIdentifier: "detail", for: indexPath)
             cell.textLabel!.text = monthAdjustments![row].reason
@@ -221,7 +234,7 @@ class ReviewTableViewController: UITableViewController {
             if indexPath.section == 0 {
                 return false
             } else if indexPath.section == 1 {
-                return day!.adjustments!.isEmpty
+                return day!.adjustments!.isEmpty && day!.relevantMonthAdjustments.isEmpty
             } else {
                 return true
             }
@@ -247,10 +260,27 @@ class ReviewTableViewController: UITableViewController {
             case .Months:
                 fatalError()
             case .DayAdjustments:
-                dayAdjustments![indexPath.row].day = nil
-                context.delete(dayAdjustments![indexPath.row])
-                dayAdjustments!.remove(at: indexPath.row)
-                tableView.deleteRows(at: [indexPath], with: .automatic)
+                if indexPath.row < dayAdjustments!.count {
+                    dayAdjustments![indexPath.row].day = nil
+                    context.delete(dayAdjustments![indexPath.row])
+                    dayAdjustments!.remove(at: indexPath.row)
+                    tableView.deleteRows(at: [indexPath], with: .automatic)
+                } else {
+                    let alert = UIAlertController(title: "Deleting Month Adjustment",
+                                                  message: "This is a month adjustment. Deleting it could affect more days than today. Would you still like to delete?",
+                                                  preferredStyle: .alert)
+                    let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+                    let delete = UIAlertAction(title: "Delete", style: .destructive, handler: {(action) in
+                        let index = indexPath.row - self.dayAdjustments!.count
+                        self.monthAdjustments![index].month = nil
+                        self.context.delete(self.monthAdjustments![index])
+                        self.monthAdjustments!.remove(at: index)
+                        self.tableView.deleteRows(at: [indexPath], with: .automatic)
+                    })
+                    alert.addAction(cancel)
+                    alert.addAction(delete)
+                    self.present(alert, animated: true, completion: nil)
+                }
             case .MonthAdjustments:
                 monthAdjustments![indexPath.row].month = nil
                 context.delete(monthAdjustments![indexPath.row])
@@ -310,15 +340,17 @@ class ReviewTableViewController: UITableViewController {
         switch mode! {
         case .Days:
             if section == 1 {
-                if day!.adjustments!.isEmpty {
+                if day!.adjustments!.isEmpty && day!.relevantMonthAdjustments.isEmpty {
                     let expenseVC = storyboard!.instantiateViewController(withIdentifier: "Expense") as! ExpenseViewController
                     let expenses = day!.expenses!.sorted(by: { $0.dateCreated! < $1.dateCreated! })
                     expenseVC.expense = expenses[row]
                     navigationController?.pushViewController(expenseVC, animated: true)
                 } else {
                     let reviewVC = storyboard!.instantiateViewController(withIdentifier: "Review") as! ReviewTableViewController
-                    let adjustments = day!.adjustments!.sorted(by: { $0.dateCreated! < $1.dateCreated! })
-                    reviewVC.dayAdjustments = adjustments
+                    let dayAdj = day!.adjustments!.sorted(by: { $0.dateCreated! < $1.dateCreated! })
+                    reviewVC.dayAdjustments = dayAdj
+                    reviewVC.monthAdjustments = day!.relevantMonthAdjustments
+                    reviewVC.day = day!
                     reviewVC.mode = .DayAdjustments
                     navigationController?.pushViewController(reviewVC, animated: true)
                 }
@@ -351,9 +383,16 @@ class ReviewTableViewController: UITableViewController {
                 navigationController?.pushViewController(reviewVC, animated: true)
             }
         case .DayAdjustments:
-            let adjustmentVC = storyboard!.instantiateViewController(withIdentifier: "AdjustmentDay") as! DayAdjustmentViewController
-            adjustmentVC.dayAdjustment = dayAdjustments![indexPath.row]
-            navigationController?.pushViewController(adjustmentVC, animated: true)
+            if indexPath.row < dayAdjustments!.count {
+                let adjustmentVC = storyboard!.instantiateViewController(withIdentifier: "AdjustmentDay") as! DayAdjustmentViewController
+                adjustmentVC.dayAdjustment = dayAdjustments![indexPath.row]
+                navigationController?.pushViewController(adjustmentVC, animated: true)
+            } else {
+                let index = indexPath.row - dayAdjustments!.count
+                let adjustmentVC = storyboard!.instantiateViewController(withIdentifier: "AdjustmentMonth") as! MonthAdjustmentViewController
+                adjustmentVC.monthAdjustment = monthAdjustments![index]
+                navigationController?.pushViewController(adjustmentVC, animated: true)
+            }
         case .MonthAdjustments:
             let adjustmentVC = storyboard!.instantiateViewController(withIdentifier: "AdjustmentMonth") as! MonthAdjustmentViewController
             adjustmentVC.monthAdjustment = monthAdjustments![indexPath.row]

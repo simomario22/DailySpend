@@ -286,7 +286,8 @@ class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
                 // Create from the selectedDate to the begininng of the day on
                 let from = selectedDate!
                 let to = earliestDayResults[0].date!
-                delegate!.createDays(from: from, to: to)
+                Day.createDays(context: context, from: from, to: to)
+                appDelegate.saveContext()
             }
             let expense = Expense(context: context)
             expense.amount = Decimal(amountField.text!.parseValidAmount(maxLength: 8))
@@ -343,5 +344,4 @@ protocol AddExpenseTableViewCellDelegate: class {
     func didOpenNotes(sender: AddExpenseTableViewCell)
     func completedExpense(sender: AddExpenseTableViewCell, expense: Expense, reloadFull: Bool)
     func invalidFields(sender: AddExpenseTableViewCell)
-    func createDays(from: Date, to: Date)
 }

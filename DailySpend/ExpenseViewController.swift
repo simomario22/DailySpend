@@ -185,16 +185,16 @@ class ExpenseViewController: UIViewController, UITextViewDelegate {
     
     @IBAction func editDate(_ sender: UIButton?) {
         // Find earliest day.
-        let earliestDayFetchReq: NSFetchRequest<Day> = Day.fetchRequest()
-        let earliestDaySortDesc = NSSortDescriptor(key: "date_", ascending: true)
-        earliestDayFetchReq.sortDescriptors = [earliestDaySortDesc]
-        earliestDayFetchReq.fetchLimit = 1
-        let earliestDayResults = try! context.fetch(earliestDayFetchReq)
+//        let earliestDayFetchReq: NSFetchRequest<Day> = Day.fetchRequest()
+//        let earliestDaySortDesc = NSSortDescriptor(key: "date_", ascending: true)
+//        earliestDayFetchReq.sortDescriptors = [earliestDaySortDesc]
+//        earliestDayFetchReq.fetchLimit = 1
+//        let earliestDayResults = try! context.fetch(earliestDayFetchReq)
         
         
         // Set up date picker.
-        let earliestDate = earliestDayResults[0].date
-        datePicker.minimumDate = earliestDate
+//        let earliestDate = earliestDayResults[0].date
+        datePicker.minimumDate = nil
         datePicker.maximumDate = Date()
         datePicker.setDate(selectedDate ?? Date(), animated: false)
         datePicker.datePickerMode = .date
@@ -225,7 +225,6 @@ class ExpenseViewController: UIViewController, UITextViewDelegate {
     
     func datePickerChanged(sender: UIDatePicker) {
         selectedDate = datePicker.date
-        
     }
     
     func dismissDatePicker() {
@@ -262,6 +261,27 @@ class ExpenseViewController: UIViewController, UITextViewDelegate {
             
             self.present(alert, animated: true, completion: nil)
         } else {
+            let navVCCount = navigationController!.viewControllers.count
+            let shouldChangePopVC =
+                navigationController!.viewControllers[navVCCount - 2] is ReviewTableViewController &&
+                expense != nil &&
+                selectedDate!.beginningOfDay != expense!.day!.date!.beginningOfDay
+            
+            // Create days up to today.
+            let earliestDayFetchReq: NSFetchRequest<Day> = Day.fetchRequest()
+            let earliestDaySortDesc = NSSortDescriptor(key: "date_", ascending: true)
+            earliestDayFetchReq.sortDescriptors = [earliestDaySortDesc]
+            earliestDayFetchReq.fetchLimit = 1
+            let earliestDayResults = try! context.fetch(earliestDayFetchReq)
+            let needsNewDays = selectedDate!.beginningOfDay < earliestDayResults[0].date!.beginningOfDay
+            if needsNewDays {
+                // Create from the selectedDate to the begininng of the day on
+                let from = selectedDate!
+                let to = earliestDayResults[0].date!
+                Day.createDays(context: context, from: from, to: to)
+                appDelegate.saveContext()
+            }
+            
             if (expense == nil) {
                 expense = Expense(context: context)
             }
@@ -270,12 +290,37 @@ class ExpenseViewController: UIViewController, UITextViewDelegate {
             expense!.notes = notesTextView.text
             expense!.day = Day.get(context: context, date: selectedDate!)
             appDelegate.saveContext()
+            
+            if shouldChangePopVC {
+                if let day = Day.get(context: context, date: selectedDate!) {
+                    var vcs = navigationController!.viewControllers
+                    
+                    let reviewDayVC = storyboard!.instantiateViewController(withIdentifier: "Review") as! ReviewTableViewController
+                    reviewDayVC.day = day
+                    reviewDayVC.mode = .Days
+                    
+                    let adjustments = day.adjustments!.sorted(by: { $0.dateCreated! < $1.dateCreated! })
+                    let reviewAdjustmentsVC = storyboard!.instantiateViewController(withIdentifier: "Review") as! ReviewTableViewController
+                    reviewAdjustmentsVC.day = day
+                    reviewAdjustmentsVC.dayAdjustments = adjustments
+                    reviewAdjustmentsVC.monthAdjustments = day.relevantMonthAdjustments
+                    
+                    reviewAdjustmentsVC.mode = .DayAdjustments
+                    
+                    vcs[vcs.count - 2] = reviewDayVC
+                    if vcs[vcs.count - 3] is ReviewTableViewController {
+                        // The user has three levels of VCs in this nav controller.
+                        let reviewMonthVC = storyboard!.instantiateViewController(withIdentifier: "Review") as! ReviewTableViewController
+                        reviewMonthVC.month = day.month!
+                        reviewMonthVC.mode = .Months
+                        vcs[vcs.count - 3] = reviewMonthVC
+                    }
+                    navigationController!.viewControllers = vcs
+                }
+            }
+            navigationController?.popViewController(animated: true)
         }
-        if let navController = self.navigationController {
-            navController.popViewController(animated: true)
-        } else {
-            self.dismiss(animated: true, completion: nil)
-        }
+
     }
 
 }

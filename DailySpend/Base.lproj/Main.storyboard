@@ -844,7 +844,7 @@
         <image name="today.png" width="25" height="25"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="M5R-Ca-GRb"/>
+        <segue reference="SEL-Rc-OCe"/>
         <segue reference="ljn-bW-His"/>
     </inferredMetricsTieBreakers>
 </document>

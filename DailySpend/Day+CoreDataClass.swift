@@ -25,11 +25,25 @@ public class Day: NSManagedObject {
             if date.beginningOfDay >= dateEffective.beginningOfDay  {
                 // This affects this day.
                 let daysAcross = date.daysInMonth - dateEffective.day + 1
-                // This is the amount of this adjustment that effects this day.
+                // This is the amount of this adjustment that affects this day.
                 total += monthAdjustment.amount! / Decimal(daysAcross)
             }
         }
         return total
+    }
+    
+    var relevantMonthAdjustments: [MonthAdjustment] {
+        // Get all applicable month adjustments.
+        var monthAdj: [MonthAdjustment] = []
+        for monthAdjustment in self.month!.adjustments! {
+            let date = self.date! as Date
+            let dateEffective = monthAdjustment.dateEffective! as Date
+            if date.beginningOfDay >= dateEffective.beginningOfDay  {
+                monthAdj.append(monthAdjustment)
+            }
+        }
+        
+        return monthAdj.sorted(by: { $0.dateCreated! < $1.dateCreated! })
     }
     
     /*
@@ -58,6 +72,25 @@ public class Day: NSManagedObject {
         day.dateCreated = Date()
         
         return day
+    }
+    
+    /*
+     * Creates consecutive days in data store inclusive of beginning date and
+     * exclusive of ending date
+     */
+    class func createDays(context: NSManagedObjectContext, from: Date, to: Date) {
+        var currentDate = from
+        while (currentDate.beginningOfDay != to.beginningOfDay) {
+            if let month = Month.get(context: context, dateInMonth: currentDate) {
+                // Create the day
+                _ = Day.create(context: context, date: currentDate, month: month)
+                currentDate = currentDate.add(days: 1)
+            } else {
+                // This month doesn't yet exist.
+                // Create the month, then call this function again.
+                _ = Month.create(context: context, dateInMonth: currentDate)
+            }
+        }
     }
     
     // Accessor functions (for Swift 3 classes)

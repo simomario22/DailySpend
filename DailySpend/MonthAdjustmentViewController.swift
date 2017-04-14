@@ -36,7 +36,7 @@ class MonthAdjustmentViewController: UIViewController {
             reasonField.text = monthAdjustment!.reason
             selectedDate = monthAdjustment!.dateEffective
             setDateLabel(date: selectedDate!)
-            additionalAmountLabel.isHidden = true
+            //additionalAmountLabel.isHidden = true
             fixFrames()
         } else {
             addDeductControl.selectedSegmentIndex = 1
@@ -84,14 +84,19 @@ class MonthAdjustmentViewController: UIViewController {
         if amount == 0 ||
             reason.characters.count == 0 ||
             selectedDate == nil {
-            let alert = UIAlertController(title: "Invalid Fields", message: "Please enter valid values for amount, reaons, and date received.", preferredStyle: UIAlertControllerStyle.alert)
+            let alert = UIAlertController(title: "Invalid Fields",
+                                          message: "Please enter valid values for amount, reaons, and date received.",
+                                          preferredStyle: UIAlertControllerStyle.alert)
             alert.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.default, handler: nil))
             
             self.present(alert, animated: true, completion: nil)
         } else {
+            
+            let oldDate: Date? = monthAdjustment?.dateEffective
             if (monthAdjustment == nil) {
                 monthAdjustment = MonthAdjustment(context: context)
             }
+            
             monthAdjustment!.amount = amount
             monthAdjustment!.reason = reason
             monthAdjustment!.dateCreated = monthAdjustment!.dateCreated ?? Date()
@@ -101,6 +106,55 @@ class MonthAdjustmentViewController: UIViewController {
             appDelegate.saveContext()
             
             tabBarController?.navigationController?.dismiss(animated: true, completion: nil)
+            
+            func fromDayAdjustmentsReview() -> Bool {
+                let navCtrlCount = self.navigationController!.viewControllers.count
+                let revCtrl = self.navigationController!.viewControllers[navCtrlCount - 2] as! ReviewTableViewController
+                if revCtrl.mode == .DayAdjustments {
+                    return true
+                } else {
+                    return false
+                }
+            }
+            
+            
+            shouldChangeNavVCs:
+            if tabBarController == nil &&
+               oldDate != nil &&
+               fromDayAdjustmentsReview() &&
+               oldDate!.beginningOfDay < monthAdjustment!.dateEffective!.beginningOfDay {
+                // This is an edit from a day adjustments review controlller, and
+                // the old date is no longer affected by this adjustment. Change
+                // to the first date that is.
+                let dayTry = Day.get(context: context, date: selectedDate!)
+                if dayTry == nil {
+                    break shouldChangeNavVCs
+                }
+                var vcs = navigationController!.viewControllers
+                let day = dayTry!
+                let reviewDayVC = storyboard!.instantiateViewController(withIdentifier: "Review") as! ReviewTableViewController
+                reviewDayVC.day = day
+                reviewDayVC.mode = .Days
+                
+                let adjustments = day.adjustments!.sorted(by: { $0.dateCreated! < $1.dateCreated! })
+                let reviewAdjustmentsVC = storyboard!.instantiateViewController(withIdentifier: "Review") as! ReviewTableViewController
+                reviewAdjustmentsVC.day = day
+                reviewAdjustmentsVC.dayAdjustments = adjustments
+                reviewAdjustmentsVC.monthAdjustments = day.relevantMonthAdjustments
+                
+                reviewAdjustmentsVC.mode = .DayAdjustments
+                
+                vcs[vcs.count - 2] = reviewAdjustmentsVC
+                vcs[vcs.count - 3] = reviewDayVC
+                if vcs[vcs.count - 4] is ReviewTableViewController {
+                    // The user has three levels of VCs in this nav controller.
+                    let reviewMonthVC = storyboard!.instantiateViewController(withIdentifier: "Review") as! ReviewTableViewController
+                    reviewMonthVC.month = day.month!
+                    reviewMonthVC.mode = .Months
+                    vcs[vcs.count - 4] = reviewMonthVC
+                }
+                navigationController!.viewControllers = vcs
+            }
             navigationController?.popViewController(animated: true)
         }
     }
@@ -159,9 +213,9 @@ class MonthAdjustmentViewController: UIViewController {
     
     func setAddDeductSegment(negOrPos: Decimal) {
         if negOrPos < 0 {
-            addDeductControl.setEnabled(true, forSegmentAt: 1)
+            addDeductControl.selectedSegmentIndex = 0
         } else {
-            addDeductControl.setEnabled(true, forSegmentAt: 0)
+            addDeductControl.selectedSegmentIndex = 1
         }
     }
     
@@ -194,6 +248,8 @@ class MonthAdjustmentViewController: UIViewController {
         datePicker.maximumDate = Date()
         datePicker.setDate(selectedDate ?? Date(), animated: false)
         datePicker.datePickerMode = .date
+        datePicker.removeTarget(self, action: #selector(datePickerChanged(sender:)), for: .valueChanged)
+        datePicker.addTarget(self, action: #selector(datePickerChanged(sender:)), for: .valueChanged)
         datePicker.frame = CGRect(x: 0, y: view.bounds.size.height,
                                   width: view.bounds.size.width,
                                   height: datePicker.intrinsicContentSize.height)
@@ -211,15 +267,22 @@ class MonthAdjustmentViewController: UIViewController {
         
         // Animate slide up.
         UIView.animate(withDuration: 0.5, animations: {
-            self.datePicker.frame = self.datePicker.frame.offsetBy(dx: 0, dy: -self.datePicker.frame.height)
-            self.dismissButton.frame = self.dismissButton.frame.offsetBy(dx: 0, dy: -self.datePicker.frame.height)
+            var tabBarHeight: CGFloat = 0
+            if let tabCtrl = self.tabBarController {
+                tabBarHeight = tabCtrl.tabBar.bounds.size.height
+            }
+            let offset = -self.datePicker.frame.height - tabBarHeight
+            self.datePicker.frame = self.datePicker.frame.offsetBy(dx: 0, dy: offset)
+            self.dismissButton.frame = self.dismissButton.frame.offsetBy(dx: 0, dy: offset)
             self.dismissButton.backgroundColor = UIColor.init(colorLiteralRed: 0, green: 0, blue: 0, alpha: 0.1)
         })
     }
     
-    func dismissDatePicker() {
+    func datePickerChanged(sender: UIDatePicker) {
         selectedDate = datePicker.date
-        
+    }
+    
+    func dismissDatePicker() {
         setDateLabel(date: selectedDate!)
         
         // Animate slide down.

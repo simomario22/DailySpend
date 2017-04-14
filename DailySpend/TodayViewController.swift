@@ -79,7 +79,8 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
         // today
         let from = latestDayResults.count < 1 ? Date() : latestDayResults[0].date!.add(days: 1)
         let to = Date().add(days: 1)
-        createDays(from: from, to: to)
+        Day.createDays(context: context, from: from, to: to)
+        appDelegate.saveContext()
         
         fetchMonthsAndDays()
         
@@ -106,29 +107,6 @@ class TodayViewController : UIViewController, AddExpenseTableViewCellDelegate, U
     }
     
     /* Methods for managment of CoreData */
-
-    /*
-     * Creates consecutive days in data store inclusive of beginning date and
-     * exclusive of ending date
-     * The from date is required to have a date in a Month that is already 
-     * created.
-     */
-    func createDays(from: Date, to: Date) {
-        var currentDate = from
-        while (currentDate.beginningOfDay != to.beginningOfDay) {
-            if let month = Month.get(context: context, dateInMonth: currentDate) {
-                // Create the day
-                _ = Day.create(context: context, date: currentDate, month: month)
-                appDelegate.saveContext()
-                currentDate = currentDate.add(days: 1)
-            } else {
-                // This month doesn't yet exist.
-                // Create and review the previous month, then call this function again.
-                _ = Month.create(context: context, dateInMonth: currentDate)
-                appDelegate.saveContext()
-            }
-        }
-    }
     
     var maxExpenseSpots: Int {
         let topHeight = UIApplication.shared.statusBarFrame.height + self.navigationController!.navigationBar.frame.height
