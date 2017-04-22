@@ -123,6 +123,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         title = "Spending"
         tableView.delegate = self
         tableView.dataSource = self

@@ -19,6 +19,53 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         return true
     }
+    
+    func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
+        guard url.pathExtension == "dailyspend" else {
+            return false
+        }
+        
+        let vc = window?.rootViewController
+        
+        let importHandler: (UIAlertAction) -> Void = { _ in
+            if Importer.importUrl(url) {
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                let initialVC = storyboard.instantiateInitialViewController()
+                self.window?.rootViewController = initialVC
+            } else {
+                let title = "Failed"
+                let message = "Import failed. Please check that the file you " +
+                    "are trying to import is valid. Your data has been restored " +
+                    "to the state before the import."
+                let alert = UIAlertController(title: title,
+                                              message: message,
+                                              preferredStyle: .alert)
+                let okay = UIAlertAction(title: "Okay", style: .default, handler: nil)
+                alert.addAction(okay)
+                vc?.present(alert, animated: true, completion: nil)
+            }
+        }
+
+        let title = "Import"
+        let message = "Would you like to import this data file to your app? " +
+                      "This will overwrite any existing data."
+        
+        let alert = UIAlertController(title: title,
+                                      message: message,
+                                      preferredStyle: .alert)
+        let cancel = UIAlertAction(title: "Cancel",
+                                   style: .cancel,
+                                   handler: nil)
+        let delete = UIAlertAction(title: "Import",
+                                   style: .default,
+                                   handler: importHandler)
+        alert.addAction(cancel)
+        alert.addAction(delete)
+        vc?.present(alert, animated: true, completion: nil)
+
+        
+        return true
+    }
 
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
