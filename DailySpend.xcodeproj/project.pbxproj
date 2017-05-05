@@ -18,15 +18,14 @@
 		C517B1F31EBC134200CDAA17 /* prng.c in Sources */ = {isa = PBXBuildFile; fileRef = C517B1D21EBC134200CDAA17 /* prng.c */; };
 		C517B1F41EBC134200CDAA17 /* pwd2key.c in Sources */ = {isa = PBXBuildFile; fileRef = C517B1D41EBC134200CDAA17 /* pwd2key.c */; };
 		C517B1F51EBC134200CDAA17 /* sha1.c in Sources */ = {isa = PBXBuildFile; fileRef = C517B1D61EBC134200CDAA17 /* sha1.c */; };
-		C517B1F61EBC134200CDAA17 /* LICENSE.md in Sources */ = {isa = PBXBuildFile; fileRef = C517B1D81EBC134200CDAA17 /* LICENSE.md */; };
-		C517B1F71EBC134200CDAA17 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = C517B1D91EBC134200CDAA17 /* LICENSE.txt */; };
+		C517B1F71EBC134200CDAA17 /* SSZipArchive-LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = C517B1D91EBC134200CDAA17 /* SSZipArchive-LICENSE.txt */; };
 		C517B1F81EBC134200CDAA17 /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = C517B1DC1EBC134200CDAA17 /* ioapi.c */; };
 		C517B1F91EBC134200CDAA17 /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = C517B1DE1EBC134200CDAA17 /* mztools.c */; };
 		C517B1FA1EBC134200CDAA17 /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = C517B1E01EBC134200CDAA17 /* unzip.c */; };
 		C517B1FB1EBC134200CDAA17 /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = C517B1E21EBC134200CDAA17 /* zip.c */; };
 		C517B1FC1EBC134200CDAA17 /* SSZipArchive+Swift.swift in Sources */ = {isa = PBXBuildFile; fileRef = C517B1E41EBC134200CDAA17 /* SSZipArchive+Swift.swift */; };
 		C517B1FD1EBC134200CDAA17 /* SSZipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = C517B1E61EBC134200CDAA17 /* SSZipArchive.m */; };
-		C517B1FE1EBC134200CDAA17 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = C517B1EA1EBC134200CDAA17 /* LICENSE.txt */; };
+		C517B1FE1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = C517B1EA1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt */; };
 		C517B1FF1EBC134200CDAA17 /* UICountingLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = C517B1EC1EBC134200CDAA17 /* UICountingLabel.m */; };
 		C518B59A1E88C7F0009CA4BB /* Decimal+DoubleValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C518B5991E88C7F0009CA4BB /* Decimal+DoubleValue.swift */; };
 		C5316BF61E78D80F00BC2918 /* AddExpenseTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5316BF51E78D80F00BC2918 /* AddExpenseTableViewCell.swift */; };
@@ -115,8 +114,8 @@
 		C517B1D51EBC134200CDAA17 /* pwd2key.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pwd2key.h; sourceTree = "<group>"; };
 		C517B1D61EBC134200CDAA17 /* sha1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sha1.c; sourceTree = "<group>"; };
 		C517B1D71EBC134200CDAA17 /* sha1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sha1.h; sourceTree = "<group>"; };
-		C517B1D81EBC134200CDAA17 /* LICENSE.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = LICENSE.md; sourceTree = "<group>"; };
-		C517B1D91EBC134200CDAA17 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		C517B1D81EBC134200CDAA17 /* LICENSE.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = LICENSE.md; path = SSZipArchive/LICENSE.md; sourceTree = "<group>"; };
+		C517B1D91EBC134200CDAA17 /* SSZipArchive-LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "SSZipArchive-LICENSE.txt"; sourceTree = "<group>"; };
 		C517B1DB1EBC134200CDAA17 /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
 		C517B1DC1EBC134200CDAA17 /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
 		C517B1DD1EBC134200CDAA17 /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
@@ -131,7 +130,7 @@
 		C517B1E61EBC134200CDAA17 /* SSZipArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSZipArchive.m; sourceTree = "<group>"; };
 		C517B1E71EBC134200CDAA17 /* SSZipCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSZipCommon.h; sourceTree = "<group>"; };
 		C517B1E81EBC134200CDAA17 /* ZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZipArchive.h; sourceTree = "<group>"; };
-		C517B1EA1EBC134200CDAA17 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		C517B1EA1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "UICountingLabel-LICENSE.txt"; sourceTree = "<group>"; };
 		C517B1EB1EBC134200CDAA17 /* UICountingLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICountingLabel.h; sourceTree = "<group>"; };
 		C517B1EC1EBC134200CDAA17 /* UICountingLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICountingLabel.m; sourceTree = "<group>"; };
 		C518B5991E88C7F0009CA4BB /* Decimal+DoubleValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Decimal+DoubleValue.swift"; sourceTree = "<group>"; };
@@ -225,8 +224,7 @@
 			isa = PBXGroup;
 			children = (
 				C517B1C21EBC134200CDAA17 /* aes */,
-				C517B1D81EBC134200CDAA17 /* LICENSE.md */,
-				C517B1D91EBC134200CDAA17 /* LICENSE.txt */,
+				C517B1D91EBC134200CDAA17 /* SSZipArchive-LICENSE.txt */,
 				C517B1DA1EBC134200CDAA17 /* minizip */,
 				C517B1E41EBC134200CDAA17 /* SSZipArchive+Swift.swift */,
 				C517B1E51EBC134200CDAA17 /* SSZipArchive.h */,
@@ -284,7 +282,7 @@
 		C517B1E91EBC134200CDAA17 /* UICountingLabel */ = {
 			isa = PBXGroup;
 			children = (
-				C517B1EA1EBC134200CDAA17 /* LICENSE.txt */,
+				C517B1EA1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt */,
 				C517B1EB1EBC134200CDAA17 /* UICountingLabel.h */,
 				C517B1EC1EBC134200CDAA17 /* UICountingLabel.m */,
 			);
@@ -364,6 +362,7 @@
 				C538FAB71E85696200295062 /* Main.storyboard */,
 				C5316C2A1E7B241200BC2918 /* Extensions */,
 				C56500201E837F3A009D64F0 /* CoreData Classes */,
+				C517B1D81EBC134200CDAA17 /* LICENSE.md */,
 				C5BFEA7A1E8F43E300528878 /* Unused */,
 				C5CF5F6A1E7BB68B00C35539 /* Images */,
 				C517B1C11EBC134200CDAA17 /* SSZipArchive */,
@@ -526,7 +525,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C517B1FE1EBC134200CDAA17 /* LICENSE.txt in Resources */,
+				C517B1FE1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt in Resources */,
 				C5B367D01EBBD65E006B5ADC /* cog@2x.png in Resources */,
 				C5B367D11EBBD65E006B5ADC /* cog@3x.png in Resources */,
 				C5781DA81E6E2060006BBC03 /* LaunchScreen.storyboard in Resources */,
@@ -539,7 +538,7 @@
 				C5CF5F691E7BB68600C35539 /* today@3x.png in Resources */,
 				C538FAB91E85696200295062 /* Main.storyboard in Resources */,
 				C5CF5F641E7BB68600C35539 /* cal.png in Resources */,
-				C517B1F71EBC134200CDAA17 /* LICENSE.txt in Resources */,
+				C517B1F71EBC134200CDAA17 /* SSZipArchive-LICENSE.txt in Resources */,
 				C5B367CF1EBBD65E006B5ADC /* cog.png in Resources */,
 				C5CF5F651E7BB68600C35539 /* cal@2x.png in Resources */,
 				C53BCAA71E9203BC000B5EE1 /* cal_recur.png in Resources */,
@@ -584,7 +583,6 @@
 				C517B1EE1EBC134200CDAA17 /* aeskey.c in Sources */,
 				C57095231E8F86A200004709 /* MonthAdjustmentViewController.swift in Sources */,
 				C517B1F01EBC134200CDAA17 /* entropy.c in Sources */,
-				C517B1F61EBC134200CDAA17 /* LICENSE.md in Sources */,
 				C5781DCC1E6E23B2006BBC03 /* TodayViewController.swift in Sources */,
 				C565001A1E837F37009D64F0 /* Day+CoreDataClass.swift in Sources */,
 				C5BA55B71E8DB17800256E7A /* ExpenseViewController.swift in Sources */,
