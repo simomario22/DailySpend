@@ -11,6 +11,88 @@ import CoreData
 
 @objc(Month)
 public class Month: NSManagedObject {
+    
+    public func json() -> [String: Any] {
+        var jsonObj = [String: Any]()
+        
+        if let month = month {
+            let num = month.timeIntervalSince1970 as NSNumber
+            jsonObj["month"] = num
+        }
+        
+        if let dailyBaseTargetSpend = dailyBaseTargetSpend {
+            let num = dailyBaseTargetSpend as NSNumber
+            jsonObj["dailyBaseTargetSpend"] = num
+        }
+        
+        if let adjs = sortedAdjustments {
+            var jsonAdjs = [[String: Any]]()
+            for adjustment in adjs {
+                let jsonAdj = adjustment.json()
+                jsonAdjs.append(jsonAdj)
+            }
+            jsonObj["adjustments"] = jsonAdjs
+        }
+        
+        if let days = sortedDays {
+            var jsonDays = [[String: Any]]()
+            for day in days {
+                let jsonDay = day.json()
+                jsonDays.append(jsonDay)
+            }
+            jsonObj["days"] = jsonDays
+        }
+        
+        if let dateCreated = dateCreated {
+            let num = dateCreated.timeIntervalSince1970 as NSNumber
+            jsonObj["dateCreated"] = num
+        }
+        
+        return jsonObj
+    }
+    
+    public func serialize() -> Data? {
+        let jsonObj = self.json()
+        let serialization = try? JSONSerialization.data(withJSONObject: jsonObj)
+        return serialization
+    }
+    
+    class func create(context: NSManagedObjectContext,
+                      json: [String: Any]) -> Month {
+        let month = Month(context: context)
+        
+        if let dailyBaseTargetSpend = json["dailyBaseTargetSpend"] as? NSNumber {
+            let decimal = Decimal(dailyBaseTargetSpend.doubleValue)
+            month.dailyBaseTargetSpend = decimal
+        }
+        
+        if let monthNumber = json["month"] as? NSNumber {
+            let date = Date(timeIntervalSince1970: monthNumber.doubleValue)
+            month.month = date
+        }
+        
+        if let jsonAdjs = json["adjustments"] as? [[String: Any]] {
+            for jsonAdj in jsonAdjs {
+                let monthAdj = MonthAdjustment.create(context: context, json: jsonAdj)
+                monthAdj.month = month
+            }
+        }
+        
+        if let jsonDays = json["days"] as? [[String: Any]] {
+            for jsonDay in jsonDays {
+                let day = Day.create(context: context, json: jsonDay)
+                day.month = month
+            }
+        }
+        
+        if let dateCreated = json["dateCreated"] as? NSNumber {
+            let date = Date(timeIntervalSince1970: dateCreated.doubleValue)
+            month.dateCreated = date
+        }
+        
+        return month
+    }
+    
     // Helper functions
     
     

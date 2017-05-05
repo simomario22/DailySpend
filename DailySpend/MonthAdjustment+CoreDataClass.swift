@@ -12,8 +12,61 @@ import CoreData
 @objc(MonthAdjustment)
 public class MonthAdjustment: NSManagedObject {
     
-    public func serialize() {
+    public func json() -> [String: Any] {
+        var jsonObj = [String: Any]()
         
+        if let amount = amount {
+            let num = amount as NSNumber
+            jsonObj["amount"] = num
+        }
+        
+        if let dateEffective = dateEffective {
+            let num = dateEffective.timeIntervalSince1970 as NSNumber
+            jsonObj["dateEffective"] = num
+        }
+        
+        if let reason = reason {
+            jsonObj["reason"] = reason
+        }
+        
+        if let dateCreated = dateCreated {
+            let num = dateCreated.timeIntervalSince1970 as NSNumber
+            jsonObj["dateCreated"] = num
+        }
+        
+        return jsonObj
+    }
+        
+    public func serialize() -> Data? {
+        let jsonObj = self.json()
+        let serialization = try? JSONSerialization.data(withJSONObject: jsonObj)
+        return serialization
+    }
+    
+    class func create(context: NSManagedObjectContext,
+                      json: [String: Any]) -> MonthAdjustment {
+        let monthAdj = MonthAdjustment(context: context)
+        
+        if let amount = json["amount"] as? NSNumber {
+            let decimal = Decimal(amount.doubleValue)
+            monthAdj.amount = decimal
+        }
+        
+        if let dateEffective = json["dateEffective"] as? NSNumber {
+            let date = Date(timeIntervalSince1970: dateEffective.doubleValue)
+            monthAdj.dateEffective = date
+        }
+        
+        if let reason = json["reason"] as? String {
+            monthAdj.reason = reason
+        }
+        
+        if let dateCreated = json["dateCreated"] as? NSNumber {
+            let date = Date(timeIntervalSince1970: dateCreated.doubleValue)
+            monthAdj.dateCreated = date
+        }
+        
+        return monthAdj
     }
     
     // Accessor functions (for Swift 3 classes)

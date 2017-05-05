@@ -256,7 +256,7 @@
                                 <rect key="frame" x="0.0" y="28" width="375" height="146"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="jRw-sd-3WD" id="sp6-ZM-PNH">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="146"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="145.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Spent" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="E8A-SF-I1p">
@@ -795,7 +795,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <sections>
-                            <tableViewSection footerTitle="To import a DailySpend file, view the file, tap &quot;Open In...&quot; and choose DailySpend." id="fp6-jg-BC2">
+                            <tableViewSection footerTitle="To import a DailySpend file, choose &quot;Import with DailySpend&quot; when viewing the file in an action or share sheet." id="fp6-jg-BC2">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="nv7-Bu-bQP" style="IBUITableViewCellStyleDefault" id="5CO-VV-7Ki">
                                         <rect key="frame" x="0.0" y="35" width="375" height="44"/>

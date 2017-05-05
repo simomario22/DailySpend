@@ -304,14 +304,14 @@
 			children = (
 				C56500141E837F37009D64F0 /* MonthAdjustment+CoreDataClass.swift */,
 				C56500151E837F37009D64F0 /* MonthAdjustment+CoreDataProperties.swift */,
-				C565000C1E837F37009D64F0 /* Month+CoreDataClass.swift */,
-				C565000D1E837F37009D64F0 /* Month+CoreDataProperties.swift */,
 				C565000E1E837F37009D64F0 /* DayAdjustment+CoreDataClass.swift */,
 				C565000F1E837F37009D64F0 /* DayAdjustment+CoreDataProperties.swift */,
-				C56500101E837F37009D64F0 /* Day+CoreDataClass.swift */,
-				C56500111E837F37009D64F0 /* Day+CoreDataProperties.swift */,
 				C56500121E837F37009D64F0 /* Expense+CoreDataClass.swift */,
 				C56500131E837F37009D64F0 /* Expense+CoreDataProperties.swift */,
+				C56500101E837F37009D64F0 /* Day+CoreDataClass.swift */,
+				C56500111E837F37009D64F0 /* Day+CoreDataProperties.swift */,
+				C565000C1E837F37009D64F0 /* Month+CoreDataClass.swift */,
+				C565000D1E837F37009D64F0 /* Month+CoreDataProperties.swift */,
 			);
 			name = "CoreData Classes";
 			path = ..;

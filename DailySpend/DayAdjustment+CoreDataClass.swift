@@ -11,6 +11,64 @@ import CoreData
 
 @objc(DayAdjustment)
 public class DayAdjustment: NSManagedObject {
+    
+    public func json() -> [String: Any] {
+        var jsonObj = [String: Any]()
+        
+        if let amount = amount {
+            let num = amount as NSNumber
+            jsonObj["amount"] = num
+        }
+        
+        if let dateAffected = dateAffected {
+            let num = dateAffected.timeIntervalSince1970 as NSNumber
+            jsonObj["dateAffected"] = num
+        }
+        
+        if let reason = reason {
+            jsonObj["reason"] = reason
+        }
+        
+        if let dateCreated = dateCreated {
+            let num = dateCreated.timeIntervalSince1970 as NSNumber
+            jsonObj["dateCreated"] = num
+        }
+        return jsonObj
+    }
+    
+    public func serialize() -> Data? {
+        let jsonObj = self.json()
+        let serialization = try? JSONSerialization.data(withJSONObject: jsonObj)
+        return serialization
+    }
+    
+    class func create(context: NSManagedObjectContext,
+                      json: [String: Any]) -> DayAdjustment {
+        let dayAdj = DayAdjustment(context: context)
+        
+        if let amount = json["amount"] as? NSNumber {
+            let decimal = Decimal(amount.doubleValue)
+            dayAdj.amount = decimal
+        }
+        
+        if let dateAffected = json["dateAffected"] as? NSNumber {
+            let date = Date(timeIntervalSince1970: dateAffected.doubleValue)
+            dayAdj.dateAffected = date
+        }
+        
+        if let reason = json["reason"] as? String {
+            dayAdj.reason = reason
+        }
+        
+        if let dateCreated = json["dateCreated"] as? NSNumber {
+            let date = Date(timeIntervalSince1970: dateCreated.doubleValue)
+            dayAdj.dateCreated = date
+        }
+        
+        return dayAdj
+    }
+    
+    
     // Accessor functions (for Swift 3 classes)
 
     public var amount: Decimal? {

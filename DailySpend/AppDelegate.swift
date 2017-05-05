@@ -25,10 +25,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             return false
         }
         
-        let vc = window?.rootViewController
+        let rootVC = window?.rootViewController
+        let visibleVC = getVisibleViewController(rootVC)
         
         let importHandler: (UIAlertAction) -> Void = { _ in
-            if Importer.importUrl(url) {
+            if Importer.importDataUrl(url) {
                 let storyboard = UIStoryboard(name: "Main", bundle: nil)
                 let initialVC = storyboard.instantiateInitialViewController()
                 self.window?.rootViewController = initialVC
@@ -42,7 +43,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                               preferredStyle: .alert)
                 let okay = UIAlertAction(title: "Okay", style: .default, handler: nil)
                 alert.addAction(okay)
-                vc?.present(alert, animated: true, completion: nil)
+                visibleVC?.present(alert, animated: true, completion: nil)
             }
         }
 
@@ -61,10 +62,37 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                    handler: importHandler)
         alert.addAction(cancel)
         alert.addAction(delete)
-        vc?.present(alert, animated: true, completion: nil)
+        visibleVC?.present(alert, animated: true, completion: nil)
 
         
         return true
+    }
+    
+    func getVisibleViewController(_ rootViewController: UIViewController?) -> UIViewController? {
+        
+        var rootVC = rootViewController
+        if rootVC == nil {
+            rootVC = UIApplication.shared.keyWindow?.rootViewController
+        }
+        
+        if rootVC?.presentedViewController == nil {
+            return rootVC
+        }
+        
+        if let presented = rootVC?.presentedViewController {
+            if presented.isKind(of: UINavigationController.self) {
+                let navigationController = presented as! UINavigationController
+                return navigationController.viewControllers.last!
+            }
+            
+            if presented.isKind(of: UITabBarController.self) {
+                let tabBarController = presented as! UITabBarController
+                return tabBarController.selectedViewController!
+            }
+            
+            return getVisibleViewController(presented)
+        }
+        return nil
     }
 
     func applicationWillResignActive(_ application: UIApplication) {

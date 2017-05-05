@@ -37,42 +37,71 @@ class ExportViewController: UITableViewController {
     }
     
     func export() {
+        let containsPhotos = itemsToExport.contains(.Photos)
+        let containsData = itemsToExport.contains(.Data)
+        guard containsData || containsPhotos else {
+            return
+        }
         
+        func failure(_ location: String) {
+            let title = "Failed"
+            let message = "Export failed due to an issue while \(location). " +
+                          "Sorry, try again later or contact support."
+            let alert = UIAlertController(title: title,
+                                          message: message,
+                                          preferredStyle: .alert)
+            let okay = UIAlertAction(title: "Okay", style: .default, handler: nil)
+            alert.addAction(okay)
+            self.present(alert, animated: true, completion: nil)
+        }
+
+        
+        var shareURL: URL! = nil
+        var directoryURL: URL! = nil
+        var fileURL: URL? = nil
+        
+        if containsData {
+            fileURL = Exporter.exportData()
+            directoryURL = fileURL?.deletingLastPathComponent()
+            guard directoryURL != nil else {
+                failure("exporting data")
+                return
+            }
+        }
+        
+        if containsPhotos {
+            directoryURL = Exporter.exportPhotos()
+            guard directoryURL != nil else {
+                // Export failed.
+                failure("exporting photos")
+                return
+            }
+        }
+        
+        shareURL = directoryURL
+        
+        if !(containsData && !containsPhotos) {
+            let zipURL = directoryURL.appendingPathExtension("zip")
+            
+            if !SSZipArchive.createZipFile(atPath: zipURL.absoluteString,
+                                           withContentsOfDirectory: directoryURL.absoluteString) {
+                failure("zipping files")
+                return
+            }
+            
+            shareURL = zipURL
+        } else {
+            shareURL = fileURL
+        }
+        
+        let activityView = UIActivityViewController(activityItems: [shareURL],
+                                                    applicationActivities: nil)
+        self.present(activityView, animated: true, completion: nil)
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
-    }
-    
-    
-    @IBAction func share(_ sender: UIBarButtonItem) {
-        let title = "Export"
-        let message = "This will export all of your DailySpend data. " +
-        "To import data, open the .dailyspend file in DailySpend."
-        let alert = UIAlertController(title: title,
-                                      message: message,
-                                      preferredStyle: .alert)
-        let okay = UIAlertAction(title: "Okay",
-                                 style: .default,
-                                 handler: { _ in
-                                    if let url = Exporter.export() {
-                                        let activityView = UIActivityViewController(activityItems: [url], applicationActivities: nil)
-                                        self.present(activityView, animated: true, completion: nil)
-                                    } else {
-                                        let title = "Failed"
-                                        let message = "Export failed, please try again later."
-                                        let alert = UIAlertController(title: title,
-                                                                      message: message,
-                                                                      preferredStyle: .alert)
-                                        let okay = UIAlertAction(title: "Okay", style: .default, handler: nil)
-                                        alert.addAction(okay)
-                                        self.present(alert, animated: true, completion: nil)
-                                        
-                                    }
-        })
-        alert.addAction(okay)
-        self.present(alert, animated: true, completion: nil)
     }
     
     func changedSelection() {
@@ -92,7 +121,7 @@ class ExportViewController: UITableViewController {
             footerLabel.text = message
         } else if containsData {
             // Only data is selected.
-            let message = "Data will be zipped. Data is in a JSON format."
+            let message = "Data will be in JSON format."
             footerLabel.text = message
         } else {
             // Nothing is selected.
