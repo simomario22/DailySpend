@@ -8,6 +8,7 @@
 
 import Foundation
 import CoreData
+
 let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
 let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
 
@@ -50,13 +51,14 @@ class Exporter {
         let commaData = ",".data(using: encoding)!
         for (i, item) in items.enumerated() {
             if let data = encodeItem(item) {
-                itemData += data
+                itemData.append(data)
                 if i != items.count - 1 {
-                    itemData += commaData
+                    itemData.append(data)
                 }
             } else {
                 return nil
             }
+            itemData.append(commaData)
         }
         
         let crlfData = "\r\n".data(using: encoding)!

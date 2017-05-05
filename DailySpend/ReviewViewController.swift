@@ -495,32 +495,4 @@ class ReviewTableViewController: UITableViewController {
             navigationController?.pushViewController(adjustmentVC, animated: true)
         }
     }
-    @IBAction func share(_ sender: UIBarButtonItem) {
-        let title = "Export"
-        let message = "This will export all of your DailySpend data. " +
-                      "To import data, open the .dailyspend file in DailySpend."
-        let alert = UIAlertController(title: title,
-                                      message: message,
-                                      preferredStyle: .alert)
-        let okay = UIAlertAction(title: "Okay",
-                                   style: .default,
-                                   handler: { _ in
-            if let url = Exporter.export() {
-                let activityView = UIActivityViewController(activityItems: [url], applicationActivities: nil)
-                self.present(activityView, animated: true, completion: nil)
-            } else {
-                let title = "Failed"
-                let message = "Export failed, please try again later."
-                let alert = UIAlertController(title: title,
-                                              message: message,
-                                              preferredStyle: .alert)
-                let okay = UIAlertAction(title: "Okay", style: .default, handler: nil)
-                alert.addAction(okay)
-                self.present(alert, animated: true, completion: nil)
-                
-            }
-        })
-        alert.addAction(okay)
-        self.present(alert, animated: true, completion: nil)
-    }
 }

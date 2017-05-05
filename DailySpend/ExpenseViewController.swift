@@ -363,7 +363,7 @@ class ExpenseViewController: UIViewController, UITextViewDelegate {
                     navigationController!.viewControllers = vcs
                 }
             }
-            navigationController?.popViewController(animated: true)
+            _ = navigationController?.popViewController(animated: true)
         }
 
     }

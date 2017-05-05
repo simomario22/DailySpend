@@ -11,6 +11,11 @@ import CoreData
 
 @objc(MonthAdjustment)
 public class MonthAdjustment: NSManagedObject {
+    
+    public func serialize() {
+        
+    }
+    
     // Accessor functions (for Swift 3 classes)
 
     public var amount: Decimal? {
