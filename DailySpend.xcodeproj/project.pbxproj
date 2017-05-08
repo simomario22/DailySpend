@@ -28,6 +28,7 @@
 		C517B1FE1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = C517B1EA1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt */; };
 		C517B1FF1EBC134200CDAA17 /* UICountingLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = C517B1EC1EBC134200CDAA17 /* UICountingLabel.m */; };
 		C518B59A1E88C7F0009CA4BB /* Decimal+DoubleValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C518B5991E88C7F0009CA4BB /* Decimal+DoubleValue.swift */; };
+		C51A224E1EBFB32D00B53C24 /* LICENSE.md in Sources */ = {isa = PBXBuildFile; fileRef = C51A224D1EBFB32D00B53C24 /* LICENSE.md */; };
 		C5316BF61E78D80F00BC2918 /* AddExpenseTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5316BF51E78D80F00BC2918 /* AddExpenseTableViewCell.swift */; };
 		C5316C291E7B240D00BC2918 /* Date+Arithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5316C281E7B240D00BC2918 /* Date+Arithmetic.swift */; };
 		C538FAB91E85696200295062 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C538FAB71E85696200295062 /* Main.storyboard */; };
@@ -114,7 +115,6 @@
 		C517B1D51EBC134200CDAA17 /* pwd2key.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pwd2key.h; sourceTree = "<group>"; };
 		C517B1D61EBC134200CDAA17 /* sha1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sha1.c; sourceTree = "<group>"; };
 		C517B1D71EBC134200CDAA17 /* sha1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sha1.h; sourceTree = "<group>"; };
-		C517B1D81EBC134200CDAA17 /* LICENSE.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = LICENSE.md; path = SSZipArchive/LICENSE.md; sourceTree = "<group>"; };
 		C517B1D91EBC134200CDAA17 /* SSZipArchive-LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "SSZipArchive-LICENSE.txt"; sourceTree = "<group>"; };
 		C517B1DB1EBC134200CDAA17 /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
 		C517B1DC1EBC134200CDAA17 /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
@@ -135,6 +135,7 @@
 		C517B1EC1EBC134200CDAA17 /* UICountingLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICountingLabel.m; sourceTree = "<group>"; };
 		C518B5991E88C7F0009CA4BB /* Decimal+DoubleValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Decimal+DoubleValue.swift"; sourceTree = "<group>"; };
 		C518B59B1E88D668009CA4BB /* DailySpend-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "DailySpend-Bridging-Header.h"; path = "DailySpend/DailySpend-Bridging-Header.h"; sourceTree = "<group>"; };
+		C51A224D1EBFB32D00B53C24 /* LICENSE.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = LICENSE.md; sourceTree = "<group>"; };
 		C5316BF51E78D80F00BC2918 /* AddExpenseTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddExpenseTableViewCell.swift; sourceTree = "<group>"; };
 		C5316C281E7B240D00BC2918 /* Date+Arithmetic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Date+Arithmetic.swift"; sourceTree = "<group>"; };
 		C538FAB81E85696200295062 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -362,7 +363,7 @@
 				C538FAB71E85696200295062 /* Main.storyboard */,
 				C5316C2A1E7B241200BC2918 /* Extensions */,
 				C56500201E837F3A009D64F0 /* CoreData Classes */,
-				C517B1D81EBC134200CDAA17 /* LICENSE.md */,
+				C51A224D1EBFB32D00B53C24 /* LICENSE.md */,
 				C5BFEA7A1E8F43E300528878 /* Unused */,
 				C5CF5F6A1E7BB68B00C35539 /* Images */,
 				C517B1C11EBC134200CDAA17 /* SSZipArchive */,
@@ -576,6 +577,7 @@
 				C517B1FC1EBC134200CDAA17 /* SSZipArchive+Swift.swift in Sources */,
 				C517B1FA1EBC134200CDAA17 /* unzip.c in Sources */,
 				C5C65A221EBBFBC6002D1B12 /* ExportViewController.swift in Sources */,
+				C51A224E1EBFB32D00B53C24 /* LICENSE.md in Sources */,
 				C56500171E837F37009D64F0 /* Month+CoreDataProperties.swift in Sources */,
 				C517B1F51EBC134200CDAA17 /* sha1.c in Sources */,
 				C5EE62A31E85769700CAEEE7 /* String+CharacterSet.swift in Sources */,
