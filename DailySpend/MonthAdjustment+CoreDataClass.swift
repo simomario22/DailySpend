@@ -12,35 +12,45 @@ import CoreData
 @objc(MonthAdjustment)
 public class MonthAdjustment: NSManagedObject {
     
-    public func json() -> [String: Any] {
+    public func json() -> [String: Any]? {
         var jsonObj = [String: Any]()
         
         if let amount = amount {
             let num = amount as NSNumber
             jsonObj["amount"] = num
+        } else {
+            return nil
         }
         
         if let dateEffective = dateEffective {
             let num = dateEffective.timeIntervalSince1970 as NSNumber
             jsonObj["dateEffective"] = num
+        } else {
+            return nil
         }
         
         if let reason = reason {
             jsonObj["reason"] = reason
+        } else {
+            return nil
         }
         
         if let dateCreated = dateCreated {
             let num = dateCreated.timeIntervalSince1970 as NSNumber
             jsonObj["dateCreated"] = num
+        } else {
+            return nil
         }
         
         return jsonObj
     }
         
     public func serialize() -> Data? {
-        let jsonObj = self.json()
-        let serialization = try? JSONSerialization.data(withJSONObject: jsonObj)
-        return serialization
+        if let jsonObj = self.json() {
+            let serialization = try? JSONSerialization.data(withJSONObject: jsonObj)
+            return serialization
+        }
+        return nil
     }
     
     class func create(context: NSManagedObjectContext,
@@ -49,6 +59,9 @@ public class MonthAdjustment: NSManagedObject {
         
         if let amount = json["amount"] as? NSNumber {
             let decimal = Decimal(amount.doubleValue)
+            if decimal <= 0 {
+                return nil
+            }
             monthAdj.amount = decimal
         } else {
             return nil
@@ -56,12 +69,18 @@ public class MonthAdjustment: NSManagedObject {
         
         if let dateEffective = json["dateEffective"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateEffective.doubleValue)
+            if date > Date() {
+                return nil
+            }
             monthAdj.dateEffective = date
         } else {
             return nil
         }
         
         if let reason = json["reason"] as? String {
+            if reason.characters.count == 0 {
+                return nil
+            }
             monthAdj.reason = reason
         } else {
             return nil
@@ -69,6 +88,9 @@ public class MonthAdjustment: NSManagedObject {
         
         if let dateCreated = json["dateCreated"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateCreated.doubleValue)
+            if date > Date() {
+                return nil
+            }
             monthAdj.dateCreated = date
         } else {
             return nil

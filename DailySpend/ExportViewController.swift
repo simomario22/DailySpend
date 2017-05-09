@@ -96,6 +96,12 @@ class ExportViewController: UITableViewController {
         
         let activityView = UIActivityViewController(activityItems: [shareURL],
                                                     applicationActivities: nil)
+        activityView.completionWithItemsHandler = { (_, completed: Bool, _, _) in
+            // Attempt to delete shared files.
+            let fm = FileManager.default
+            try? fm.removeItem(at: shareURL)
+            try? fm.removeItem(at: directoryURL)
+        }
         self.present(activityView, animated: true, completion: nil)
     }
 

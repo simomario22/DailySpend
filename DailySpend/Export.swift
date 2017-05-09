@@ -10,7 +10,9 @@ import Foundation
 import CoreData
 
 let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
-let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+var context: NSManagedObjectContext {
+    return appDelegate.persistentContainer.viewContext
+}
 
 let encoding = String.Encoding.utf8
 
@@ -31,7 +33,6 @@ class Exporter {
         let name = dateFormatter.string(from: Date())
         let directoryPath = cacheDirectory + "/" + name
         let filePath = directoryPath + "/\(name).dailyspend"
-        print(filePath)
         
         let fm = FileManager.default
         
@@ -89,57 +90,99 @@ class Exporter {
 
 enum ExportError: Error {
     case unrecoverableDatabaseInBadState
-    case recoveredParseFailed
-    case recoveredPersistentStoreFailed
+    case recoveredFromBadFormat
+    case recoveredFromPersistentStoreProblem
+    case recoveredFromBadFormatWithContextChange
 }
 
 class Importer {
     class func importDataUrl(_ url: URL) throws {
-        guard let managedObjMod = context.persistentStoreCoordinator?.managedObjectModel,
-              let istream = InputStream(url: url),
-              let ambiguousObj = try? JSONSerialization.jsonObject(with: istream, options: []),
-              let jsonObj = ambiguousObj as? [[String: Any]] else {
-            throw ExportError.recoveredParseFailed
+        guard let stream = InputStream(url: url) else {
+            throw ExportError.recoveredFromBadFormat
         }
+        
+        stream.open()
+        
+        guard let ambiguousObj = try? JSONSerialization.jsonObject(with: stream, options: []),
+              let jsonObj = ambiguousObj as? [[String: Any]] else {
+            throw ExportError.recoveredFromBadFormat
+        }
+        
+        let managedObjMod = appDelegate.persistentContainer.managedObjectModel
+        let storeCoord = appDelegate.persistentContainer.persistentStoreCoordinator
+        if storeCoord.persistentStores.count != 1 {
+            throw ExportError.recoveredFromPersistentStoreProblem
+        }
+        
+        let store = storeCoord.persistentStores.first!
+        let storeURL = store.url!
+        let storeOptions = store.options
         
         // Make backup copy of store.
         let backupStoreCoord = NSPersistentStoreCoordinator(managedObjectModel: managedObjMod)
-        
-        if backupStoreCoord.persistentStores.count != 1 {
-            throw ExportError.recoveredPersistentStoreFailed
+        do {
+            try backupStoreCoord.addPersistentStore(ofType: NSSQLiteStoreType,
+                                                configurationName: nil,
+                                                at: storeURL,
+                                                options: storeOptions)
+        } catch {
+            throw ExportError.recoveredFromPersistentStoreProblem
         }
         
         let backupStore = backupStoreCoord.persistentStores.first!
-        let origStoreURL = backupStore.url!
+        
         
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd-MM-yy-HHmmss"
         let name = dateFormatter.string(from: Date()) + ".sqlite"
-        let backupStoreURL = origStoreURL.deletingLastPathComponent()
+        let backupStoreURL = storeURL.deletingLastPathComponent()
                                          .appendingPathComponent(name, isDirectory: false)
         
         do {
             try backupStoreCoord.migratePersistentStore(backupStore,
                                                   to: backupStoreURL,
-                                                  options: nil,
+                                                  options: storeOptions,
                                                   withType: NSSQLiteStoreType)
+            try storeCoord.destroyPersistentStore(at: storeURL,
+                                              ofType: NSSQLiteStoreType,
+                                              options: storeOptions)
         } catch {
-            throw ExportError.recoveredPersistentStoreFailed
+            throw ExportError.recoveredFromPersistentStoreProblem
         }
-
+        
+        appDelegate.persistentContainer = nil
+        
         for jsonMonth in jsonObj {
             if Month.create(context: context, json: jsonMonth) == nil {
                 // This import failed. Reset to normal.
                 do {
-                    try backupStoreCoord.migratePersistentStore(backupStore,
-                                                                to: backupStoreURL,
-                                                                options: nil,
-                                                                withType: NSSQLiteStoreType)
+                    try storeCoord.replacePersistentStore(at: storeURL,
+                                                          destinationOptions: storeOptions,
+                                                          withPersistentStoreFrom: backupStoreURL,
+                                                          sourceOptions: storeOptions,
+                                                          ofType: NSSQLiteStoreType)
+                    
+                    // Delete the backup.
+                    try storeCoord.destroyPersistentStore(at: backupStoreURL,
+                                                          ofType: NSSQLiteStoreType,
+                                                          options: storeOptions)
+                    appDelegate.persistentContainer = nil
                 } catch {
                     // Reset failed.
                     throw ExportError.unrecoverableDatabaseInBadState
                 }
+                throw ExportError.recoveredFromBadFormatWithContextChange
             }
+        }
+        
+        do {
+            // Import successful. Delete the backup store.
+            try storeCoord.destroyPersistentStore(at: backupStoreURL,
+                                                  ofType: NSSQLiteStoreType,
+                                                  options: storeOptions)
+        } catch {
+            // We don't really care.
+            print("Could not delete backup store.")
         }
         
     }

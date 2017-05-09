@@ -12,34 +12,46 @@ import CoreData
 @objc(DayAdjustment)
 public class DayAdjustment: NSManagedObject {
     
-    public func json() -> [String: Any] {
+    public func json() -> [String: Any]? {
         var jsonObj = [String: Any]()
         
         if let amount = amount {
             let num = amount as NSNumber
             jsonObj["amount"] = num
+        } else {
+            return nil
         }
         
         if let dateAffected = dateAffected {
             let num = dateAffected.timeIntervalSince1970 as NSNumber
             jsonObj["dateAffected"] = num
+        } else {
+            return nil
         }
         
         if let reason = reason {
             jsonObj["reason"] = reason
+        } else {
+            return nil
         }
         
         if let dateCreated = dateCreated {
             let num = dateCreated.timeIntervalSince1970 as NSNumber
             jsonObj["dateCreated"] = num
+        } else {
+            return nil
         }
+        
         return jsonObj
     }
     
     public func serialize() -> Data? {
-        let jsonObj = self.json()
-        let serialization = try? JSONSerialization.data(withJSONObject: jsonObj)
-        return serialization
+        if let jsonObj = self.json() {
+            let serialization = try? JSONSerialization.data(withJSONObject: jsonObj)
+            return serialization
+        }
+        
+        return nil
     }
     
     class func create(context: NSManagedObjectContext,
@@ -48,6 +60,9 @@ public class DayAdjustment: NSManagedObject {
         
         if let amount = json["amount"] as? NSNumber {
             let decimal = Decimal(amount.doubleValue)
+            if decimal <= 0 {
+                return nil
+            }
             dayAdj.amount = decimal
         } else {
             return nil
@@ -55,12 +70,18 @@ public class DayAdjustment: NSManagedObject {
         
         if let dateAffected = json["dateAffected"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateAffected.doubleValue)
+            if date > Date() {
+                return nil
+            }
             dayAdj.dateAffected = date
         } else {
             return nil
         }
         
         if let reason = json["reason"] as? String {
+            if reason.characters.count == 0 {
+                return nil
+            }
             dayAdj.reason = reason
         } else {
             return nil
@@ -68,6 +89,9 @@ public class DayAdjustment: NSManagedObject {
         
         if let dateCreated = json["dateCreated"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateCreated.doubleValue)
+            if date > Date() {
+                return nil
+            }
             dayAdj.dateCreated = date
         } else {
             return nil

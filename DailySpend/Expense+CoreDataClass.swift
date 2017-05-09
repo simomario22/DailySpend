@@ -11,16 +11,20 @@ import CoreData
 
 @objc(Expense)
 public class Expense: NSManagedObject {
-    public func json() -> [String: Any] {
+    public func json() -> [String: Any]? {
         var jsonObj = [String: Any]()
         
         if let amount = amount {
             let num = amount as NSNumber
             jsonObj["amount"] = num
+        } else {
+            return nil
         }
         
         if let shortDescription = shortDescription {
             jsonObj["shortDescription"] = shortDescription
+        } else {
+            return nil
         }
         
         if let notes = notes {
@@ -30,14 +34,20 @@ public class Expense: NSManagedObject {
         if let dateCreated = dateCreated {
             let num = dateCreated.timeIntervalSince1970 as NSNumber
             jsonObj["dateCreated"] = num
+        } else {
+            return nil
         }
+        
         return jsonObj
     }
     
     public func serialize() -> Data? {
-        let jsonObj = self.json()
-        let serialization = try? JSONSerialization.data(withJSONObject: jsonObj)
-        return serialization
+        if let jsonObj = self.json() {
+            let serialization = try? JSONSerialization.data(withJSONObject: jsonObj)
+            return serialization
+        }
+        
+        return nil
     }
     
     class func create(context: NSManagedObjectContext,
@@ -46,12 +56,18 @@ public class Expense: NSManagedObject {
         
         if let amount = json["amount"] as? NSNumber {
             let decimal = Decimal(amount.doubleValue)
+            if decimal <= 0 {
+                return nil
+            }
             expense.amount = decimal
         } else {
             return nil
         }
         
         if let shortDescription = json["shortDescription"] as? String {
+            if shortDescription.characters.count == 0 {
+                return nil
+            }
             expense.shortDescription = shortDescription
         } else {
             return nil
@@ -59,12 +75,13 @@ public class Expense: NSManagedObject {
         
         if let notes = json["notes"] as? String {
             expense.notes = notes
-        } else {
-            return nil
         }
         
         if let dateCreated = json["dateCreated"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateCreated.doubleValue)
+            if date > Date() {
+                return nil
+            }
             expense.dateCreated = date
         } else {
             return nil

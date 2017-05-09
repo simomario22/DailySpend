@@ -166,6 +166,7 @@
 		C5781DBD1E6E2060006BBC03 /* DailySpendUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailySpendUITests.swift; sourceTree = "<group>"; };
 		C5781DBF1E6E2060006BBC03 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C5781DCB1E6E23B2006BBC03 /* TodayViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TodayViewController.swift; sourceTree = "<group>"; };
+		C5A287C41EC1741200D3479A /* DailySpend 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "DailySpend 2.xcdatamodel"; sourceTree = "<group>"; };
 		C5B367CC1EBBD65E006B5ADC /* cog.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cog.png; sourceTree = "<group>"; };
 		C5B367CD1EBBD65E006B5ADC /* cog@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cog@2x.png"; sourceTree = "<group>"; };
 		C5B367CE1EBBD65E006B5ADC /* cog@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cog@3x.png"; sourceTree = "<group>"; };
@@ -888,9 +889,10 @@
 		C5781DA11E6E2060006BBC03 /* DailySpend.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				C5A287C41EC1741200D3479A /* DailySpend 2.xcdatamodel */,
 				C5781DA21E6E2060006BBC03 /* DailySpend.xcdatamodel */,
 			);
-			currentVersion = C5781DA21E6E2060006BBC03 /* DailySpend.xcdatamodel */;
+			currentVersion = C5A287C41EC1741200D3479A /* DailySpend 2.xcdatamodel */;
 			name = DailySpend.xcdatamodeld;
 			path = DailySpend/DailySpend.xcdatamodeld;
 			sourceTree = "<group>";

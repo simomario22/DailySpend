@@ -34,7 +34,9 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
     }
 
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    var context: NSManagedObjectContext {
+        return appDelegate.persistentContainer.viewContext
+    }
     let redColor = UIColor(colorLiteralRed: 179.0/255.0,
                            green: 0.0/255.0,
                            blue: 0.0/255.0,
@@ -123,7 +125,6 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
     }
     
     override func viewDidLoad() {
-        print(Unmanaged.passUnretained(context).toOpaque())
         super.viewDidLoad()
         
         title = "Spending"

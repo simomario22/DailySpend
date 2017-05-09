@@ -16,7 +16,9 @@ class DayAdjustmentViewController: UIViewController {
     @IBOutlet weak var dateButton: UIButton!
     @IBOutlet weak var additionalAmountLabel: UILabel!
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    var context: NSManagedObjectContext {
+        return appDelegate.persistentContainer.viewContext
+    }
     let datePicker = UIDatePicker()
     let dismissButton = UIButton()
     

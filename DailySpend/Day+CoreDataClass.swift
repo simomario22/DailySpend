@@ -11,24 +11,24 @@ import CoreData
 
 @objc(Day)
 public class Day: NSManagedObject {
-    public func json() -> [String: Any] {
+    public func json() -> [String: Any]? {
         var jsonObj = [String: Any]()
-        
-        if let baseTargetSpend = baseTargetSpend {
-            let num = baseTargetSpend as NSNumber
-            jsonObj["baseTargetSpend"] = num
-        }
-        
+
         if let date = date {
             let num = date.timeIntervalSince1970 as NSNumber
             jsonObj["date"] = num
+        } else {
+            return nil
         }
         
         if let adjs = sortedAdjustments {
             var jsonAdjs = [[String: Any]]()
             for adjustment in adjs {
-                let jsonAdj = adjustment.json()
-                jsonAdjs.append(jsonAdj)
+                if let jsonAdj = adjustment.json() {
+                    jsonAdjs.append(jsonAdj)
+                } else {
+                    return nil
+                }
             }
             jsonObj["adjustments"] = jsonAdjs
         }
@@ -36,8 +36,11 @@ public class Day: NSManagedObject {
         if let exps = sortedExpenses {
             var jsonExps = [[String: Any]]()
             for expense in exps {
-                let jsonExp = expense.json()
-                jsonExps.append(jsonExp)
+                if let jsonExp = expense.json() {
+                    jsonExps.append(jsonExp)
+                } else {
+                    return nil
+                }
             }
             jsonObj["expenses"] = jsonExps
         }
@@ -45,30 +48,33 @@ public class Day: NSManagedObject {
         if let dateCreated = dateCreated {
             let num = dateCreated.timeIntervalSince1970 as NSNumber
             jsonObj["dateCreated"] = num
+        } else {
+            return nil
         }
         
         return jsonObj
     }
     
     public func serialize() -> Data? {
-        let jsonObj = self.json()
-        let serialization = try? JSONSerialization.data(withJSONObject: jsonObj)
-        return serialization
+        if let jsonObj = self.json() {
+            let serialization = try? JSONSerialization.data(withJSONObject: jsonObj)
+            return serialization
+        }
+        
+        return nil
     }
     
     class func create(context: NSManagedObjectContext,
                       json: [String: Any]) -> Day? {
         let day = Day(context: context)
         
-        if let baseTargetSpend = json["baseTargetSpend"] as? NSNumber {
-            let decimal = Decimal(baseTargetSpend.doubleValue)
-            day.baseTargetSpend = decimal
-        } else {
-            return nil
-        }
-        
         if let dateNumber = json["date"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateNumber.doubleValue)
+            if date > Date() ||
+                date.beginningOfDay != date ||
+                Day.get(context: context, date: date) != nil {
+                return nil
+            }
             day.date = date
         } else {
             return nil
@@ -82,8 +88,6 @@ public class Day: NSManagedObject {
                     return nil
                 }
             }
-        } else {
-            return nil
         }
         
         if let jsonExps = json["expenses"] as? [[String: Any]] {
@@ -94,12 +98,13 @@ public class Day: NSManagedObject {
                     return nil
                 }
             }
-        } else {
-            return nil
         }
         
         if let dateCreated = json["dateCreated"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateCreated.doubleValue)
+            if date > Date() {
+                return nil
+            }
             day.dateCreated = date
         } else {
             return nil
@@ -143,7 +148,7 @@ public class Day: NSManagedObject {
     }
     
     /*
-     * Return the month object that a day is in, or nil if it doesn't exist.
+     * Return the day object that a date is in, or nil if it doesn't exist.
      */
     class func get(context: NSManagedObjectContext, date: Date) -> Day? {
         let fetchRequest: NSFetchRequest<Day> = Day.fetchRequest()
@@ -167,7 +172,6 @@ public class Day: NSManagedObject {
         let day = Day(context: context)
         day.date = date.beginningOfDay
         day.month = month
-        day.baseTargetSpend = day.month!.dailyBaseTargetSpend
         day.dateCreated = Date()
         
         return day
@@ -203,14 +207,7 @@ public class Day: NSManagedObject {
     
     public var baseTargetSpend: Decimal? {
         get {
-            return baseTargetSpend_ as Decimal?
-        }
-        set {
-            if newValue != nil {
-                baseTargetSpend_ = NSDecimalNumber(decimal: newValue!)
-            } else {
-                baseTargetSpend_ = nil
-            }
+            return month?.dailyBaseTargetSpend
         }
     }
     

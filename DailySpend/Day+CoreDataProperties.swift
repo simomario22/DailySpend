@@ -16,7 +16,6 @@ extension Day {
         return NSFetchRequest<Day>(entityName: "Day");
     }
 
-    @NSManaged public var baseTargetSpend_: NSDecimalNumber?
     @NSManaged public var date_: NSDate?
     @NSManaged public var adjustments_: NSSet?
     @NSManaged public var expenses_: NSSet?

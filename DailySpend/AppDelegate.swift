@@ -28,13 +28,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         let rootVC = window?.rootViewController
-        let visibleVC = getVisibleViewController(rootVC)
+        var visibleVC = getVisibleViewController(rootVC)
         
         let importHandler: (UIAlertAction) -> Void = { _ in
             // Initialize import feedback message.
             var title = "Success"
             var message = "The import has succeeded. Your data file has been " +
-            "loaded into the app."
+                            "loaded into the app."
             
             do {
                 // Attempt to import.
@@ -43,31 +43,46 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 let storyboard = UIStoryboard(name: "Main", bundle: nil)
                 let initialVC = storyboard.instantiateInitialViewController()
                 self.window?.rootViewController = initialVC
-            } catch ExportError.recoveredPersistentStoreFailed {
+                visibleVC = initialVC
+            } catch ExportError.recoveredFromPersistentStoreProblem {
                 // Recovered from failure due to an error moving or accessing the
                 // persistent store.
                 title = "Failed"
                 message = "Import failed. Please check that your device isn't " +
-                    "running low on space. Your data has been restored " +
-                    "to the state before the import."
-            } catch ExportError.recoveredParseFailed {
+                            "running low on space. Your data has been restored " +
+                            "to the state before the import."
+            } catch ExportError.recoveredFromBadFormat {
                 // Recovered from failure due to an error parsing the import file.
                 title = "Failed"
                 message = "Import failed. Please check that the file you " +
-                    "are trying to import is valid. Your data has been restored " +
-                "to the state before the import."
+                            "are trying to import is valid. Your data has been restored " +
+                            "to the state before the import."
             } catch ExportError.unrecoverableDatabaseInBadState {
                 // Could not recover due to being unable to promote the backup
                 // persistent store to the primary persistent store.
                 title = "Failed"
                 message = "Import failed. Unfortunately, we were not able " +
                           "to recover to the state before import, possibly " +
-                          "due to a number of factors, including possible " +
+                          "due to a number of factors, one of which could be " +
                           "low space on your device. Check that the imported " +
                           "file is in a correct format and that your device " +
                           "has sufficient space and try again. Sorry for " +
                           "this inconvenience. If you need help, please " +
                           "contact support."
+            } catch ExportError.recoveredFromBadFormatWithContextChange {
+                // The context has changed. Any ManagedObjects stored in memory
+                // will be invalidated and cause errors if used. 
+                // To ensure they aren't, we'll instantiate a new 
+                // TodayViewController and set it as the window's root VC.
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                let initialVC = storyboard.instantiateInitialViewController()
+                self.window?.rootViewController = initialVC
+                visibleVC = initialVC
+                
+                title = "Failed"
+                message = "Import failed. Please check that the file you " +
+                    "are trying to import is valid. Your data has been restored " +
+                "to the state before the import."
             } catch {
                 // Catch-all to satisfy function type requirements.
                 title = "Failed"
@@ -87,7 +102,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Prompt user as to whether they would like to import.
         let title = "Import"
         let message = "Would you like to import this data file to your app? " +
-                      "This will overwrite any existing data."
+                      "This will overwrite any existing data. If you haven't " +
+                      "made a backup of your existing data, tap cancel, go to " +
+                      "the Settings menu, export your data, and make a copy " +
+                      "somewhere safe."
         
         let alert = UIAlertController(title: title,
                                       message: message,
@@ -95,8 +113,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let cancel = UIAlertAction(title: "Cancel",
                                    style: .cancel,
                                    handler: nil)
-        let delete = UIAlertAction(title: "Import",
-                                   style: .default,
+        let delete = UIAlertAction(title: "Overwrite and Import",
+                                   style: .destructive,
                                    handler: importHandler)
         alert.addAction(cancel)
         alert.addAction(delete)
