@@ -123,6 +123,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
     }
     
     override func viewDidLoad() {
+        print(Unmanaged.passUnretained(context).toOpaque())
         super.viewDidLoad()
         
         title = "Spending"

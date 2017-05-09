@@ -20,7 +20,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
     
-    func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
+    func application(_ app: UIApplication,
+                     open url: URL,
+                     options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
         guard url.pathExtension == "dailyspend" else {
             return false
         }
@@ -29,24 +31,60 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let visibleVC = getVisibleViewController(rootVC)
         
         let importHandler: (UIAlertAction) -> Void = { _ in
-            if Importer.importDataUrl(url) {
+            // Initialize import feedback message.
+            var title = "Success"
+            var message = "The import has succeeded. Your data file has been " +
+            "loaded into the app."
+            
+            do {
+                // Attempt to import.
+                try Importer.importDataUrl(url)
+                // Success, load the main screen.
                 let storyboard = UIStoryboard(name: "Main", bundle: nil)
                 let initialVC = storyboard.instantiateInitialViewController()
                 self.window?.rootViewController = initialVC
-            } else {
-                let title = "Failed"
-                let message = "Import failed. Please check that the file you " +
-                    "are trying to import is valid. Your data has been restored " +
+            } catch ExportError.recoveredPersistentStoreFailed {
+                // Recovered from failure due to an error moving or accessing the
+                // persistent store.
+                title = "Failed"
+                message = "Import failed. Please check that your device isn't " +
+                    "running low on space. Your data has been restored " +
                     "to the state before the import."
-                let alert = UIAlertController(title: title,
-                                              message: message,
-                                              preferredStyle: .alert)
-                let okay = UIAlertAction(title: "Okay", style: .default, handler: nil)
-                alert.addAction(okay)
-                visibleVC?.present(alert, animated: true, completion: nil)
+            } catch ExportError.recoveredParseFailed {
+                // Recovered from failure due to an error parsing the import file.
+                title = "Failed"
+                message = "Import failed. Please check that the file you " +
+                    "are trying to import is valid. Your data has been restored " +
+                "to the state before the import."
+            } catch ExportError.unrecoverableDatabaseInBadState {
+                // Could not recover due to being unable to promote the backup
+                // persistent store to the primary persistent store.
+                title = "Failed"
+                message = "Import failed. Unfortunately, we were not able " +
+                          "to recover to the state before import, possibly " +
+                          "due to a number of factors, including possible " +
+                          "low space on your device. Check that the imported " +
+                          "file is in a correct format and that your device " +
+                          "has sufficient space and try again. Sorry for " +
+                          "this inconvenience. If you need help, please " +
+                          "contact support."
+            } catch {
+                // Catch-all to satisfy function type requirements.
+                title = "Failed"
+                message = "There was an unknown error."
             }
+            
+            // Create and present alert.
+            let alert = UIAlertController(title: title,
+                                          message: message,
+                                          preferredStyle: .alert)
+            let okay = UIAlertAction(title: "Okay", style: .default, handler: nil)
+            alert.addAction(okay)
+            visibleVC?.present(alert, animated: true, completion: nil)
         }
 
+        
+        // Prompt user as to whether they would like to import.
         let title = "Import"
         let message = "Would you like to import this data file to your app? " +
                       "This will overwrite any existing data."
@@ -121,7 +159,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // MARK: - Core Data stack
 
-    lazy var persistentContainer: NSPersistentContainer = {
+    lazy var persistentContainer: NSPersistentContainer! = {
         /*
          The persistent container for the application. This implementation
          creates and returns a container, having loaded the store for the

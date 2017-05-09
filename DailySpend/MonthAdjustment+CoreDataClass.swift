@@ -44,26 +44,34 @@ public class MonthAdjustment: NSManagedObject {
     }
     
     class func create(context: NSManagedObjectContext,
-                      json: [String: Any]) -> MonthAdjustment {
+                      json: [String: Any]) -> MonthAdjustment? {
         let monthAdj = MonthAdjustment(context: context)
         
         if let amount = json["amount"] as? NSNumber {
             let decimal = Decimal(amount.doubleValue)
             monthAdj.amount = decimal
+        } else {
+            return nil
         }
         
         if let dateEffective = json["dateEffective"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateEffective.doubleValue)
             monthAdj.dateEffective = date
+        } else {
+            return nil
         }
         
         if let reason = json["reason"] as? String {
             monthAdj.reason = reason
+        } else {
+            return nil
         }
         
         if let dateCreated = json["dateCreated"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateCreated.doubleValue)
             monthAdj.dateCreated = date
+        } else {
+            return nil
         }
         
         return monthAdj

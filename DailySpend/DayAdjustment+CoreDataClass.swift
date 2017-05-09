@@ -43,26 +43,34 @@ public class DayAdjustment: NSManagedObject {
     }
     
     class func create(context: NSManagedObjectContext,
-                      json: [String: Any]) -> DayAdjustment {
+                      json: [String: Any]) -> DayAdjustment? {
         let dayAdj = DayAdjustment(context: context)
         
         if let amount = json["amount"] as? NSNumber {
             let decimal = Decimal(amount.doubleValue)
             dayAdj.amount = decimal
+        } else {
+            return nil
         }
         
         if let dateAffected = json["dateAffected"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateAffected.doubleValue)
             dayAdj.dateAffected = date
+        } else {
+            return nil
         }
         
         if let reason = json["reason"] as? String {
             dayAdj.reason = reason
+        } else {
+            return nil
         }
         
         if let dateCreated = json["dateCreated"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateCreated.doubleValue)
             dayAdj.dateCreated = date
+        } else {
+            return nil
         }
         
         return dayAdj

@@ -41,25 +41,33 @@ public class Expense: NSManagedObject {
     }
     
     class func create(context: NSManagedObjectContext,
-                      json: [String: Any]) -> Expense {
+                      json: [String: Any]) -> Expense? {
         let expense = Expense(context: context)
         
         if let amount = json["amount"] as? NSNumber {
             let decimal = Decimal(amount.doubleValue)
             expense.amount = decimal
+        } else {
+            return nil
         }
         
         if let shortDescription = json["shortDescription"] as? String {
             expense.shortDescription = shortDescription
+        } else {
+            return nil
         }
         
         if let notes = json["notes"] as? String {
             expense.notes = notes
+        } else {
+            return nil
         }
         
         if let dateCreated = json["dateCreated"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateCreated.doubleValue)
             expense.dateCreated = date
+        } else {
+            return nil
         }
         
         return expense

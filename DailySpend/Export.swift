@@ -87,24 +87,60 @@ class Exporter {
     }
 }
 
+enum ExportError: Error {
+    case unrecoverableDatabaseInBadState
+    case recoveredParseFailed
+    case recoveredPersistentStoreFailed
+}
+
 class Importer {
-    class func importDataUrl(_ url: URL) -> Bool {
-        guard let istream = InputStream(url: url) else {
-            return false
+    class func importDataUrl(_ url: URL) throws {
+        guard let managedObjMod = context.persistentStoreCoordinator?.managedObjectModel,
+              let istream = InputStream(url: url),
+              let ambiguousObj = try? JSONSerialization.jsonObject(with: istream, options: []),
+              let jsonObj = ambiguousObj as? [[String: Any]] else {
+            throw ExportError.recoveredParseFailed
         }
         
-        guard let ambiguousObj = try? JSONSerialization.jsonObject(with: istream, options: []) else {
-            return false
+        // Make backup copy of store.
+        let backupStoreCoord = NSPersistentStoreCoordinator(managedObjectModel: managedObjMod)
+        
+        if backupStoreCoord.persistentStores.count != 1 {
+            throw ExportError.recoveredPersistentStoreFailed
         }
         
-        guard let jsonObj = ambiguousObj as? [[String: Any]] else {
-            return false
-        }
+        let backupStore = backupStoreCoord.persistentStores.first!
+        let origStoreURL = backupStore.url!
         
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd-MM-yy-HHmmss"
+        let name = dateFormatter.string(from: Date()) + ".sqlite"
+        let backupStoreURL = origStoreURL.deletingLastPathComponent()
+                                         .appendingPathComponent(name, isDirectory: false)
+        
+        do {
+            try backupStoreCoord.migratePersistentStore(backupStore,
+                                                  to: backupStoreURL,
+                                                  options: nil,
+                                                  withType: NSSQLiteStoreType)
+        } catch {
+            throw ExportError.recoveredPersistentStoreFailed
+        }
+
         for jsonMonth in jsonObj {
-            _ = Month.create(context: context, json: jsonMonth)
+            if Month.create(context: context, json: jsonMonth) == nil {
+                // This import failed. Reset to normal.
+                do {
+                    try backupStoreCoord.migratePersistentStore(backupStore,
+                                                                to: backupStoreURL,
+                                                                options: nil,
+                                                                withType: NSSQLiteStoreType)
+                } catch {
+                    // Reset failed.
+                    throw ExportError.unrecoverableDatabaseInBadState
+                }
+            }
         }
         
-        return true
     }
 }

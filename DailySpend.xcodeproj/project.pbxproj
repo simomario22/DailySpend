@@ -28,7 +28,6 @@
 		C517B1FE1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = C517B1EA1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt */; };
 		C517B1FF1EBC134200CDAA17 /* UICountingLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = C517B1EC1EBC134200CDAA17 /* UICountingLabel.m */; };
 		C518B59A1E88C7F0009CA4BB /* Decimal+DoubleValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C518B5991E88C7F0009CA4BB /* Decimal+DoubleValue.swift */; };
-		C51A224E1EBFB32D00B53C24 /* LICENSE.md in Sources */ = {isa = PBXBuildFile; fileRef = C51A224D1EBFB32D00B53C24 /* LICENSE.md */; };
 		C5316BF61E78D80F00BC2918 /* AddExpenseTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5316BF51E78D80F00BC2918 /* AddExpenseTableViewCell.swift */; };
 		C5316C291E7B240D00BC2918 /* Date+Arithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5316C281E7B240D00BC2918 /* Date+Arithmetic.swift */; };
 		C538FAB91E85696200295062 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C538FAB71E85696200295062 /* Main.storyboard */; };
@@ -577,7 +576,6 @@
 				C517B1FC1EBC134200CDAA17 /* SSZipArchive+Swift.swift in Sources */,
 				C517B1FA1EBC134200CDAA17 /* unzip.c in Sources */,
 				C5C65A221EBBFBC6002D1B12 /* ExportViewController.swift in Sources */,
-				C51A224E1EBFB32D00B53C24 /* LICENSE.md in Sources */,
 				C56500171E837F37009D64F0 /* Month+CoreDataProperties.swift in Sources */,
 				C517B1F51EBC134200CDAA17 /* sha1.c in Sources */,
 				C5EE62A31E85769700CAEEE7 /* String+CharacterSet.swift in Sources */,

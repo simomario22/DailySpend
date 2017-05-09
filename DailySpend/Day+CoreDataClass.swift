@@ -57,36 +57,52 @@ public class Day: NSManagedObject {
     }
     
     class func create(context: NSManagedObjectContext,
-                      json: [String: Any]) -> Day {
+                      json: [String: Any]) -> Day? {
         let day = Day(context: context)
         
         if let baseTargetSpend = json["baseTargetSpend"] as? NSNumber {
             let decimal = Decimal(baseTargetSpend.doubleValue)
             day.baseTargetSpend = decimal
+        } else {
+            return nil
         }
         
         if let dateNumber = json["date"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateNumber.doubleValue)
             day.date = date
+        } else {
+            return nil
         }
         
         if let jsonAdjs = json["adjustments"] as? [[String: Any]] {
             for jsonAdj in jsonAdjs {
-                let dayAdj = DayAdjustment.create(context: context, json: jsonAdj)
-                dayAdj.day = day
+                if let dayAdj = DayAdjustment.create(context: context, json: jsonAdj) {
+                    dayAdj.day = day
+                } else {
+                    return nil
+                }
             }
+        } else {
+            return nil
         }
         
         if let jsonExps = json["expenses"] as? [[String: Any]] {
             for jsonExp in jsonExps {
-                let expense = Expense.create(context: context, json: jsonExp)
-                expense.day = day
+                if let expense = Expense.create(context: context, json: jsonExp) {
+                    expense.day = day
+                } else {
+                    return nil
+                }
             }
+        } else {
+            return nil
         }
         
         if let dateCreated = json["dateCreated"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateCreated.doubleValue)
             day.dateCreated = date
+        } else {
+            return nil
         }
         
         return day

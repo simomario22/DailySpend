@@ -58,36 +58,52 @@ public class Month: NSManagedObject {
     }
     
     class func create(context: NSManagedObjectContext,
-                      json: [String: Any]) -> Month {
+                      json: [String: Any]) -> Month? {
         let month = Month(context: context)
         
         if let dailyBaseTargetSpend = json["dailyBaseTargetSpend"] as? NSNumber {
             let decimal = Decimal(dailyBaseTargetSpend.doubleValue)
             month.dailyBaseTargetSpend = decimal
+        } else {
+            return nil
         }
         
         if let monthNumber = json["month"] as? NSNumber {
             let date = Date(timeIntervalSince1970: monthNumber.doubleValue)
             month.month = date
+        } else {
+            return nil
         }
         
         if let jsonAdjs = json["adjustments"] as? [[String: Any]] {
             for jsonAdj in jsonAdjs {
-                let monthAdj = MonthAdjustment.create(context: context, json: jsonAdj)
-                monthAdj.month = month
+                if let monthAdj = MonthAdjustment.create(context: context, json: jsonAdj) {
+                    monthAdj.month = month
+                } else {
+                    return nil
+                }
             }
+        } else {
+            return nil
         }
         
         if let jsonDays = json["days"] as? [[String: Any]] {
             for jsonDay in jsonDays {
-                let day = Day.create(context: context, json: jsonDay)
-                day.month = month
+                if let day = Day.create(context: context, json: jsonDay) {
+                    day.month = month
+                } else {
+                    return nil
+                }
             }
+        } else {
+            return nil
         }
         
         if let dateCreated = json["dateCreated"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateCreated.doubleValue)
             month.dateCreated = date
+        } else {
+            return nil
         }
         
         return month
