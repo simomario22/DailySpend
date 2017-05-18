@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import AVFoundation
 
 class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
     
@@ -204,6 +205,41 @@ class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
     
     func datePickerChanged(sender: UIDatePicker) {
         selectedDate = datePicker.date
+
+    }
+    
+    @IBAction func addPhoto(_ sender: UIButton) {
+        let status = AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo)
+        if 
+        if (authStatus == AVAuthorizationStatusDenied)
+        {
+            // Denies access to camera, alert the user.
+            // The user has previously denied access. Remind the user that we need camera access to be useful.
+            UIAlertController *alertController =
+                [UIAlertController alertControllerWithTitle:@"Unable to access the Camera"
+                    message:@"To enable access, go to Settings > Privacy > Camera and turn on Camera access for this app."
+                    preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction *ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
+            [alertController addAction:ok];
+            
+            [self presentViewController:alertController animated:YES completion:nil];
+        }
+        else if (authStatus == AVAuthorizationStatusNotDetermined)
+        // The user has not yet been presented with the option to grant access to the camera hardware.
+        // Ask for it.
+        [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^( BOOL granted ) {
+        // If access was denied, we do not set the setup error message since access was just denied.
+        if (granted)
+        {
+        // Allowed access to camera, go ahead and present the UIImagePickerController.
+        [self showImagePickerForSourceType:UIImagePickerControllerSourceTypeCamera fromButton:sender];
+        }
+        }];
+        else
+        {
+            // Allowed access to camera, go ahead and present the UIImagePickerController.
+            [self showImagePickerForSourceType:UIImagePickerControllerSourceTypeCamera fromButton:sender];
+        }
 
     }
     

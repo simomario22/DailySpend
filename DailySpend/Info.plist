@@ -78,5 +78,9 @@
 			</dict>
 		</dict>
 	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>To allow you to select receipts associated with expenses.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>To allow you to take photos of receipts associated with expenses.</string>
 </dict>
 </plist>
