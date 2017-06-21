@@ -24,24 +24,18 @@ class ExportViewController: UITableViewController {
         let exportButton = UIBarButtonItem(title: "Export",
                                            style: .plain,
                                            target: self,
-                                           action: #selector(export))
+                                           action: #selector(exportPressed))
         self.navigationItem.rightBarButtonItem = exportButton
         
         itemsToExport.append(.Data)
 //        itemsToExport.append(.Photos)
     }
     
-    func export() {
-        let containsPhotos = itemsToExport.contains(.Photos)
-        let containsData = itemsToExport.contains(.Data)
-        guard containsData || containsPhotos else {
-            return
-        }
-        
+    func export(_ containsPhotos: Bool, _ containsData: Bool) {
         func failure(_ location: String) {
             let title = "Failed"
             let message = "Export failed due to an issue while \(location). " +
-                          "Sorry, try again later or contact support."
+            "Sorry, try again later or contact support."
             let alert = UIAlertController(title: title,
                                           message: message,
                                           preferredStyle: .alert)
@@ -49,7 +43,6 @@ class ExportViewController: UITableViewController {
             alert.addAction(okay)
             self.present(alert, animated: true, completion: nil)
         }
-
         
         var shareURL: URL! = nil
         var directoryURL: URL! = nil
@@ -75,7 +68,9 @@ class ExportViewController: UITableViewController {
         
         shareURL = directoryURL
         
-        if !(containsData && !containsPhotos) {
+        if containsData && !containsPhotos {
+            shareURL = fileURL
+        } else {
             let zipURL = directoryURL.appendingPathExtension("zip")
             
             if !SSZipArchive.createZipFile(atPath: zipURL.absoluteString,
@@ -85,19 +80,42 @@ class ExportViewController: UITableViewController {
             }
             
             shareURL = zipURL
-        } else {
-            shareURL = fileURL
         }
         
         let activityView = UIActivityViewController(activityItems: [shareURL],
                                                     applicationActivities: nil)
+
         activityView.completionWithItemsHandler = { (_, completed: Bool, _, _) in
             // Attempt to delete shared files.
             let fm = FileManager.default
             try? fm.removeItem(at: shareURL)
             try? fm.removeItem(at: directoryURL)
         }
+
         self.present(activityView, animated: true, completion: nil)
+    }
+
+    func exportPressed() {
+        let containsPhotos = itemsToExport.contains(.Photos)
+        let containsData = itemsToExport.contains(.Data)
+        guard containsData || containsPhotos else {
+            return
+        }
+
+        let exportButton = self.navigationItem.rightBarButtonItem
+
+        // Initialize spinner and frame and add to nav bar.
+        let spinner = UIActivityIndicatorView(activityIndicatorStyle: .gray)
+        let bbi = UIBarButtonItem(customView: spinner)
+        spinner.startAnimating()
+
+        self.navigationItem.rightBarButtonItem = bbi
+
+        // Dispatch asyncronously in order to let view update with spinner.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01, execute: {
+            self.export(containsPhotos, containsData)
+            self.navigationItem.rightBarButtonItem = exportButton
+        })
     }
 
     override func didReceiveMemoryWarning() {
