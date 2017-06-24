@@ -133,7 +133,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
                        name: NSNotification.Name.UIApplicationWillEnterForeground,
                        object: nil)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.0001) {
-            let currentDayPath = IndexPath(row: self.lastExpenseCellIndex + 1, section: 0)
+            let currentDayPath = IndexPath(row: self.currentDayCellIndex, section: 0)
             self.tableView.scrollToRow(at: currentDayPath,
                                        at: .top, animated: false)
         }
@@ -168,14 +168,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
         monthsFetchReq.predicate = monthsPred
         months = try! context.fetch(monthsFetchReq)
     }
-    
-    var visibleHeight: CGFloat {
-        let topHeight = UIApplication.shared.statusBarFrame.height +
-            self.navigationController!.navigationBar.frame.height
-        let windowFrameHeight = tableView.frame.height
-        return windowFrameHeight - topHeight;
-    }
-    
+
     /*
      * Calculates the number of on-screen spots for expenses (including "see
      * additional" spots) while keeping addExpenseMinPxVisible pixels visible in
@@ -209,8 +202,12 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
         return currentDayCellIndex + numExpenseSpots
     }
     
-    var blankCellIndex: Int {
+    var addExpenseCellIndex: Int {
         return lastExpenseCellIndex + 1
+    }
+    
+    var blankCellIndex: Int {
+        return addExpenseCellIndex + 1
     }
     
     var heightUsed: CGFloat {
@@ -218,6 +215,12 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
         return currentDayHeight + expensesHeight + addExpenseHeight
     }
     
+    var visibleHeight: CGFloat {
+        let topHeight = UIApplication.shared.statusBarFrame.height +
+            self.navigationController!.navigationBar.frame.height
+        let windowFrameHeight = UIScreen.main.bounds.size.height
+        return windowFrameHeight - topHeight;
+    }
     
     /* Table view data source methods */
     
@@ -442,9 +445,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
         self.navigationItem.rightBarButtonItem = saveBBI
         self.navigationItem.leftBarButtonItem = cancelBBI
         
-        let locationOfAddExpenseCell = months.count + daysThisMonth.count + numExpenseSpots
-        
-        self.tableView.scrollToRow(at: IndexPath(row: locationOfAddExpenseCell, section: 0),
+        self.tableView.scrollToRow(at: IndexPath(row: addExpenseCellIndex, section: 0),
                                    at: .top, animated: true)
     }
     
