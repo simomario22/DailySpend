@@ -25,7 +25,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
         
     }
     var addExpenseHeight: CGFloat {
-        let baseHeight: CGFloat = 213
+        let baseHeight: CGFloat = 295
         if addingExpense {
             return visibleHeight
         } else {
@@ -427,6 +427,10 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
         }
     }
     
+    func present(_ vc: UIViewController, animated: Bool, completion: (() -> Void)?, sender: Any?) {
+        self.present(vc, animated: animated, completion: completion)
+    }
+    
     /* Add Expense TableView Cell delegate methods */
     
     func didBeginEditing(sender: AddExpenseTableViewCell) {
@@ -520,20 +524,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
         self.tableView.scrollToRow(at: path,
                                    at: .top, animated: true)
     }
-    
-    func invalidFields(sender: AddExpenseTableViewCell) {
-        let message = "Please enter valid values for amount, description, and date."
-        let alert = UIAlertController(title: "Invalid Fields",
-                                      message: message,
-                                      preferredStyle: UIAlertControllerStyle.alert)
-        alert.addAction(UIAlertAction(title: "Okay", style: .default, handler: nil))
-        
-        self.present(alert, animated: true, completion: nil)
-    }
-    
-    
-    
-    
+
     func printAllCoreData() {
         print("\(months.count) months (not including this one)")
         print("\(daysThisMonth.count) days this month")

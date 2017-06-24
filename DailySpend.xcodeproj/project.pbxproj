@@ -34,6 +34,7 @@
 		C53BCAA71E9203BC000B5EE1 /* cal_recur.png in Resources */ = {isa = PBXBuildFile; fileRef = C53BCAA41E9203BC000B5EE1 /* cal_recur.png */; };
 		C53BCAA81E9203BC000B5EE1 /* cal_recur@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C53BCAA51E9203BC000B5EE1 /* cal_recur@2x.png */; };
 		C53BCAA91E9203BC000B5EE1 /* cal_recur@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C53BCAA61E9203BC000B5EE1 /* cal_recur@3x.png */; };
+		C54E4F491EFD3984006A1CA3 /* ImageSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54E4F481EFD3984006A1CA3 /* ImageSelectorView.swift */; };
 		C56500161E837F37009D64F0 /* Month+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C565000C1E837F37009D64F0 /* Month+CoreDataClass.swift */; };
 		C56500171E837F37009D64F0 /* Month+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C565000D1E837F37009D64F0 /* Month+CoreDataProperties.swift */; };
 		C56500181E837F37009D64F0 /* DayAdjustment+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C565000E1E837F37009D64F0 /* DayAdjustment+CoreDataClass.swift */; };
@@ -141,6 +142,7 @@
 		C53BCAA41E9203BC000B5EE1 /* cal_recur.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cal_recur.png; sourceTree = "<group>"; };
 		C53BCAA51E9203BC000B5EE1 /* cal_recur@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cal_recur@2x.png"; sourceTree = "<group>"; };
 		C53BCAA61E9203BC000B5EE1 /* cal_recur@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cal_recur@3x.png"; sourceTree = "<group>"; };
+		C54E4F481EFD3984006A1CA3 /* ImageSelectorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageSelectorView.swift; sourceTree = "<group>"; };
 		C565000C1E837F37009D64F0 /* Month+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Month+CoreDataClass.swift"; path = "DailySpend/Month+CoreDataClass.swift"; sourceTree = "<group>"; };
 		C565000D1E837F37009D64F0 /* Month+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Month+CoreDataProperties.swift"; path = "DailySpend/Month+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		C565000E1E837F37009D64F0 /* DayAdjustment+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "DayAdjustment+CoreDataClass.swift"; path = "DailySpend/DayAdjustment+CoreDataClass.swift"; sourceTree = "<group>"; };
@@ -359,6 +361,7 @@
 				C5DD5A821E83B383008F7FC6 /* CurrentDayTableViewCell.swift */,
 				C5EDC2261EBBC12400DA5CB7 /* SettingsViewController.swift */,
 				C5C65A211EBBFBC6002D1B12 /* ExportViewController.swift */,
+				C54E4F481EFD3984006A1CA3 /* ImageSelectorView.swift */,
 				C503F1391EA1A8A100FA95A7 /* Export.swift */,
 				C538FAB71E85696200295062 /* Main.storyboard */,
 				C5316C2A1E7B241200BC2918 /* Extensions */,
@@ -588,6 +591,7 @@
 				C565001A1E837F37009D64F0 /* Day+CoreDataClass.swift in Sources */,
 				C5BA55B71E8DB17800256E7A /* ExpenseViewController.swift in Sources */,
 				C517B1F41EBC134200CDAA17 /* pwd2key.c in Sources */,
+				C54E4F491EFD3984006A1CA3 /* ImageSelectorView.swift in Sources */,
 				C5DD5A851E83B4AC008F7FC6 /* InitialSpendViewController.swift in Sources */,
 				C518B59A1E88C7F0009CA4BB /* Decimal+DoubleValue.swift in Sources */,
 				C56500181E837F37009D64F0 /* DayAdjustment+CoreDataClass.swift in Sources */,

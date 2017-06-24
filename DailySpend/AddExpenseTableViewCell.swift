@@ -10,7 +10,9 @@ import UIKit
 import CoreData
 import AVFoundation
 
-class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
+class AddExpenseTableViewCell:
+UITableViewCell, UITextFieldDelegate,
+UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
     var context: NSManagedObjectContext {
@@ -210,37 +212,51 @@ class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
     
     @IBAction func addPhoto(_ sender: UIButton) {
         let status = AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo)
-        if 
-        if (authStatus == AVAuthorizationStatusDenied)
-        {
-            // Denies access to camera, alert the user.
-            // The user has previously denied access. Remind the user that we need camera access to be useful.
-            UIAlertController *alertController =
-                [UIAlertController alertControllerWithTitle:@"Unable to access the Camera"
-                    message:@"To enable access, go to Settings > Privacy > Camera and turn on Camera access for this app."
-                    preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction *ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
-            [alertController addAction:ok];
-            
-            [self presentViewController:alertController animated:YES completion:nil];
+        
+        switch status {
+        case .denied:
+            // The user has previously denied access. Remind the user that we
+            // need camera access to be useful.
+            let message = "To enable access, go to Settings > Privacy > Camera" +
+            "and turn on Camera access for this app."
+            let alert = UIAlertController(title: "Unable to access the Camera",
+                                          message: message, preferredStyle: .alert)
+            let okay = UIAlertAction(title: "Okay", style: .default, handler: nil)
+            alert.addAction(okay)
+            delegate?.present(alert, animated: true, completion: nil, sender: self)
+        case .notDetermined:
+            // The user has not yet been presented with the option to grant
+            // access to the camera hardware. Ask for it.
+            AVCaptureDevice.requestAccess(forMediaType: AVMediaTypeVideo,
+                                          completionHandler:
+                { (granted: Bool) in
+                    // If access was denied, we do not set the setup error
+                    // message since access was just denied.
+                    if granted {
+                        // Allowed access to camera, present UIImagePickerController.
+                        self.showImagePickerForSourceType(.camera, fromButton: sender)
+                    }
+            })
+        default:
+            // Has previously allowed access to camera, present 
+            // UIImagePickerController.
+            showImagePickerForSourceType(.camera, fromButton: sender)
         }
-        else if (authStatus == AVAuthorizationStatusNotDetermined)
-        // The user has not yet been presented with the option to grant access to the camera hardware.
-        // Ask for it.
-        [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^( BOOL granted ) {
-        // If access was denied, we do not set the setup error message since access was just denied.
-        if (granted)
-        {
-        // Allowed access to camera, go ahead and present the UIImagePickerController.
-        [self showImagePickerForSourceType:UIImagePickerControllerSourceTypeCamera fromButton:sender];
-        }
-        }];
-        else
-        {
-            // Allowed access to camera, go ahead and present the UIImagePickerController.
-            [self showImagePickerForSourceType:UIImagePickerControllerSourceTypeCamera fromButton:sender];
-        }
-
+    }
+    
+    @IBAction func showImagePickerForPhotoPicker(_ sender: UIButton) {
+        self.showImagePickerForSourceType(.photoLibrary, fromButton: sender)
+    }
+    
+    func showImagePickerForSourceType(_ sourceType: UIImagePickerControllerSourceType,
+                                      fromButton: UIButton) {
+        
+        let imagePicker = UIImagePickerController()
+        imagePicker.modalPresentationStyle = .currentContext
+        imagePicker.sourceType = sourceType
+        imagePicker.delegate = self
+        imagePicker.modalPresentationStyle = (sourceType == .camera) ? .fullScreen : .popover
+        delegate?.present(imagePicker, animated: true, completion: nil, sender: self)
     }
     
     func dismissDatePicker() {
@@ -346,7 +362,12 @@ class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
         if amount <= 0 ||
             shortDescription.characters.count == 0 ||
             selectedDate == nil {
-            delegate?.invalidFields(sender: self)
+            let message = "Please enter valid values for amount, description, and date."
+            let alert = UIAlertController(title: "Invalid Fields",
+                                          message: message,
+                                          preferredStyle: UIAlertControllerStyle.alert)
+            alert.addAction(UIAlertAction(title: "Okay", style: .default, handler: nil))
+            delegate?.present(alert, animated: true, completion: nil, sender: self)
         } else {
             // Create days up to today.
             let earliestDayFetchReq: NSFetchRequest<Day> = Day.fetchRequest()
@@ -426,5 +447,5 @@ protocol AddExpenseTableViewCellDelegate: class {
     func completedExpense(sender: AddExpenseTableViewCell,
                           expense: Expense,
                           reloadFull: Bool)
-    func invalidFields(sender: AddExpenseTableViewCell)
+    func present(_ vc: UIViewController, animated: Bool, completion: (() -> Void)?, sender: Any?)
 }

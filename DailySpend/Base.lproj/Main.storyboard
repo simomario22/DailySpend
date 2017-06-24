@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="G5v-Vy-ekD">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="G5v-Vy-ekD">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -126,11 +126,11 @@
                                             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="addExpense" rowHeight="252" id="Re8-S4-vOu" customClass="AddExpenseTableViewCell" customModule="DailySpend" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="246" width="375" height="252"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="addExpense" rowHeight="295" id="Re8-S4-vOu" customClass="AddExpenseTableViewCell" customModule="DailySpend" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="246" width="375" height="295"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Re8-S4-vOu" id="xnj-G8-kh6">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="252"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="295"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Add Expense" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="leq-h6-itk">
@@ -179,27 +179,21 @@
                                                         <action selector="editNotes:" destination="Re8-S4-vOu" eventType="touchUpInside" id="q0y-Pb-T08"/>
                                                     </connections>
                                                 </button>
-                                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gjG-jz-3UG">
-                                                    <rect key="frame" x="97" y="207" width="183" height="35"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleTitle1"/>
-                                                    <inset key="contentEdgeInsets" minX="0.0" minY="0.0" maxX="0.0" maxY="1"/>
-                                                    <state key="normal" title="Receipt Photos">
-                                                        <color key="titleColor" red="0.75294117650000003" green="0.75294117650000003" blue="0.77647058820000003" alpha="1" colorSpace="calibratedRGB"/>
-                                                    </state>
-                                                    <connections>
-                                                        <action selector="addPhoto:" destination="Re8-S4-vOu" eventType="touchUpInside" id="a9s-Yq-s1g"/>
-                                                        <action selector="editNotes:" destination="Re8-S4-vOu" eventType="touchUpInside" id="8k6-bY-xK1"/>
-                                                    </connections>
-                                                </button>
+                                                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sBG-xW-CJu" customClass="ImageSelectorView" customModule="DailySpend" customModuleProvider="target">
+                                                    <rect key="frame" x="76" y="207" width="224" height="72"/>
+                                                </scrollView>
                                             </subviews>
                                             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <constraints>
+                                                <constraint firstItem="sBG-xW-CJu" firstAttribute="top" secondItem="23x-Mw-cAq" secondAttribute="bottom" constant="8" id="5mZ-XF-YbQ"/>
                                                 <constraint firstItem="y55-Je-4kr" firstAttribute="centerX" secondItem="xnj-G8-kh6" secondAttribute="centerX" id="83N-Fj-kpn"/>
                                                 <constraint firstItem="y55-Je-4kr" firstAttribute="top" secondItem="dFU-rV-11A" secondAttribute="bottom" constant="8" id="9Cy-FF-W4u"/>
                                                 <constraint firstItem="leq-h6-itk" firstAttribute="centerX" secondItem="xnj-G8-kh6" secondAttribute="centerX" id="AqC-vq-0I3"/>
                                                 <constraint firstItem="0jQ-O4-zlP" firstAttribute="top" secondItem="y55-Je-4kr" secondAttribute="bottom" constant="8" id="CNw-0M-Uku"/>
                                                 <constraint firstItem="23x-Mw-cAq" firstAttribute="top" secondItem="0jQ-O4-zlP" secondAttribute="bottom" constant="8" id="Kf9-vs-FGn"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="sBG-xW-CJu" secondAttribute="bottom" constant="8" id="V2u-TV-Nnq"/>
+                                                <constraint firstItem="sBG-xW-CJu" firstAttribute="leading" secondItem="xnj-G8-kh6" secondAttribute="leadingMargin" constant="68" id="W9F-eB-EVD"/>
+                                                <constraint firstItem="sBG-xW-CJu" firstAttribute="centerX" secondItem="xnj-G8-kh6" secondAttribute="centerX" id="Xfj-kh-hCU"/>
                                                 <constraint firstAttribute="topMargin" secondItem="leq-h6-itk" secondAttribute="top" id="Y3g-Ps-Ire"/>
                                                 <constraint firstItem="dFU-rV-11A" firstAttribute="centerX" secondItem="xnj-G8-kh6" secondAttribute="centerX" id="Zfu-K3-QtF"/>
                                                 <constraint firstItem="0jQ-O4-zlP" firstAttribute="centerX" secondItem="xnj-G8-kh6" secondAttribute="centerX" id="f1e-2z-KAY"/>
@@ -216,7 +210,7 @@
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="blank" rowHeight="44" id="GBg-vw-hUX">
-                                        <rect key="frame" x="0.0" y="498" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="541" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="GBg-vw-hUX" id="EVz-9e-u8a">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
