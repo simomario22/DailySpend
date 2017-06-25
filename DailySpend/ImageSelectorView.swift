@@ -9,10 +9,12 @@
 import UIKit
 import QuartzCore
 import AVFoundation
+import NYTPhotoViewer
 
 class ImageSelectorView: UIScrollView,
 UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     private var _images = [UIImage]()
+    private var photoBoxes = [NYTPhotoBox]()
     
     var selectorDelegate: ImageSelectorDelegate?
 
@@ -47,6 +49,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
         addButton.titleLabel?.font = font
         addButton.addTarget(self, action: #selector(selectSourceForNewPhoto(sender:)),
                             for: .touchUpInside)
+        addButton.tag = -1
         self.addSubview(addButton)
         
         // Add all image buttons.
@@ -56,19 +59,10 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
             photoButton.addTarget(self, action: #selector(viewPhoto(_:)),
                                   for: .touchUpInside)
             
-            let buttonSize = photoButton.frame.width
-            var newSize = CGSize()
-            if image.size.height > image.size.width {
-                // Resize the width to be the same as the photo button.
-                newSize.width = buttonSize
-                newSize.height = image.size.height * (buttonSize / image.size.width)
-            } else {
-                // Resize the height to be the same as the photo button.
-                newSize.width = image.size.width * (buttonSize / image.size.height)
-                newSize.height = buttonSize
-            }
-            let resizedImage = resizeImage(image, newSize: newSize)
-            photoButton.setImage(resizedImage, for: .normal)
+            photoButton.setImage(image, for: .normal)
+            photoButton.imageView?.layer.shouldRasterize = true
+            photoButton.imageView?.layer.rasterizationScale = 6
+            photoButton.imageView?.layer.minificationFilter = kCAFilterTrilinear
             photoButton.imageView?.contentMode = .scaleAspectFill
             self.addSubview(photoButton)
         }
@@ -154,14 +148,22 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController,
                                didFinishPickingMediaWithInfo info: [String : Any]) {
         let image: UIImage = info[UIImagePickerControllerOriginalImage] as! UIImage
+        let photoBox = NYTPhotoBox(photoId: 0, image: image)
         _images.insert(image, at: 0)
+        photoBoxes.forEach { $0.photoId += 1 }
+        photoBoxes.insert(photoBox, at: 0)
         recreateButtons()
         picker.dismiss(animated: true, completion: nil)
         
     }
     
     func viewPhoto(_ sender: UIButton!) {
-        print("selected photo \(sender.tag)")
+        let photoId = sender.tag
+
+        let vc = NYTPhotosViewController(photos: photoBoxes,
+                                         initialPhoto: photoBoxes[photoId],
+                                         delegate: self)
+        selectorDelegate?.present(vc, animated: true, completion: nil, sender: self)
     }
 
     func makeButton(index: Int, type: UIButtonType = .system) -> UIButton {
@@ -188,32 +190,44 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
         UIGraphicsEndImageContext()
         return image
     }
-    
-    // Based on https://stackoverflow.com/questions/12730384/ios-uiimageview-
-    // scaling-image-down-produces-aliased-image-on-ipad-2
-    func resizeImage(_ image: UIImage, newSize: CGSize) -> UIImage {
-        let newRect = CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height).integral
-        let imageRef = image.cgImage
-        UIGraphicsBeginImageContextWithOptions(newSize, false, 0)
-        let context = UIGraphicsGetCurrentContext()
-        // Set quality level to use when rescaling
-        context?.interpolationQuality = .high
-        let flipVertical = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: newSize.height)
-        
-        context?.concatenate(flipVertical)
-        // Draw and scale
-        context?.draw(imageRef!, in: newRect)
-        
-        // Get image and convert to UIImage.
-        let newImageRef = context?.makeImage()
-        let newImage = UIImage(cgImage: newImageRef!)
-        
-        return newImage
-    }
 }
 
 protocol ImageSelectorDelegate: class {
     func selectedNewImage(_ image: UIImage)
     func removedImage(_ image: UIImage)
     func present(_ vc: UIViewController, animated: Bool, completion: (() -> Void)?, sender: Any?)
+}
+
+
+extension ImageSelectorView: NYTPhotosViewControllerDelegate {
+
+    func photosViewController(_ photosViewController: NYTPhotosViewController, handleActionButtonTappedFor photo: NYTPhoto) -> Bool {
+        guard UIDevice.current.userInterfaceIdiom == .pad, let photoImage = photo.image else {
+            return false
+        }
+
+        let shareActivityViewController = UIActivityViewController(activityItems: [photoImage], applicationActivities: nil)
+        shareActivityViewController.completionWithItemsHandler = {(activityType: UIActivityType?, completed: Bool, items: [Any]?, error: Error?) in
+            if completed {
+                photosViewController.delegate?.photosViewController!(photosViewController, actionCompletedWithActivityType: activityType?.rawValue)
+            }
+        }
+
+        shareActivityViewController.popoverPresentationController?.barButtonItem = photosViewController.rightBarButtonItem
+        photosViewController.present(shareActivityViewController, animated: true, completion: nil)
+
+        return true
+    }
+
+    func photosViewController(_ photosViewController: NYTPhotosViewController, referenceViewFor photo: NYTPhoto) -> UIView? {
+        guard let box = photo as? NYTPhotoBox else { return nil }
+
+        let tag = box.photoId
+        for view in subviews {
+            if view.tag == tag {
+                return view
+            }
+        }
+        return nil
+    }
 }
