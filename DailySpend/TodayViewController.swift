@@ -25,7 +25,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
         
     }
     var addExpenseHeight: CGFloat {
-        let baseHeight: CGFloat = 295
+        let baseHeight: CGFloat = 305
         if addingExpense {
             return visibleHeight
         } else {

@@ -8,12 +8,10 @@
 
 import UIKit
 import CoreData
-import AVFoundation
 
 class AddExpenseTableViewCell:
-UITableViewCell, UITextFieldDelegate,
-UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    
+UITableViewCell, UITextFieldDelegate, ImageSelectorDelegate {
+
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
     var context: NSManagedObjectContext {
         return appDelegate.persistentContainer.viewContext
@@ -36,17 +34,20 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     let resignAllButton = UIButton()
     let notesTextView = UITextView()
 
+
     @IBOutlet weak var amountField: UITextField!
     @IBOutlet weak var descriptionField: UITextField!
     @IBOutlet weak var dateButton: UIButton!
     @IBOutlet weak var notesButton: UIButton!
     @IBOutlet weak var addExpenseLabel: UILabel!
+    @IBOutlet weak var imageSelector: ImageSelectorView!
 
     
     override func awakeFromNib() {
         super.awakeFromNib()
         amountField.delegate = self
         descriptionField.delegate = self
+        imageSelector.selectorDelegate = self
         let nc = NotificationCenter.default
         nc.addObserver(self,
                        selector: #selector(keyboardWillChangeFrame),
@@ -162,7 +163,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     @IBAction func editDate(_ sender: UIButton?) {
         checkForFirstEdit()
         
-        datePicker.minimumDate = nil
+        datePicker.minimumDate = Date(timeIntervalSince1970: 0)
         datePicker.maximumDate = Date()
         datePicker.setDate(selectedDate ?? Date(), animated: false)
         datePicker.datePickerMode = .date
@@ -209,56 +210,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
         selectedDate = datePicker.date
 
     }
-    
-    @IBAction func addPhoto(_ sender: UIButton) {
-        let status = AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo)
         
-        switch status {
-        case .denied:
-            // The user has previously denied access. Remind the user that we
-            // need camera access to be useful.
-            let message = "To enable access, go to Settings > Privacy > Camera" +
-            "and turn on Camera access for this app."
-            let alert = UIAlertController(title: "Unable to access the Camera",
-                                          message: message, preferredStyle: .alert)
-            let okay = UIAlertAction(title: "Okay", style: .default, handler: nil)
-            alert.addAction(okay)
-            delegate?.present(alert, animated: true, completion: nil, sender: self)
-        case .notDetermined:
-            // The user has not yet been presented with the option to grant
-            // access to the camera hardware. Ask for it.
-            AVCaptureDevice.requestAccess(forMediaType: AVMediaTypeVideo,
-                                          completionHandler:
-                { (granted: Bool) in
-                    // If access was denied, we do not set the setup error
-                    // message since access was just denied.
-                    if granted {
-                        // Allowed access to camera, present UIImagePickerController.
-                        self.showImagePickerForSourceType(.camera, fromButton: sender)
-                    }
-            })
-        default:
-            // Has previously allowed access to camera, present 
-            // UIImagePickerController.
-            showImagePickerForSourceType(.camera, fromButton: sender)
-        }
-    }
-    
-    @IBAction func showImagePickerForPhotoPicker(_ sender: UIButton) {
-        self.showImagePickerForSourceType(.photoLibrary, fromButton: sender)
-    }
-    
-    func showImagePickerForSourceType(_ sourceType: UIImagePickerControllerSourceType,
-                                      fromButton: UIButton) {
-        
-        let imagePicker = UIImagePickerController()
-        imagePicker.modalPresentationStyle = .currentContext
-        imagePicker.sourceType = sourceType
-        imagePicker.delegate = self
-        imagePicker.modalPresentationStyle = (sourceType == .camera) ? .fullScreen : .popover
-        delegate?.present(imagePicker, animated: true, completion: nil, sender: self)
-    }
-    
     func dismissDatePicker() {
         // Set label
         let selectedBegOfDay = selectedDate?.beginningOfDay
@@ -275,7 +227,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
         }
         
         // Animate slide down.
-        UIView.animate(withDuration: 0.5, animations: {
+        UIView.animate(withDuration: 0.2, animations: {
             let dPHeight = self.datePicker.frame.height
             let dPFrame = self.datePicker.frame.offsetBy(dx: 0, dy: dPHeight)
             let dBFrame = self.dismissButton.frame.offsetBy(dx: 0, dy: dPHeight)
@@ -438,6 +390,13 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
             self.notesTextView.removeFromSuperview()
         })
     }
+    
+    func present(_ vc: UIViewController, animated: Bool, completion: (() -> Void)?, sender: Any?) {
+        delegate?.present(vc, animated: animated, completion: completion, sender: sender)
+    }
+    
+    func selectedNewImage(_ image: UIImage) { }
+    func removedImage(_ image: UIImage) { }
 
 }
 

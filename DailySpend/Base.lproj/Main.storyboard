@@ -126,11 +126,11 @@
                                             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="addExpense" rowHeight="295" id="Re8-S4-vOu" customClass="AddExpenseTableViewCell" customModule="DailySpend" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="246" width="375" height="295"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="addExpense" rowHeight="305" id="Re8-S4-vOu" customClass="AddExpenseTableViewCell" customModule="DailySpend" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="246" width="375" height="305"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Re8-S4-vOu" id="xnj-G8-kh6">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="295"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="305"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Add Expense" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="leq-h6-itk">
@@ -180,7 +180,11 @@
                                                     </connections>
                                                 </button>
                                                 <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sBG-xW-CJu" customClass="ImageSelectorView" customModule="DailySpend" customModuleProvider="target">
-                                                    <rect key="frame" x="76" y="207" width="224" height="72"/>
+                                                    <rect key="frame" x="62" y="207" width="251" height="82"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="82" id="Vte-BW-HPj"/>
+                                                        <constraint firstAttribute="width" constant="251" id="yrN-jm-7k4"/>
+                                                    </constraints>
                                                 </scrollView>
                                             </subviews>
                                             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -191,8 +195,6 @@
                                                 <constraint firstItem="leq-h6-itk" firstAttribute="centerX" secondItem="xnj-G8-kh6" secondAttribute="centerX" id="AqC-vq-0I3"/>
                                                 <constraint firstItem="0jQ-O4-zlP" firstAttribute="top" secondItem="y55-Je-4kr" secondAttribute="bottom" constant="8" id="CNw-0M-Uku"/>
                                                 <constraint firstItem="23x-Mw-cAq" firstAttribute="top" secondItem="0jQ-O4-zlP" secondAttribute="bottom" constant="8" id="Kf9-vs-FGn"/>
-                                                <constraint firstAttribute="bottomMargin" secondItem="sBG-xW-CJu" secondAttribute="bottom" constant="8" id="V2u-TV-Nnq"/>
-                                                <constraint firstItem="sBG-xW-CJu" firstAttribute="leading" secondItem="xnj-G8-kh6" secondAttribute="leadingMargin" constant="68" id="W9F-eB-EVD"/>
                                                 <constraint firstItem="sBG-xW-CJu" firstAttribute="centerX" secondItem="xnj-G8-kh6" secondAttribute="centerX" id="Xfj-kh-hCU"/>
                                                 <constraint firstAttribute="topMargin" secondItem="leq-h6-itk" secondAttribute="top" id="Y3g-Ps-Ire"/>
                                                 <constraint firstItem="dFU-rV-11A" firstAttribute="centerX" secondItem="xnj-G8-kh6" secondAttribute="centerX" id="Zfu-K3-QtF"/>
@@ -206,11 +208,12 @@
                                             <outlet property="amountField" destination="dFU-rV-11A" id="JFk-qs-y5g"/>
                                             <outlet property="dateButton" destination="0jQ-O4-zlP" id="X3a-6o-XwW"/>
                                             <outlet property="descriptionField" destination="y55-Je-4kr" id="XRS-d4-5kk"/>
+                                            <outlet property="imageSelector" destination="sBG-xW-CJu" id="caA-lM-RgN"/>
                                             <outlet property="notesButton" destination="23x-Mw-cAq" id="cbQ-XD-aWQ"/>
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="blank" rowHeight="44" id="GBg-vw-hUX">
-                                        <rect key="frame" x="0.0" y="541" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="551" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="GBg-vw-hUX" id="EVz-9e-u8a">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
