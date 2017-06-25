@@ -8,25 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		C503F13A1EA1A8A200FA95A7 /* Export.swift in Sources */ = {isa = PBXBuildFile; fileRef = C503F1391EA1A8A100FA95A7 /* Export.swift */; };
-		C517B1BE1EBC125600CDAA17 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C517B1BD1EBC125600CDAA17 /* libz.tbd */; };
-		C517B1ED1EBC134200CDAA17 /* aescrypt.c in Sources */ = {isa = PBXBuildFile; fileRef = C517B1C51EBC134200CDAA17 /* aescrypt.c */; };
-		C517B1EE1EBC134200CDAA17 /* aeskey.c in Sources */ = {isa = PBXBuildFile; fileRef = C517B1C61EBC134200CDAA17 /* aeskey.c */; };
-		C517B1EF1EBC134200CDAA17 /* aestab.c in Sources */ = {isa = PBXBuildFile; fileRef = C517B1C81EBC134200CDAA17 /* aestab.c */; };
-		C517B1F01EBC134200CDAA17 /* entropy.c in Sources */ = {isa = PBXBuildFile; fileRef = C517B1CC1EBC134200CDAA17 /* entropy.c */; };
-		C517B1F11EBC134200CDAA17 /* fileenc.c in Sources */ = {isa = PBXBuildFile; fileRef = C517B1CE1EBC134200CDAA17 /* fileenc.c */; };
-		C517B1F21EBC134200CDAA17 /* hmac.c in Sources */ = {isa = PBXBuildFile; fileRef = C517B1D01EBC134200CDAA17 /* hmac.c */; };
-		C517B1F31EBC134200CDAA17 /* prng.c in Sources */ = {isa = PBXBuildFile; fileRef = C517B1D21EBC134200CDAA17 /* prng.c */; };
-		C517B1F41EBC134200CDAA17 /* pwd2key.c in Sources */ = {isa = PBXBuildFile; fileRef = C517B1D41EBC134200CDAA17 /* pwd2key.c */; };
-		C517B1F51EBC134200CDAA17 /* sha1.c in Sources */ = {isa = PBXBuildFile; fileRef = C517B1D61EBC134200CDAA17 /* sha1.c */; };
-		C517B1F71EBC134200CDAA17 /* SSZipArchive-LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = C517B1D91EBC134200CDAA17 /* SSZipArchive-LICENSE.txt */; };
-		C517B1F81EBC134200CDAA17 /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = C517B1DC1EBC134200CDAA17 /* ioapi.c */; };
-		C517B1F91EBC134200CDAA17 /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = C517B1DE1EBC134200CDAA17 /* mztools.c */; };
-		C517B1FA1EBC134200CDAA17 /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = C517B1E01EBC134200CDAA17 /* unzip.c */; };
-		C517B1FB1EBC134200CDAA17 /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = C517B1E21EBC134200CDAA17 /* zip.c */; };
-		C517B1FC1EBC134200CDAA17 /* SSZipArchive+Swift.swift in Sources */ = {isa = PBXBuildFile; fileRef = C517B1E41EBC134200CDAA17 /* SSZipArchive+Swift.swift */; };
-		C517B1FD1EBC134200CDAA17 /* SSZipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = C517B1E61EBC134200CDAA17 /* SSZipArchive.m */; };
 		C517B1FE1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = C517B1EA1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt */; };
 		C517B1FF1EBC134200CDAA17 /* UICountingLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = C517B1EC1EBC134200CDAA17 /* UICountingLabel.m */; };
+		C51879171F00416F00881FB6 /* FLAnimatedImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C5A81A771F0040540032D9F1 /* FLAnimatedImage.framework */; };
+		C51879181F00416F00881FB6 /* NYTPhotoViewer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C5A81A781F0040540032D9F1 /* NYTPhotoViewer.framework */; };
+		C51879191F00416F00881FB6 /* NYTPhotoViewerCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C5A81A791F0040540032D9F1 /* NYTPhotoViewerCore.framework */; };
+		C518791A1F00416F00881FB6 /* ZipArchive.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C5A81A7A1F0040540032D9F1 /* ZipArchive.framework */; };
 		C518B59A1E88C7F0009CA4BB /* Decimal+DoubleValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C518B5991E88C7F0009CA4BB /* Decimal+DoubleValue.swift */; };
 		C5316BF61E78D80F00BC2918 /* AddExpenseTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5316BF51E78D80F00BC2918 /* AddExpenseTableViewCell.swift */; };
 		C5316C291E7B240D00BC2918 /* Date+Arithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5316C281E7B240D00BC2918 /* Date+Arithmetic.swift */; };
@@ -93,43 +80,6 @@
 
 /* Begin PBXFileReference section */
 		C503F1391EA1A8A100FA95A7 /* Export.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Export.swift; sourceTree = "<group>"; };
-		C517B1BD1EBC125600CDAA17 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
-		C517B1C31EBC134200CDAA17 /* aes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aes.h; sourceTree = "<group>"; };
-		C517B1C41EBC134200CDAA17 /* aes_via_ace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aes_via_ace.h; sourceTree = "<group>"; };
-		C517B1C51EBC134200CDAA17 /* aescrypt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aescrypt.c; sourceTree = "<group>"; };
-		C517B1C61EBC134200CDAA17 /* aeskey.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aeskey.c; sourceTree = "<group>"; };
-		C517B1C71EBC134200CDAA17 /* aesopt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aesopt.h; sourceTree = "<group>"; };
-		C517B1C81EBC134200CDAA17 /* aestab.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aestab.c; sourceTree = "<group>"; };
-		C517B1C91EBC134200CDAA17 /* aestab.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aestab.h; sourceTree = "<group>"; };
-		C517B1CA1EBC134200CDAA17 /* brg_endian.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = brg_endian.h; sourceTree = "<group>"; };
-		C517B1CB1EBC134200CDAA17 /* brg_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = brg_types.h; sourceTree = "<group>"; };
-		C517B1CC1EBC134200CDAA17 /* entropy.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = entropy.c; sourceTree = "<group>"; };
-		C517B1CD1EBC134200CDAA17 /* entropy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = entropy.h; sourceTree = "<group>"; };
-		C517B1CE1EBC134200CDAA17 /* fileenc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fileenc.c; sourceTree = "<group>"; };
-		C517B1CF1EBC134200CDAA17 /* fileenc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fileenc.h; sourceTree = "<group>"; };
-		C517B1D01EBC134200CDAA17 /* hmac.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = hmac.c; sourceTree = "<group>"; };
-		C517B1D11EBC134200CDAA17 /* hmac.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hmac.h; sourceTree = "<group>"; };
-		C517B1D21EBC134200CDAA17 /* prng.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = prng.c; sourceTree = "<group>"; };
-		C517B1D31EBC134200CDAA17 /* prng.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = prng.h; sourceTree = "<group>"; };
-		C517B1D41EBC134200CDAA17 /* pwd2key.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = pwd2key.c; sourceTree = "<group>"; };
-		C517B1D51EBC134200CDAA17 /* pwd2key.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pwd2key.h; sourceTree = "<group>"; };
-		C517B1D61EBC134200CDAA17 /* sha1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sha1.c; sourceTree = "<group>"; };
-		C517B1D71EBC134200CDAA17 /* sha1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sha1.h; sourceTree = "<group>"; };
-		C517B1D91EBC134200CDAA17 /* SSZipArchive-LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "SSZipArchive-LICENSE.txt"; sourceTree = "<group>"; };
-		C517B1DB1EBC134200CDAA17 /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
-		C517B1DC1EBC134200CDAA17 /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
-		C517B1DD1EBC134200CDAA17 /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
-		C517B1DE1EBC134200CDAA17 /* mztools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mztools.c; sourceTree = "<group>"; };
-		C517B1DF1EBC134200CDAA17 /* mztools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mztools.h; sourceTree = "<group>"; };
-		C517B1E01EBC134200CDAA17 /* unzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unzip.c; sourceTree = "<group>"; };
-		C517B1E11EBC134200CDAA17 /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
-		C517B1E21EBC134200CDAA17 /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
-		C517B1E31EBC134200CDAA17 /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
-		C517B1E41EBC134200CDAA17 /* SSZipArchive+Swift.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SSZipArchive+Swift.swift"; sourceTree = "<group>"; };
-		C517B1E51EBC134200CDAA17 /* SSZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSZipArchive.h; sourceTree = "<group>"; };
-		C517B1E61EBC134200CDAA17 /* SSZipArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSZipArchive.m; sourceTree = "<group>"; };
-		C517B1E71EBC134200CDAA17 /* SSZipCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSZipCommon.h; sourceTree = "<group>"; };
-		C517B1E81EBC134200CDAA17 /* ZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZipArchive.h; sourceTree = "<group>"; };
 		C517B1EA1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "UICountingLabel-LICENSE.txt"; sourceTree = "<group>"; };
 		C517B1EB1EBC134200CDAA17 /* UICountingLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICountingLabel.h; sourceTree = "<group>"; };
 		C517B1EC1EBC134200CDAA17 /* UICountingLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICountingLabel.m; sourceTree = "<group>"; };
@@ -169,6 +119,10 @@
 		C5781DBF1E6E2060006BBC03 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C5781DCB1E6E23B2006BBC03 /* TodayViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TodayViewController.swift; sourceTree = "<group>"; };
 		C5A287C41EC1741200D3479A /* DailySpend 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "DailySpend 2.xcdatamodel"; sourceTree = "<group>"; };
+		C5A81A771F0040540032D9F1 /* FLAnimatedImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FLAnimatedImage.framework; path = Carthage/Build/iOS/FLAnimatedImage.framework; sourceTree = "<group>"; };
+		C5A81A781F0040540032D9F1 /* NYTPhotoViewer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NYTPhotoViewer.framework; path = Carthage/Build/iOS/NYTPhotoViewer.framework; sourceTree = "<group>"; };
+		C5A81A791F0040540032D9F1 /* NYTPhotoViewerCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NYTPhotoViewerCore.framework; path = Carthage/Build/iOS/NYTPhotoViewerCore.framework; sourceTree = "<group>"; };
+		C5A81A7A1F0040540032D9F1 /* ZipArchive.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ZipArchive.framework; path = Carthage/Build/iOS/ZipArchive.framework; sourceTree = "<group>"; };
 		C5B367CC1EBBD65E006B5ADC /* cog.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cog.png; sourceTree = "<group>"; };
 		C5B367CD1EBBD65E006B5ADC /* cog@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cog@2x.png"; sourceTree = "<group>"; };
 		C5B367CE1EBBD65E006B5ADC /* cog@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cog@3x.png"; sourceTree = "<group>"; };
@@ -194,7 +148,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C517B1BE1EBC125600CDAA17 /* libz.tbd in Frameworks */,
+				C51879171F00416F00881FB6 /* FLAnimatedImage.framework in Frameworks */,
+				C51879181F00416F00881FB6 /* NYTPhotoViewer.framework in Frameworks */,
+				C51879191F00416F00881FB6 /* NYTPhotoViewerCore.framework in Frameworks */,
+				C518791A1F00416F00881FB6 /* ZipArchive.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -218,68 +175,12 @@
 		C517B1BC1EBC125600CDAA17 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				C517B1BD1EBC125600CDAA17 /* libz.tbd */,
+				C5A81A771F0040540032D9F1 /* FLAnimatedImage.framework */,
+				C5A81A781F0040540032D9F1 /* NYTPhotoViewer.framework */,
+				C5A81A791F0040540032D9F1 /* NYTPhotoViewerCore.framework */,
+				C5A81A7A1F0040540032D9F1 /* ZipArchive.framework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		C517B1C11EBC134200CDAA17 /* SSZipArchive */ = {
-			isa = PBXGroup;
-			children = (
-				C517B1C21EBC134200CDAA17 /* aes */,
-				C517B1D91EBC134200CDAA17 /* SSZipArchive-LICENSE.txt */,
-				C517B1DA1EBC134200CDAA17 /* minizip */,
-				C517B1E41EBC134200CDAA17 /* SSZipArchive+Swift.swift */,
-				C517B1E51EBC134200CDAA17 /* SSZipArchive.h */,
-				C517B1E61EBC134200CDAA17 /* SSZipArchive.m */,
-				C517B1E71EBC134200CDAA17 /* SSZipCommon.h */,
-				C517B1E81EBC134200CDAA17 /* ZipArchive.h */,
-			);
-			path = SSZipArchive;
-			sourceTree = "<group>";
-		};
-		C517B1C21EBC134200CDAA17 /* aes */ = {
-			isa = PBXGroup;
-			children = (
-				C517B1C31EBC134200CDAA17 /* aes.h */,
-				C517B1C41EBC134200CDAA17 /* aes_via_ace.h */,
-				C517B1C51EBC134200CDAA17 /* aescrypt.c */,
-				C517B1C61EBC134200CDAA17 /* aeskey.c */,
-				C517B1C71EBC134200CDAA17 /* aesopt.h */,
-				C517B1C81EBC134200CDAA17 /* aestab.c */,
-				C517B1C91EBC134200CDAA17 /* aestab.h */,
-				C517B1CA1EBC134200CDAA17 /* brg_endian.h */,
-				C517B1CB1EBC134200CDAA17 /* brg_types.h */,
-				C517B1CC1EBC134200CDAA17 /* entropy.c */,
-				C517B1CD1EBC134200CDAA17 /* entropy.h */,
-				C517B1CE1EBC134200CDAA17 /* fileenc.c */,
-				C517B1CF1EBC134200CDAA17 /* fileenc.h */,
-				C517B1D01EBC134200CDAA17 /* hmac.c */,
-				C517B1D11EBC134200CDAA17 /* hmac.h */,
-				C517B1D21EBC134200CDAA17 /* prng.c */,
-				C517B1D31EBC134200CDAA17 /* prng.h */,
-				C517B1D41EBC134200CDAA17 /* pwd2key.c */,
-				C517B1D51EBC134200CDAA17 /* pwd2key.h */,
-				C517B1D61EBC134200CDAA17 /* sha1.c */,
-				C517B1D71EBC134200CDAA17 /* sha1.h */,
-			);
-			path = aes;
-			sourceTree = "<group>";
-		};
-		C517B1DA1EBC134200CDAA17 /* minizip */ = {
-			isa = PBXGroup;
-			children = (
-				C517B1DB1EBC134200CDAA17 /* crypt.h */,
-				C517B1DC1EBC134200CDAA17 /* ioapi.c */,
-				C517B1DD1EBC134200CDAA17 /* ioapi.h */,
-				C517B1DE1EBC134200CDAA17 /* mztools.c */,
-				C517B1DF1EBC134200CDAA17 /* mztools.h */,
-				C517B1E01EBC134200CDAA17 /* unzip.c */,
-				C517B1E11EBC134200CDAA17 /* unzip.h */,
-				C517B1E21EBC134200CDAA17 /* zip.c */,
-				C517B1E31EBC134200CDAA17 /* zip.h */,
-			);
-			path = minizip;
 			sourceTree = "<group>";
 		};
 		C517B1E91EBC134200CDAA17 /* UICountingLabel */ = {
@@ -369,7 +270,6 @@
 				C51A224D1EBFB32D00B53C24 /* LICENSE.md */,
 				C5BFEA7A1E8F43E300528878 /* Unused */,
 				C5CF5F6A1E7BB68B00C35539 /* Images */,
-				C517B1C11EBC134200CDAA17 /* SSZipArchive */,
 				C517B1E91EBC134200CDAA17 /* UICountingLabel */,
 			);
 			path = DailySpend;
@@ -430,6 +330,7 @@
 				C5781D931E6E2060006BBC03 /* Sources */,
 				C5781D941E6E2060006BBC03 /* Frameworks */,
 				C5781D951E6E2060006BBC03 /* Resources */,
+				C518791B1F00417400881FB6 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -542,7 +443,6 @@
 				C5CF5F691E7BB68600C35539 /* today@3x.png in Resources */,
 				C538FAB91E85696200295062 /* Main.storyboard in Resources */,
 				C5CF5F641E7BB68600C35539 /* cal.png in Resources */,
-				C517B1F71EBC134200CDAA17 /* SSZipArchive-LICENSE.txt in Resources */,
 				C5B367CF1EBBD65E006B5ADC /* cog.png in Resources */,
 				C5CF5F651E7BB68600C35539 /* cal@2x.png in Resources */,
 				C53BCAA71E9203BC000B5EE1 /* cal_recur.png in Resources */,
@@ -565,55 +465,64 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		C518791B1F00417400881FB6 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Carthage/Build/iOS/FLAnimatedImage.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/NYTPhotoViewer.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/NYTPhotoViewerCore.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/ZipArchive.framework",
+			);
+			outputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/FLAnimatedImage.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/NYTPhotoViewer.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/NYTPhotoViewerCore.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/ZipArchive.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		C5781D931E6E2060006BBC03 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				C565001E1E837F37009D64F0 /* MonthAdjustment+CoreDataClass.swift in Sources */,
-				C517B1ED1EBC134200CDAA17 /* aescrypt.c in Sources */,
 				C517B1FF1EBC134200CDAA17 /* UICountingLabel.m in Sources */,
 				C5316BF61E78D80F00BC2918 /* AddExpenseTableViewCell.swift in Sources */,
 				C5DD5A831E83B383008F7FC6 /* CurrentDayTableViewCell.swift in Sources */,
 				C565001F1E837F37009D64F0 /* MonthAdjustment+CoreDataProperties.swift in Sources */,
-				C517B1F31EBC134200CDAA17 /* prng.c in Sources */,
-				C517B1FC1EBC134200CDAA17 /* SSZipArchive+Swift.swift in Sources */,
-				C517B1FA1EBC134200CDAA17 /* unzip.c in Sources */,
 				C5C65A221EBBFBC6002D1B12 /* ExportViewController.swift in Sources */,
 				C56500171E837F37009D64F0 /* Month+CoreDataProperties.swift in Sources */,
-				C517B1F51EBC134200CDAA17 /* sha1.c in Sources */,
 				C5EE62A31E85769700CAEEE7 /* String+CharacterSet.swift in Sources */,
 				C5BA55B31E8D92C800256E7A /* InitialAdjustmentViewController.swift in Sources */,
-				C517B1EE1EBC134200CDAA17 /* aeskey.c in Sources */,
 				C57095231E8F86A200004709 /* MonthAdjustmentViewController.swift in Sources */,
-				C517B1F01EBC134200CDAA17 /* entropy.c in Sources */,
 				C5781DCC1E6E23B2006BBC03 /* TodayViewController.swift in Sources */,
 				C565001A1E837F37009D64F0 /* Day+CoreDataClass.swift in Sources */,
 				C5BA55B71E8DB17800256E7A /* ExpenseViewController.swift in Sources */,
-				C517B1F41EBC134200CDAA17 /* pwd2key.c in Sources */,
 				C54E4F491EFD3984006A1CA3 /* ImageSelectorView.swift in Sources */,
 				C5DD5A851E83B4AC008F7FC6 /* InitialSpendViewController.swift in Sources */,
 				C518B59A1E88C7F0009CA4BB /* Decimal+DoubleValue.swift in Sources */,
 				C56500181E837F37009D64F0 /* DayAdjustment+CoreDataClass.swift in Sources */,
 				C57095251E8F86AE00004709 /* DayAdjustmentViewController.swift in Sources */,
-				C517B1EF1EBC134200CDAA17 /* aestab.c in Sources */,
 				C56500191E837F37009D64F0 /* DayAdjustment+CoreDataProperties.swift in Sources */,
-				C517B1F11EBC134200CDAA17 /* fileenc.c in Sources */,
 				C5781DA31E6E2060006BBC03 /* DailySpend.xcdatamodeld in Sources */,
-				C517B1F81EBC134200CDAA17 /* ioapi.c in Sources */,
 				C565001B1E837F37009D64F0 /* Day+CoreDataProperties.swift in Sources */,
 				C5316C291E7B240D00BC2918 /* Date+Arithmetic.swift in Sources */,
-				C517B1FD1EBC134200CDAA17 /* SSZipArchive.m in Sources */,
 				C565001C1E837F37009D64F0 /* Expense+CoreDataClass.swift in Sources */,
 				C5BFEA791E8F0BDC00528878 /* ReviewViewController.swift in Sources */,
 				C5781D9B1E6E2060006BBC03 /* AppDelegate.swift in Sources */,
 				C5EDC2271EBBC12400DA5CB7 /* SettingsViewController.swift in Sources */,
-				C517B1F91EBC134200CDAA17 /* mztools.c in Sources */,
 				C565001D1E837F37009D64F0 /* Expense+CoreDataProperties.swift in Sources */,
 				C5BA55B51E8DAB0E00256E7A /* ReviewTableViewCell.swift in Sources */,
 				C56500161E837F37009D64F0 /* Month+CoreDataClass.swift in Sources */,
-				C517B1FB1EBC134200CDAA17 /* zip.c in Sources */,
-				C517B1F21EBC134200CDAA17 /* hmac.c in Sources */,
 				C503F13A1EA1A8A200FA95A7 /* Export.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -769,6 +678,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = 9QAA23LAQ9;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = DailySpend/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.joshsherick.DailySpendTesting;
@@ -785,6 +698,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = 9QAA23LAQ9;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = DailySpend/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.joshsherick.DailySpendTesting;
