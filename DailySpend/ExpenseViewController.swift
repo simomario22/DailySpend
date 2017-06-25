@@ -18,7 +18,9 @@ class ExpenseViewController: UIViewController, UITextViewDelegate {
     @IBOutlet weak var notesTextView: UITextView!
     
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    var context: NSManagedObjectContext {
+        return appDelegate.persistentContainer.viewContext
+    }
     
     let datePicker = UIDatePicker()
     let dismissButton = UIButton()
@@ -288,7 +290,7 @@ class ExpenseViewController: UIViewController, UITextViewDelegate {
     func save() {
         let amount = amountField.text!.parseValidAmount(maxLength: 8)
         let shortDescription = descriptionField.text!
-        if amount == 0 ||
+        if amount <= 0 ||
             shortDescription.characters.count == 0 ||
             selectedDate == nil {
             let message = "Please enter valid values for amount, description, and date."
@@ -363,7 +365,7 @@ class ExpenseViewController: UIViewController, UITextViewDelegate {
                     navigationController!.viewControllers = vcs
                 }
             }
-            navigationController?.popViewController(animated: true)
+            _ = navigationController?.popViewController(animated: true)
         }
 
     }

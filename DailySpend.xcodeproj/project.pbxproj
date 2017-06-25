@@ -7,9 +7,27 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C503F13A1EA1A8A200FA95A7 /* Export.swift in Sources */ = {isa = PBXBuildFile; fileRef = C503F1391EA1A8A100FA95A7 /* Export.swift */; };
+		C517B1BE1EBC125600CDAA17 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C517B1BD1EBC125600CDAA17 /* libz.tbd */; };
+		C517B1ED1EBC134200CDAA17 /* aescrypt.c in Sources */ = {isa = PBXBuildFile; fileRef = C517B1C51EBC134200CDAA17 /* aescrypt.c */; };
+		C517B1EE1EBC134200CDAA17 /* aeskey.c in Sources */ = {isa = PBXBuildFile; fileRef = C517B1C61EBC134200CDAA17 /* aeskey.c */; };
+		C517B1EF1EBC134200CDAA17 /* aestab.c in Sources */ = {isa = PBXBuildFile; fileRef = C517B1C81EBC134200CDAA17 /* aestab.c */; };
+		C517B1F01EBC134200CDAA17 /* entropy.c in Sources */ = {isa = PBXBuildFile; fileRef = C517B1CC1EBC134200CDAA17 /* entropy.c */; };
+		C517B1F11EBC134200CDAA17 /* fileenc.c in Sources */ = {isa = PBXBuildFile; fileRef = C517B1CE1EBC134200CDAA17 /* fileenc.c */; };
+		C517B1F21EBC134200CDAA17 /* hmac.c in Sources */ = {isa = PBXBuildFile; fileRef = C517B1D01EBC134200CDAA17 /* hmac.c */; };
+		C517B1F31EBC134200CDAA17 /* prng.c in Sources */ = {isa = PBXBuildFile; fileRef = C517B1D21EBC134200CDAA17 /* prng.c */; };
+		C517B1F41EBC134200CDAA17 /* pwd2key.c in Sources */ = {isa = PBXBuildFile; fileRef = C517B1D41EBC134200CDAA17 /* pwd2key.c */; };
+		C517B1F51EBC134200CDAA17 /* sha1.c in Sources */ = {isa = PBXBuildFile; fileRef = C517B1D61EBC134200CDAA17 /* sha1.c */; };
+		C517B1F71EBC134200CDAA17 /* SSZipArchive-LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = C517B1D91EBC134200CDAA17 /* SSZipArchive-LICENSE.txt */; };
+		C517B1F81EBC134200CDAA17 /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = C517B1DC1EBC134200CDAA17 /* ioapi.c */; };
+		C517B1F91EBC134200CDAA17 /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = C517B1DE1EBC134200CDAA17 /* mztools.c */; };
+		C517B1FA1EBC134200CDAA17 /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = C517B1E01EBC134200CDAA17 /* unzip.c */; };
+		C517B1FB1EBC134200CDAA17 /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = C517B1E21EBC134200CDAA17 /* zip.c */; };
+		C517B1FC1EBC134200CDAA17 /* SSZipArchive+Swift.swift in Sources */ = {isa = PBXBuildFile; fileRef = C517B1E41EBC134200CDAA17 /* SSZipArchive+Swift.swift */; };
+		C517B1FD1EBC134200CDAA17 /* SSZipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = C517B1E61EBC134200CDAA17 /* SSZipArchive.m */; };
+		C517B1FE1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = C517B1EA1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt */; };
+		C517B1FF1EBC134200CDAA17 /* UICountingLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = C517B1EC1EBC134200CDAA17 /* UICountingLabel.m */; };
 		C518B59A1E88C7F0009CA4BB /* Decimal+DoubleValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C518B5991E88C7F0009CA4BB /* Decimal+DoubleValue.swift */; };
-		C518B59F1E88D669009CA4BB /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = C518B59C1E88D669009CA4BB /* LICENSE */; };
-		C518B5A01E88D669009CA4BB /* UICountingLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = C518B59E1E88D669009CA4BB /* UICountingLabel.m */; };
 		C5316BF61E78D80F00BC2918 /* AddExpenseTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5316BF51E78D80F00BC2918 /* AddExpenseTableViewCell.swift */; };
 		C5316C291E7B240D00BC2918 /* Date+Arithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5316C281E7B240D00BC2918 /* Date+Arithmetic.swift */; };
 		C538FAB91E85696200295062 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C538FAB71E85696200295062 /* Main.storyboard */; };
@@ -35,10 +53,14 @@
 		C5781DB31E6E2060006BBC03 /* DailySpendTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5781DB21E6E2060006BBC03 /* DailySpendTests.swift */; };
 		C5781DBE1E6E2060006BBC03 /* DailySpendUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5781DBD1E6E2060006BBC03 /* DailySpendUITests.swift */; };
 		C5781DCC1E6E23B2006BBC03 /* TodayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5781DCB1E6E23B2006BBC03 /* TodayViewController.swift */; };
+		C5B367CF1EBBD65E006B5ADC /* cog.png in Resources */ = {isa = PBXBuildFile; fileRef = C5B367CC1EBBD65E006B5ADC /* cog.png */; };
+		C5B367D01EBBD65E006B5ADC /* cog@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5B367CD1EBBD65E006B5ADC /* cog@2x.png */; };
+		C5B367D11EBBD65E006B5ADC /* cog@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5B367CE1EBBD65E006B5ADC /* cog@3x.png */; };
 		C5BA55B31E8D92C800256E7A /* InitialAdjustmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5BA55B21E8D92C800256E7A /* InitialAdjustmentViewController.swift */; };
 		C5BA55B51E8DAB0E00256E7A /* ReviewTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5BA55B41E8DAB0E00256E7A /* ReviewTableViewCell.swift */; };
 		C5BA55B71E8DB17800256E7A /* ExpenseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5BA55B61E8DB17800256E7A /* ExpenseViewController.swift */; };
-		C5BFEA791E8F0BDC00528878 /* ReviewTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5BFEA781E8F0BDC00528878 /* ReviewTableViewController.swift */; };
+		C5BFEA791E8F0BDC00528878 /* ReviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5BFEA781E8F0BDC00528878 /* ReviewViewController.swift */; };
+		C5C65A221EBBFBC6002D1B12 /* ExportViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5C65A211EBBFBC6002D1B12 /* ExportViewController.swift */; };
 		C5CF5F641E7BB68600C35539 /* cal.png in Resources */ = {isa = PBXBuildFile; fileRef = C5CF5F5E1E7BB68600C35539 /* cal.png */; };
 		C5CF5F651E7BB68600C35539 /* cal@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5CF5F5F1E7BB68600C35539 /* cal@2x.png */; };
 		C5CF5F661E7BB68600C35539 /* cal@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5CF5F601E7BB68600C35539 /* cal@3x.png */; };
@@ -47,6 +69,7 @@
 		C5CF5F691E7BB68600C35539 /* today@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5CF5F631E7BB68600C35539 /* today@3x.png */; };
 		C5DD5A831E83B383008F7FC6 /* CurrentDayTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5DD5A821E83B383008F7FC6 /* CurrentDayTableViewCell.swift */; };
 		C5DD5A851E83B4AC008F7FC6 /* InitialSpendViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5DD5A841E83B4AC008F7FC6 /* InitialSpendViewController.swift */; };
+		C5EDC2271EBBC12400DA5CB7 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5EDC2261EBBC12400DA5CB7 /* SettingsViewController.swift */; };
 		C5EE62A31E85769700CAEEE7 /* String+CharacterSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5EE62A21E85769700CAEEE7 /* String+CharacterSet.swift */; };
 /* End PBXBuildFile section */
 
@@ -68,11 +91,50 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C503F1391EA1A8A100FA95A7 /* Export.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Export.swift; sourceTree = "<group>"; };
+		C517B1BD1EBC125600CDAA17 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		C517B1C31EBC134200CDAA17 /* aes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aes.h; sourceTree = "<group>"; };
+		C517B1C41EBC134200CDAA17 /* aes_via_ace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aes_via_ace.h; sourceTree = "<group>"; };
+		C517B1C51EBC134200CDAA17 /* aescrypt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aescrypt.c; sourceTree = "<group>"; };
+		C517B1C61EBC134200CDAA17 /* aeskey.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aeskey.c; sourceTree = "<group>"; };
+		C517B1C71EBC134200CDAA17 /* aesopt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aesopt.h; sourceTree = "<group>"; };
+		C517B1C81EBC134200CDAA17 /* aestab.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aestab.c; sourceTree = "<group>"; };
+		C517B1C91EBC134200CDAA17 /* aestab.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aestab.h; sourceTree = "<group>"; };
+		C517B1CA1EBC134200CDAA17 /* brg_endian.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = brg_endian.h; sourceTree = "<group>"; };
+		C517B1CB1EBC134200CDAA17 /* brg_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = brg_types.h; sourceTree = "<group>"; };
+		C517B1CC1EBC134200CDAA17 /* entropy.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = entropy.c; sourceTree = "<group>"; };
+		C517B1CD1EBC134200CDAA17 /* entropy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = entropy.h; sourceTree = "<group>"; };
+		C517B1CE1EBC134200CDAA17 /* fileenc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fileenc.c; sourceTree = "<group>"; };
+		C517B1CF1EBC134200CDAA17 /* fileenc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fileenc.h; sourceTree = "<group>"; };
+		C517B1D01EBC134200CDAA17 /* hmac.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = hmac.c; sourceTree = "<group>"; };
+		C517B1D11EBC134200CDAA17 /* hmac.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hmac.h; sourceTree = "<group>"; };
+		C517B1D21EBC134200CDAA17 /* prng.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = prng.c; sourceTree = "<group>"; };
+		C517B1D31EBC134200CDAA17 /* prng.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = prng.h; sourceTree = "<group>"; };
+		C517B1D41EBC134200CDAA17 /* pwd2key.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = pwd2key.c; sourceTree = "<group>"; };
+		C517B1D51EBC134200CDAA17 /* pwd2key.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pwd2key.h; sourceTree = "<group>"; };
+		C517B1D61EBC134200CDAA17 /* sha1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sha1.c; sourceTree = "<group>"; };
+		C517B1D71EBC134200CDAA17 /* sha1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sha1.h; sourceTree = "<group>"; };
+		C517B1D91EBC134200CDAA17 /* SSZipArchive-LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "SSZipArchive-LICENSE.txt"; sourceTree = "<group>"; };
+		C517B1DB1EBC134200CDAA17 /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
+		C517B1DC1EBC134200CDAA17 /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
+		C517B1DD1EBC134200CDAA17 /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
+		C517B1DE1EBC134200CDAA17 /* mztools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mztools.c; sourceTree = "<group>"; };
+		C517B1DF1EBC134200CDAA17 /* mztools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mztools.h; sourceTree = "<group>"; };
+		C517B1E01EBC134200CDAA17 /* unzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unzip.c; sourceTree = "<group>"; };
+		C517B1E11EBC134200CDAA17 /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
+		C517B1E21EBC134200CDAA17 /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
+		C517B1E31EBC134200CDAA17 /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
+		C517B1E41EBC134200CDAA17 /* SSZipArchive+Swift.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SSZipArchive+Swift.swift"; sourceTree = "<group>"; };
+		C517B1E51EBC134200CDAA17 /* SSZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSZipArchive.h; sourceTree = "<group>"; };
+		C517B1E61EBC134200CDAA17 /* SSZipArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSZipArchive.m; sourceTree = "<group>"; };
+		C517B1E71EBC134200CDAA17 /* SSZipCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSZipCommon.h; sourceTree = "<group>"; };
+		C517B1E81EBC134200CDAA17 /* ZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZipArchive.h; sourceTree = "<group>"; };
+		C517B1EA1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "UICountingLabel-LICENSE.txt"; sourceTree = "<group>"; };
+		C517B1EB1EBC134200CDAA17 /* UICountingLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICountingLabel.h; sourceTree = "<group>"; };
+		C517B1EC1EBC134200CDAA17 /* UICountingLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICountingLabel.m; sourceTree = "<group>"; };
 		C518B5991E88C7F0009CA4BB /* Decimal+DoubleValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Decimal+DoubleValue.swift"; sourceTree = "<group>"; };
-		C518B59B1E88D668009CA4BB /* DailySpend-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "DailySpend-Bridging-Header.h"; sourceTree = "<group>"; };
-		C518B59C1E88D669009CA4BB /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		C518B59D1E88D669009CA4BB /* UICountingLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICountingLabel.h; sourceTree = "<group>"; };
-		C518B59E1E88D669009CA4BB /* UICountingLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICountingLabel.m; sourceTree = "<group>"; };
+		C518B59B1E88D668009CA4BB /* DailySpend-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "DailySpend-Bridging-Header.h"; path = "DailySpend/DailySpend-Bridging-Header.h"; sourceTree = "<group>"; };
+		C51A224D1EBFB32D00B53C24 /* LICENSE.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = LICENSE.md; sourceTree = "<group>"; };
 		C5316BF51E78D80F00BC2918 /* AddExpenseTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddExpenseTableViewCell.swift; sourceTree = "<group>"; };
 		C5316C281E7B240D00BC2918 /* Date+Arithmetic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Date+Arithmetic.swift"; sourceTree = "<group>"; };
 		C538FAB81E85696200295062 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -94,9 +156,9 @@
 		C5781D971E6E2060006BBC03 /* DailySpend.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DailySpend.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C5781D9A1E6E2060006BBC03 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C5781DA21E6E2060006BBC03 /* DailySpend.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DailySpend.xcdatamodel; sourceTree = "<group>"; };
-		C5781DA41E6E2060006BBC03 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		C5781DA41E6E2060006BBC03 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = DailySpend/Assets.xcassets; sourceTree = "<group>"; };
 		C5781DA71E6E2060006BBC03 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		C5781DA91E6E2060006BBC03 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C5781DA91E6E2060006BBC03 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = DailySpend/Info.plist; sourceTree = "<group>"; };
 		C5781DAE1E6E2060006BBC03 /* DailySpendTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DailySpendTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C5781DB21E6E2060006BBC03 /* DailySpendTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailySpendTests.swift; sourceTree = "<group>"; };
 		C5781DB41E6E2060006BBC03 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -104,10 +166,15 @@
 		C5781DBD1E6E2060006BBC03 /* DailySpendUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailySpendUITests.swift; sourceTree = "<group>"; };
 		C5781DBF1E6E2060006BBC03 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C5781DCB1E6E23B2006BBC03 /* TodayViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TodayViewController.swift; sourceTree = "<group>"; };
+		C5A287C41EC1741200D3479A /* DailySpend 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "DailySpend 2.xcdatamodel"; sourceTree = "<group>"; };
+		C5B367CC1EBBD65E006B5ADC /* cog.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cog.png; sourceTree = "<group>"; };
+		C5B367CD1EBBD65E006B5ADC /* cog@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cog@2x.png"; sourceTree = "<group>"; };
+		C5B367CE1EBBD65E006B5ADC /* cog@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cog@3x.png"; sourceTree = "<group>"; };
 		C5BA55B21E8D92C800256E7A /* InitialAdjustmentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InitialAdjustmentViewController.swift; sourceTree = "<group>"; };
 		C5BA55B41E8DAB0E00256E7A /* ReviewTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReviewTableViewCell.swift; sourceTree = "<group>"; };
 		C5BA55B61E8DB17800256E7A /* ExpenseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpenseViewController.swift; sourceTree = "<group>"; };
-		C5BFEA781E8F0BDC00528878 /* ReviewTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReviewTableViewController.swift; sourceTree = "<group>"; };
+		C5BFEA781E8F0BDC00528878 /* ReviewViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReviewViewController.swift; sourceTree = "<group>"; };
+		C5C65A211EBBFBC6002D1B12 /* ExportViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExportViewController.swift; sourceTree = "<group>"; };
 		C5CF5F5E1E7BB68600C35539 /* cal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cal.png; sourceTree = "<group>"; };
 		C5CF5F5F1E7BB68600C35539 /* cal@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cal@2x.png"; sourceTree = "<group>"; };
 		C5CF5F601E7BB68600C35539 /* cal@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cal@3x.png"; sourceTree = "<group>"; };
@@ -116,6 +183,7 @@
 		C5CF5F631E7BB68600C35539 /* today@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "today@3x.png"; sourceTree = "<group>"; };
 		C5DD5A821E83B383008F7FC6 /* CurrentDayTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrentDayTableViewCell.swift; sourceTree = "<group>"; };
 		C5DD5A841E83B4AC008F7FC6 /* InitialSpendViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InitialSpendViewController.swift; sourceTree = "<group>"; };
+		C5EDC2261EBBC12400DA5CB7 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		C5EE62A21E85769700CAEEE7 /* String+CharacterSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+CharacterSet.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -124,6 +192,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C517B1BE1EBC125600CDAA17 /* libz.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -144,6 +213,83 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C517B1BC1EBC125600CDAA17 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C517B1BD1EBC125600CDAA17 /* libz.tbd */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		C517B1C11EBC134200CDAA17 /* SSZipArchive */ = {
+			isa = PBXGroup;
+			children = (
+				C517B1C21EBC134200CDAA17 /* aes */,
+				C517B1D91EBC134200CDAA17 /* SSZipArchive-LICENSE.txt */,
+				C517B1DA1EBC134200CDAA17 /* minizip */,
+				C517B1E41EBC134200CDAA17 /* SSZipArchive+Swift.swift */,
+				C517B1E51EBC134200CDAA17 /* SSZipArchive.h */,
+				C517B1E61EBC134200CDAA17 /* SSZipArchive.m */,
+				C517B1E71EBC134200CDAA17 /* SSZipCommon.h */,
+				C517B1E81EBC134200CDAA17 /* ZipArchive.h */,
+			);
+			path = SSZipArchive;
+			sourceTree = "<group>";
+		};
+		C517B1C21EBC134200CDAA17 /* aes */ = {
+			isa = PBXGroup;
+			children = (
+				C517B1C31EBC134200CDAA17 /* aes.h */,
+				C517B1C41EBC134200CDAA17 /* aes_via_ace.h */,
+				C517B1C51EBC134200CDAA17 /* aescrypt.c */,
+				C517B1C61EBC134200CDAA17 /* aeskey.c */,
+				C517B1C71EBC134200CDAA17 /* aesopt.h */,
+				C517B1C81EBC134200CDAA17 /* aestab.c */,
+				C517B1C91EBC134200CDAA17 /* aestab.h */,
+				C517B1CA1EBC134200CDAA17 /* brg_endian.h */,
+				C517B1CB1EBC134200CDAA17 /* brg_types.h */,
+				C517B1CC1EBC134200CDAA17 /* entropy.c */,
+				C517B1CD1EBC134200CDAA17 /* entropy.h */,
+				C517B1CE1EBC134200CDAA17 /* fileenc.c */,
+				C517B1CF1EBC134200CDAA17 /* fileenc.h */,
+				C517B1D01EBC134200CDAA17 /* hmac.c */,
+				C517B1D11EBC134200CDAA17 /* hmac.h */,
+				C517B1D21EBC134200CDAA17 /* prng.c */,
+				C517B1D31EBC134200CDAA17 /* prng.h */,
+				C517B1D41EBC134200CDAA17 /* pwd2key.c */,
+				C517B1D51EBC134200CDAA17 /* pwd2key.h */,
+				C517B1D61EBC134200CDAA17 /* sha1.c */,
+				C517B1D71EBC134200CDAA17 /* sha1.h */,
+			);
+			path = aes;
+			sourceTree = "<group>";
+		};
+		C517B1DA1EBC134200CDAA17 /* minizip */ = {
+			isa = PBXGroup;
+			children = (
+				C517B1DB1EBC134200CDAA17 /* crypt.h */,
+				C517B1DC1EBC134200CDAA17 /* ioapi.c */,
+				C517B1DD1EBC134200CDAA17 /* ioapi.h */,
+				C517B1DE1EBC134200CDAA17 /* mztools.c */,
+				C517B1DF1EBC134200CDAA17 /* mztools.h */,
+				C517B1E01EBC134200CDAA17 /* unzip.c */,
+				C517B1E11EBC134200CDAA17 /* unzip.h */,
+				C517B1E21EBC134200CDAA17 /* zip.c */,
+				C517B1E31EBC134200CDAA17 /* zip.h */,
+			);
+			path = minizip;
+			sourceTree = "<group>";
+		};
+		C517B1E91EBC134200CDAA17 /* UICountingLabel */ = {
+			isa = PBXGroup;
+			children = (
+				C517B1EA1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt */,
+				C517B1EB1EBC134200CDAA17 /* UICountingLabel.h */,
+				C517B1EC1EBC134200CDAA17 /* UICountingLabel.m */,
+			);
+			path = UICountingLabel;
+			sourceTree = "<group>";
+		};
 		C5316C2A1E7B241200BC2918 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
@@ -157,16 +303,16 @@
 		C56500201E837F3A009D64F0 /* CoreData Classes */ = {
 			isa = PBXGroup;
 			children = (
-				C565000C1E837F37009D64F0 /* Month+CoreDataClass.swift */,
-				C565000D1E837F37009D64F0 /* Month+CoreDataProperties.swift */,
-				C565000E1E837F37009D64F0 /* DayAdjustment+CoreDataClass.swift */,
-				C565000F1E837F37009D64F0 /* DayAdjustment+CoreDataProperties.swift */,
-				C56500101E837F37009D64F0 /* Day+CoreDataClass.swift */,
-				C56500111E837F37009D64F0 /* Day+CoreDataProperties.swift */,
-				C56500121E837F37009D64F0 /* Expense+CoreDataClass.swift */,
-				C56500131E837F37009D64F0 /* Expense+CoreDataProperties.swift */,
 				C56500141E837F37009D64F0 /* MonthAdjustment+CoreDataClass.swift */,
 				C56500151E837F37009D64F0 /* MonthAdjustment+CoreDataProperties.swift */,
+				C565000E1E837F37009D64F0 /* DayAdjustment+CoreDataClass.swift */,
+				C565000F1E837F37009D64F0 /* DayAdjustment+CoreDataProperties.swift */,
+				C56500121E837F37009D64F0 /* Expense+CoreDataClass.swift */,
+				C56500131E837F37009D64F0 /* Expense+CoreDataProperties.swift */,
+				C56500101E837F37009D64F0 /* Day+CoreDataClass.swift */,
+				C56500111E837F37009D64F0 /* Day+CoreDataProperties.swift */,
+				C565000C1E837F37009D64F0 /* Month+CoreDataClass.swift */,
+				C565000D1E837F37009D64F0 /* Month+CoreDataProperties.swift */,
 			);
 			name = "CoreData Classes";
 			path = ..;
@@ -176,9 +322,15 @@
 			isa = PBXGroup;
 			children = (
 				C5781D991E6E2060006BBC03 /* DailySpend */,
+				C518B59B1E88D668009CA4BB /* DailySpend-Bridging-Header.h */,
+				C5781DA41E6E2060006BBC03 /* Assets.xcassets */,
+				C5781DA61E6E2060006BBC03 /* LaunchScreen.storyboard */,
+				C5781DA91E6E2060006BBC03 /* Info.plist */,
+				C5781DA11E6E2060006BBC03 /* DailySpend.xcdatamodeld */,
 				C5781DB11E6E2060006BBC03 /* DailySpendTests */,
 				C5781DBC1E6E2060006BBC03 /* DailySpendUITests */,
 				C5781D981E6E2060006BBC03 /* Products */,
+				C517B1BC1EBC125600CDAA17 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -197,24 +349,25 @@
 			children = (
 				C5781D9A1E6E2060006BBC03 /* AppDelegate.swift */,
 				C5781DCB1E6E23B2006BBC03 /* TodayViewController.swift */,
-				C538FAB71E85696200295062 /* Main.storyboard */,
 				C57095221E8F86A200004709 /* MonthAdjustmentViewController.swift */,
 				C57095241E8F86AE00004709 /* DayAdjustmentViewController.swift */,
 				C5DD5A841E83B4AC008F7FC6 /* InitialSpendViewController.swift */,
 				C5BA55B61E8DB17800256E7A /* ExpenseViewController.swift */,
-				C5BFEA781E8F0BDC00528878 /* ReviewTableViewController.swift */,
+				C5BFEA781E8F0BDC00528878 /* ReviewViewController.swift */,
 				C5BA55B41E8DAB0E00256E7A /* ReviewTableViewCell.swift */,
 				C5316BF51E78D80F00BC2918 /* AddExpenseTableViewCell.swift */,
 				C5DD5A821E83B383008F7FC6 /* CurrentDayTableViewCell.swift */,
+				C5EDC2261EBBC12400DA5CB7 /* SettingsViewController.swift */,
+				C5C65A211EBBFBC6002D1B12 /* ExportViewController.swift */,
+				C503F1391EA1A8A100FA95A7 /* Export.swift */,
+				C538FAB71E85696200295062 /* Main.storyboard */,
 				C5316C2A1E7B241200BC2918 /* Extensions */,
 				C56500201E837F3A009D64F0 /* CoreData Classes */,
-				C5781DA41E6E2060006BBC03 /* Assets.xcassets */,
-				C5781DA61E6E2060006BBC03 /* LaunchScreen.storyboard */,
-				C5781DA91E6E2060006BBC03 /* Info.plist */,
-				C5781DA11E6E2060006BBC03 /* DailySpend.xcdatamodeld */,
+				C51A224D1EBFB32D00B53C24 /* LICENSE.md */,
 				C5BFEA7A1E8F43E300528878 /* Unused */,
 				C5CF5F6A1E7BB68B00C35539 /* Images */,
-				C5BA55B81E8DC47600256E7A /* UICountingLabel */,
+				C517B1C11EBC134200CDAA17 /* SSZipArchive */,
+				C517B1E91EBC134200CDAA17 /* UICountingLabel */,
 			);
 			path = DailySpend;
 			sourceTree = "<group>";
@@ -237,17 +390,6 @@
 			path = DailySpendUITests;
 			sourceTree = "<group>";
 		};
-		C5BA55B81E8DC47600256E7A /* UICountingLabel */ = {
-			isa = PBXGroup;
-			children = (
-				C518B59C1E88D669009CA4BB /* LICENSE */,
-				C518B59D1E88D669009CA4BB /* UICountingLabel.h */,
-				C518B59E1E88D669009CA4BB /* UICountingLabel.m */,
-				C518B59B1E88D668009CA4BB /* DailySpend-Bridging-Header.h */,
-			);
-			name = UICountingLabel;
-			sourceTree = "<group>";
-		};
 		C5BFEA7A1E8F43E300528878 /* Unused */ = {
 			isa = PBXGroup;
 			children = (
@@ -259,6 +401,9 @@
 		C5CF5F6A1E7BB68B00C35539 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				C5B367CC1EBBD65E006B5ADC /* cog.png */,
+				C5B367CD1EBBD65E006B5ADC /* cog@2x.png */,
+				C5B367CE1EBBD65E006B5ADC /* cog@3x.png */,
 				C5CF5F5E1E7BB68600C35539 /* cal.png */,
 				C5CF5F5F1E7BB68600C35539 /* cal@2x.png */,
 				C5CF5F601E7BB68600C35539 /* cal@3x.png */,
@@ -381,17 +526,21 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C517B1FE1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt in Resources */,
+				C5B367D01EBBD65E006B5ADC /* cog@2x.png in Resources */,
+				C5B367D11EBBD65E006B5ADC /* cog@3x.png in Resources */,
 				C5781DA81E6E2060006BBC03 /* LaunchScreen.storyboard in Resources */,
 				C53BCAA91E9203BC000B5EE1 /* cal_recur@3x.png in Resources */,
 				C5CF5F671E7BB68600C35539 /* today.png in Resources */,
 				C5CF5F681E7BB68600C35539 /* today@2x.png in Resources */,
 				C5781DA51E6E2060006BBC03 /* Assets.xcassets in Resources */,
-				C518B59F1E88D669009CA4BB /* LICENSE in Resources */,
 				C53BCAA81E9203BC000B5EE1 /* cal_recur@2x.png in Resources */,
 				C5CF5F661E7BB68600C35539 /* cal@3x.png in Resources */,
 				C5CF5F691E7BB68600C35539 /* today@3x.png in Resources */,
 				C538FAB91E85696200295062 /* Main.storyboard in Resources */,
 				C5CF5F641E7BB68600C35539 /* cal.png in Resources */,
+				C517B1F71EBC134200CDAA17 /* SSZipArchive-LICENSE.txt in Resources */,
+				C5B367CF1EBBD65E006B5ADC /* cog.png in Resources */,
 				C5CF5F651E7BB68600C35539 /* cal@2x.png in Resources */,
 				C53BCAA71E9203BC000B5EE1 /* cal_recur.png in Resources */,
 			);
@@ -419,31 +568,49 @@
 			buildActionMask = 2147483647;
 			files = (
 				C565001E1E837F37009D64F0 /* MonthAdjustment+CoreDataClass.swift in Sources */,
+				C517B1ED1EBC134200CDAA17 /* aescrypt.c in Sources */,
+				C517B1FF1EBC134200CDAA17 /* UICountingLabel.m in Sources */,
 				C5316BF61E78D80F00BC2918 /* AddExpenseTableViewCell.swift in Sources */,
 				C5DD5A831E83B383008F7FC6 /* CurrentDayTableViewCell.swift in Sources */,
 				C565001F1E837F37009D64F0 /* MonthAdjustment+CoreDataProperties.swift in Sources */,
+				C517B1F31EBC134200CDAA17 /* prng.c in Sources */,
+				C517B1FC1EBC134200CDAA17 /* SSZipArchive+Swift.swift in Sources */,
+				C517B1FA1EBC134200CDAA17 /* unzip.c in Sources */,
+				C5C65A221EBBFBC6002D1B12 /* ExportViewController.swift in Sources */,
 				C56500171E837F37009D64F0 /* Month+CoreDataProperties.swift in Sources */,
+				C517B1F51EBC134200CDAA17 /* sha1.c in Sources */,
 				C5EE62A31E85769700CAEEE7 /* String+CharacterSet.swift in Sources */,
 				C5BA55B31E8D92C800256E7A /* InitialAdjustmentViewController.swift in Sources */,
+				C517B1EE1EBC134200CDAA17 /* aeskey.c in Sources */,
 				C57095231E8F86A200004709 /* MonthAdjustmentViewController.swift in Sources */,
+				C517B1F01EBC134200CDAA17 /* entropy.c in Sources */,
 				C5781DCC1E6E23B2006BBC03 /* TodayViewController.swift in Sources */,
 				C565001A1E837F37009D64F0 /* Day+CoreDataClass.swift in Sources */,
 				C5BA55B71E8DB17800256E7A /* ExpenseViewController.swift in Sources */,
+				C517B1F41EBC134200CDAA17 /* pwd2key.c in Sources */,
 				C5DD5A851E83B4AC008F7FC6 /* InitialSpendViewController.swift in Sources */,
 				C518B59A1E88C7F0009CA4BB /* Decimal+DoubleValue.swift in Sources */,
 				C56500181E837F37009D64F0 /* DayAdjustment+CoreDataClass.swift in Sources */,
 				C57095251E8F86AE00004709 /* DayAdjustmentViewController.swift in Sources */,
+				C517B1EF1EBC134200CDAA17 /* aestab.c in Sources */,
 				C56500191E837F37009D64F0 /* DayAdjustment+CoreDataProperties.swift in Sources */,
+				C517B1F11EBC134200CDAA17 /* fileenc.c in Sources */,
 				C5781DA31E6E2060006BBC03 /* DailySpend.xcdatamodeld in Sources */,
+				C517B1F81EBC134200CDAA17 /* ioapi.c in Sources */,
 				C565001B1E837F37009D64F0 /* Day+CoreDataProperties.swift in Sources */,
 				C5316C291E7B240D00BC2918 /* Date+Arithmetic.swift in Sources */,
+				C517B1FD1EBC134200CDAA17 /* SSZipArchive.m in Sources */,
 				C565001C1E837F37009D64F0 /* Expense+CoreDataClass.swift in Sources */,
-				C518B5A01E88D669009CA4BB /* UICountingLabel.m in Sources */,
-				C5BFEA791E8F0BDC00528878 /* ReviewTableViewController.swift in Sources */,
+				C5BFEA791E8F0BDC00528878 /* ReviewViewController.swift in Sources */,
 				C5781D9B1E6E2060006BBC03 /* AppDelegate.swift in Sources */,
+				C5EDC2271EBBC12400DA5CB7 /* SettingsViewController.swift in Sources */,
+				C517B1F91EBC134200CDAA17 /* mztools.c in Sources */,
 				C565001D1E837F37009D64F0 /* Expense+CoreDataProperties.swift in Sources */,
 				C5BA55B51E8DAB0E00256E7A /* ReviewTableViewCell.swift in Sources */,
 				C56500161E837F37009D64F0 /* Month+CoreDataClass.swift in Sources */,
+				C517B1FB1EBC134200CDAA17 /* zip.c in Sources */,
+				C517B1F21EBC134200CDAA17 /* hmac.c in Sources */,
+				C503F13A1EA1A8A200FA95A7 /* Export.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -493,6 +660,7 @@
 				C5781DA71E6E2060006BBC03 /* Base */,
 			);
 			name = LaunchScreen.storyboard;
+			path = DailySpend;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -721,10 +889,12 @@
 		C5781DA11E6E2060006BBC03 /* DailySpend.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				C5A287C41EC1741200D3479A /* DailySpend 2.xcdatamodel */,
 				C5781DA21E6E2060006BBC03 /* DailySpend.xcdatamodel */,
 			);
-			currentVersion = C5781DA21E6E2060006BBC03 /* DailySpend.xcdatamodel */;
-			path = DailySpend.xcdatamodeld;
+			currentVersion = C5A287C41EC1741200D3479A /* DailySpend 2.xcdatamodel */;
+			name = DailySpend.xcdatamodeld;
+			path = DailySpend/DailySpend.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};

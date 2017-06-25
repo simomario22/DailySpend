@@ -7,11 +7,14 @@
 //
 
 import UIKit
+import CoreData
 
 class InitialAdjustmentViewController: UIViewController {
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-
+    var context: NSManagedObjectContext {
+        return appDelegate.persistentContainer.viewContext
+    }
+    
     @IBOutlet weak var monthlyField: UITextField!
     @IBOutlet weak var dailyField: UITextField!
     

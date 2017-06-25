@@ -18,7 +18,10 @@ class MonthAdjustmentViewController: UIViewController {
     @IBOutlet weak var additionalAmountLabel: UILabel!
     
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    var context: NSManagedObjectContext {
+        return appDelegate.persistentContainer.viewContext
+    }
+    
     let datePicker = UIDatePicker()
     let dismissButton = UIButton()
     
@@ -165,7 +168,7 @@ class MonthAdjustmentViewController: UIViewController {
                 }
                 navigationController!.viewControllers = vcs
             }
-            navigationController?.popViewController(animated: true)
+            _ = navigationController?.popViewController(animated: true)
         }
     }
     

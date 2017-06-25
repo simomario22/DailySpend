@@ -12,7 +12,9 @@ import CoreData
 class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
     
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    var context: NSManagedObjectContext {
+        return appDelegate.persistentContainer.viewContext
+    }
     let greyColor = UIColor.init(colorLiteralRed: 192.0 / 255.0,
                                  green: 192.0 / 255.0,
                                  blue: 198.0 / 255.0,
@@ -305,7 +307,7 @@ class AddExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
     func processAndSend() {
         let amount = amountField.text!.parseValidAmount(maxLength: 8)
         let shortDescription = descriptionField.text!
-        if amount == 0 ||
+        if amount <= 0 ||
             shortDescription.characters.count == 0 ||
             selectedDate == nil {
             delegate?.invalidFields(sender: self)

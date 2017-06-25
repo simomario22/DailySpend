@@ -11,6 +11,132 @@ import CoreData
 
 @objc(Month)
 public class Month: NSManagedObject {
+    
+    public func json() -> [String: Any]? {
+        var jsonObj = [String: Any]()
+        
+        if let month = month {
+            let num = month.timeIntervalSince1970 as NSNumber
+            jsonObj["month"] = num
+        } else {
+            return nil
+        }
+        
+        if let dailyBaseTargetSpend = dailyBaseTargetSpend {
+            let num = dailyBaseTargetSpend as NSNumber
+            jsonObj["dailyBaseTargetSpend"] = num
+        } else {
+            return nil
+        }
+        
+        if let adjs = sortedAdjustments {
+            var jsonAdjs = [[String: Any]]()
+            for adjustment in adjs {
+                if let jsonAdj = adjustment.json() {
+                    jsonAdjs.append(jsonAdj)
+                } else {
+                    return nil
+                }
+            }
+            jsonObj["adjustments"] = jsonAdjs
+        }
+        
+        if let days = sortedDays {
+            var jsonDays = [[String: Any]]()
+            for day in days {
+                if let jsonDay = day.json() {
+                    jsonDays.append(jsonDay)
+                } else {
+                    return nil
+                }
+            }
+            jsonObj["days"] = jsonDays
+        }
+        
+        if let dateCreated = dateCreated {
+            let num = dateCreated.timeIntervalSince1970 as NSNumber
+            jsonObj["dateCreated"] = num
+        } else {
+            return nil
+        }
+        
+        return jsonObj
+    }
+    
+    public func serialize() -> Data? {
+        if let jsonObj = self.json() {
+            let serialization = try? JSONSerialization.data(withJSONObject: jsonObj)
+            return serialization
+        }
+        return nil
+    }
+    
+    class func create(context: NSManagedObjectContext,
+                      json: [String: Any]) -> Month? {
+        
+        let month = Month(context: context)
+        
+        if let dailyBaseTargetSpend = json["dailyBaseTargetSpend"] as? NSNumber {
+            let decimal = Decimal(dailyBaseTargetSpend.doubleValue)
+            if decimal <= 0 {
+                return nil
+            }
+            month.dailyBaseTargetSpend = decimal
+        } else {
+            return nil
+        }
+        
+        if let monthNumber = json["month"] as? NSNumber {
+            let date = Date(timeIntervalSince1970: monthNumber.doubleValue)
+            if date > Date() ||
+                date.beginningOfDay != date ||
+                Month.get(context: context, dateInMonth: date) != nil {
+                // The date is after today, the date isn't a beginning of day,
+                // or this month already exists.
+                return nil
+            }
+            month.month = date
+        } else {
+            return nil
+        }
+        
+        if let jsonAdjs = json["adjustments"] as? [[String: Any]] {
+            for jsonAdj in jsonAdjs {
+                if let monthAdj = MonthAdjustment.create(context: context, json: jsonAdj) {
+                    monthAdj.month = month
+                } else {
+                    return nil
+                }
+            }
+        }
+        
+        if let jsonDays = json["days"] as? [[String: Any]] {
+            for jsonDay in jsonDays {
+                if let day = Day.create(context: context, json: jsonDay) {
+                    if day.date!.month != month.month!.month ||
+                        day.date!.year != month.month!.year {
+                        return nil
+                    }
+                    day.month = month
+                } else {
+                    return nil
+                }
+            }
+        }
+        
+        if let dateCreated = json["dateCreated"] as? NSNumber {
+            let date = Date(timeIntervalSince1970: dateCreated.doubleValue)
+            if date > Date() {
+                return nil
+            }
+            month.dateCreated = date
+        } else {
+            return nil
+        }
+
+        return month
+    }
+    
     // Helper functions
     
     
@@ -65,7 +191,7 @@ public class Month: NSManagedObject {
         let dailySpend = Decimal(defaults.double(forKey: "dailyTargetSpend"))
         
         let month = Month(context: context)
-        month.month = date
+        month.month = date.beginningOfDay
         month.dailyBaseTargetSpend = dailySpend
         month.dateCreated = Date()
 

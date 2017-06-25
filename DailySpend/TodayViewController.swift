@@ -34,7 +34,9 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
     }
 
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    var context: NSManagedObjectContext {
+        return appDelegate.persistentContainer.viewContext
+    }
     let redColor = UIColor(colorLiteralRed: 179.0/255.0,
                            green: 0.0/255.0,
                            blue: 0.0/255.0,
@@ -49,6 +51,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
     var addingExpense = false
     var previousDailySpendLeft: Decimal = 0
     var adjustBarButton: UIBarButtonItem?
+    var settingsBarButton: UIBarButtonItem?
     
     @IBOutlet weak var tableView: UITableView!
     // Required for unwind segue
@@ -123,6 +126,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         title = "Spending"
         tableView.delegate = self
         tableView.dataSource = self
@@ -434,6 +438,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
         self.tableView.endUpdates()
         
         adjustBarButton = self.navigationItem.rightBarButtonItem
+        settingsBarButton = self.navigationItem.leftBarButtonItem
         let saveBBI = UIBarButtonItem(title: "Save",
                                       style: .done,
                                       target: self,
@@ -455,7 +460,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
                 object: UIApplication.shared)
 
         self.tableView.isScrollEnabled = true
-        self.navigationItem.leftBarButtonItem = nil
+        self.navigationItem.leftBarButtonItem = settingsBarButton
         self.navigationItem.rightBarButtonItem = adjustBarButton
         addingExpense = false
         self.tableView.beginUpdates()
@@ -486,8 +491,8 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
                           reloadFull: Bool) {
         self.tableView.isScrollEnabled = true
         self.navigationItem.leftBarButtonItem?.isEnabled = true
-        self.navigationItem.rightBarButtonItem = self.adjustBarButton
-        self.navigationItem.leftBarButtonItem = nil
+        self.navigationItem.rightBarButtonItem = adjustBarButton
+        self.navigationItem.leftBarButtonItem = settingsBarButton
         addingExpense = false
         if reloadFull {
             print("reloading full")
