@@ -116,7 +116,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
         let bundleID = Bundle.main.bundleIdentifier
         if bundleID == "com.joshsherick.DailySpendTesting" {
             // Print all core data if testing.
-            printAllCoreData()
+            //printAllCoreData()
         }
         
         self.tableView.reloadData()

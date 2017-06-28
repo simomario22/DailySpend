@@ -395,7 +395,7 @@ UITableViewCell, UITextFieldDelegate, ImageSelectorDelegate {
         delegate?.present(vc, animated: animated, completion: completion, sender: sender)
     }
     
-    func selectedNewImage(_ image: UIImage) { }
+    func addedImage(_ image: UIImage) { }
     func removedImage(_ image: UIImage) { }
 
 }
