@@ -89,6 +89,16 @@ public class Expense: NSManagedObject {
             expense.notes = notes
         }
         
+        if let jsonImgs = json["images"] as? [[String: Any]] {
+            for jsonImg in jsonImgs {
+                if let image = Image.create(context: context, json: jsonImg) {
+                    image.expense = expense
+                } else {
+                    return nil
+                }
+            }
+        }
+        
         if let dateCreated = json["dateCreated"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateCreated.doubleValue)
             if date > Date() {

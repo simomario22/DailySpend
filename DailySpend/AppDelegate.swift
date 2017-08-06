@@ -23,7 +23,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ app: UIApplication,
                      open url: URL,
                      options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
-        guard url.pathExtension == "dailyspend" else {
+        guard url.pathExtension == "dailyspend" || url.pathExtension == "zip" else {
             return false
         }
         
@@ -38,7 +38,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             
             do {
                 // Attempt to import.
-                try Importer.importDataUrl(url)
+                try Importer.importURL(url)
                 // Success, load the main screen.
                 let storyboard = UIStoryboard(name: "Main", bundle: nil)
                 let initialVC = storyboard.instantiateInitialViewController()
@@ -55,8 +55,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 // Recovered from failure due to an error parsing the import file.
                 title = "Failed"
                 message = "Import failed. Please check that the file you " +
-                            "are trying to import is valid. Your data has been restored " +
-                            "to the state before the import."
+                            "are trying to import is valid. Your data has been " +
+                            "restored to the state before the import."
             } catch ExportError.unrecoverableDatabaseInBadState {
                 // Could not recover due to being unable to promote the backup
                 // persistent store to the primary persistent store.
@@ -82,7 +82,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 title = "Failed"
                 message = "Import failed. Please check that the file you " +
                     "are trying to import is valid. Your data has been restored " +
+                    "to the state before the import."
+            } catch ExportError.recoveredFromFilesystemError {
+                // Recovered from failure due to filesystem operations.
+                title = "Failed"
+                message = "Import failed. Please check that your device isn't " +
+                    "running low on space. Your data has been restored " +
                 "to the state before the import."
+            } catch ExportError.unrecoverableFilesystemError {
+                // Could not recover from a failure due to filesystem operations.
+                title = "Failed"
+                message = "Import failed. Unfortunately, we were not able " +
+                    "to recover to the state before import, possibly " +
+                    "due to a number of factors, one of which could be " +
+                    "low space on your device. Check that the imported " +
+                    "file is in a correct format and that your device " +
+                    "has sufficient space and try again. Sorry for " +
+                    "this inconvenience. If you need help, please " +
+                    "contact support."
             } catch {
                 // Catch-all to satisfy function type requirements.
                 title = "Failed"
