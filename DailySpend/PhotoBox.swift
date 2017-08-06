@@ -10,29 +10,53 @@ import UIKit
 import NYTPhotoViewer
 
 /// A box allowing NYTPhotoViewer to consume Swift value types from our codebase.
-final class NYTPhotoBox: NSObject, NYTPhoto {
+final class PhotoBox: NSObject, NYTPhoto {
 
     var photoId: Int
+    var imageName: String?
+    var imageType: String?
+    var dateCreated: Date?
 
     override init() {
         photoId = 0
+        self.dateCreated = Date()
         super.init()
     }
 
     init(photoId: Int) {
         self.photoId = photoId
+        self.dateCreated = Date()
         super.init()
     }
 
     init(photoId: Int, image: UIImage) {
         self.photoId = photoId
         self.image = image
+        self.dateCreated = Date()
+        super.init()
+    }
+    
+    init(photoId: Int, image: UIImage, imageName: String?) {
+        self.photoId = photoId
+        self.image = image
+        self.imageName = imageName
+        self.dateCreated = Date()
+        super.init()
+    }
+    
+    
+    init(photoId: Int, image: UIImage, imageName: String?, imageType: String?) {
+        self.photoId = photoId
+        self.image = image
+        self.imageName = imageName
+        self.imageType = imageType
+        self.dateCreated = Date()
         super.init()
     }
 
     var image: UIImage?
 
-    // We don't use these but they are required.
+    // We don't use these but they are required by NYTPhotoViewer.
     var imageData: Data?
     var placeholderImage: UIImage?
     var attributedCaptionTitle: NSAttributedString?
@@ -40,10 +64,10 @@ final class NYTPhotoBox: NSObject, NYTPhoto {
     var attributedCaptionCredit: NSAttributedString?
 }
 
-extension NYTPhotoBox {
+extension PhotoBox {
     @objc
     override func isEqual(_ object: Any?) -> Bool {
-        guard let otherPhoto = object as? NYTPhotoBox else { return false }
+        guard let otherPhoto = object as? PhotoBox else { return false }
         return photoId == otherPhoto.photoId
     }
 }

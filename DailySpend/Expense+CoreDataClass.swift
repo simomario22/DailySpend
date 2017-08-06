@@ -38,6 +38,18 @@ public class Expense: NSManagedObject {
             return nil
         }
         
+        if let imgs = sortedImages {
+            var jsonImgs = [[String: Any]]()
+            for image in imgs {
+                if let jsonImg = image.json() {
+                    jsonImgs.append(jsonImg)
+                } else {
+                    return nil
+                }
+            }
+            jsonObj["images"] = jsonImgs
+        }
+        
         return jsonObj
     }
     
@@ -143,6 +155,27 @@ public class Expense: NSManagedObject {
         }
         set {
             day_ = newValue
+        }
+    }
+    
+    public var sortedImages: [Image]? {
+        if let img = images {
+            return img.sorted(by: { $0.dateCreated! < $1.dateCreated! })
+        } else {
+            return nil
+        }
+    }
+    
+    public var images: Set<Image>? {
+        get {
+            return images_ as! Set?
+        }
+        set {
+            if newValue != nil {
+                images_ = NSSet(set: newValue!)
+            } else {
+                images_ = nil
+            }
         }
     }
 
