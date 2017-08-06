@@ -207,8 +207,6 @@ class ExpenseView: UIView {
         
         scrollView.contentSize = CGSize(width: newWidth,
                                         height: imageSelector.frame.bottomEdge)
-        
-        print(amountLabel.frame.size.height)
     }
     
     func updateFieldValues() {

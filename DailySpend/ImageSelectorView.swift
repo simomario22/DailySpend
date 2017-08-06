@@ -328,7 +328,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIScrollViewDel
         // Create a button at a particular index, properly setting visual
         // attributes and the frame of the button.
         let sideSize: CGFloat = self.frame.height
-        let startXFromEnd: CGFloat = ((sideSize - buttonMargin) * CGFloat(index)) + sideSize
+        let startXFromEnd: CGFloat = ((sideSize - buttonMargin) * CGFloat(index)) + sideSize - buttonMargin
         
         let startX = contentWidth - startXFromEnd
         
