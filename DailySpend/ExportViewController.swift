@@ -28,14 +28,15 @@ class ExportViewController: UITableViewController {
         self.navigationItem.rightBarButtonItem = exportButton
         
         itemsToExport.append(.Data)
-//        itemsToExport.append(.Photos)
+        itemsToExport.append(.Photos)
     }
     
     func export(_ containsPhotos: Bool, _ containsData: Bool) {
-        func failure(_ location: String) {
+        func failure(_ location: String? = nil, message: String? = nil) {
             let title = "Failed"
-            let message = "Export failed due to an issue while \(location). " +
-            "Sorry, try again later or contact support."
+            let message = message != nil ? message! :
+                    "Export failed due to an issue while \(location!). " +
+                    "Sorry, try again later or contact support."
             let alert = UIAlertController(title: title,
                                           message: message,
                                           preferredStyle: .alert)
@@ -66,15 +67,34 @@ class ExportViewController: UITableViewController {
             }
         }
         
-        shareURL = directoryURL
+        if containsData && containsPhotos {
+            let fm = FileManager.default
+            let newFileURL = directoryURL.appendingPathComponent(fileURL!.lastPathComponent)
+            do {
+                try fm.moveItem(at: fileURL!, to: newFileURL)
+            } catch {
+                failure("creating the directory to zip")
+                return
+            }
+        }
+        
         
         if containsData && !containsPhotos {
             shareURL = fileURL
         } else {
-            let zipURL = directoryURL.appendingPathExtension("zip")
+            let fm = FileManager.default
+            if let count = try? fm.contentsOfDirectory(atPath: directoryURL.path).count {
+                if count == 0 {
+                    failure(message: "There's nothing to export with the selected options.")
+                    return
+                }
+                    
+            }
             
-            if !SSZipArchive.createZipFile(atPath: zipURL.absoluteString,
-                                           withContentsOfDirectory: directoryURL.absoluteString) {
+            let zipURL = directoryURL.appendingPathExtension("zip")
+            if !SSZipArchive.createZipFile(atPath: zipURL.path,
+                                           withContentsOfDirectory: directoryURL.path,
+                                           keepParentDirectory: true) {
                 failure("zipping files")
                 return
             }
@@ -111,7 +131,7 @@ class ExportViewController: UITableViewController {
 
         self.navigationItem.rightBarButtonItem = bbi
 
-        // Dispatch asyncronously in order to let view update with spinner.
+        // Run asyncronously in order to let view update with spinner.
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.01, execute: {
             self.export(containsPhotos, containsData)
             self.navigationItem.rightBarButtonItem = exportButton
@@ -145,19 +165,19 @@ class ExportViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell")!
         
-//        let row = indexPath.row
-//        let containsPhotos = itemsToExport.contains(.Photos)
+        let row = indexPath.row
+        let containsPhotos = itemsToExport.contains(.Photos)
         let containsData = itemsToExport.contains(.Data)
         
-//        switch row {
-//        case 0:
-//            cell.textLabel!.text! = "Photos"
-//            cell.accessoryType = containsPhotos ? .checkmark : .none
-//        case 1:
+        switch row {
+        case 0:
+            cell.textLabel!.text! = "Photos"
+            cell.accessoryType = containsPhotos ? .checkmark : .none
+        case 1:
             cell.textLabel!.text! = "Data"
             cell.accessoryType = containsData ? .checkmark : .none
-//        default: break
-//        }
+        default: break
+        }
         
         return cell
     }
@@ -167,21 +187,20 @@ class ExportViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        return 2
-        return 1
+        return 2
     }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let row = indexPath.row
         
         if row == 0 {
-//            if let index = itemsToExport.index(of: .Photos) {
-//                // This was already selected, deselect it.
-//                itemsToExport.remove(at: index)
-//            } else {
-//                itemsToExport.append(.Photos)
-//            }
-//        } else if row == 1 {
+            if let index = itemsToExport.index(of: .Photos) {
+                // This was already selected, deselect it.
+                itemsToExport.remove(at: index)
+            } else {
+                itemsToExport.append(.Photos)
+            }
+        } else if row == 1 {
             if let index = itemsToExport.index(of: .Data) {
                 // This was already selected, deselect it.
                 itemsToExport.remove(at: index)

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="G5v-Vy-ekD">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16G29" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="G5v-Vy-ekD">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -51,21 +51,21 @@
                                             </subviews>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="currentDay" rowHeight="130" id="WR3-6T-zP4" customClass="CurrentDayTableViewCell" customModule="DailySpend" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="72" width="375" height="130"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="currentDay" rowHeight="140" id="WR3-6T-zP4" customClass="CurrentDayTableViewCell" customModule="DailySpend" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="72" width="375" height="140"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="WR3-6T-zP4" id="mCW-dH-eas">
-                                            <rect key="frame" x="0.0" y="0.0" width="342" height="130"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="342" height="140"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="$0.00" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mwL-6Y-rxj" customClass="UICountingLabel">
-                                                    <rect key="frame" x="134" y="37" width="75" height="34"/>
-                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleTitle1"/>
+                                                    <rect key="frame" x="126.5" y="37" width="90.5" height="42.5"/>
+                                                    <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="36"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="left to spend today" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Bn8-Cg-Mlb">
-                                                    <rect key="frame" x="103" y="71" width="137" height="20"/>
+                                                    <rect key="frame" x="103" y="79.5" width="137" height="20"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
@@ -77,7 +77,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Today's Spending:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Tpz-j7-vkK">
-                                                    <rect key="frame" x="101" y="99" width="141" height="21"/>
+                                                    <rect key="frame" x="101" y="107.5" width="141" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
@@ -102,7 +102,7 @@
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="expense" textLabel="zF8-Rl-bQZ" detailTextLabel="79A-8d-du1" style="IBUITableViewCellStyleValue1" id="w0A-72-8an">
-                                        <rect key="frame" x="0.0" y="202" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="212" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="w0A-72-8an" id="n27-jy-PDM">
                                             <rect key="frame" x="0.0" y="0.0" width="342" height="43.5"/>
@@ -126,84 +126,29 @@
                                             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="addExpense" rowHeight="213" id="Re8-S4-vOu" customClass="AddExpenseTableViewCell" customModule="DailySpend" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="246" width="375" height="213"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="addExpense" rowHeight="305" id="Re8-S4-vOu" customClass="ExpenseTableViewCell" customModule="DailySpend" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="256" width="375" height="305"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Re8-S4-vOu" id="xnj-G8-kh6">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="213"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="305"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Add Expense" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="leq-h6-itk">
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Add Expense" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="leq-h6-itk">
                                                     <rect key="frame" x="135" y="8" width="105" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
-                                                    <color key="textColor" red="0.75294117647058822" green="0.75294117647058822" blue="0.77647058823529413" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <color key="textColor" red="0.018464721996509219" green="0.018604856264221297" blue="0.019025259067357525" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <textField opaque="NO" clipsSubviews="YES" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="$0.00" textAlignment="center" adjustsFontSizeToFit="NO" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="dFU-rV-11A">
-                                                    <rect key="frame" x="148" y="37" width="79" height="34"/>
-                                                    <nil key="textColor"/>
-                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleTitle1"/>
-                                                    <textInputTraits key="textInputTraits" keyboardType="numberPad" returnKeyType="next"/>
-                                                    <connections>
-                                                        <action selector="editedAmount:" destination="Re8-S4-vOu" eventType="editingChanged" id="AdC-za-Bbw"/>
-                                                    </connections>
-                                                </textField>
-                                                <textField opaque="NO" clipsSubviews="YES" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Description" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="y55-Je-4kr">
-                                                    <rect key="frame" x="116" y="79" width="143" height="34"/>
-                                                    <nil key="textColor"/>
-                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleTitle1"/>
-                                                    <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                                                    <connections>
-                                                        <action selector="fixFrames" destination="Re8-S4-vOu" eventType="editingChanged" id="EeW-6b-5Q0"/>
-                                                    </connections>
-                                                </textField>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0jQ-O4-zlP">
-                                                    <rect key="frame" x="159" y="121" width="57" height="35"/>
-                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleTitle1"/>
-                                                    <inset key="contentEdgeInsets" minX="0.0" minY="0.0" maxX="0.0" maxY="1"/>
-                                                    <state key="normal" title="Date">
-                                                        <color key="titleColor" red="0.75294117647058822" green="0.75294117647058822" blue="0.77647058823529413" alpha="1" colorSpace="calibratedRGB"/>
-                                                    </state>
-                                                    <connections>
-                                                        <action selector="editDate:" destination="Re8-S4-vOu" eventType="touchUpInside" id="xg4-6y-KtF"/>
-                                                    </connections>
-                                                </button>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="23x-Mw-cAq">
-                                                    <rect key="frame" x="152" y="164" width="72" height="35"/>
-                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleTitle1"/>
-                                                    <inset key="contentEdgeInsets" minX="0.0" minY="0.0" maxX="0.0" maxY="1"/>
-                                                    <state key="normal" title="Notes">
-                                                        <color key="titleColor" red="0.75294117650000003" green="0.75294117650000003" blue="0.77647058820000003" alpha="1" colorSpace="calibratedRGB"/>
-                                                    </state>
-                                                    <connections>
-                                                        <action selector="editNotes:" destination="Re8-S4-vOu" eventType="touchUpInside" id="q0y-Pb-T08"/>
-                                                    </connections>
-                                                </button>
                                             </subviews>
                                             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                            <constraints>
-                                                <constraint firstItem="y55-Je-4kr" firstAttribute="centerX" secondItem="xnj-G8-kh6" secondAttribute="centerX" id="83N-Fj-kpn"/>
-                                                <constraint firstItem="y55-Je-4kr" firstAttribute="top" secondItem="dFU-rV-11A" secondAttribute="bottom" constant="8" id="9Cy-FF-W4u"/>
-                                                <constraint firstItem="leq-h6-itk" firstAttribute="centerX" secondItem="xnj-G8-kh6" secondAttribute="centerX" id="AqC-vq-0I3"/>
-                                                <constraint firstItem="0jQ-O4-zlP" firstAttribute="top" secondItem="y55-Je-4kr" secondAttribute="bottom" constant="8" id="CNw-0M-Uku"/>
-                                                <constraint firstItem="23x-Mw-cAq" firstAttribute="top" secondItem="0jQ-O4-zlP" secondAttribute="bottom" constant="8" id="Kf9-vs-FGn"/>
-                                                <constraint firstAttribute="topMargin" secondItem="leq-h6-itk" secondAttribute="top" id="Y3g-Ps-Ire"/>
-                                                <constraint firstItem="dFU-rV-11A" firstAttribute="centerX" secondItem="xnj-G8-kh6" secondAttribute="centerX" id="Zfu-K3-QtF"/>
-                                                <constraint firstItem="0jQ-O4-zlP" firstAttribute="centerX" secondItem="xnj-G8-kh6" secondAttribute="centerX" id="f1e-2z-KAY"/>
-                                                <constraint firstItem="23x-Mw-cAq" firstAttribute="centerX" secondItem="xnj-G8-kh6" secondAttribute="centerX" id="p4o-gQ-Fmi"/>
-                                                <constraint firstItem="dFU-rV-11A" firstAttribute="top" secondItem="leq-h6-itk" secondAttribute="bottom" constant="8" id="xbd-OZ-uD0"/>
-                                            </constraints>
                                         </tableViewCellContentView>
                                         <connections>
-                                            <outlet property="addExpenseLabel" destination="leq-h6-itk" id="rEu-7u-uQa"/>
-                                            <outlet property="amountField" destination="dFU-rV-11A" id="JFk-qs-y5g"/>
-                                            <outlet property="dateButton" destination="0jQ-O4-zlP" id="X3a-6o-XwW"/>
-                                            <outlet property="descriptionField" destination="y55-Je-4kr" id="XRS-d4-5kk"/>
-                                            <outlet property="notesButton" destination="23x-Mw-cAq" id="cbQ-XD-aWQ"/>
+                                            <outlet property="addExpenseLabel" destination="leq-h6-itk" id="gGz-yt-ucn"/>
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="blank" rowHeight="44" id="GBg-vw-hUX">
-                                        <rect key="frame" x="0.0" y="459" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="561" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="GBg-vw-hUX" id="EVz-9e-u8a">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -534,94 +479,6 @@
             </objects>
             <point key="canvasLocation" x="2328.8000000000002" y="987.25637181409309"/>
         </scene>
-        <!--Expense View Controller-->
-        <scene sceneID="sn9-te-QeW">
-            <objects>
-                <viewController storyboardIdentifier="Expense" useStoryboardIdentifierAsRestorationIdentifier="YES" id="nrp-3h-qSd" customClass="ExpenseViewController" customModule="DailySpend" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="72q-dg-jj8"/>
-                        <viewControllerLayoutGuide type="bottom" id="wk3-oT-Z9e"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="Ip2-ZP-dR4">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <textField opaque="NO" clipsSubviews="YES" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="$0.00" textAlignment="center" adjustsFontSizeToFit="NO" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="2mb-Xj-4Jk">
-                                <rect key="frame" x="148" y="72" width="79" height="34"/>
-                                <nil key="textColor"/>
-                                <fontDescription key="fontDescription" style="UICTFontTextStyleTitle1"/>
-                                <textInputTraits key="textInputTraits" keyboardType="numberPad" returnKeyType="next"/>
-                                <connections>
-                                    <action selector="amountChanged:" destination="nrp-3h-qSd" eventType="editingChanged" id="Jev-nd-HX9"/>
-                                </connections>
-                            </textField>
-                            <textField opaque="NO" clipsSubviews="YES" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Description" textAlignment="center" adjustsFontSizeToFit="NO" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="hMz-CH-Bu5">
-                                <rect key="frame" x="116" y="114" width="143" height="34"/>
-                                <nil key="textColor"/>
-                                <fontDescription key="fontDescription" style="UICTFontTextStyleTitle1"/>
-                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                                <connections>
-                                    <action selector="fixFrames" destination="nrp-3h-qSd" eventType="editingChanged" id="b35-hq-kVe"/>
-                                </connections>
-                            </textField>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7O7-uH-54o">
-                                <rect key="frame" x="159" y="156" width="57" height="35"/>
-                                <fontDescription key="fontDescription" style="UICTFontTextStyleTitle1"/>
-                                <inset key="contentEdgeInsets" minX="0.0" minY="0.0" maxX="0.0" maxY="1"/>
-                                <state key="normal" title="Date"/>
-                                <connections>
-                                    <action selector="editDate:" destination="nrp-3h-qSd" eventType="touchUpInside" id="2an-pi-qs8"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OZt-lK-gzh">
-                                <rect key="frame" x="152" y="199" width="72" height="35"/>
-                                <fontDescription key="fontDescription" style="UICTFontTextStyleTitle1"/>
-                                <inset key="contentEdgeInsets" minX="0.0" minY="0.0" maxX="0.0" maxY="1"/>
-                                <state key="normal" title="Notes"/>
-                                <connections>
-                                    <action selector="editNotes" destination="nrp-3h-qSd" eventType="touchUpInside" id="akZ-cY-Zvn"/>
-                                </connections>
-                            </button>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="Dat-ld-b6L">
-                                <rect key="frame" x="16" y="234" width="343" height="413"/>
-                                <color key="backgroundColor" red="0.96078431372549022" green="0.96078431372549022" blue="0.96078431372549022" alpha="1" colorSpace="calibratedRGB"/>
-                                <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                                <connections>
-                                    <outlet property="delegate" destination="nrp-3h-qSd" id="zSa-BD-TKR"/>
-                                </connections>
-                            </textView>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <constraints>
-                            <constraint firstItem="2mb-Xj-4Jk" firstAttribute="top" secondItem="72q-dg-jj8" secondAttribute="bottom" constant="8" id="3A3-jf-4F8"/>
-                            <constraint firstItem="Dat-ld-b6L" firstAttribute="leading" secondItem="Ip2-ZP-dR4" secondAttribute="leadingMargin" id="9kl-4K-dP8"/>
-                            <constraint firstItem="Dat-ld-b6L" firstAttribute="trailing" secondItem="Ip2-ZP-dR4" secondAttribute="trailingMargin" id="Gdg-tQ-pRF"/>
-                            <constraint firstItem="hMz-CH-Bu5" firstAttribute="top" secondItem="2mb-Xj-4Jk" secondAttribute="bottom" constant="8" id="GgX-6t-EIu"/>
-                            <constraint firstItem="hMz-CH-Bu5" firstAttribute="centerX" secondItem="2mb-Xj-4Jk" secondAttribute="centerX" id="I6f-Xu-3Cj"/>
-                            <constraint firstItem="7O7-uH-54o" firstAttribute="top" secondItem="hMz-CH-Bu5" secondAttribute="bottom" constant="8" id="JRy-xw-8t6"/>
-                            <constraint firstItem="OZt-lK-gzh" firstAttribute="top" secondItem="7O7-uH-54o" secondAttribute="bottom" constant="8" symbolic="YES" id="OqJ-ef-bxU"/>
-                            <constraint firstItem="2mb-Xj-4Jk" firstAttribute="centerX" secondItem="Ip2-ZP-dR4" secondAttribute="centerX" id="PRf-4K-juw"/>
-                            <constraint firstItem="Dat-ld-b6L" firstAttribute="top" secondItem="OZt-lK-gzh" secondAttribute="bottom" id="SyY-yB-oK4"/>
-                            <constraint firstItem="OZt-lK-gzh" firstAttribute="centerX" secondItem="7O7-uH-54o" secondAttribute="centerX" id="bHh-bP-h2n"/>
-                            <constraint firstItem="Dat-ld-b6L" firstAttribute="bottom" secondItem="wk3-oT-Z9e" secondAttribute="top" constant="-20" id="siR-WN-gHD"/>
-                            <constraint firstItem="7O7-uH-54o" firstAttribute="centerX" secondItem="hMz-CH-Bu5" secondAttribute="centerX" id="suL-uL-Ivt"/>
-                        </constraints>
-                    </view>
-                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
-                    <connections>
-                        <outlet property="amountField" destination="2mb-Xj-4Jk" id="d0H-BR-GT1"/>
-                        <outlet property="dateButton" destination="7O7-uH-54o" id="Bq8-gv-h3O"/>
-                        <outlet property="descriptionField" destination="hMz-CH-Bu5" id="Bx2-Ec-aI3"/>
-                        <outlet property="notesButton" destination="OZt-lK-gzh" id="YZt-ma-s2s"/>
-                        <outlet property="notesTextView" destination="Dat-ld-b6L" id="s4H-LL-Gxm"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="JN4-jP-V6p" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="3209" y="206"/>
-        </scene>
         <!--DailySpend-->
         <scene sceneID="srT-b1-kZQ">
             <objects>
@@ -916,6 +773,6 @@
         <image name="today.png" width="25" height="25"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="ljn-bW-His"/>
+        <segue reference="c75-ZS-DKf"/>
     </inferredMetricsTieBreakers>
 </document>

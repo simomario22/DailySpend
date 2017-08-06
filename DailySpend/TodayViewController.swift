@@ -14,7 +14,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
     let standardCellHeight: CGFloat = 44
     let addExpenseMinPxVisible: CGFloat = 70
     var currentDayHeight: CGFloat {
-        let baseHeight: CGFloat = 130
+        let baseHeight: CGFloat = 140
         let heightOfTodaysSpendingLabel: CGFloat = 21
         if daysThisMonth.last == nil ||
             daysThisMonth.last!.expenses!.count == 0 {
@@ -25,7 +25,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
         
     }
     var addExpenseHeight: CGFloat {
-        let baseHeight: CGFloat = 213
+        let baseHeight: CGFloat = 400
         if addingExpense {
             return visibleHeight
         } else {
@@ -69,7 +69,9 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
             // The day has changed since we last opened the app.
             // Refresh.
             if addingExpense {
-                cancelAddingExpense(sender: self.navigationItem.leftBarButtonItem!)
+                let nc = NotificationCenter.default
+                nc.post(name: NSNotification.Name.init("CancelAddingExpense"),
+                        object: UIApplication.shared)
             }
             viewWillAppear(false)
         }
@@ -78,7 +80,6 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if UserDefaults.standard.double(forKey: "dailyTargetSpend") == 0 {
-            
             let sb = storyboard!
             let id = "InitialSpend"
             let navController = sb.instantiateViewController(withIdentifier: id)
@@ -113,33 +114,41 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
         
         fetchMonthsAndDays()
         
-        let bundleID = Bundle.main.bundleIdentifier
-        if bundleID == "com.joshsherick.DailySpendTesting" {
+        let bundleID = Bundle.main.bundleIdentifier!
+        if bundleID.contains("com.joshsherick.DailySpendTesting") {
             // Print all core data if testing.
             printAllCoreData()
         }
         
         self.tableView.reloadData()
-        
-
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = "Spending"
+        let width = navigationController!.navigationBar.frame.size.width * (2 / 3)
+        let titleLabelView = UILabel(frame: CGRect(x: 0, y: 0, width: width, height: 44))
+        titleLabelView.backgroundColor = UIColor.clear
+        titleLabelView.textAlignment = .center
+        titleLabelView.textColor = UINavigationBar.appearance().tintColor
+        titleLabelView.font = UIFont.boldSystemFont(ofSize: 16.0)
+        titleLabelView.text = "Spending"
+        self.navigationItem.titleView = titleLabelView
+
         tableView.delegate = self
         tableView.dataSource = self
         tableView.tableFooterView = UIView()
-        let nc = NotificationCenter.default
-        nc.addObserver(self,
+        NotificationCenter.default.addObserver(self,
                        selector: #selector(willEnterForeground),
                        name: NSNotification.Name.UIApplicationWillEnterForeground,
                        object: nil)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.0001) {
-            let currentDayPath = IndexPath(row: self.currentDayCellIndex, section: 0)
-            self.tableView.scrollToRow(at: currentDayPath,
-                                       at: .top, animated: false)
+            if UserDefaults.standard.double(forKey: "dailyTargetSpend") > 0 {
+                let currentDayPath = IndexPath(row: self.currentDayCellIndex,
+                                               section: 0)
+                self.tableView.scrollToRow(at: currentDayPath,
+                                           at: .top, animated: false)
+            }
         }
     }
     
@@ -235,7 +244,6 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
               2
     }
     
-    
     func tableView(_ tableView: UITableView,
                    cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.row <= lastPrevDayCellIndex {
@@ -305,7 +313,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
         } else if indexPath.row == lastExpenseCellIndex + 1 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "addExpense",
                                                      for: indexPath)
-            let addExpenseCell = cell as! AddExpenseTableViewCell
+            let addExpenseCell = cell as! ExpenseTableViewCell
             addExpenseCell.delegate = self
             return addExpenseCell
         } else {
@@ -394,8 +402,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
             // Expense (not bonus expense) selected
             let expenses = daysThisMonth.last!.sortedExpenses!
             let index = indexPath.row - (currentDayCellIndex + 1)
-            let vc = storyboard!.instantiateViewController(withIdentifier: "Expense")
-            let expenseVC = vc as! ExpenseViewController
+            let expenseVC = ExpenseViewController(nibName: nil, bundle: nil)
             expenseVC.expense = expenses[index]
             self.navigationController?.pushViewController(expenseVC, animated: true)
         } else if bonusExpenses && indexPath.row == lastExpenseCellIndex ||
@@ -426,114 +433,106 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
             }
         }
     }
-    
+
     /* Add Expense TableView Cell delegate methods */
     
-    func didBeginEditing(sender: AddExpenseTableViewCell) {
+    func expandCell(sender: ExpenseTableViewCell) {
         addingExpense = true
         
         self.tableView.isScrollEnabled = false
+        
+        UIView.animate(withDuration: 0.2, animations: {
+            self.tableView.beginUpdates()
+            self.tableView.endUpdates()
+        })
+        
+        UIView.animate(withDuration: 0.1, delay: 0.1, options: .curveEaseInOut,
+        animations: {
+            self.animateTitle(newTitle: "Add Expense", fromTop: true)
+        }, completion: nil)
 
-        self.tableView.beginUpdates()
-        self.tableView.endUpdates()
-        
-        adjustBarButton = self.navigationItem.rightBarButtonItem
-        settingsBarButton = self.navigationItem.leftBarButtonItem
-        let saveBBI = UIBarButtonItem(title: "Save",
-                                      style: .done,
-                                      target: self,
-                                      action: #selector(rightBarButtonPressed(sender:)))
-        let cancelBBI = UIBarButtonItem(title: "Cancel",
-                                        style: .plain,
-                                        target: self,
-                                        action: #selector(cancelAddingExpense(sender:)))
-        self.navigationItem.rightBarButtonItem = saveBBI
-        self.navigationItem.leftBarButtonItem = cancelBBI
-        
         self.tableView.scrollToRow(at: IndexPath(row: addExpenseCellIndex, section: 0),
                                    at: .top, animated: true)
     }
     
-    func cancelAddingExpense(sender: UIBarButtonItem) {
-        let nc = NotificationCenter.default
-        nc.post(name: NSNotification.Name.init("PressedCancelButton"),
-                object: UIApplication.shared)
-
+    
+    func collapseCell(sender: ExpenseTableViewCell) {
         self.tableView.isScrollEnabled = true
-        self.navigationItem.leftBarButtonItem = settingsBarButton
-        self.navigationItem.rightBarButtonItem = adjustBarButton
-        addingExpense = false
-        self.tableView.beginUpdates()
-        self.tableView.endUpdates()
         
+        addingExpense = false
+        
+        UIView.animate(withDuration: 0.2, animations: {
+            self.tableView.beginUpdates()
+            self.tableView.endUpdates()
+        })
+        
+        UIView.animate(withDuration: 0.1, delay: 0.1, options: .curveEaseInOut,
+                       animations: {
+                        self.animateTitle(newTitle: "Spending", fromTop: false)
+        }, completion: nil)
         self.tableView.scrollToRow(at: IndexPath(row: currentDayCellIndex, section: 0),
                                    at: .top, animated: true)
     }
     
-    func rightBarButtonPressed(sender: UIBarButtonItem) {
-        let buttonTitle = sender.title!
-        let nc = NotificationCenter.default
-        nc.post(name: NSNotification.Name.init("Pressed\(buttonTitle)Button"),
-                object: UIApplication.shared)
-        if buttonTitle == "Done" {
-            self.navigationItem.leftBarButtonItem?.isEnabled = true
-            sender.title! = "Save"
-        }
-    }
-    
-    func didOpenNotes(sender: AddExpenseTableViewCell) {
-        self.navigationItem.leftBarButtonItem?.isEnabled = false
-        self.navigationItem.rightBarButtonItem?.title = "Done"
-    }
-    
-    func completedExpense(sender: AddExpenseTableViewCell,
-                          expense: Expense,
-                          reloadFull: Bool) {
-        self.tableView.isScrollEnabled = true
-        self.navigationItem.leftBarButtonItem?.isEnabled = true
-        self.navigationItem.rightBarButtonItem = adjustBarButton
-        self.navigationItem.leftBarButtonItem = settingsBarButton
-        addingExpense = false
-        if reloadFull {
-            print("reloading full")
+    func addedExpense(expense: Expense) {
+        if expense.day!.date!.beginningOfDay != Date().beginningOfDay {
+            // This expense isn't for today. Do a full refresh because it 
+            // affected month and day rows.
             viewWillAppear(false)
         } else {
             self.tableView.beginUpdates()
-            if expense.day!.date!.beginningOfDay == Date().beginningOfDay &&
-                daysThisMonth.last!.expenses!.count <= numExpenseSpots {
-                // The number of rows has changed, so we need to insert them.
+            if daysThisMonth.last!.expenses!.count <= numExpenseSpots {
+                // We have not yet reached bonus expenses, so we will be 
+                // inserting a new row.
                 let locationOfNewRow = months.count +
-                                       daysThisMonth.count +
-                                       daysThisMonth.last!.expenses!.count -
-                                       1
+                    daysThisMonth.count +
+                    daysThisMonth.last!.expenses!.count - 1
                 let indices = [IndexPath(row: locationOfNewRow, section: 0)]
                 self.tableView.insertRows(at: indices, with: .bottom)
             } else {
+                // There are bonus expenses, just reload the bonus expense cell.
                 let indices = [IndexPath(row: lastExpenseCellIndex, section: 0)]
                 tableView.reloadRows(at: indices, with: .none)
             }
+            // Reload the current day cell, since the DailySpend amount changed.
             let indices = [IndexPath(row: currentDayCellIndex, section: 0)]
             tableView.reloadRows(at: indices, with: .none)
             self.tableView.endUpdates()
         }
-        let path = IndexPath(row: currentDayCellIndex, section: 0)
-        self.tableView.scrollToRow(at: path,
-                                   at: .top, animated: true)
+
     }
     
-    func invalidFields(sender: AddExpenseTableViewCell) {
-        let message = "Please enter valid values for amount, description, and date."
-        let alert = UIAlertController(title: "Invalid Fields",
-                                      message: message,
-                                      preferredStyle: UIAlertControllerStyle.alert)
-        alert.addAction(UIAlertAction(title: "Okay", style: .default, handler: nil))
+    func setRightBBI(_ bbi: UIBarButtonItem) {
+        navigationItem.rightBarButtonItem = bbi
+    }
+    
+    func setLeftBBI(_ bbi: UIBarButtonItem) {
+        navigationItem.leftBarButtonItem = bbi
+    }
+    
+    func present(_ vc: UIViewController, animated: Bool, completion: (() -> Void)?, sender: Any?) {
+        self.present(vc, animated: animated, completion: completion)
+    }
+    
+    func animateTitle(newTitle: String, fromTop: Bool) {
+        // Remove old animation, if necessary.
+        if let keys = navigationItem.titleView!.layer.animationKeys() {
+            if keys.contains("changeTitle") {
+                navigationItem.titleView!.layer.removeAnimation(forKey: "changeTitle")
+            }
+        }
+        let titleAnimation = CATransition()
+        titleAnimation.duration = 0.2
+        titleAnimation.type = kCATransitionPush
+        titleAnimation.subtype = fromTop ? kCATransitionFromTop : kCATransitionFromBottom
+        let timing = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
+        titleAnimation.timingFunction = timing
+        navigationItem.titleView!.layer.add(titleAnimation, forKey: "changeTitle")
         
-        self.present(alert, animated: true, completion: nil)
+        (navigationItem.titleView as! UILabel).text = newTitle
+        //(navigationItem.titleView as! UILabel).sizeToFit()
     }
-    
-    
-    
-    
+
     func printAllCoreData() {
         print("\(months.count) months (not including this one)")
         print("\(daysThisMonth.count) days this month")
@@ -554,7 +553,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
             print("\(humanMonthYear) - \(dateFormatter.string(from: month.month!))")
             print("month.dailyBaseTargetSpend: \(month.dailyBaseTargetSpend!)")
             print("month.dateCreated: \(dateFormatter.string(from: month.dateCreated!))")
-            
+            print("")
             
             if (month.adjustments!.count > 0) {
                 print("\tMonthAdjustments:")
@@ -581,7 +580,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
                 print("\tday.baseTargetSpend: \(day.baseTargetSpend!)")
                 print("\tday.date: \(dateFormatter.string(from: day.date!))")
                 print("\tday.dateCreated: \(dateFormatter.string(from: day.dateCreated!))")
-                
+                print("")
                 
                 if (day.adjustments!.count > 0) {
                     print("\t\tDayAdjustments:")
@@ -611,12 +610,23 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
                     print("\t\texpense.notes: \(expense.notes ?? "")")
                     print("\t\texpense.shortDescription: \(expense.shortDescription!)")
                     print("")
+                    
+                    if (expense.images!.count > 0) {
+                        print("\t\t\tImages:")
+                    } else {
+                        print("\t\t\tNo Images.")
+                    }
+                    for image in expense.sortedImages! {
+                        let created = dateFormatter.string(from: expense.dateCreated!)
+                        print("\t\t\timage.imageName: \(image.imageName!)")
+                        print("\t\t\timage.dateCreated: \(created)")
+                        print("")
+                    }
                 }
                 print("")
                 
             }
             print("")
-            
         }
     }
 

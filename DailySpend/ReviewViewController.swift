@@ -75,9 +75,7 @@ class ReviewTableViewController: UITableViewController {
     }
     
     func createExpenseVC() -> ExpenseViewController {
-        let id = "Expense"
-        let vc = storyboard!.instantiateViewController(withIdentifier: id)
-        return vc as! ExpenseViewController
+        return ExpenseViewController()
     }
     
     func createReviewVC() -> ReviewTableViewController {

@@ -21,5 +21,23 @@ extension Expense {
     @NSManaged public var notes_: String?
     @NSManaged public var dateCreated_: NSDate?
     @NSManaged public var day_: Day?
+    @NSManaged public var images_: NSSet?
 
+}
+
+// MARK: Generated accessors for images_
+extension Expense {
+    
+    @objc(addImages_Object:)
+    @NSManaged public func addToImages_(_ value: Image)
+    
+    @objc(removeImages_Object:)
+    @NSManaged public func removeFromImages_(_ value: Image)
+    
+    @objc(addImages_:)
+    @NSManaged public func addToImages_(_ values: NSSet)
+    
+    @objc(removeImages_:)
+    @NSManaged public func removeFromImages_(_ values: NSSet)
+    
 }

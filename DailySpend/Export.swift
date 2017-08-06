@@ -22,35 +22,62 @@ func desc(_ obj: Any) -> String {
 
 class Exporter {
     class func exportPhotos() -> URL? {
-        return nil
+        let fm = FileManager.default
+        let cacheDirectory = fm.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+        let documentsDirectory = fm.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        
+        let imagesDirectory = documentsDirectory.appendingPathComponent("images")
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd-MM-yy-HHmmss"
+        let name = "DailySpendExport \(dateFormatter.string(from: Date()))"
+        let exportDirectory = cacheDirectory.appendingPathComponent(name)
+        
+        if !fm.fileExists(atPath: imagesDirectory.path) {
+            do {
+                try fm.createDirectory(at: exportDirectory,
+                                       withIntermediateDirectories: false,
+                                       attributes: nil)
+            } catch {
+                return nil
+            }
+        } else {
+            do {
+                try fm.copyItem(at: imagesDirectory, to: exportDirectory)
+            } catch {
+                return nil
+            }
+        }
+        return exportDirectory
     }
 
     class func exportData() -> URL? {
-        let paths = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true)
+        let fm = FileManager.default
+        let paths = fm.urls(for: .cachesDirectory, in: .userDomainMask)
         let cacheDirectory = paths[0]
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd-MM-yy-HHmmss"
         let name = dateFormatter.string(from: Date())
-        let directoryPath = cacheDirectory + "/" + name
-        let filePath = directoryPath + "/\(name).dailyspend"
+        let directoryUrl = cacheDirectory.appendingPathComponent(name)
+        let fileUrl = directoryUrl.appendingPathComponent("/\(name).dailyspend")
         
-        let fm = FileManager.default
         
         // Create directory and file.
-        if !fm.fileExists(atPath: directoryPath, isDirectory: nil) {
+        if !fm.fileExists(atPath: directoryUrl.path, isDirectory: nil) {
             do {
-                try fm.createDirectory(atPath: directoryPath,
-                                       withIntermediateDirectories: false)
+                try fm.createDirectory(at: directoryUrl,
+                                       withIntermediateDirectories: false,
+                                       attributes: nil)
             } catch {
                 return nil
             }
         }
         
-        if !fm.createFile(atPath: filePath, contents: Data(), attributes: nil) {
+        if !fm.createFile(atPath: fileUrl.path, contents: Data(), attributes: nil) {
             return nil
         }
         
-        guard let os = FileHandle(forWritingAtPath: filePath) else {
+        guard let os = FileHandle(forWritingAtPath: fileUrl.path) else {
             return nil
         }
         
@@ -84,7 +111,7 @@ class Exporter {
         os.write("]".data(using: encoding)!)
         
         os.closeFile()
-        return URL(fileURLWithPath: filePath)
+        return fileUrl
     }
 }
 
@@ -93,10 +120,115 @@ enum ExportError: Error {
     case recoveredFromBadFormat
     case recoveredFromPersistentStoreProblem
     case recoveredFromBadFormatWithContextChange
+    case recoveredFromFilesystemError
+    case unrecoverableFilesystemError
 }
 
 class Importer {
-    class func importDataUrl(_ url: URL) throws {
+    class func importURL(_ url: URL) throws {
+        if url.lastPathComponent.contains(".dailyspend") {
+            try importDataUrl(url)
+        } else if url.lastPathComponent.contains(".zip") {
+            try importZipUrl(url)
+        } else {
+            throw ExportError.recoveredFromBadFormat
+        }
+    }
+    
+    private class func importZipUrl(_ url: URL) throws {
+        let fm = FileManager.default
+        
+        // Move any images to a temporary directory.
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd-MM-yy-HHmmss"
+        let name = dateFormatter.string(from: Date())
+        let documentsDirectory = fm.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let imagesDirectory = documentsDirectory.appendingPathComponent("images")
+        let backupImagesDirectory = imagesDirectory.deletingLastPathComponent()
+                                .appendingPathComponent(name, isDirectory: true)
+        var movedImages = false
+        if fm.fileExists(atPath: imagesDirectory.path) {
+            do {
+                try fm.moveItem(at: imagesDirectory, to: backupImagesDirectory)
+                try fm.createDirectory(at: imagesDirectory,
+                                       withIntermediateDirectories: false,
+                                       attributes: nil)
+            } catch {
+                throw ExportError.recoveredFromFilesystemError
+            }
+            movedImages = true
+        }
+
+        let cacheDirectory = fm.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+        let unzippedName = url.deletingPathExtension().lastPathComponent
+        let unzippedUrl = cacheDirectory.appendingPathComponent(unzippedName,
+                                                                isDirectory: true)
+
+        // Define a function to move the backed up images back if we need to revert
+        func revert() throws {
+            if !movedImages {
+                // We never actually moved the images directory, we're done
+                return
+            }
+            do {
+                // Remove the old images directory and rename the backup folder
+                // to "images"
+                try fm.removeItem(at: imagesDirectory)
+                try fm.moveItem(at: backupImagesDirectory, to: imagesDirectory)
+            } catch {
+                throw ExportError.unrecoverableFilesystemError
+            }
+            
+            do {
+                try fm.removeItem(at: url)
+                try fm.removeItem(at: unzippedUrl)
+            } catch { }
+        }
+
+        // Unzip archive.
+        if !SSZipArchive.unzipFile(atPath: url.path,
+                                  toDestination: cacheDirectory.path) {
+            try revert()
+            throw ExportError.recoveredFromBadFormat
+        }
+        
+        if let contents = try? fm.contentsOfDirectory(at: unzippedUrl,
+                                                     includingPropertiesForKeys: nil,
+                                                     options: []) {
+            for fileUrl in contents {
+                if fileUrl.lastPathComponent.contains(".dailyspend") {
+                    // This is a data file, let's import that
+                    try importDataUrl(fileUrl)
+                } else {
+                    // This is an image, move it to the images directory.
+                    do {
+                        let newUrl = imagesDirectory
+                                .appendingPathComponent(fileUrl.lastPathComponent,
+                                                        isDirectory: false)
+                        try fm.moveItem(at: fileUrl, to: newUrl)
+                    } catch {
+                        try revert()
+                        throw ExportError.recoveredFromFilesystemError
+                    }
+                }
+            }
+        } else {
+            try revert()
+            throw ExportError.recoveredFromFilesystemError
+        }
+        
+        // All done, clean up
+        do {
+            try fm.removeItem(at: url)
+            try fm.removeItem(at: unzippedUrl)
+            try fm.removeItem(at: backupImagesDirectory)
+        } catch {
+            // We don't really care.
+            print("Could not delete import zipped file, unzipped file, or images backup.")
+        }
+    }
+    
+    private class func importDataUrl(_ url: URL) throws {
         guard let stream = InputStream(url: url) else {
             throw ExportError.recoveredFromBadFormat
         }
@@ -180,10 +312,10 @@ class Importer {
             try storeCoord.destroyPersistentStore(at: backupStoreURL,
                                                   ofType: NSSQLiteStoreType,
                                                   options: storeOptions)
+            try FileManager.default.removeItem(at: url)
         } catch {
             // We don't really care.
-            print("Could not delete backup store.")
+            print("Could not delete backup store or import file.")
         }
-        
     }
 }
