@@ -22,7 +22,7 @@ public class DayAdjustment: NSManagedObject {
             return nil
         }
         
-        if let dateAffected = dateAffected {
+        if let dateAffected = calendarDayAffected?.gmtDate {
             let num = dateAffected.timeIntervalSince1970 as NSNumber
             jsonObj["dateAffected"] = num
         } else {
@@ -70,10 +70,12 @@ public class DayAdjustment: NSManagedObject {
         
         if let dateAffected = json["dateAffected"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateAffected.doubleValue)
-            if date > Date() {
+            let calDay = CalendarDay(dateInGMTDay: date)
+            if calDay > CalendarDay() ||
+                calDay.gmtDate != date {
                 return nil
             }
-            dayAdj.dateAffected = date
+            dayAdj.calendarDayAffected = calDay
         } else {
             return nil
         }
@@ -129,13 +131,18 @@ public class DayAdjustment: NSManagedObject {
         }
     }
     
-    public var dateAffected: Date? {
+    public var calendarDayAffected: CalendarDay? {
         get {
-            return dateAffected_ as Date?
+            if let dateAffected = dateAffected_ as Date? {
+                return CalendarDay(dateInGMTDay: dateAffected)
+            } else {
+                return nil
+            }
+            
         }
         set {
             if newValue != nil {
-                dateAffected_ = newValue! as NSDate
+                dateAffected_ = newValue!.gmtDate as NSDate
             } else {
                 dateAffected_ = nil
             }

@@ -22,7 +22,7 @@ public class MonthAdjustment: NSManagedObject {
             return nil
         }
         
-        if let dateEffective = dateEffective {
+        if let dateEffective = calendarDayEffective?.gmtDate {
             let num = dateEffective.timeIntervalSince1970 as NSNumber
             jsonObj["dateEffective"] = num
         } else {
@@ -69,10 +69,12 @@ public class MonthAdjustment: NSManagedObject {
         
         if let dateEffective = json["dateEffective"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateEffective.doubleValue)
-            if date > Date() {
+            let calDay = CalendarDay(dateInGMTDay: date)
+            if calDay > CalendarDay() ||
+                calDay.gmtDate != date {
                 return nil
             }
-            monthAdj.dateEffective = date
+            monthAdj.calendarDayEffective = calDay
         } else {
             return nil
         }
@@ -114,13 +116,17 @@ public class MonthAdjustment: NSManagedObject {
         }
     }
     
-    public var dateEffective: Date? {
+    public var calendarDayEffective: CalendarDay? {
         get {
-            return dateEffective_ as Date?
+            if let dateEffective = dateEffective_ as Date? {
+                return CalendarDay(dateInGMTDay: dateEffective)
+            } else {
+                return nil
+            }
         }
         set {
             if newValue != nil {
-                dateEffective_ = newValue! as NSDate
+                dateEffective_ = newValue!.gmtDate as NSDate
             } else {
                 dateEffective_ = nil
             }

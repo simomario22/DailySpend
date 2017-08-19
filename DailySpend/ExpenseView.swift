@@ -221,7 +221,7 @@ class ExpenseView: UIView {
         descriptionField.text = dataSource.shortDescription
         self.descriptionChanged(descriptionField)
         
-        dateField.text = humanReadableDate(dataSource.date)
+        dateField.text = humanReadableDate(dataSource.calDay)
 
         self.imageSelector.removeAllImages()
         if let containers = dataSource.imageContainers {
@@ -302,16 +302,16 @@ class ExpenseView: UIView {
         }
     }
     
-    func humanReadableDate(_ date: Date) -> String {
-        if date.beginningOfDay == Date().beginningOfDay {
+    func humanReadableDate(_ day: CalendarDay) -> String {
+        if day == CalendarDay() {
             return "Today"
-        } else if date.beginningOfDay == Date().subtract(days: 1).beginningOfDay {
+        } else if day == CalendarDay().subtract(days: 1) {
             return "Yesterday"
         } else {
             let dateFormatter = DateFormatter()
             dateFormatter.dateStyle = .short
             dateFormatter.timeStyle = .none
-            return dateFormatter.string(from: date)
+            return day.string(formatter: dateFormatter)
         }
     }
     
@@ -399,10 +399,11 @@ extension ExpenseView: UITextFieldDelegate {
     
     func showDatePicker() {
         let datePicker = UIDatePicker()
+        datePicker.timeZone = CalendarDay.gmtTimeZone
         datePicker.backgroundColor = UIColor.white
         datePicker.minimumDate = nil
         datePicker.maximumDate = Date()
-        datePicker.setDate(dataSource.date, animated: false)
+        datePicker.setDate(dataSource.calDay.gmtDate, animated: false)
         datePicker.datePickerMode = .date
         datePicker.frame = CGRect(x: 0,
                                   y: bounds.size.height,
@@ -410,8 +411,8 @@ extension ExpenseView: UITextFieldDelegate {
                                   height: datePicker.intrinsicContentSize.height)
         datePicker.add(for: .valueChanged) {
             // Grab the selected date from the date picker.
-            self.dataSource.date = datePicker.date
-            self.dateField.text = self.humanReadableDate(self.dataSource.date)
+            self.dataSource.calDay = CalendarDay(dateInGMTDay: datePicker.date)
+            self.dateField.text = self.humanReadableDate(self.dataSource.calDay)
         }
                 
         addSubview(datePicker)
@@ -593,7 +594,7 @@ protocol ExpenseViewDelegate: class {
 }
 
 protocol ExpenseViewDataSource: class {
-    var date: Date! { get set }
+    var calDay: CalendarDay! { get set }
     var amount: Decimal? { get set }
     var shortDescription: String? { get set }
     var notes: String? { get set }

@@ -28,7 +28,7 @@ class ExpenseProvider: NSObject, ExpenseViewDataSource {
     
     // Attributes of the expense that we can change
     // The date of the Day that the expense should be associated with
-    var date: Date!
+    var calDay: CalendarDay!
     var amount: Decimal?
     var shortDescription: String?
     var notes: String?
@@ -43,13 +43,13 @@ class ExpenseProvider: NSObject, ExpenseViewDataSource {
         if let expense = expense {
             guard let amount = expense.amount,
                   let shortDescription = expense.shortDescription,
-                  let date = expense.day!.date else {
+                  let calDay = expense.day!.calendarDay else {
                 return nil
             }
             
             self.amount = amount
             self.shortDescription = shortDescription
-            self.date = date
+            self.calDay = calDay
             
             self.notes = expense.notes
             
@@ -64,7 +64,7 @@ class ExpenseProvider: NSObject, ExpenseViewDataSource {
             }
             self.expense = expense
         } else {
-            self.date = Date().beginningOfDay
+            self.calDay = CalendarDay()
             self.amount = nil
             self.shortDescription = nil
             self.notes = nil
@@ -94,7 +94,7 @@ class ExpenseProvider: NSObject, ExpenseViewDataSource {
         guard let expense = self.expense,
             let amount = self.amount,
             let shortDescription = self.shortDescription,
-            let date = self.date else {
+            let calDay = self.calDay else {
                 return nil
         }
         
@@ -103,14 +103,14 @@ class ExpenseProvider: NSObject, ExpenseViewDataSource {
         
         // Create new Days if we need to.
         let earliestDay = earliestDayCreated()
-        if date.beginningOfDay < earliestDay.beginningOfDay {
+        if calDay < earliestDay {
             // Create from the selectedDate to the earliest day available.
-            Day.createDays(context: context, from: date, to: earliestDay)
+            Day.createDays(context: context, from: calDay, to: earliestDay)
             appDelegate.saveContext()
         }
         
         // Set all the properties on expense.
-        if let day = Day.get(context: context, date: date) {
+        if let day = Day.get(context: context, calDay: calDay) {
             expense.day = day
         } else {
             return nil
@@ -143,14 +143,14 @@ class ExpenseProvider: NSObject, ExpenseViewDataSource {
         return expense
     }
     
-    func earliestDayCreated() -> Date {
+    func earliestDayCreated() -> CalendarDay {
         // Find the earliest day that has already been created.
         let earliestDayFR: NSFetchRequest<Day> = Day.fetchRequest()
         let earliestDaySD = NSSortDescriptor(key: "date_", ascending: true)
         earliestDayFR.sortDescriptors = [earliestDaySD]
         earliestDayFR.fetchLimit = 1
         let earliestDays = try! context.fetch(earliestDayFR)
-        return earliestDays.first!.date!
+        return earliestDays.first!.calendarDay!
     }
     
     func saveImage(container: ImageContainer) -> String? {

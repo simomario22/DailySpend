@@ -15,7 +15,7 @@ public class Month: NSManagedObject {
     public func json() -> [String: Any]? {
         var jsonObj = [String: Any]()
         
-        if let month = month {
+        if let month = calendarMonth?.gmtDate {
             let num = month.timeIntervalSince1970 as NSNumber
             jsonObj["month"] = num
         } else {
@@ -88,14 +88,15 @@ public class Month: NSManagedObject {
         
         if let monthNumber = json["month"] as? NSNumber {
             let date = Date(timeIntervalSince1970: monthNumber.doubleValue)
-            if date > Date() ||
-                date.beginningOfDay != date ||
-                Month.get(context: context, dateInMonth: date) != nil {
+            let calendarMonth = CalendarMonth(dateInGMTMonth: date)
+            if calendarMonth > CalendarMonth() ||
+                calendarMonth.gmtDate != date ||
+                Month.get(context: context, calMonth: calendarMonth) != nil {
                 // The date is after today, the date isn't a beginning of day,
                 // or this month already exists.
                 return nil
             }
-            month.month = date
+            month.calendarMonth = calendarMonth
         } else {
             return nil
         }
@@ -113,8 +114,7 @@ public class Month: NSManagedObject {
         if let jsonDays = json["days"] as? [[String: Any]] {
             for jsonDay in jsonDays {
                 if let day = Day.create(context: context, json: jsonDay) {
-                    if day.date!.month != month.month!.month ||
-                        day.date!.year != month.month!.year {
+                    if !month.calendarMonth!.contains(day: day.calendarDay!) {
                         return nil
                     }
                     day.month = month
@@ -161,14 +161,10 @@ public class Month: NSManagedObject {
     /*
      * Return the month object that a day is in, or nil if it doesn't exist.
      */
-    class func get(context: NSManagedObjectContext, dateInMonth date: Date) -> Month? {
-        
-        let month = date.month
-        let year = date.year
+    class func get(context: NSManagedObjectContext, calMonth: CalendarMonth) -> Month? {
         // Fetch all months equal to the month and year
         let fetchRequest: NSFetchRequest<Month> = Month.fetchRequest()
-        let pred = NSPredicate(format: "month_ == %@",
-                             Date.firstDayOfMonth(dayInMonth: date) as CVarArg)
+        let pred = NSPredicate(format: "month_ == %@", calMonth.gmtDate as CVarArg)
         fetchRequest.predicate = pred
         var monthResults: [Month] = []
         monthResults = try! context.fetch(fetchRequest)
@@ -177,7 +173,7 @@ public class Month: NSManagedObject {
             return nil
         } else if monthResults.count > 1 {
             // Multiple months exist.
-            fatalError("Error: multiple months exist for \(month)/\(year)")
+            fatalError("Error: multiple months exist for \(calMonth.month)/\(calMonth.year)")
         }
         return monthResults[0]
     }
@@ -185,13 +181,12 @@ public class Month: NSManagedObject {
     /*
      * Create and return a month.
      */
-    class func create(context: NSManagedObjectContext,
-                      dateInMonth date: Date) -> Month {
+    class func create(context: NSManagedObjectContext, calMonth: CalendarMonth) -> Month {
         let defaults = UserDefaults.standard
         let dailySpend = Decimal(defaults.double(forKey: "dailyTargetSpend"))
         
         let month = Month(context: context)
-        month.month = date.beginningOfDay
+        month.calendarMonth = calMonth
         month.dailyBaseTargetSpend = dailySpend
         month.dateCreated = Date()
 
@@ -201,9 +196,12 @@ public class Month: NSManagedObject {
     
     
     // Accessor functions (for Swift 3 classes)
-    public var actualSpend: Decimal {
+    public var actualSpend: Decimal? {
+        guard let days = days else {
+            return nil
+        }
         var totalSpend: Decimal = 0
-        for day in days! {
+        for day in days {
             totalSpend += day.actualSpend
         }
         return totalSpend as Decimal
@@ -223,17 +221,21 @@ public class Month: NSManagedObject {
     }
     
     
-    public var daysInMonth: Int {
-        return month!.daysInMonth
+    public var daysInMonth: Int? {
+        return calendarMonth?.daysInMonth
     }
     
-    public var month: Date? {
+    public var calendarMonth: CalendarMonth? {
         get {
-            return month_ as Date?
+            if let month = month_ as Date? {
+                return CalendarMonth(dateInGMTMonth: month)
+            } else {
+                return nil
+            }
         }
         set {
             if newValue != nil {
-                month_ = Date.firstDayOfMonth(dayInMonth: newValue!) as NSDate
+                month_ = newValue!.gmtDate as NSDate
             } else {
                 month_ = nil
             }
@@ -253,12 +255,20 @@ public class Month: NSManagedObject {
         }
     }
     
-    public var baseTargetSpend: Decimal {
+    public var baseTargetSpend: Decimal? {
+        guard let daysInMonth = daysInMonth,
+              let days = days else {
+            return nil
+        }
         
+        // Find the earliest day this month we have a Day object for.
         var earliestDay = daysInMonth + 1
-        for day in days! {
-            if day.date!.day < earliestDay {
-                earliestDay = day.date!.day
+        for day in days {
+            guard let dayOfMonth = day.calendarDay?.day else {
+                return nil
+            }
+            if dayOfMonth < earliestDay {
+                earliestDay = dayOfMonth
             }
         }
         
@@ -274,7 +284,10 @@ public class Month: NSManagedObject {
         }
     }
     
-    public var fullTargetSpend: Decimal {
+    public var fullTargetSpend: Decimal? {
+        guard let baseTargetSpend = baseTargetSpend else {
+            return nil
+        }
         return baseTargetSpend + totalAdjustments()
     }
     
@@ -301,7 +314,7 @@ public class Month: NSManagedObject {
     
     public var sortedDays: [Day]? {
         if let days = days {
-            return days.sorted(by: { $0.date! < $1.date! })
+            return days.sorted(by: { $0.calendarDay! < $1.calendarDay! })
         } else {
             return nil
         }

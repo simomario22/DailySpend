@@ -46,23 +46,15 @@ class ReviewTableViewController: UITableViewController {
         case .Days:
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "E, M/d"
-            self.navigationItem.title = dateFormatter.string(from: day!.date!)
+            self.navigationItem.title = day?.calendarDay?.string(formatter: dateFormatter)
         case .Months:
-            let monthName = DateFormatter().monthSymbols[month!.month!.month - 1]
-            let monthAndYearName = monthName + " \(month!.month!.year)"
-
-            self.navigationItem.title = monthAndYearName
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "B Y"
+            self.navigationItem.title = day?.calendarDay?.string(formatter: dateFormatter)
         case .DayAdjustments,
              .MonthAdjustments:
             self.navigationItem.title = "Adjustments"
         }
-
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the 
-        // navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -153,12 +145,12 @@ class ReviewTableViewController: UITableViewController {
                                                          for: indexPath)
                 let reviewCell = cell as! ReviewTableViewCell
                 let isFirstDayOfMonth: Bool = {
-                    if day!.date!.day == 1 {
+                    if day!.calendarDay!.day == 1 {
                         // This is the first day of the month.
                         return true
                     }
                     for checkDay in day!.month!.days! {
-                        if checkDay.date!.beginningOfDay < day!.date!.beginningOfDay {
+                        if checkDay.calendarDay! < day!.calendarDay! {
                             // There's a day earlier than this one
                             // so this day is not the earliest
                             return false
@@ -170,14 +162,14 @@ class ReviewTableViewController: UITableViewController {
                 }()
                 var previousDay: Day?
                 if !isFirstDayOfMonth {
-                    let date = day!.date!.subtract(days: 1)
-                    previousDay = Day.get(context: context, date: date)
+                    let calDay = day!.calendarDay!.subtract(days: 1)
+                    previousDay = Day.get(context: context, calDay: calDay)
                 }
                 let carryFromYesterday = isFirstDayOfMonth ?
                                          0 : previousDay?.leftToCarry
-                let isLastDayOfMonth = day!.date!.day == day!.month!.month!.daysInMonth
+                let isLastDayOfMonth = day!.calendarDay!.day == day!.month!.daysInMonth!
                 reviewCell.setAndFormatLabels(spentAmount: day!.actualSpend,
-                                        goalAmount: day!.fullTargetSpend,
+                                        goalAmount: day!.fullTargetSpend!,
                                         carryFromYesterday: carryFromYesterday,
                                         lastDayOfMonth: isLastDayOfMonth)
                 return cell
@@ -220,8 +212,8 @@ class ReviewTableViewController: UITableViewController {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "review",
                                                          for: indexPath)
                 let reviewCell = cell as! ReviewTableViewCell
-                reviewCell.setAndFormatLabels(spentAmount: month!.actualSpend,
-                                              goalAmount: month!.fullTargetSpend)
+                reviewCell.setAndFormatLabels(spentAmount: month!.actualSpend!,
+                                              goalAmount: month!.fullTargetSpend!)
                 return cell
             } else if section == 1 {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "detail",
@@ -232,12 +224,12 @@ class ReviewTableViewController: UITableViewController {
                     let dateFormatter = DateFormatter()
                     dateFormatter.dateFormat = "E, M/d"
                     let amount = days[row].actualSpend.doubleValue
-                    let primaryText = dateFormatter.string(from: days[row].date!)
+                    let primaryText = days[row].calendarDay!.string(formatter: dateFormatter)
                     let detailText = String.formatAsCurrency(amount: amount)
                     cell.textLabel!.text = primaryText
                     cell.detailTextLabel!.text = detailText
                     
-                    let neg = days[row].actualSpend > days[row].fullTargetSpend
+                    let neg = days[row].actualSpend > days[row].fullTargetSpend!
                     cell.detailTextLabel!.textColor = neg ? redColor : greenColor
                 } else {
                     var total: Decimal = 0.0
@@ -260,7 +252,7 @@ class ReviewTableViewController: UITableViewController {
                 let dateFormatter = DateFormatter()
                 dateFormatter.dateFormat = "E, M/d"
                 let amount = days[row].actualSpend.doubleValue
-                let primaryText = dateFormatter.string(from: days[row].date!)
+                let primaryText = days[row].calendarDay!.string(formatter: dateFormatter)
                 let detailText = String.formatAsCurrency(amount: amount)
                 cell.textLabel!.text = primaryText
                 cell.detailTextLabel!.text = detailText
@@ -284,12 +276,12 @@ class ReviewTableViewController: UITableViewController {
                                                          for: indexPath)
                 
                 let df = DateFormatter()
-                let monthName = df.monthSymbols[day!.month!.month!.month - 1]
+                let monthName = df.monthSymbols[day!.month!.calendarMonth!.month - 1]
                 cell.textLabel!.text = monthAdjustment.reason! + " (\(monthName))"
                 
                 // This is the amount of this adjustment that affects this day.
-                let daysAcross = day!.date!.daysInMonth -
-                                 monthAdjustment.dateEffective!.day + 1
+                let daysAcross = day!.month!.daysInMonth! -
+                                 monthAdjustment.calendarDayEffective!.day + 1
                 let applicableAmount = monthAdjustment.amount! / Decimal(daysAcross)
                 
                 let amount = applicableAmount.doubleValue

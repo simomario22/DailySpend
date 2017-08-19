@@ -28,7 +28,7 @@ class MonthAdjustmentViewController: UIViewController {
     var amountConstraint: NSLayoutConstraint?
     var reasonConstraint: NSLayoutConstraint?
     
-    var selectedDate: Date?
+    var selectedDay: CalendarDay?
     var monthAdjustment: MonthAdjustment?
     
     override func viewDidLoad() {
@@ -38,14 +38,14 @@ class MonthAdjustmentViewController: UIViewController {
             let absAmount = abs(monthAdjustment!.amount!.doubleValue)
             amountField.text = String.formatAsCurrency(amount: absAmount)
             reasonField.text = monthAdjustment!.reason
-            selectedDate = monthAdjustment!.dateEffective
-            setDateLabel(date: selectedDate!)
+            selectedDay = monthAdjustment!.calendarDayEffective!
+            setDateLabel(day: selectedDay!)
             //additionalAmountLabel.isHidden = true
             fixFrames()
         } else {
             addDeductControl.selectedSegmentIndex = 1
-            selectedDate = Date()
-            setDateLabel(date: selectedDate!)
+            selectedDay = CalendarDay()
+            setDateLabel(day: selectedDay!)
         }
 
         
@@ -93,7 +93,7 @@ class MonthAdjustmentViewController: UIViewController {
         let reason = reasonField.text!
         if amount == 0 ||
             reason.characters.count == 0 ||
-            selectedDate == nil {
+            selectedDay == nil {
             let message = "Please enter valid values for amount, reaons, and date received."
             let alert = UIAlertController(title: "Invalid Fields",
                                           message: message,
@@ -105,7 +105,7 @@ class MonthAdjustmentViewController: UIViewController {
             self.present(alert, animated: true, completion: nil)
         } else {
             
-            let oldDate: Date? = monthAdjustment?.dateEffective
+            let oldDay: CalendarDay? = monthAdjustment?.calendarDayEffective
             if (monthAdjustment == nil) {
                 monthAdjustment = MonthAdjustment(context: context)
             }
@@ -113,8 +113,9 @@ class MonthAdjustmentViewController: UIViewController {
             monthAdjustment!.amount = amount
             monthAdjustment!.reason = reason
             monthAdjustment!.dateCreated = monthAdjustment!.dateCreated ?? Date()
-            monthAdjustment!.dateEffective = selectedDate
-            monthAdjustment!.month = Month.get(context: context, dateInMonth: selectedDate!)
+            monthAdjustment!.calendarDayEffective = selectedDay
+            let calMonth = CalendarMonth(day: selectedDay!)
+            monthAdjustment!.month = Month.get(context: context, calMonth: calMonth)
 
             appDelegate.saveContext()
             
@@ -130,13 +131,13 @@ class MonthAdjustmentViewController: UIViewController {
             
             shouldChangeNavVCs:
             if tabBarController == nil &&
-               oldDate != nil &&
+               oldDay != nil &&
                fromDayAdjustmentsReview() &&
-               oldDate!.beginningOfDay < monthAdjustment!.dateEffective!.beginningOfDay {
+               oldDay! < monthAdjustment!.calendarDayEffective! {
                 // This is an edit from a day adjustments review controlller, and
                 // the old date is no longer affected by this adjustment. Change
                 // to the first date that is.
-                let dayTry = Day.get(context: context, date: selectedDate!)
+                let dayTry = Day.get(context: context, calDay: selectedDay!)
                 if dayTry == nil {
                     break shouldChangeNavVCs
                 }
@@ -233,17 +234,17 @@ class MonthAdjustmentViewController: UIViewController {
         }
     }
     
-    func setDateLabel(date: Date) {
+    func setDateLabel(day: CalendarDay) {
         // Set label
-        if date.beginningOfDay == Date().beginningOfDay {
+        if day == CalendarDay() {
             dateReceivedButton.setTitle("Today", for: .normal)
-        } else if date.beginningOfDay == Date().subtract(days: 1).beginningOfDay {
+        } else if day == CalendarDay().subtract(days: 1) {
             dateReceivedButton.setTitle("Yesterday", for: .normal)
         } else {
             let dateFormatter = DateFormatter()
             dateFormatter.dateStyle = .short
             dateFormatter.timeStyle = .none
-            dateReceivedButton.setTitle(dateFormatter.string(from: date), for: .normal)
+            dateReceivedButton.setTitle(day.string(formatter: dateFormatter), for: .normal)
         }
     }
     
@@ -257,10 +258,12 @@ class MonthAdjustmentViewController: UIViewController {
         
         
         // Set up date picker.
-        let earliestDate = earliestDayResults[0].date
+        datePicker.timeZone = CalendarDay.gmtTimeZone
+
+        let earliestDate = earliestDayResults[0].calendarDay!.gmtDate
         datePicker.minimumDate = earliestDate
         datePicker.maximumDate = Date()
-        datePicker.setDate(selectedDate ?? Date(), animated: false)
+        datePicker.setDate(selectedDay?.gmtDate ?? CalendarDay().gmtDate, animated: false)
         datePicker.datePickerMode = .date
         datePicker.removeTarget(self,
                                 action: #selector(datePickerChanged(sender:)),
@@ -304,11 +307,11 @@ class MonthAdjustmentViewController: UIViewController {
     }
     
     func datePickerChanged(sender: UIDatePicker) {
-        selectedDate = datePicker.date
+        selectedDay = CalendarDay(dateInGMTDay: sender.date)
     }
     
     func dismissDatePicker() {
-        setDateLabel(date: selectedDate!)
+        setDateLabel(day: selectedDay!)
         
         // Animate slide down.
         UIView.animate(withDuration: 0.2, animations: {

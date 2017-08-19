@@ -25,7 +25,7 @@ class DayAdjustmentViewController: UIViewController {
     var amountConstraint: NSLayoutConstraint?
     var reasonConstraint: NSLayoutConstraint?
     
-    var selectedDate: Date?
+    var selectedDay: CalendarDay?
     var dayAdjustment: DayAdjustment?
     
     
@@ -36,14 +36,14 @@ class DayAdjustmentViewController: UIViewController {
             let absAmount = abs(dayAdjustment!.amount!.doubleValue)
             amountField.text = String.formatAsCurrency(amount: absAmount)
             reasonField.text = dayAdjustment!.reason
-            selectedDate = dayAdjustment!.dateAffected
-            setDateLabel(date: selectedDate!)
+            selectedDay = dayAdjustment!.calendarDayAffected
+            setDateLabel(day: selectedDay!)
             //additionalAmountLabel.isHidden = true
             fixFrames()
         } else {
             addDeductControl.selectedSegmentIndex = 1
-            selectedDate = Date()
-            setDateLabel(date: selectedDate!)
+            selectedDay = CalendarDay()
+            setDateLabel(day: selectedDay!)
         }
                 
         let saveButton = UIBarButtonItem(barButtonSystemItem: .save,
@@ -106,7 +106,7 @@ class DayAdjustmentViewController: UIViewController {
         let reason = reasonField.text!
         if amount == 0 ||
             reason.characters.count == 0 ||
-            selectedDate == nil {
+            selectedDay == nil {
             let message = "Please enter valid values for amount, reaons, and date received."
             let alert = UIAlertController(title: "Invalid Fields",
                                           message: message,
@@ -119,7 +119,7 @@ class DayAdjustmentViewController: UIViewController {
         } else {
             let shouldChangePopVC = tabBarController == nil &&
                 dayAdjustment != nil &&
-                selectedDate!.beginningOfDay != dayAdjustment!.dateAffected!.beginningOfDay
+                selectedDay! != dayAdjustment!.calendarDayAffected!
             
             if (dayAdjustment == nil) {
                 dayAdjustment = DayAdjustment(context: context)
@@ -127,14 +127,14 @@ class DayAdjustmentViewController: UIViewController {
             dayAdjustment!.amount = amount
             dayAdjustment!.reason = reason
             dayAdjustment!.dateCreated = dayAdjustment!.dateCreated ?? Date()
-            dayAdjustment!.dateAffected = selectedDate
-            dayAdjustment!.day = Day.get(context: context, date: selectedDate!)
+            dayAdjustment!.calendarDayAffected = selectedDay
+            dayAdjustment!.day = Day.get(context: context, calDay: selectedDay!)
             
             appDelegate.saveContext()
             
             tabBarController?.navigationController?.dismiss(animated: true, completion: nil)
             if shouldChangePopVC {
-                if let day = Day.get(context: context, date: selectedDate!) {                    
+                if let day = Day.get(context: context, calDay: selectedDay!) {
                     var vcs = navigationController!.viewControllers
                     let vc = storyboard!.instantiateViewController(withIdentifier: "Review")
                     let vc2 = storyboard!.instantiateViewController(withIdentifier: "Review")
@@ -229,17 +229,17 @@ class DayAdjustmentViewController: UIViewController {
         }
     }
     
-    func setDateLabel(date: Date) {
+    func setDateLabel(day: CalendarDay) {
         // Set label
-        if date.beginningOfDay == Date().beginningOfDay {
+        if day == CalendarDay() {
             dateButton.setTitle("Today", for: .normal)
-        } else if date.beginningOfDay == Date().subtract(days: 1).beginningOfDay {
+        } else if day == CalendarDay().subtract(days: 1) {
             dateButton.setTitle("Yesterday", for: .normal)
         } else {
             let dateFormatter = DateFormatter()
             dateFormatter.dateStyle = .short
             dateFormatter.timeStyle = .none
-            dateButton.setTitle(dateFormatter.string(from: date), for: .normal)
+            dateButton.setTitle(day.string(formatter: dateFormatter), for: .normal)
         }
     }
     
@@ -253,10 +253,12 @@ class DayAdjustmentViewController: UIViewController {
         
         
         // Set up date picker.
-        let earliestDate = earliestDayResults[0].date
+        datePicker.timeZone = CalendarDay.gmtTimeZone
+        
+        let earliestDate = earliestDayResults[0].calendarDay!.gmtDate
         datePicker.minimumDate = earliestDate
         datePicker.maximumDate = Date()
-        datePicker.setDate(selectedDate ?? Date(), animated: false)
+        datePicker.setDate(selectedDay?.gmtDate ?? CalendarDay().gmtDate, animated: false)
         datePicker.datePickerMode = .date
         datePicker.removeTarget(self,
                                 action: #selector(datePickerChanged(sender:)),
@@ -301,11 +303,11 @@ class DayAdjustmentViewController: UIViewController {
     }
     
     func datePickerChanged(sender: UIDatePicker) {
-        selectedDate = datePicker.date
+        selectedDay = CalendarDay(dateInGMTDay: sender.date)
     }
     
     func dismissDatePicker() {        
-        setDateLabel(date: selectedDate!)
+        setDateLabel(day: selectedDay!)
         
         // Animate slide down.
         UIView.animate(withDuration: 0.5, animations: {

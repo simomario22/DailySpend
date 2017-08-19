@@ -14,7 +14,7 @@ public class Day: NSManagedObject {
     public func json() -> [String: Any]? {
         var jsonObj = [String: Any]()
 
-        if let date = date {
+        if let date = calendarDay?.gmtDate {
             let num = date.timeIntervalSince1970 as NSNumber
             jsonObj["date"] = num
         } else {
@@ -70,12 +70,13 @@ public class Day: NSManagedObject {
         
         if let dateNumber = json["date"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateNumber.doubleValue)
-            if date > Date() ||
-                date.beginningOfDay != date ||
-                Day.get(context: context, date: date) != nil {
+            let calDay = CalendarDay(dateInGMTDay: date)
+            if calDay > CalendarDay() ||
+                calDay.gmtDate != date ||
+                Day.get(context: context, calDay: calDay) != nil {
                 return nil
             }
-            day.date = date
+            day.calendarDay = calDay
         } else {
             return nil
         }
@@ -116,31 +117,44 @@ public class Day: NSManagedObject {
     // Helper functions
     func totalAdjustments() -> Decimal {
         var total: Decimal = 0
-        for dayAdjustment in self.adjustments! {
-            total += dayAdjustment.amount!
-        }
         
-        for monthAdjustment in self.month!.adjustments! {
-            let date = self.date! as Date
-            let dateEffective = monthAdjustment.dateEffective! as Date
-            if date.beginningOfDay >= dateEffective.beginningOfDay  {
-                // This affects this day.
-                let daysAcross = date.daysInMonth - dateEffective.day + 1
-                // This is the amount of this adjustment that affects this day.
-                total += monthAdjustment.amount! / Decimal(daysAcross)
+        if let dayAdjustments = self.adjustments {
+            for dayAdjustment in dayAdjustments {
+                total += dayAdjustment.amount ?? 0
             }
         }
+        
+        for monthAdjustment in relevantMonthAdjustments {
+            let calendarDay = self.calendarDay!
+            let calendarDayEffective = monthAdjustment.calendarDayEffective!
+            
+            let calMonth = CalendarMonth(day: calendarDay)
+            let daysAcross = calMonth.daysInMonth - calendarDayEffective.day + 1
+            
+            if let amount = monthAdjustment.amount {
+                // This is the amount of this adjustment that affects this day.
+                total += amount / Decimal(daysAcross)
+            }
+        }
+        
         return total
     }
     
     var relevantMonthAdjustments: [MonthAdjustment] {
-        // Get all applicable month adjustments.
+        guard let calendarDay = self.calendarDay,
+              let monthAdjustments = self.month?.adjustments else {
+            return []
+        }
+        
+        // Get all applicable month adjustments, those for which this day is 
+        // after or on the same day as the effective day.
         var monthAdj: [MonthAdjustment] = []
-        for monthAdjustment in self.month!.adjustments! {
-            let date = self.date! as Date
-            let dateEffective = monthAdjustment.dateEffective! as Date
-            if date.beginningOfDay >= dateEffective.beginningOfDay  {
-                monthAdj.append(monthAdjustment)
+        for monthAdjustment in monthAdjustments {
+            if let calendarDayEffective = monthAdjustment.calendarDayEffective {
+                if calendarDay >= calendarDayEffective {
+                    // This adjustments affects today.
+                    monthAdj.append(monthAdjustment)
+                }
             }
         }
         
@@ -150,10 +164,9 @@ public class Day: NSManagedObject {
     /*
      * Return the day object that a date is in, or nil if it doesn't exist.
      */
-    class func get(context: NSManagedObjectContext, date: Date) -> Day? {
+    class func get(context: NSManagedObjectContext, calDay: CalendarDay) -> Day? {
         let fetchRequest: NSFetchRequest<Day> = Day.fetchRequest()
-        let pred = NSPredicate(format: "date_ == %@",
-                               date.beginningOfDay as CVarArg)
+        let pred = NSPredicate(format: "date_ == %@", calDay.gmtDate as CVarArg)
         fetchRequest.predicate = pred
         var dayResults: [Day] = []
         dayResults = try! context.fetch(fetchRequest)
@@ -161,16 +174,16 @@ public class Day: NSManagedObject {
             // No month exists.
             return nil
         } else if dayResults.count > 1 {
-            // Multiple months exist.
-            fatalError("Error: multiple months exist for \(date)")
+            // Multiple days exist.
+            fatalError("Error: multiple days exist for " +
+                        "\(calDay.day)/\(calDay.month)/\(calDay.year)")
         }
         return dayResults[0]
     }
     
-    class func create(context: NSManagedObjectContext,
-                      date: Date, month: Month) -> Day {
+    class func create(context: NSManagedObjectContext, calDay: CalendarDay, month: Month) -> Day {
         let day = Day(context: context)
-        day.date = date.beginningOfDay
+        day.calendarDay = calDay
         day.month = month
         day.dateCreated = Date()
         
@@ -181,17 +194,18 @@ public class Day: NSManagedObject {
      * Creates consecutive days in data store inclusive of beginning date and
      * exclusive of ending date
      */
-    class func createDays(context: NSManagedObjectContext, from: Date, to: Date) {
-        var currentDate = from
-        while (currentDate.beginningOfDay != to.beginningOfDay) {
-            if let month = Month.get(context: context, dateInMonth: currentDate) {
+    class func createDays(context: NSManagedObjectContext, from: CalendarDay, to: CalendarDay) {
+        var currentDay = from
+        while (currentDay != to) {
+            let calMonth = CalendarMonth(day: currentDay)
+            if let month = Month.get(context: context, calMonth: calMonth) {
                 // Create the day
-                _ = Day.create(context: context, date: currentDate, month: month)
-                currentDate = currentDate.add(days: 1)
+                _ = Day.create(context: context, calDay: currentDay, month: month)
+                currentDay = currentDay.add(days: 1)
             } else {
                 // This month doesn't yet exist.
                 // Create the month, then call this function again.
-                _ = Month.create(context: context, dateInMonth: currentDate)
+                _ = Month.create(context: context, calMonth: calMonth)
             }
         }
     }
@@ -199,8 +213,8 @@ public class Day: NSManagedObject {
     // Accessor functions (for Swift 3 classes)
     public var actualSpend: Decimal {
         var totalSpend: Decimal = 0
-        for expense in expenses! {
-           totalSpend += expense.amount!
+        for expense in expenses ?? [] {
+           totalSpend += expense.amount ?? 0
         }
         return totalSpend
     }
@@ -224,31 +238,45 @@ public class Day: NSManagedObject {
         }
     }
     
-    public var fullTargetSpend: Decimal {
-        return baseTargetSpend! + totalAdjustments()
+    public var fullTargetSpend: Decimal? {
+        guard let baseTargetSpend = baseTargetSpend else {
+            return nil
+        }
+        return baseTargetSpend + totalAdjustments()
     }
     
     public var leftToCarry: Decimal {
+        guard let daysThisMonth = month!.days,
+              let calendarDay = self.calendarDay else {
+            return 0
+        }
         var dailySpend: Decimal = 0
-        for day in month!.days! {
-            if day.date! <= date! {
-                dailySpend += day.baseTargetSpend!
+        for day in daysThisMonth {
+            guard let otherCalDay = day.calendarDay else {
+                return 0
+            }
+            if otherCalDay <= calendarDay {
+                dailySpend += day.baseTargetSpend ?? 0
                 dailySpend += day.totalAdjustments()
-                for expense in day.expenses! {
-                    dailySpend -= expense.amount!
+                for expense in day.expenses ?? [] {
+                    dailySpend -= expense.amount ?? 0
                 }
             }
         }
         return dailySpend
     }
     
-    public var date: Date? {
+    public var calendarDay: CalendarDay? {
         get {
-            return date_ as Date?
+            if let date = date_ as Date? {
+                return CalendarDay(dateInGMTDay: date)
+            } else {
+                return nil
+            }
         }
         set {
             if newValue != nil {
-                date_ = newValue!.beginningOfDay as NSDate
+                date_ = newValue!.gmtDate as NSDate
             } else {
                 date_ = nil
             }

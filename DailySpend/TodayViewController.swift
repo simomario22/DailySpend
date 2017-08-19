@@ -65,7 +65,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
         latestDayFetchReq.fetchLimit = 1
         let latestDayResults = try! context.fetch(latestDayFetchReq)
         if latestDayResults.count > 0 &&
-            latestDayResults[0].date!.beginningOfDay < Date().beginningOfDay{
+            latestDayResults[0].calendarDay! < CalendarDay() {
             // The day has changed since we last opened the app.
             // Refresh.
             if addingExpense {
@@ -99,16 +99,15 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
         
         if (latestDayResults.count < 1) {
             // To satisfy requirement of createDays, create month for today
-            _ = Month.create(context: context, dateInMonth: Date())
+            _ = Month.create(context: context, calMonth: CalendarMonth())
             appDelegate.saveContext()
         }
 
         
         // Start from one after the latest created date (or today) and go to
         // today
-        let from = latestDayResults.count < 1 ?
-                    Date() : latestDayResults[0].date!.add(days: 1)
-        let to = Date().add(days: 1)
+        let from = latestDayResults.first?.calendarDay?.add(days: 1) ?? CalendarDay()
+        let to = CalendarDay().add(days: 1)
         Day.createDays(context: context, from: from, to: to)
         appDelegate.saveContext()
         
@@ -157,29 +156,21 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
         // Dispose of any resources that can be recreated.
     }
     
-    /* Methods for managment of CoreData */
+    /* Functions for managment of CoreData */
 
     func fetchMonthsAndDays() {
         // Populate daysThisMonth and months
-        let today = Date()
-        
-        // Fetch all days this month
-        let daysThisMonthFetchReq: NSFetchRequest<Day> = Day.fetchRequest()
-        let daysThisMonthSortDesc = NSSortDescriptor(key: "date_", ascending: true)
-        daysThisMonthFetchReq.sortDescriptors = [daysThisMonthSortDesc]
-        let daysPred = NSPredicate(format: "month_.month_ == %@",
-                                  Date.firstDayOfMonth(dayInMonth: today) as CVarArg)
-        daysThisMonthFetchReq.predicate = daysPred
-        daysThisMonth = try! context.fetch(daysThisMonthFetchReq)
-        
-        // Fetch all previous months
+
+        // Fetch all  months
         let monthsFetchReq: NSFetchRequest<Month> = Month.fetchRequest()
         let monthSortDesc = NSSortDescriptor(key: "month_", ascending: true)
         monthsFetchReq.sortDescriptors = [monthSortDesc]
-        let monthsPred = NSPredicate(format: "month_ != %@",
-                                     Date.firstDayOfMonth(dayInMonth: today) as CVarArg)
-        monthsFetchReq.predicate = monthsPred
         months = try! context.fetch(monthsFetchReq)
+        
+        // Pop this month and get it's days.
+        if let thisMonth = months.popLast() {
+            daysThisMonth = thisMonth.sortedDays!
+        }
     }
 
     /*
@@ -251,11 +242,16 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
                                                             for: indexPath)
             if indexPath.row < months.count {
                 let month = months[indexPath.row]
-                let monthName = DateFormatter().monthSymbols[month.month!.month - 1]
-                let monthAndYearName = monthName + " \(month.month!.year)"
-                let primaryText = month.month!.year == Date().year ? monthName : monthAndYearName
-                let detailText = String.formatAsCurrency(amount: month.actualSpend.doubleValue)
-                let textColor = month.actualSpend > month.fullTargetSpend ? redColor : greenColor
+                
+                let dateFormatter = DateFormatter()
+                let monthsYear = month.calendarMonth!.year
+                let currentYear = CalendarMonth().year
+                // Only include the year if it's different than the current year.
+                dateFormatter.dateFormat = monthsYear != currentYear ? "B Y" : "B"
+                
+                let primaryText = month.calendarMonth!.string(formatter: dateFormatter)
+                let detailText = String.formatAsCurrency(amount: month.actualSpend!.doubleValue)
+                let textColor = month.actualSpend! > month.fullTargetSpend! ? redColor : greenColor
                 
                 prevDayCell.textLabel?.text = primaryText
                 prevDayCell.detailTextLabel?.text = detailText
@@ -265,7 +261,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
                 let day = daysThisMonth[indexPath.row - months.count]
                 let dateFormatter = DateFormatter()
                 dateFormatter.dateFormat = "E, M/d"
-                let primaryText = dateFormatter.string(from: day.date!)
+                let primaryText = day.calendarDay!.string(formatter: dateFormatter)
                 let detailText = String.formatAsCurrency(amount: day.actualSpend.doubleValue)
                 let textColor = day.leftToCarry < 0 ? redColor : greenColor
                 
@@ -475,7 +471,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
     }
     
     func addedExpense(expense: Expense) {
-        if expense.day!.date!.beginningOfDay != Date().beginningOfDay {
+        if expense.day!.calendarDay! != CalendarDay() {
             // This expense isn't for today. Do a full refresh because it 
             // affected month and day rows.
             viewWillAppear(false)
@@ -545,12 +541,14 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
         for (index, month) in allMonths.enumerated() {
             print("allMonths[\(index)]")
             let dateFormatter = DateFormatter()
-            let humanMonth = dateFormatter.monthSymbols[month.month!.month - 1]
-            let humanMonthYear = humanMonth + " \(month.month!.year)"
             dateFormatter.dateStyle = .full
             dateFormatter.timeStyle = .full
+            let humanMonth = dateFormatter.monthSymbols[month.calendarMonth!.month - 1]
+            let humanMonthYear = humanMonth + " \(month.calendarMonth!.year)"
             
-            print("\(humanMonthYear) - \(dateFormatter.string(from: month.month!))")
+            let fullDate = month.calendarMonth!.string(formatter: dateFormatter)
+            
+            print("\(humanMonthYear) - \(fullDate)")
             print("month.dailyBaseTargetSpend: \(month.dailyBaseTargetSpend!)")
             print("month.dateCreated: \(dateFormatter.string(from: month.dateCreated!))")
             print("")
@@ -562,7 +560,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
             }
             for monthAdjustment in month.sortedAdjustments! {
                 let created = dateFormatter.string(from: monthAdjustment.dateCreated!)
-                let effective = dateFormatter.string(from: monthAdjustment.dateEffective!)
+                let effective = monthAdjustment.calendarDayEffective!.string(formatter: dateFormatter)
                 print("\tmonthAdjustment.amount: \(monthAdjustment.amount!)")
                 print("\tmonthAdjustment.dateCreated: \(created)")
                 print("\tmonthAdjustment.dateEffective: \(effective)")
@@ -578,7 +576,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
             }
             for day in month.sortedDays! {
                 print("\tday.baseTargetSpend: \(day.baseTargetSpend!)")
-                print("\tday.date: \(dateFormatter.string(from: day.date!))")
+                print("\tday.date: \(day.calendarDay!.string(formatter: dateFormatter))")
                 print("\tday.dateCreated: \(dateFormatter.string(from: day.dateCreated!))")
                 print("")
                 
@@ -589,7 +587,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
                 }
                 for dayAdjustment in day.sortedAdjustments! {
                     let created = dateFormatter.string(from: dayAdjustment.dateCreated!)
-                    let affected = dateFormatter.string(from: dayAdjustment.dateAffected!)
+                    let affected = dayAdjustment.calendarDayAffected!.string(formatter: dateFormatter)
                     print("\t\tdayAdjustment.amount: \(dayAdjustment.amount!)")
                     print("\t\tdayAdjustment.dateAffected: \(created)")
                     print("\t\tdayAdjustment.dateCreated: \(affected)")
