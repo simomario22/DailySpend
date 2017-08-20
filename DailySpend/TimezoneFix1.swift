@@ -79,6 +79,46 @@ extension TimezoneFix1 {
                 months = getAllMonths()
             }
         }
+        
+        // Create any days and months that don't exist.
+        
+        // Fetch the earliest day created.
+        let earliestDayFetchReq: NSFetchRequest<Day> = Day.fetchRequest()
+        let earliestDaySortDesc = NSSortDescriptor(key: "date_", ascending: true)
+        earliestDayFetchReq.sortDescriptors = [earliestDaySortDesc]
+        earliestDayFetchReq.fetchLimit = 1
+        let earliestDayResults = try! context.fetch(earliestDayFetchReq)
+        if earliestDayResults.count < 1 {
+            return
+        }
+        let from = earliestDayResults[0].calendarDay!
+        
+        // Fetch the latest day created.
+        let latestDayFetchReq: NSFetchRequest<Day> = Day.fetchRequest()
+        let latestDaySortDesc = NSSortDescriptor(key: "date_", ascending: false)
+        latestDayFetchReq.sortDescriptors = [latestDaySortDesc]
+        latestDayFetchReq.fetchLimit = 1
+        let latestDayResults = try! context.fetch(latestDayFetchReq)
+        let to = latestDayResults[0].calendarDay!
+        
+        var currentDay = from
+        while (currentDay != to) {
+            if Day.get(context: context, calDay: currentDay) != nil {
+                // This day already exists, no need to create it.
+                currentDay = currentDay.add(days: 1)
+                continue
+            }
+            let calMonth = CalendarMonth(day: currentDay)
+            if let month = Month.get(context: context, calMonth: calMonth) {
+                // Create the day
+                _ = Day.create(context: context, calDay: currentDay, month: month)
+                currentDay = currentDay.add(days: 1)
+            } else {
+                // This month doesn't yet exist.
+                // Create the month, then call this function again.
+                _ = Month.create(context: context, calMonth: calMonth)
+            }
+        }
     }
     
     private static func needsFix(month: Month) -> Bool {
