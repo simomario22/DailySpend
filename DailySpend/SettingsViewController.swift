@@ -21,14 +21,10 @@ class SettingsViewController: UITableViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    @IBAction func cancel(_ sender: UIBarButtonItem) {
+    @IBAction func done(_ sender: UIBarButtonItem) {
         self.dismiss(animated: true, completion: nil)
     }
     
-    
-    @IBAction func save(_ sender: UIBarButtonItem) {
-        self.dismiss(animated: true, completion: nil)
-    }
     /*
     // MARK: - Navigation
 
