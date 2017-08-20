@@ -175,8 +175,9 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
         months = try! context.fetch(monthsFetchReq)
         
         // Pop this month and get its days.
-        if let thisMonth = months.last {
-            daysThisMonth = thisMonth.sortedDays!
+        if let thisMonth = months.popLast() {
+            let today = CalendarDay()
+            daysThisMonth = thisMonth.sortedDays!.filter { $0.calendarDay! <= today }
         }
     }
 

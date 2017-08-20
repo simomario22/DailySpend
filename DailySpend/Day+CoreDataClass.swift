@@ -208,6 +208,9 @@ public class Day: NSManagedObject {
      * exclusive of ending date
      */
     class func createDays(context: NSManagedObjectContext, from: CalendarDay, to: CalendarDay) {
+        if from > to {
+            return
+        }
         var currentDay = from
         while (currentDay != to) {
             let calMonth = CalendarMonth(day: currentDay)
