@@ -261,6 +261,7 @@ class ExpenseView: UIView {
         if let expense = dataSource.save() {
             editing = false
             resignTextFieldsAsFirstResponder()
+            dismissButton?.removeFromSuperview()
             delegate.popRightBBI(sender: self)
             delegate.popLeftBBI(sender: self)
             delegate.didEndEditing(sender: self, expense: expense)
