@@ -21,7 +21,9 @@ class ReviewTableViewController: UITableViewController {
     var dayAdjustments: [DayAdjustment]?
     var monthAdjustments: [MonthAdjustment]?
     var day: Day?
+    var expenses: [Expense]?
     var month: Month?
+    var days: [Day]?
     var mode: ReviewMode?
     
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
@@ -44,13 +46,15 @@ class ReviewTableViewController: UITableViewController {
         
         switch mode! {
         case .Days:
+            expenses = day!.sortedExpenses
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "E, M/d"
             self.navigationItem.title = day?.calendarDay?.string(formatter: dateFormatter)
         case .Months:
+            days = month!.sortedDays
             let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "B Y"
-            self.navigationItem.title = day?.calendarDay?.string(formatter: dateFormatter)
+            dateFormatter.dateFormat = "MMMM YYYY"
+            self.navigationItem.title = month?.calendarMonth?.string(formatter: dateFormatter)
         case .DayAdjustments,
              .MonthAdjustments:
             self.navigationItem.title = "Adjustments"
@@ -177,9 +181,8 @@ class ReviewTableViewController: UITableViewController {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "detail",
                                                          for: indexPath)
                 if !dayHasAdjustments {
-                    let expenses = day!.sortedExpenses!
-                    let amount = expenses[row].amount!.doubleValue
-                    let primaryText = expenses[row].shortDescription
+                    let amount = expenses![row].amount!.doubleValue
+                    let primaryText = expenses![row].shortDescription
                     let detailText = String.formatAsCurrency(amount: amount)
                     
                     cell.textLabel!.text = primaryText
@@ -197,9 +200,8 @@ class ReviewTableViewController: UITableViewController {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "detail",
                                                          for: indexPath)
 
-                let expenses = day!.sortedExpenses!
-                let amount = expenses[row].amount!.doubleValue
-                let primaryText = expenses[row].shortDescription
+                let amount = expenses![row].amount!.doubleValue
+                let primaryText = expenses![row].shortDescription
                 let detailText = String.formatAsCurrency(amount: amount)
                 
                 cell.textLabel!.text = primaryText
@@ -219,17 +221,15 @@ class ReviewTableViewController: UITableViewController {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "detail",
                                                          for: indexPath)
                 if month!.adjustments!.isEmpty {
-                    let days = month!.sortedDays!
-                    
                     let dateFormatter = DateFormatter()
                     dateFormatter.dateFormat = "E, M/d"
-                    let amount = days[row].actualSpend.doubleValue
-                    let primaryText = days[row].calendarDay!.string(formatter: dateFormatter)
+                    let amount = days![row].actualSpend.doubleValue
+                    let primaryText = days![row].calendarDay!.string(formatter: dateFormatter)
                     let detailText = String.formatAsCurrency(amount: amount)
                     cell.textLabel!.text = primaryText
                     cell.detailTextLabel!.text = detailText
                     
-                    let neg = days[row].actualSpend > days[row].fullTargetSpend!
+                    let neg = days![row].actualSpend > days![row].fullTargetSpend!
                     cell.detailTextLabel!.textColor = neg ? redColor : greenColor
                 } else {
                     var total: Decimal = 0.0
@@ -247,12 +247,10 @@ class ReviewTableViewController: UITableViewController {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "detail",
                                                          for: indexPath)
                 
-                let days = month!.sortedDays!
-                
                 let dateFormatter = DateFormatter()
                 dateFormatter.dateFormat = "E, M/d"
-                let amount = days[row].actualSpend.doubleValue
-                let primaryText = days[row].calendarDay!.string(formatter: dateFormatter)
+                let amount = days![row].actualSpend.doubleValue
+                let primaryText = days![row].calendarDay!.string(formatter: dateFormatter)
                 let detailText = String.formatAsCurrency(amount: amount)
                 cell.textLabel!.text = primaryText
                 cell.detailTextLabel!.text = detailText
@@ -329,9 +327,9 @@ class ReviewTableViewController: UITableViewController {
         if editingStyle == .delete {
             switch mode! {
             case .Days:
-                let expenses = day!.sortedExpenses!
-                let expense = expenses[indexPath.row]
+                let expense = expenses![indexPath.row]
                 expense.day = nil
+                expenses = day!.sortedExpenses!
                 context.delete(expense)
                 tableView.deleteRows(at: [indexPath], with: .automatic)
             case .Months:
@@ -431,8 +429,7 @@ class ReviewTableViewController: UITableViewController {
             if section == 1 {
                 if !dayHasAdjustments {
                     let expenseVC = createExpenseVC()
-                    let expenses = day!.sortedExpenses!
-                    expenseVC.expense = expenses[row]
+                    expenseVC.expense = expenses![row]
                     navigationController?.pushViewController(expenseVC, animated: true)
                 } else {
                     let reviewVC = createReviewVC()
@@ -445,16 +442,14 @@ class ReviewTableViewController: UITableViewController {
                 }
             } else {
                 let expenseVC = createExpenseVC()
-                let expenses = day!.sortedExpenses!
-                expenseVC.expense = expenses[row]
+                expenseVC.expense = expenses![row]
                 navigationController?.pushViewController(expenseVC, animated: true)
             }
         case .Months:
             if section == 1 {
                 if month!.adjustments!.isEmpty {
                     let reviewVC = createReviewVC()
-                    let days = month!.sortedDays!
-                    reviewVC.day = days[row]
+                    reviewVC.day = days![row]
                     reviewVC.mode = .Days
                     navigationController?.pushViewController(reviewVC, animated: true)
                 } else {
@@ -466,8 +461,7 @@ class ReviewTableViewController: UITableViewController {
                 }
             } else {
                 let reviewVC = createReviewVC()
-                let days = month!.sortedDays!
-                reviewVC.day = days[row]
+                reviewVC.day = days![row]
                 reviewVC.mode = .Days
                 navigationController?.pushViewController(reviewVC, animated: true)
             }
