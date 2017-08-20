@@ -164,7 +164,7 @@ class ExpenseProvider: NSObject, ExpenseViewDataSource {
         
         // Find a name that hasn't been taken.
         var num = 0
-        while fm.fileExists(atPath: imageUrl.absoluteString) {
+        while fm.fileExists(atPath: imageUrl.path) {
             let ext = container.imageType
             var components = container.imageName.components(separatedBy: ".")
             _ = components.popLast()
