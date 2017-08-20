@@ -79,7 +79,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if UserDefaults.standard.double(forKey: "dailyTargetSpend") == 0 {
+        if UserDefaults.standard.double(forKey: "dailyTargetSpend") <= 0 {
             let sb = storyboard!
             let id = "InitialSpend"
             let navController = sb.instantiateViewController(withIdentifier: id)

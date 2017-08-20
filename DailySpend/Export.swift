@@ -81,8 +81,22 @@ class Exporter {
             return nil
         }
         
-        // Write opening JSON character.
-        os.write("[".data(using: encoding)!)
+        // Write opening JSON dictionary character, and a key for "defaults".
+        os.write("{\"defaults\":".data(using: encoding)!)
+        
+        var defaults = [String: Any]()
+        defaults["photoNumber"] = UserDefaults.standard.integer(forKey: "photoNumber")
+        defaults["dailyTargetSpend"] = UserDefaults.standard.integer(forKey: "dailyTargetSpend")
+        
+        if let defaultsData = try? JSONSerialization.data(withJSONObject: defaults) {
+            os.write(defaultsData)
+        } else {
+            return nil
+        }
+        
+        // Write separating JSON character, a key for "months" and an opening
+        // JSON array character.
+        os.write(",\"months\":[".data(using: encoding)!)
         
         // Fetch all months
         let monthsFetchReq: NSFetchRequest<Month> = Month.fetchRequest()
@@ -107,8 +121,8 @@ class Exporter {
             }
         }
         
-        // Write closing JSON character
-        os.write("]".data(using: encoding)!)
+        // Write closing JSON array and dictionary characters
+        os.write("]}".data(using: encoding)!)
         
         os.closeFile()
         return fileUrl
@@ -244,8 +258,24 @@ class Importer {
         
         stream.open()
         
-        guard let ambiguousObj = try? JSONSerialization.jsonObject(with: stream, options: []),
-              let jsonObj = ambiguousObj as? [[String: Any]] else {
+        guard let ambiguousObj = try? JSONSerialization.jsonObject(with: stream, options: [])
+        else {
+            throw ExportError.recoveredFromBadFormat
+        }
+        var jsonObj: [String: Any]!
+        if let months = ambiguousObj as? [[String: Any]] {
+            // This is an old .dailyspend format, attach it to a jsonObject 
+            // with months
+            jsonObj = [String: Any]()
+            jsonObj["months"] = months
+        } else {
+            jsonObj = ambiguousObj as? [String: Any]
+            if jsonObj == nil {
+                // We didn't understand the format
+                throw ExportError.recoveredFromBadFormat
+            }
+        }
+        guard let months = jsonObj["months"] as? [[String: Any]] else {
             throw ExportError.recoveredFromBadFormat
         }
         
@@ -292,27 +322,57 @@ class Importer {
         }
         
         appDelegate.persistentContainer = nil
+
+        // Define a function reset everything in case we need to revert
+        func revert() throws {
+            do {
+                try storeCoord.replacePersistentStore(at: storeURL,
+                                                      destinationOptions: storeOptions,
+                                                      withPersistentStoreFrom: backupStoreURL,
+                                                      sourceOptions: storeOptions,
+                                                      ofType: NSSQLiteStoreType)
+                
+                // Delete the backup.
+                try storeCoord.destroyPersistentStore(at: backupStoreURL,
+                                                      ofType: NSSQLiteStoreType,
+                                                      options: storeOptions)
+                appDelegate.persistentContainer = nil
+            } catch {
+                // Reset failed.
+                throw ExportError.unrecoverableDatabaseInBadState
+            }
+        }
+
         
-        for jsonMonth in jsonObj {
+        for jsonMonth in months {
             if Month.create(context: context, json: jsonMonth) == nil {
                 // This import failed. Reset to normal.
-                do {
-                    try storeCoord.replacePersistentStore(at: storeURL,
-                                                          destinationOptions: storeOptions,
-                                                          withPersistentStoreFrom: backupStoreURL,
-                                                          sourceOptions: storeOptions,
-                                                          ofType: NSSQLiteStoreType)
-                    
-                    // Delete the backup.
-                    try storeCoord.destroyPersistentStore(at: backupStoreURL,
-                                                          ofType: NSSQLiteStoreType,
-                                                          options: storeOptions)
-                    appDelegate.persistentContainer = nil
-                } catch {
-                    // Reset failed.
-                    throw ExportError.unrecoverableDatabaseInBadState
-                }
+                try revert()
                 throw ExportError.recoveredFromBadFormatWithContextChange
+            }
+        }
+        
+        // If there is a defaults array, set some defaults.
+        if let defaults = jsonObj["defaults"] as? [String: Any] {
+            for key in defaults.keys {
+                switch key {
+                case "photoNumber":
+                    guard let photoNumber = defaults[key] as? NSNumber else {
+                        try revert()
+                        throw ExportError.recoveredFromBadFormatWithContextChange
+                    }
+                    UserDefaults.standard.set(photoNumber.intValue, forKey: key)
+                case "dailyTargetSpend":
+                    guard let dailyTargetSpend = defaults[key] as? NSNumber else {
+                        try revert()
+                        throw ExportError.recoveredFromBadFormatWithContextChange
+                    }
+                    UserDefaults.standard.set(dailyTargetSpend.doubleValue, forKey: key)
+                default:
+                    // Ignore bad keys.
+                    Logger.debug("There was an unrecognized key '\(key)' in defaults.")
+                    continue
+                }
             }
         }
         
