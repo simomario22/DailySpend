@@ -224,7 +224,7 @@ class Importer {
             try fm.removeItem(at: backupImagesDirectory)
         } catch {
             // We don't really care.
-            print("Could not delete import zipped file, unzipped file, or images backup.")
+            Logger.warning("Could not delete import zipped file, unzipped file, or images backup.")
         }
     }
     
@@ -315,7 +315,7 @@ class Importer {
             try FileManager.default.removeItem(at: url)
         } catch {
             // We don't really care.
-            print("Could not delete backup store or import file.")
+            Logger.warning("Could not delete backup store or import file.")
         }
     }
 }

@@ -18,12 +18,14 @@ public class Expense: NSManagedObject {
             let num = amount as NSNumber
             jsonObj["amount"] = num
         } else {
+            Logger.debug("couldn't unwrap amount in Expense")
             return nil
         }
         
         if let shortDescription = shortDescription {
             jsonObj["shortDescription"] = shortDescription
         } else {
+            Logger.debug("couldn't unwrap shortDescription in Expense")
             return nil
         }
         
@@ -35,6 +37,7 @@ public class Expense: NSManagedObject {
             let num = dateCreated.timeIntervalSince1970 as NSNumber
             jsonObj["dateCreated"] = num
         } else {
+            Logger.debug("couldn't unwrap dateCreated in Expense")
             return nil
         }
         
@@ -44,6 +47,7 @@ public class Expense: NSManagedObject {
                 if let jsonImg = image.json() {
                     jsonImgs.append(jsonImg)
                 } else {
+                    Logger.debug("couldn't unwrap jsonImg in Expense")
                     return nil
                 }
             }
@@ -69,19 +73,23 @@ public class Expense: NSManagedObject {
         if let amount = json["amount"] as? NSNumber {
             let decimal = Decimal(amount.doubleValue)
             if decimal <= 0 {
+                Logger.debug("amount less than 0 in Expense")
                 return nil
             }
             expense.amount = decimal
         } else {
+            Logger.debug("couldn't unwrap amount in Expense")
             return nil
         }
         
         if let shortDescription = json["shortDescription"] as? String {
             if shortDescription.characters.count == 0 {
+                Logger.debug("shortDescription empty in Expense")
                 return nil
             }
             expense.shortDescription = shortDescription
         } else {
+            Logger.debug("couldn't unwrap shortDescription in Expense")
             return nil
         }
         
@@ -94,6 +102,7 @@ public class Expense: NSManagedObject {
                 if let image = Image.create(context: context, json: jsonImg) {
                     image.expense = expense
                 } else {
+                    Logger.debug("couldn't create image in Expense")
                     return nil
                 }
             }
@@ -102,10 +111,12 @@ public class Expense: NSManagedObject {
         if let dateCreated = json["dateCreated"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateCreated.doubleValue)
             if date > Date() {
+                Logger.debug("dateCreated after today in Expense")
                 return nil
             }
             expense.dateCreated = date
         } else {
+            Logger.debug("coulnd't unwrap dateCreated in Expense")
             return nil
         }
         

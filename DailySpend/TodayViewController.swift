@@ -90,19 +90,30 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
             return
         }
         
-        // Create days up to today.
+        // Check if any months exist
+        let latestMonthFetchReq: NSFetchRequest<Month> = Month.fetchRequest()
+        let latestMonthSortDesc = NSSortDescriptor(key: "month_", ascending: false)
+        latestMonthFetchReq.sortDescriptors = [latestMonthSortDesc]
+        latestMonthFetchReq.fetchLimit = 1
+        let latestMonthResults = try! context.fetch(latestMonthFetchReq)
+        
+        if (latestMonthResults.count < 1) {
+            // To satisfy requirement of createDays, create month for this month
+            _ = Month.create(context: context, calMonth: CalendarMonth())
+            appDelegate.saveContext()
+        }
+        
+        if UserDefaults.standard.bool(forKey: "timezoneFix1Applied") == false {
+            TimezoneFix1.fix()
+            UserDefaults.standard.set(true, forKey: "timezoneFix1Applied")
+        }
+        
+        // Fetch the latest day created.
         let latestDayFetchReq: NSFetchRequest<Day> = Day.fetchRequest()
         let latestDaySortDesc = NSSortDescriptor(key: "date_", ascending: false)
         latestDayFetchReq.sortDescriptors = [latestDaySortDesc]
         latestDayFetchReq.fetchLimit = 1
         let latestDayResults = try! context.fetch(latestDayFetchReq)
-        
-        if (latestDayResults.count < 1) {
-            // To satisfy requirement of createDays, create month for today
-            _ = Month.create(context: context, calMonth: CalendarMonth())
-            appDelegate.saveContext()
-        }
-
         
         // Start from one after the latest created date (or today) and go to
         // today
@@ -113,11 +124,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
         
         fetchMonthsAndDays()
         
-        let bundleID = Bundle.main.bundleIdentifier!
-        if bundleID.contains("com.joshsherick.DailySpendTesting") {
-            // Print all core data if testing.
-            printAllCoreData()
-        }
+        printAllCoreData()
         
         self.tableView.reloadData()
     }
@@ -167,8 +174,8 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
         monthsFetchReq.sortDescriptors = [monthSortDesc]
         months = try! context.fetch(monthsFetchReq)
         
-        // Pop this month and get it's days.
-        if let thisMonth = months.popLast() {
+        // Pop this month and get its days.
+        if let thisMonth = months.last {
             daysThisMonth = thisMonth.sortedDays!
         }
     }
@@ -247,7 +254,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
                 let monthsYear = month.calendarMonth!.year
                 let currentYear = CalendarMonth().year
                 // Only include the year if it's different than the current year.
-                dateFormatter.dateFormat = monthsYear != currentYear ? "B Y" : "B"
+                dateFormatter.dateFormat = monthsYear != currentYear ? "MMMM YYYY" : "MMMM"
                 
                 let primaryText = month.calendarMonth!.string(formatter: dateFormatter)
                 let detailText = String.formatAsCurrency(amount: month.actualSpend!.doubleValue)
@@ -530,8 +537,8 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
     }
 
     func printAllCoreData() {
-        print("\(months.count) months (not including this one)")
-        print("\(daysThisMonth.count) days this month")
+        Logger.debug("\(months.count) months (not including this one)")
+        Logger.debug("\(daysThisMonth.count) days this month")
         
         let monthsFetchReq: NSFetchRequest<Month> = Month.fetchRequest()
         let monthSortDesc = NSSortDescriptor(key: "month_", ascending: true)
@@ -539,7 +546,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
         let allMonths = try! context.fetch(monthsFetchReq)
         
         for (index, month) in allMonths.enumerated() {
-            print("allMonths[\(index)]")
+            Logger.debug("allMonths[\(index)]")
             let dateFormatter = DateFormatter()
             dateFormatter.dateStyle = .full
             dateFormatter.timeStyle = .full
@@ -548,83 +555,83 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
             
             let fullDate = month.calendarMonth!.string(formatter: dateFormatter)
             
-            print("\(humanMonthYear) - \(fullDate)")
-            print("month.dailyBaseTargetSpend: \(month.dailyBaseTargetSpend!)")
-            print("month.dateCreated: \(dateFormatter.string(from: month.dateCreated!))")
-            print("")
+            Logger.debug("\(humanMonthYear) - \(fullDate)")
+            Logger.debug("month.dailyBaseTargetSpend: \(month.dailyBaseTargetSpend!)")
+            Logger.debug("month.dateCreated: \(dateFormatter.string(from: month.dateCreated!))")
+            Logger.debug("")
             
             if (month.adjustments!.count > 0) {
-                print("\tMonthAdjustments:")
+                Logger.debug("\tMonthAdjustments:")
             } else {
-                print("\tNo MonthAdjustments.")
+                Logger.debug("\tNo MonthAdjustments.")
             }
             for monthAdjustment in month.sortedAdjustments! {
                 let created = dateFormatter.string(from: monthAdjustment.dateCreated!)
                 let effective = monthAdjustment.calendarDayEffective!.string(formatter: dateFormatter)
-                print("\tmonthAdjustment.amount: \(monthAdjustment.amount!)")
-                print("\tmonthAdjustment.dateCreated: \(created)")
-                print("\tmonthAdjustment.dateEffective: \(effective)")
-                print("\tmonthAdjustment.reason: \(monthAdjustment.reason!)")
-                print("")
+                Logger.debug("\tmonthAdjustment.amount: \(monthAdjustment.amount!)")
+                Logger.debug("\tmonthAdjustment.dateCreated: \(created)")
+                Logger.debug("\tmonthAdjustment.dateEffective: \(effective)")
+                Logger.debug("\tmonthAdjustment.reason: \(monthAdjustment.reason!)")
+                Logger.debug("")
             }
             
             
             if (month.days!.count > 0) {
-                print("\tDays:")
+                Logger.debug("\tDays:")
             } else {
-                print("\tNo Days.")
+                Logger.debug("\tNo Days.")
             }
             for day in month.sortedDays! {
-                print("\tday.baseTargetSpend: \(day.baseTargetSpend!)")
-                print("\tday.date: \(day.calendarDay!.string(formatter: dateFormatter))")
-                print("\tday.dateCreated: \(dateFormatter.string(from: day.dateCreated!))")
-                print("")
+                Logger.debug("\tday.baseTargetSpend: \(day.baseTargetSpend!)")
+                Logger.debug("\tday.date: \(day.calendarDay!.string(formatter: dateFormatter))")
+                Logger.debug("\tday.dateCreated: \(dateFormatter.string(from: day.dateCreated!))")
+                Logger.debug("")
                 
                 if (day.adjustments!.count > 0) {
-                    print("\t\tDayAdjustments:")
+                    Logger.debug("\t\tDayAdjustments:")
                 } else {
-                    print("\t\tNo DayAdjustments.")
+                    Logger.debug("\t\tNo DayAdjustments.")
                 }
                 for dayAdjustment in day.sortedAdjustments! {
                     let created = dateFormatter.string(from: dayAdjustment.dateCreated!)
                     let affected = dayAdjustment.calendarDayAffected!.string(formatter: dateFormatter)
-                    print("\t\tdayAdjustment.amount: \(dayAdjustment.amount!)")
-                    print("\t\tdayAdjustment.dateAffected: \(created)")
-                    print("\t\tdayAdjustment.dateCreated: \(affected)")
-                    print("\t\tdayAdjustment.reason: \(dayAdjustment.reason!)")
-                    print("")
+                    Logger.debug("\t\tdayAdjustment.amount: \(dayAdjustment.amount!)")
+                    Logger.debug("\t\tdayAdjustment.dateAffected: \(created)")
+                    Logger.debug("\t\tdayAdjustment.dateCreated: \(affected)")
+                    Logger.debug("\t\tdayAdjustment.reason: \(dayAdjustment.reason!)")
+                    Logger.debug("")
                 }
                 
                 
                 if (day.expenses!.count > 0) {
-                    print("\t\tExpenses:")
+                    Logger.debug("\t\tExpenses:")
                 } else {
-                    print("\t\tNo Expenses.")
+                    Logger.debug("\t\tNo Expenses.")
                 }
                 for expense in day.sortedExpenses! {
                     let created = dateFormatter.string(from: expense.dateCreated!)
-                    print("\t\texpense.amount: \(expense.amount!)")
-                    print("\t\texpense.dateCreated: \(created)")
-                    print("\t\texpense.notes: \(expense.notes ?? "")")
-                    print("\t\texpense.shortDescription: \(expense.shortDescription!)")
-                    print("")
+                    Logger.debug("\t\texpense.amount: \(expense.amount!)")
+                    Logger.debug("\t\texpense.dateCreated: \(created)")
+                    Logger.debug("\t\texpense.notes: \(expense.notes ?? "")")
+                    Logger.debug("\t\texpense.shortDescription: \(expense.shortDescription!)")
+                    Logger.debug("")
                     
                     if (expense.images!.count > 0) {
-                        print("\t\t\tImages:")
+                        Logger.debug("\t\t\tImages:")
                     } else {
-                        print("\t\t\tNo Images.")
+                        Logger.debug("\t\t\tNo Images.")
                     }
                     for image in expense.sortedImages! {
                         let created = dateFormatter.string(from: expense.dateCreated!)
-                        print("\t\t\timage.imageName: \(image.imageName!)")
-                        print("\t\t\timage.dateCreated: \(created)")
-                        print("")
+                        Logger.debug("\t\t\timage.imageName: \(image.imageName!)")
+                        Logger.debug("\t\t\timage.dateCreated: \(created)")
+                        Logger.debug("")
                     }
                 }
-                print("")
+                Logger.debug("")
                 
             }
-            print("")
+            Logger.debug("")
         }
     }
 

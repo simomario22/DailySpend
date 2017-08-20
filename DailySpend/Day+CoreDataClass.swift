@@ -18,6 +18,7 @@ public class Day: NSManagedObject {
             let num = date.timeIntervalSince1970 as NSNumber
             jsonObj["date"] = num
         } else {
+            Logger.debug("couldn't unwrap date in Day")
             return nil
         }
         
@@ -27,6 +28,7 @@ public class Day: NSManagedObject {
                 if let jsonAdj = adjustment.json() {
                     jsonAdjs.append(jsonAdj)
                 } else {
+                    Logger.debug("couldn't unwrap jsonAdj in Day")
                     return nil
                 }
             }
@@ -39,6 +41,7 @@ public class Day: NSManagedObject {
                 if let jsonExp = expense.json() {
                     jsonExps.append(jsonExp)
                 } else {
+                    Logger.debug("couldn't unwrap jsonExp in Day")
                     return nil
                 }
             }
@@ -49,6 +52,7 @@ public class Day: NSManagedObject {
             let num = dateCreated.timeIntervalSince1970 as NSNumber
             jsonObj["dateCreated"] = num
         } else {
+            Logger.debug("couldn't unwrap dateCreated in Day")
             return nil
         }
         
@@ -74,10 +78,15 @@ public class Day: NSManagedObject {
             if calDay > CalendarDay() ||
                 calDay.gmtDate != date ||
                 Day.get(context: context, calDay: calDay) != nil {
+                // The date is after today, the date isn't a beginning of day,
+                // or this day already exists.
+                Logger.debug("The date is after today, the date isn't a " +
+                    "beginning of day, or this day already exists in Day")
                 return nil
             }
             day.calendarDay = calDay
         } else {
+            Logger.debug("couldn't unwrap date in Day")
             return nil
         }
         
@@ -86,6 +95,7 @@ public class Day: NSManagedObject {
                 if let dayAdj = DayAdjustment.create(context: context, json: jsonAdj) {
                     dayAdj.day = day
                 } else {
+                    Logger.debug("couldn't create dayAdj in Day")
                     return nil
                 }
             }
@@ -96,6 +106,7 @@ public class Day: NSManagedObject {
                 if let expense = Expense.create(context: context, json: jsonExp) {
                     expense.day = day
                 } else {
+                    Logger.debug("couldn't create expense in Day")
                     return nil
                 }
             }
@@ -104,10 +115,12 @@ public class Day: NSManagedObject {
         if let dateCreated = json["dateCreated"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateCreated.doubleValue)
             if date > Date() {
+                Logger.debug("dateCreated after today in Day")
                 return nil
             }
             day.dateCreated = date
         } else {
+            Logger.debug("couldn't unwrap dateCreated in Day")
             return nil
         }
         

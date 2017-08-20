@@ -19,6 +19,7 @@ public class Month: NSManagedObject {
             let num = month.timeIntervalSince1970 as NSNumber
             jsonObj["month"] = num
         } else {
+            Logger.debug("couldn't unwrap month in Month")
             return nil
         }
         
@@ -26,6 +27,7 @@ public class Month: NSManagedObject {
             let num = dailyBaseTargetSpend as NSNumber
             jsonObj["dailyBaseTargetSpend"] = num
         } else {
+            Logger.debug("couldn't unwrap dailyBaseTargetSpend in Month")
             return nil
         }
         
@@ -35,6 +37,7 @@ public class Month: NSManagedObject {
                 if let jsonAdj = adjustment.json() {
                     jsonAdjs.append(jsonAdj)
                 } else {
+                    Logger.debug("couldn't unwrap jsonAdj in Month")
                     return nil
                 }
             }
@@ -47,6 +50,7 @@ public class Month: NSManagedObject {
                 if let jsonDay = day.json() {
                     jsonDays.append(jsonDay)
                 } else {
+                    Logger.debug("couldn't unwrap jsonDay in Month")
                     return nil
                 }
             }
@@ -57,6 +61,7 @@ public class Month: NSManagedObject {
             let num = dateCreated.timeIntervalSince1970 as NSNumber
             jsonObj["dateCreated"] = num
         } else {
+            Logger.debug("couldn't unwrap dateCreated in Month")
             return nil
         }
         
@@ -79,10 +84,12 @@ public class Month: NSManagedObject {
         if let dailyBaseTargetSpend = json["dailyBaseTargetSpend"] as? NSNumber {
             let decimal = Decimal(dailyBaseTargetSpend.doubleValue)
             if decimal <= 0 {
+                Logger.debug("invalid dailyBaseTargetSpend in Month")
                 return nil
             }
             month.dailyBaseTargetSpend = decimal
         } else {
+            Logger.debug("couldn't unwrap dateCreated in Month")
             return nil
         }
         
@@ -94,10 +101,13 @@ public class Month: NSManagedObject {
                 Month.get(context: context, calMonth: calendarMonth) != nil {
                 // The date is after today, the date isn't a beginning of day,
                 // or this month already exists.
+                Logger.debug("The date is after today, the date isn't a " +
+                    "beginning of day, or this month already exists in Month")
                 return nil
             }
             month.calendarMonth = calendarMonth
         } else {
+            Logger.debug("couldn't unwrap month in Month")
             return nil
         }
         
@@ -106,6 +116,7 @@ public class Month: NSManagedObject {
                 if let monthAdj = MonthAdjustment.create(context: context, json: jsonAdj) {
                     monthAdj.month = month
                 } else {
+                    Logger.debug("couldn't create monthAdj in Month")
                     return nil
                 }
             }
@@ -115,10 +126,12 @@ public class Month: NSManagedObject {
             for jsonDay in jsonDays {
                 if let day = Day.create(context: context, json: jsonDay) {
                     if !month.calendarMonth!.contains(day: day.calendarDay!) {
+                        Logger.debug("day attached to month isn't in Month")
                         return nil
                     }
                     day.month = month
                 } else {
+                    Logger.debug("couldn't create day in Month")
                     return nil
                 }
             }
@@ -127,10 +140,12 @@ public class Month: NSManagedObject {
         if let dateCreated = json["dateCreated"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateCreated.doubleValue)
             if date > Date() {
+                Logger.debug("dateCreated after today in Month")
                 return nil
             }
             month.dateCreated = date
         } else {
+            Logger.debug("couldn't unwrap dateCreated in Month")
             return nil
         }
 

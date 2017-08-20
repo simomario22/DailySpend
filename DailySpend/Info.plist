@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>DailySpend</string>
+	<string>DailySpend Test</string>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>

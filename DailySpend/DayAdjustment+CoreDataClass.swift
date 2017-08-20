@@ -19,6 +19,7 @@ public class DayAdjustment: NSManagedObject {
             let num = amount as NSNumber
             jsonObj["amount"] = num
         } else {
+            Logger.debug("couldn't unwrap amount in DayAdjustment")
             return nil
         }
         
@@ -26,12 +27,14 @@ public class DayAdjustment: NSManagedObject {
             let num = dateAffected.timeIntervalSince1970 as NSNumber
             jsonObj["dateAffected"] = num
         } else {
+            Logger.debug("couldn't unwrap dateAffected in DayAdjustment")
             return nil
         }
         
         if let reason = reason {
             jsonObj["reason"] = reason
         } else {
+            Logger.debug("couldn't unwrap reason in DayAdjustment")
             return nil
         }
         
@@ -39,6 +42,7 @@ public class DayAdjustment: NSManagedObject {
             let num = dateCreated.timeIntervalSince1970 as NSNumber
             jsonObj["dateCreated"] = num
         } else {
+            Logger.debug("couldn't unwrap dateCreated in DayAdjustment")
             return nil
         }
         
@@ -61,10 +65,12 @@ public class DayAdjustment: NSManagedObject {
         if let amount = json["amount"] as? NSNumber {
             let decimal = Decimal(amount.doubleValue)
             if decimal <= 0 {
+                Logger.debug("amount less than 0 in DayAdjustment")
                 return nil
             }
             dayAdj.amount = decimal
         } else {
+            Logger.debug("couldn't unwrap amount in DayAdjustment")
             return nil
         }
         
@@ -73,29 +79,37 @@ public class DayAdjustment: NSManagedObject {
             let calDay = CalendarDay(dateInGMTDay: date)
             if calDay > CalendarDay() ||
                 calDay.gmtDate != date {
+                // The date is after today or the date isn't a beginning of day.
+                Logger.debug("The date is after today or the date isn't a " +
+                    "beginning of day in DayAdjustment")
                 return nil
             }
             dayAdj.calendarDayAffected = calDay
         } else {
+            Logger.debug("couldn't unwrap dateAffected in DayAdjustment")
             return nil
         }
         
         if let reason = json["reason"] as? String {
             if reason.characters.count == 0 {
+                Logger.debug("reason is empty in DayAdjustment")
                 return nil
             }
             dayAdj.reason = reason
         } else {
+            Logger.debug("couldn't unwrap reason in DayAdjustment")
             return nil
         }
         
         if let dateCreated = json["dateCreated"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateCreated.doubleValue)
             if date > Date() {
+                Logger.debug("dateCreated is after today in DayAdjustment")
                 return nil
             }
             dayAdj.dateCreated = date
         } else {
+            Logger.debug("couldn't unwrap dateCreated in DayAdjustment")
             return nil
         }
         

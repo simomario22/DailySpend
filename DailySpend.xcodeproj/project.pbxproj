@@ -51,6 +51,8 @@
 		C58681401F2E91E6008D3AEE /* UIView+MultipleSubviews.swift in Sources */ = {isa = PBXBuildFile; fileRef = C586813F1F2E91E6008D3AEE /* UIView+MultipleSubviews.swift */; };
 		C594F1CE1F47EDFE006CA097 /* CalendarDay.swift in Sources */ = {isa = PBXBuildFile; fileRef = C594F1CD1F47EDFE006CA097 /* CalendarDay.swift */; };
 		C594F1D01F47F206006CA097 /* CalendarMonth.swift in Sources */ = {isa = PBXBuildFile; fileRef = C594F1CF1F47F206006CA097 /* CalendarMonth.swift */; };
+		C594F1D21F490076006CA097 /* TimezoneFix1.swift in Sources */ = {isa = PBXBuildFile; fileRef = C594F1D11F490076006CA097 /* TimezoneFix1.swift */; };
+		C594F1D41F491B44006CA097 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = C594F1D31F491B44006CA097 /* Logger.swift */; };
 		C5B367CF1EBBD65E006B5ADC /* cog.png in Resources */ = {isa = PBXBuildFile; fileRef = C5B367CC1EBBD65E006B5ADC /* cog.png */; };
 		C5B367D01EBBD65E006B5ADC /* cog@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5B367CD1EBBD65E006B5ADC /* cog@2x.png */; };
 		C5B367D11EBBD65E006B5ADC /* cog@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5B367CE1EBBD65E006B5ADC /* cog@3x.png */; };
@@ -139,6 +141,8 @@
 		C586813F1F2E91E6008D3AEE /* UIView+MultipleSubviews.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+MultipleSubviews.swift"; sourceTree = "<group>"; };
 		C594F1CD1F47EDFE006CA097 /* CalendarDay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalendarDay.swift; sourceTree = "<group>"; };
 		C594F1CF1F47F206006CA097 /* CalendarMonth.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CalendarMonth.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		C594F1D11F490076006CA097 /* TimezoneFix1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimezoneFix1.swift; sourceTree = "<group>"; };
+		C594F1D31F491B44006CA097 /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Logger.swift; path = ../Logger.swift; sourceTree = "<group>"; };
 		C5A287C41EC1741200D3479A /* DailySpend 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "DailySpend 2.xcdatamodel"; sourceTree = "<group>"; };
 		C5A81A771F0040540032D9F1 /* FLAnimatedImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FLAnimatedImage.framework; path = Carthage/Build/iOS/FLAnimatedImage.framework; sourceTree = "<group>"; };
 		C5A81A781F0040540032D9F1 /* NYTPhotoViewer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NYTPhotoViewer.framework; path = Carthage/Build/iOS/NYTPhotoViewer.framework; sourceTree = "<group>"; };
@@ -281,6 +285,7 @@
 				C538FAB71E85696200295062 /* Main.storyboard */,
 				C5781D9A1E6E2060006BBC03 /* AppDelegate.swift */,
 				C5781DCB1E6E23B2006BBC03 /* TodayViewController.swift */,
+				C594F1D11F490076006CA097 /* TimezoneFix1.swift */,
 				C57095221E8F86A200004709 /* MonthAdjustmentViewController.swift */,
 				C57095241E8F86AE00004709 /* DayAdjustmentViewController.swift */,
 				C5DD5A841E83B4AC008F7FC6 /* InitialSpendViewController.swift */,
@@ -292,6 +297,7 @@
 				C5EDC2261EBBC12400DA5CB7 /* SettingsViewController.swift */,
 				C5C65A211EBBFBC6002D1B12 /* ExportViewController.swift */,
 				C503F1391EA1A8A100FA95A7 /* Export.swift */,
+				C594F1D31F491B44006CA097 /* Logger.swift */,
 				C5AA87D61F36D5B7001B9F08 /* Expense View */,
 				C5316C2A1E7B241200BC2918 /* Extensions and Subclasses */,
 				C56500201E837F3A009D64F0 /* CoreData Classes */,
@@ -558,6 +564,7 @@
 				C57095251E8F86AE00004709 /* DayAdjustmentViewController.swift in Sources */,
 				C56500191E837F37009D64F0 /* DayAdjustment+CoreDataProperties.swift in Sources */,
 				C5781DA31E6E2060006BBC03 /* DailySpend.xcdatamodeld in Sources */,
+				C594F1D41F491B44006CA097 /* Logger.swift in Sources */,
 				C565001B1E837F37009D64F0 /* Day+CoreDataProperties.swift in Sources */,
 				C594F1CE1F47EDFE006CA097 /* CalendarDay.swift in Sources */,
 				C565001C1E837F37009D64F0 /* Expense+CoreDataClass.swift in Sources */,
@@ -573,6 +580,7 @@
 				C503F13A1EA1A8A200FA95A7 /* Export.swift in Sources */,
 				C51B8C511F04DE65008AC0C6 /* ExpenseView.swift in Sources */,
 				C556D2541F247C6B008CA20E /* UIControl+Closures.swift in Sources */,
+				C594F1D21F490076006CA097 /* TimezoneFix1.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

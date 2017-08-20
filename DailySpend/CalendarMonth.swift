@@ -16,7 +16,14 @@ public class CalendarMonth {
      * the desired month when using the GMT time zone.
      */
     init(dateInGMTMonth date: Date) {
-        self.date = CalendarMonth.gmtCal.startOfDay(for: date)
+        let gmtCal = CalendarMonth.gmtCal
+        
+        let componentSet: Set<Calendar.Component> = [.year, .month, .day]
+        
+        var dateComponents = gmtCal.dateComponents(componentSet, from: date)
+        dateComponents.setValue(1, for: .day)
+        
+        self.date = gmtCal.startOfDay(for: gmtCal.date(from: dateComponents)!)
     }
 
     /*

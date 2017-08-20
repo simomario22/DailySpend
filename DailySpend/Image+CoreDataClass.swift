@@ -18,6 +18,7 @@ public class Image: NSManagedObject {
         if let imageName = imageName {
             jsonObj["imageName"] = imageName
         } else {
+            Logger.debug("couldn't unwrap imageName in Image")
             return nil
         }
         
@@ -25,6 +26,7 @@ public class Image: NSManagedObject {
             let num = dateCreated.timeIntervalSince1970 as NSNumber
             jsonObj["dateCreated"] = num
         } else {
+            Logger.debug("couldn't unwrap dateCreated in Image")
             return nil
         }
         
@@ -46,20 +48,24 @@ public class Image: NSManagedObject {
         
         if let imageName = json["imageName"] as? String {
             if imageName.characters.count == 0 {
+                Logger.debug("imageName is empty in Image")
                 return nil
             }
             image.imageName = imageName
         } else {
+            Logger.debug("couldn't unwrap imageName in Image")
             return nil
         }
 
         if let dateCreated = json["dateCreated"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateCreated.doubleValue)
             if date > Date() {
+                Logger.debug("dateCreated after today in Image")
                 return nil
             }
             image.dateCreated = date
         } else {
+            Logger.debug("couldn't unwrap dateCreated in Image")
             return nil
         }
         
@@ -123,7 +129,7 @@ public class Image: NSManagedObject {
                 try FileManager.default.removeItem(at: imageURL)
             } catch {
                 // We don't *really* care, but log for good measure.
-                print("The file at at \(imageURL) wasn't able to be deleted.")
+                Logger.warning("The file at at \(imageURL) wasn't able to be deleted.")
             }
         }
     }
