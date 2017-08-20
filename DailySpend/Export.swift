@@ -157,6 +157,14 @@ class Importer {
                 throw ExportError.recoveredFromFilesystemError
             }
             movedImages = true
+        } else {
+            do {
+                try fm.createDirectory(at: imagesDirectory,
+                                        withIntermediateDirectories: false,
+                                        attributes: nil)
+            } catch {
+                throw ExportError.recoveredFromFilesystemError
+            }
         }
 
         let cacheDirectory = fm.urls(for: .cachesDirectory, in: .userDomainMask)[0]
@@ -166,10 +174,16 @@ class Importer {
 
         // Define a function to move the backed up images back if we need to revert
         func revert() throws {
+            do {
+                try fm.removeItem(at: url)
+                try fm.removeItem(at: unzippedUrl)
+            } catch { }
+            
             if !movedImages {
                 // We never actually moved the images directory, we're done
                 return
             }
+            
             do {
                 // Remove the old images directory and rename the backup folder
                 // to "images"
@@ -178,11 +192,6 @@ class Importer {
             } catch {
                 throw ExportError.unrecoverableFilesystemError
             }
-            
-            do {
-                try fm.removeItem(at: url)
-                try fm.removeItem(at: unzippedUrl)
-            } catch { }
         }
 
         // Unzip archive.
