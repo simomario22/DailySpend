@@ -429,6 +429,7 @@ extension ExpenseView: UITextFieldDelegate {
                 datePicker.removeFromSuperview()
                 self.dismissButton?.removeFromSuperview()
                 self.delegate.enableRightBBI(sender: self)
+                self.delegate.popLeftBBI(sender: self)
             })
         }
         
