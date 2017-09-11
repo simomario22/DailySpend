@@ -124,6 +124,11 @@ public class Day: NSManagedObject {
             return nil
         }
         
+        
+        // Get relevant pause.
+        let relevantPause = Pause.getRelevantPauseForDay(day: day, context: context)
+        day.pause = relevantPause
+        
         return day
     }
     
@@ -194,11 +199,35 @@ public class Day: NSManagedObject {
         return dayResults[0]
     }
     
+    
+    /*
+     * Return the day object that a date is in, or nil if it doesn't exist.
+     */
+    class func getRelevantDaysForPause(pause: Pause, context: NSManagedObjectContext) -> [Day] {
+        guard let firstDayEffective = pause.firstDayEffective,
+            let lastDayEffective = pause.lastDayEffective else {
+            return []
+        }
+        let fetchRequest: NSFetchRequest<Day> = Day.fetchRequest()
+        let pred = NSPredicate(format: "date_ >= %@ AND date_ <= %@",
+                               firstDayEffective.gmtDate as CVarArg, lastDayEffective.gmtDate as CVarArg)
+        fetchRequest.predicate = pred
+        let sortDesc = NSSortDescriptor(key: "date_", ascending: true)
+        fetchRequest.sortDescriptors = [sortDesc]
+        let dayResults = try! context.fetch(fetchRequest)
+        
+        return dayResults
+    }
+    
     class func create(context: NSManagedObjectContext, calDay: CalendarDay, month: Month) -> Day {
         let day = Day(context: context)
         day.calendarDay = calDay
         day.month = month
         day.dateCreated = Date()
+        
+        // Get relevant pause.
+        let relevantPause = Pause.getRelevantPauseForDay(day: day, context: context)
+        day.pause = relevantPause
         
         return day
     }
@@ -350,6 +379,15 @@ public class Day: NSManagedObject {
         }
     }
     
+    public var pause: Pause? {
+        get {
+            return pause_
+        }
+        set {
+            pause_ = newValue
+        }
+    }
+    
     @objc(addAdjustmentsObject:)
     public func addToAdjustments(_ value: DayAdjustment) {
         addToAdjustments_(value)
@@ -382,7 +420,7 @@ public class Day: NSManagedObject {
     }
     
     @objc(addExpenses:)
-    public func addToAdjustments(_ values: Set<Expense>) {
+    public func addToExpenses(_ values: Set<Expense>) {
         removeFromExpenses_(NSSet(set: values))
     }
     

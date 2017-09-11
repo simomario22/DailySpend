@@ -19,6 +19,7 @@ extension Day {
     @NSManaged public var date_: NSDate?
     @NSManaged public var adjustments_: NSSet?
     @NSManaged public var expenses_: NSSet?
+    @NSManaged public var pause_: Pause?
     @NSManaged public var month_: Month?
     @NSManaged public var dateCreated_: NSDate?
 
