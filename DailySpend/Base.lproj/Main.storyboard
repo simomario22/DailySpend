@@ -377,6 +377,116 @@
             </objects>
             <point key="canvasLocation" x="4222" y="183"/>
         </scene>
+        <!--Pause View Controller-->
+        <scene sceneID="lpF-sQ-7lT">
+            <objects>
+                <viewController id="E7h-Y0-QB4" customClass="PauseViewController" customModule="DailySpend" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="5Ly-9s-xVC"/>
+                        <viewControllerLayoutGuide type="bottom" id="zG0-8H-bdJ"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="dHM-lm-6XE">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="A7h-sv-v6Z">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="623"/>
+                                <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="detail" textLabel="4dw-gX-8lD" detailTextLabel="4N9-NJ-ECG" rowHeight="44" style="IBUITableViewCellStyleValue1" id="ud5-sD-MZ1">
+                                        <rect key="frame" x="0.0" y="56" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ud5-sD-MZ1" id="xPu-aD-fW5">
+                                            <rect key="frame" x="0.0" y="0.0" width="342" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Stopped Using App" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="4dw-gX-8lD">
+                                                    <rect key="frame" x="15" y="12" width="149" height="20.5"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="9/1-9/8" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="4N9-NJ-ECG">
+                                                    <rect key="frame" x="282" y="12" width="58" height="20.5"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                                <connections>
+                                    <outlet property="dataSource" destination="E7h-Y0-QB4" id="WQx-bh-kRR"/>
+                                    <outlet property="delegate" destination="E7h-Y0-QB4" id="Kmo-3j-GMq"/>
+                                </connections>
+                            </tableView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xQ2-fV-py4">
+                                <rect key="frame" x="0.0" y="623" width="375" height="44"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="44" id="x8c-R6-AHm"/>
+                                </constraints>
+                                <state key="normal" title="Show All Pauses"/>
+                                <connections>
+                                    <action selector="toggleShowingAll:" destination="E7h-Y0-QB4" eventType="touchUpInside" id="u3r-wH-Uuu"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="You don't have any current or future pauses. View all your pauses by tapping the button below, or create a new pause above." textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bRL-S2-epN">
+                                <rect key="frame" x="16" y="108" width="343" height="61"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Relevant Pauses" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ssA-Bl-66a">
+                                <rect key="frame" x="16" y="80" width="343" height="20.5"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
+                                <color key="textColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UlN-Sf-KUU">
+                                <rect key="frame" x="16" y="177" width="343" height="142.5"/>
+                                <string key="text">In a situation where you don't have "everyday" expenses, such as during vacation, you can pause DailySpend over that date range. Any expenses and money accrued on paused days will be ignored when calculating the daily amount left to spend and any monthly goals.</string>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="A7h-sv-v6Z" firstAttribute="leading" secondItem="dHM-lm-6XE" secondAttribute="leading" id="DAR-bP-uvL"/>
+                            <constraint firstItem="A7h-sv-v6Z" firstAttribute="top" secondItem="dHM-lm-6XE" secondAttribute="top" id="DmB-xo-DmC"/>
+                            <constraint firstItem="xQ2-fV-py4" firstAttribute="top" secondItem="A7h-sv-v6Z" secondAttribute="bottom" id="Dn8-jC-XyX"/>
+                            <constraint firstItem="bRL-S2-epN" firstAttribute="top" secondItem="ssA-Bl-66a" secondAttribute="bottom" constant="7.5" id="EhV-1P-p80"/>
+                            <constraint firstItem="zG0-8H-bdJ" firstAttribute="top" secondItem="A7h-sv-v6Z" secondAttribute="bottom" constant="44" id="H0d-Rj-l8T"/>
+                            <constraint firstItem="UlN-Sf-KUU" firstAttribute="top" secondItem="bRL-S2-epN" secondAttribute="bottom" constant="8" id="Hxa-IW-Fcy"/>
+                            <constraint firstItem="ssA-Bl-66a" firstAttribute="leading" secondItem="dHM-lm-6XE" secondAttribute="leadingMargin" id="JHR-kd-jMW"/>
+                            <constraint firstItem="bRL-S2-epN" firstAttribute="leading" secondItem="dHM-lm-6XE" secondAttribute="leadingMargin" id="JzP-on-PUO"/>
+                            <constraint firstItem="ssA-Bl-66a" firstAttribute="top" secondItem="5Ly-9s-xVC" secondAttribute="bottom" constant="16" id="TYt-fe-HSH"/>
+                            <constraint firstItem="ssA-Bl-66a" firstAttribute="trailing" secondItem="dHM-lm-6XE" secondAttribute="trailingMargin" id="arX-Ks-pcR"/>
+                            <constraint firstItem="UlN-Sf-KUU" firstAttribute="trailing" secondItem="dHM-lm-6XE" secondAttribute="trailingMargin" id="bAP-JB-zhC"/>
+                            <constraint firstItem="bRL-S2-epN" firstAttribute="trailing" secondItem="dHM-lm-6XE" secondAttribute="trailingMargin" id="hK6-d2-70l"/>
+                            <constraint firstItem="xQ2-fV-py4" firstAttribute="leading" secondItem="dHM-lm-6XE" secondAttribute="leading" id="hnr-er-9OA"/>
+                            <constraint firstAttribute="trailing" secondItem="A7h-sv-v6Z" secondAttribute="trailing" id="i8H-cc-08K"/>
+                            <constraint firstAttribute="trailing" secondItem="xQ2-fV-py4" secondAttribute="trailing" id="k7z-mN-eVQ"/>
+                            <constraint firstItem="UlN-Sf-KUU" firstAttribute="leading" secondItem="dHM-lm-6XE" secondAttribute="leadingMargin" id="piU-VY-ul3"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="infoLabel" destination="UlN-Sf-KUU" id="s3c-Ma-aBj"/>
+                        <outlet property="noPausesHeading" destination="ssA-Bl-66a" id="Fd4-Sv-GLX"/>
+                        <outlet property="noPausesLabel" destination="bRL-S2-epN" id="YMU-2t-SOw"/>
+                        <outlet property="tableView" destination="A7h-sv-v6Z" id="AqR-x6-2hs"/>
+                        <outlet property="toggleButton" destination="xQ2-fV-py4" id="G8N-5Y-oas"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="YpR-ji-I6p" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3392.8000000000002" y="-622.93853073463276"/>
+        </scene>
         <!--Month Adjust-->
         <scene sceneID="7no-Yz-Yt6">
             <objects>
@@ -650,7 +760,7 @@
                                             </subviews>
                                         </tableViewCellContentView>
                                         <connections>
-                                            <segue destination="cxX-Uy-dOg" kind="show" id="h4T-Vu-Gls"/>
+                                            <segue destination="E7h-Y0-QB4" kind="show" id="kwW-bx-TLk"/>
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="S4L-7U-p0F" style="IBUITableViewCellStyleDefault" id="3U7-7n-xht">
@@ -708,36 +818,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="2Mf-Ac-j5I" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="3297" y="1194"/>
-        </scene>
-        <!--Pause View Controller-->
-        <scene sceneID="vrg-eT-foA">
-            <objects>
-                <viewController id="cxX-Uy-dOg" customClass="PauseViewController" customModule="DailySpend" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="3aR-Uf-MFa"/>
-                        <viewControllerLayoutGuide type="bottom" id="CJq-pL-s6d"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="paN-KV-L9A">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" keyboardDismissMode="interactive" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="6Gk-vf-fip">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
-                                <connections>
-                                    <outlet property="dataSource" destination="cxX-Uy-dOg" id="mjK-bg-dTg"/>
-                                    <outlet property="delegate" destination="cxX-Uy-dOg" id="UPD-51-TSv"/>
-                                </connections>
-                            </tableView>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    </view>
-                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="tc9-Ik-3IU" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="3296.8000000000002" y="-543.77811094452773"/>
         </scene>
         <!--Adjust Goals-->
         <scene sceneID="2FR-JS-ENO">

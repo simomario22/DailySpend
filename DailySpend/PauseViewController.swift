@@ -2,41 +2,59 @@
 //  PauseViewController.swift
 //  DailySpend
 //
-//  Created by Josh Sherick on 9/9/17.
+//  Created by Josh Sherick on 9/10/17.
 //  Copyright © 2017 Josh Sherick. All rights reserved.
 //
 
 import UIKit
 import CoreData
 
-class PauseViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class PauseViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, AddPauseDelegate {
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
     var context: NSManagedObjectContext {
         return appDelegate.persistentContainer.viewContext
     }
+    @IBOutlet weak var tableView: UITableView!
     
-    var editingFirstDate = false
-    var editingLastDate = false
+    @IBOutlet weak var infoLabel: UILabel!
+    @IBOutlet weak var noPausesLabel: UILabel!
+    @IBOutlet weak var noPausesHeading: UILabel!
     
-    var pause: Pause!
+    @IBOutlet weak var toggleButton: UIButton!
+    
+    var pauses = [Pause]()
+    
+    var showingAll = false
+    
+    let noRelevantPausesMessage = "You don't have any current or future " +
+        "pauses. View past pauses by tapping the button below, or create a " +
+        "new pause above."
+    let noPausesMessage = "You don't have any pauses. Create a new pause above."
+    let noRelevantPausesHeader = "No Relevant Pauses"
+    let noPausesHeader = "No Pauses"
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        if pause == nil {
-            pause = Pause(context: context)
-            pause.firstDayEffective = CalendarDay()
-            pause.lastDayEffective = CalendarDay()
-            self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Add", style: .done, save)
-        } else {
-            self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save, save)
-        }
+
+        self.navigationItem.title = "Pauses"
         
-        self.navigationItem.title = "New Pause"
+        let addButton = UIBarButtonItem(barButtonSystemItem: .add) {
+            let addPauseVC = AddPauseViewController(nibName: nil, bundle: nil)
+            addPauseVC.delegate = self
+            let navController = UINavigationController(rootViewController: addPauseVC)
+            self.present(navController, animated: true, completion: nil)
+        }
+        self.navigationItem.rightBarButtonItem = addButton
+        noPausesLabel.isHidden = true
+        infoLabel.isHidden = true
+        noPausesHeading.isHidden = true
+        noPausesLabel.text = noRelevantPausesMessage
+        noPausesHeading.text = noRelevantPausesHeader
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        // Roll back any uncommitted changes
-        context.rollback()
+    override func viewWillAppear(_ animated: Bool) {
+        pauses = showingAll ? getAllPauses()! : getRelevantPauses()!
+        tableView.reloadData()
     }
 
     override func didReceiveMemoryWarning() {
@@ -44,275 +62,127 @@ class PauseViewController: UIViewController, UITableViewDelegate, UITableViewDat
         // Dispose of any resources that can be recreated.
     }
     
-    func save() {
-        pause.dateCreated = Date()
-        let validation = pause.validate(context: context)
-        if validation.valid {
-            appDelegate.saveContext()
-            self.navigationController?.popViewController(animated: true)
+    func getRelevantPauses() -> [Pause]? {
+        let sortDescriptors = [NSSortDescriptor(key: "lastDateEffective_", ascending: false)]
+        let predicate = NSPredicate(format: "lastDateEffective_ >= %@", CalendarDay().gmtDate as CVarArg)
+        return Pause.getPauses(context: context,
+                               predicate: predicate,
+                               sortDescriptors: sortDescriptors)
+    }
+    
+    func getAllPauses() -> [Pause]? {
+        let sortDescriptors = [NSSortDescriptor(key: "lastDateEffective_", ascending: false)]
+        return Pause.getPauses(context: context,
+                               sortDescriptors: sortDescriptors)
+    }
+    
+    @IBAction func toggleShowingAll(_ sender: UIButton) {
+        if showingAll {
+            sender.setTitle("Show All Pauses", for: .normal)
+            showingAll = false
+            let relevantPauses = getRelevantPauses()
+            let allPausesCount = pauses.count
+            pauses = relevantPauses!
+            if pauses.count < allPausesCount {
+                var indexPaths = [IndexPath]()
+                for row in pauses.count..<allPausesCount {
+                    indexPaths.append(IndexPath(row: row, section: 0))
+                }
+                tableView.deleteRows(at: indexPaths, with: .automatic)
+            }
+            noPausesLabel.text = noRelevantPausesMessage
+            noPausesHeading.text = noRelevantPausesHeader
         } else {
-            let alert = UIAlertController(title: "Validation Error",
-                                          message: validation.problem!,
-                                          preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "Okay",
-                                          style: .default,
-                                          handler: nil))
-            self.present(alert, animated: true, completion: nil)
+            sender.setTitle("Show Current and Future Pauses", for: .normal)
+            showingAll = true
+            let allPauses = getAllPauses()
+            let relevantPausesCount = pauses.count
+            pauses = allPauses!
+            if relevantPausesCount < pauses.count {
+                var indexPaths = [IndexPath]()
+                for row in relevantPausesCount..<pauses.count {
+                    indexPaths.append(IndexPath(row: row, section: 0))
+                }
+                tableView.insertRows(at: indexPaths, with: .automatic)
+            }
+            noPausesLabel.text = noPausesMessage
+            noPausesHeading.text = noPausesHeader
         }
     }
     
-    
-    enum PauseViewCellType {
-        case DescriptionCell
-        case FirstDayEffectiveDisplayCell
-        case FirstDayEffectiveDatePickerCell
-        case LastDayEffectiveDisplayCell
-        case LastDayEffectiveDatePickerCell
-    }
-    
-    func cellTypeForIndexPath(indexPath: IndexPath) -> PauseViewCellType {
-        let section = indexPath.section
-        let row = indexPath.row
-        
-        if section == 1 {
-            if row == 0 {
-                return .FirstDayEffectiveDisplayCell
-            }
-            
-            if !editingFirstDate && !editingLastDate {
-                return .LastDayEffectiveDisplayCell
-            }
-            
-            if editingFirstDate {
-                if row == 1 {
-                    return .FirstDayEffectiveDatePickerCell
-                }
-                if row == 2 {
-                    return .LastDayEffectiveDisplayCell
-                }
-            }
-            
-            if editingLastDate {
-                if row == 1 {
-                    return .LastDayEffectiveDisplayCell
-                }
-                if row == 2 {
-                    return .LastDayEffectiveDatePickerCell
-                }
-            }
-        }
-        
-        return .DescriptionCell
-    }
-    
-    func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        if section != 1 {
-            return nil
-        }
-        
-        guard let firstDayEffective = pause.firstDayEffective,
-              let lastDayEffective = pause.lastDayEffective else {
-            return nil
-        }
-        
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MMM d, yyyy"
-        
-        if firstDayEffective == lastDayEffective {
-            let formattedDate = firstDayEffective.string(formatter: dateFormatter)
-            return "Any expenses and money accrued on \(formattedDate) will be " +
-                    "ignored when calculating the daily amount left to spend and " +
-                    "any monthly goals."
-        } else {
-            let formattedFirstDate = firstDayEffective.string(formatter: dateFormatter)
-            let formattedLastDate = lastDayEffective.string(formatter: dateFormatter)
-            return "Any expenses and money accrued from \(formattedFirstDate) to " +
-                    "\(formattedLastDate) will be ignored when calculating the " +
-                    "daily amount left to spend and any monthly goals."
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let firstDayEffective = pause.firstDayEffective!
-        let lastDayEffective = pause.lastDayEffective!
-
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "E, MMM d, yyyy"
-        
-        func dateDisplayCell(label: String, day: CalendarDay, shouldTintDetailText: () -> Bool) -> UITableViewCell {
-            var cell: UITableViewCell! = tableView.dequeueReusableCell(withIdentifier: "dateDisplay")
-            if cell == nil {
-                cell = UITableViewCell(style: .value1, reuseIdentifier: "dateDisplay")
-            }
-            
-            cell.textLabel!.text = label
-            cell.detailTextLabel!.text = day.string(formatter: dateFormatter)
-            if (shouldTintDetailText()) {
-                cell.detailTextLabel!.textColor = view.tintColor
-            } else {
-                cell.detailTextLabel!.textColor = UIColor.black
-            }
-            return cell
-        }
-
-        func textFieldDisplayCell(placeholder: String, text: String?,
-                                  didBeginEditing: @escaping (UITextField) -> (),
-                                  changedToText: @escaping (String) -> ()) -> UITableViewCell {
-            var cell: TextFieldTableViewCell! = tableView.dequeueReusableCell(withIdentifier: "textFieldDisplay") as? TextFieldTableViewCell
-            if cell == nil {
-                cell = TextFieldTableViewCell(style: .default, reuseIdentifier: "textFieldDisplay")
-            }
-            
-            cell.textField.placeholder = placeholder
-            cell.textField.text = text == "" ? nil : text
-            cell.setEditingCallback(didBeginEditing)
-            cell.setChangedCallback { (textField: UITextField) in
-                let text = textField.text
-                changedToText(text!)
-            }
-            
-            return cell
-        }
-
-        func datePickerCell(day: CalendarDay, changedToDay: @escaping (CalendarDay) -> ()) -> UITableViewCell {
-            var cell: DatePickerTableViewCell! = tableView.dequeueReusableCell(withIdentifier: "datePicker") as? DatePickerTableViewCell
-            if cell == nil {
-                cell = DatePickerTableViewCell(style: .default, reuseIdentifier: "datePicker")
-            }
-            
-            cell.datePicker.datePickerMode = .date
-            cell.datePicker.timeZone = CalendarDay.gmtTimeZone
-            cell.datePicker.setDate(day.gmtDate, animated: false)
-            cell.setCallback { (datePicker: UIDatePicker) in
-                let day = CalendarDay(dateInGMTDay: datePicker.date)
-                changedToDay(day)
-            }
-            
-            return cell
-        }
-        
-        switch cellTypeForIndexPath(indexPath: indexPath) {
-        case .DescriptionCell:
-            return textFieldDisplayCell(placeholder: "Description (e.g. \"Vacation in Hawaii\")",
-                                        text: pause.shortDescription, didBeginEditing: { _ in
-                if self.editingFirstDate {
-                    self.editingFirstDate = false
-                    tableView.beginUpdates()
-                    tableView.reloadRows(at: [IndexPath(row: 0, section: 1)], with: .fade)
-                    tableView.deleteRows(at: [IndexPath(row: 1, section: 1)], with: .fade)
-                    tableView.endUpdates()
-                } else if self.editingLastDate {
-                    self.editingLastDate = false
-                    tableView.beginUpdates()
-                    tableView.reloadRows(at: [IndexPath(row: 1, section: 1)], with: .fade)
-                    tableView.deleteRows(at: [IndexPath(row: 2, section: 1)], with: .fade)
-                    tableView.endUpdates()
-                }
-            }, changedToText: { (text: String) in
-                self.pause.shortDescription = text
-            })
-            
-        case .FirstDayEffectiveDisplayCell:
-            return dateDisplayCell(label: "Start", day: firstDayEffective) { self.editingFirstDate }
-            
-        case .FirstDayEffectiveDatePickerCell:
-            return datePickerCell(day: firstDayEffective) { (day: CalendarDay) in
-                self.pause.firstDayEffective = day
-                if self.pause.firstDayEffective! > self.pause.lastDayEffective! {
-                    self.pause.lastDayEffective = self.pause.firstDayEffective
-                }
-                tableView.reloadSections(IndexSet(integer: 1), with: .fade)
-            }
-            
-        case .LastDayEffectiveDisplayCell:
-            return dateDisplayCell(label: "End", day: lastDayEffective) { self.editingLastDate }
-            
-        case .LastDayEffectiveDatePickerCell:
-            return datePickerCell(day: lastDayEffective) { (day: CalendarDay) in
-                self.pause.lastDayEffective = day
-                if self.pause.firstDayEffective! > self.pause.lastDayEffective! {
-                    self.pause.firstDayEffective = self.pause.lastDayEffective
-                }
-                tableView.reloadSections(IndexSet(integer: 1), with: .fade)
-            }
+    func addedOrChangedPause(_ pause: Pause) {
+        if !showingAll && pause.lastDayEffective! < CalendarDay() {
+            // The table data will refresh automatically, but make
+            // sure the user can see the pause they just added.
+            toggleShowingAll(toggleButton)
         }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        return 1
     }
-    
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        switch section {
-        case 0:
-            return 1
-        case 1:
-            return editingFirstDate || editingLastDate ? 3 : 2
-        default:
-            return 0
+        if pauses.isEmpty {
+            noPausesLabel.isHidden = false
+            infoLabel.isHidden = false
+            noPausesHeading.isHidden = false
+        } else {
+            noPausesLabel.isHidden = true
+            infoLabel.isHidden = true
+            noPausesHeading.isHidden = true
         }
+        
+        return pauses.count
     }
-    
-    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        switch cellTypeForIndexPath(indexPath: indexPath) {
-        case .FirstDayEffectiveDisplayCell, .LastDayEffectiveDisplayCell:
-            return indexPath
-        default:
-            return nil
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "detail", for: indexPath)
+        
+        let pause = pauses[indexPath.row]
+        cell.textLabel!.text = pause.shortDescription
+        
+        // Format the dates like 3/6 or 3/6/16.
+        let thisYear = CalendarDay().year
+        let dateFormatter = DateFormatter()
+        if pause.firstDayEffective!.year == thisYear &&
+            pause.lastDayEffective!.year == thisYear {
+            dateFormatter.dateFormat = "M/d"
+        } else {
+            dateFormatter.dateFormat = "M/d/yy"
         }
+        
+        let firstDay = pause.firstDayEffective!.string(formatter: dateFormatter)
+        if pause.firstDayEffective! == pause.lastDayEffective! {
+            cell.detailTextLabel!.text = "\(firstDay)"
+        } else {
+            let lastDay = pause.lastDayEffective!.string(formatter: dateFormatter)
+            cell.detailTextLabel!.text = "\(firstDay) - \(lastDay)"
+        }
+        
+
+        return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        switch cellTypeForIndexPath(indexPath: indexPath) {
-        case .FirstDayEffectiveDisplayCell:
-            tableView.beginUpdates()
-            tableView.reloadRows(at: [IndexPath(row: 0, section: 1)], with: .fade)
-            if editingFirstDate {
-                editingFirstDate = false
-                tableView.deleteRows(at: [IndexPath(row: 1, section: 1)], with: .fade)
-            } else {
-                editingFirstDate = true
-                tableView.insertRows(at: [IndexPath(row: 1, section: 1)], with: .fade)
-                if editingLastDate {
-                    editingLastDate = false
-                    tableView.deleteRows(at: [IndexPath(row: 2, section: 1)], with: .fade)
-                    tableView.reloadRows(at: [IndexPath(row: 1, section: 1)], with: .fade)
-                }
-            }
-            tableView.deselectRow(at: indexPath, animated: true)
-            tableView.endUpdates()
-            self.view.endEditing(false)
-        case .LastDayEffectiveDisplayCell:
-            tableView.beginUpdates()
-            tableView.reloadRows(at: [IndexPath(row: editingFirstDate ? 2 : 1, section: 1)], with: .fade)
-            if editingLastDate {
-                editingLastDate = false
-                tableView.deleteRows(at: [IndexPath(row: 2, section: 1)], with: .fade)
-            } else {
-                editingLastDate = true
-                tableView.insertRows(at: [IndexPath(row: 2, section: 1)], with: .fade)
-                if editingFirstDate {
-                    editingFirstDate = false
-                    tableView.deleteRows(at: [IndexPath(row: 1, section: 1)], with: .fade)
-                    tableView.reloadRows(at: [IndexPath(row: 0, section: 1)], with: .fade)
-                }
-            }
-            tableView.deselectRow(at: indexPath, animated: true)
-            tableView.endUpdates()
-            self.view.endEditing(false)
-        default:
-            return
-        }
+        let addPauseVC = AddPauseViewController()
+        addPauseVC.pause = pauses[indexPath.row]
+        addPauseVC.delegate = self
+        
+        tableView.deselectRow(at: indexPath, animated: true)
+        self.navigationController!.pushViewController(addPauseVC, animated: true)
     }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        switch cellTypeForIndexPath(indexPath: indexPath) {
-        case .FirstDayEffectiveDatePickerCell:
-            return editingFirstDate ? 216 : 0
-        case .LastDayEffectiveDatePickerCell:
-            return editingLastDate ? 216 : 0
-        default:
-            return 44
+
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            let pause = pauses.remove(at: indexPath.row)
+            context.delete(pause)
+            appDelegate.saveContext()
+            tableView.deleteRows(at: [indexPath], with: .fade)
         }
     }
 }

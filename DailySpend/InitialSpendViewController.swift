@@ -139,7 +139,7 @@ class InitialSpendViewController: UIViewController {
             monthlyField.resignFirstResponder()
             dailyField.resignFirstResponder()
             self.dismiss(animated: true, completion: nil)
-            self.tabBarController?.navigationController?.dismiss(animated: true, completion: nil)
+            self.tabBarController?.navigationController?.popViewController(animated: true)
         }
     }
 }

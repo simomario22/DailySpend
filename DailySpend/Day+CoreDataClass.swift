@@ -300,7 +300,7 @@ public class Day: NSManagedObject {
             guard let otherCalDay = day.calendarDay else {
                 return 0
             }
-            if otherCalDay <= calendarDay {
+            if otherCalDay <= calendarDay && day.pause == nil {
                 dailySpend += day.baseTargetSpend ?? 0
                 dailySpend += day.totalAdjustments()
                 for expense in day.expenses ?? [] {

@@ -68,11 +68,7 @@ class MonthAdjustmentViewController: UIViewController {
             // Set right bar button item
             tabBarCtrl.navigationItem.rightBarButtonItem = saveButton
             
-            let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel,
-                                               target: self,
-                                               action: #selector(cancel))
             navigationItem.rightBarButtonItem = saveButton
-            tabBarCtrl.navigationItem.leftBarButtonItem = cancelButton
         } else {
             navigationItem.rightBarButtonItem = saveButton
         }
@@ -83,10 +79,6 @@ class MonthAdjustmentViewController: UIViewController {
         self.reasonField.resignFirstResponder()
     }
 
-    func cancel() {
-        self.tabBarController?.dismiss(animated: true, completion: nil)
-    }
-    
     func save() {
         let posNeg: Decimal = addDeductControl.selectedSegmentIndex == 1 ? 1 : -1
         let amount = Decimal(amountField.text!.parseValidAmount(maxLength: 8)) * posNeg
@@ -119,7 +111,7 @@ class MonthAdjustmentViewController: UIViewController {
 
             appDelegate.saveContext()
             
-            tabBarController?.navigationController?.dismiss(animated: true, completion: nil)
+            tabBarController?.navigationController?.popViewController(animated: true)
             
             func fromDayAdjustmentsReview() -> Bool {
                 let navCtrlCount = self.navigationController!.viewControllers.count

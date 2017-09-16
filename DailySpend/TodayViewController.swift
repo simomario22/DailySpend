@@ -45,6 +45,10 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
                              green: 179.0/255.0,
                              blue: 0.0/255.0,
                              alpha: 1)
+    let blueColor = UIColor(colorLiteralRed: 0.0/255.0,
+                             green: 0.0/255.0,
+                             blue: 179.0/255.0,
+                             alpha: 1)
     
     var daysThisMonth: [Day] = []
     var months: [Month] = []
@@ -271,7 +275,11 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
                 dateFormatter.dateFormat = "E, M/d"
                 let primaryText = day.calendarDay!.string(formatter: dateFormatter)
                 let detailText = String.formatAsCurrency(amount: day.actualSpend.doubleValue)
-                let textColor = day.leftToCarry < 0 ? redColor : greenColor
+                
+                var textColor = day.leftToCarry < 0 ? redColor : greenColor
+                if day.pause != nil {
+                    textColor = blueColor
+                }
                 
                 prevDayCell.textLabel?.text = primaryText
                 prevDayCell.detailTextLabel?.text = detailText
@@ -546,11 +554,14 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
         monthsFetchReq.sortDescriptors = [monthSortDesc]
         let allMonths = try! context.fetch(monthsFetchReq)
         
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .full
+        dateFormatter.timeStyle = .full
+
+        
         for (index, month) in allMonths.enumerated() {
             Logger.debug("allMonths[\(index)]")
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateStyle = .full
-            dateFormatter.timeStyle = .full
+
             let humanMonth = dateFormatter.monthSymbols[month.calendarMonth!.month - 1]
             let humanMonthYear = humanMonth + " \(month.calendarMonth!.year)"
             
@@ -631,7 +642,43 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
                 }
                 Logger.debug("")
                 
+                if let pause = day.pause {
+                    Logger.debug("\t\tPause:")
+                    let created = dateFormatter.string(from: pause.dateCreated!)
+                    let first = pause.firstDayEffective!.string(formatter: dateFormatter)
+                    let last = pause.lastDayEffective!.string(formatter: dateFormatter)
+
+                    Logger.debug("\t\tpause.shortDescription: \(pause.shortDescription!)")
+                    Logger.debug("\t\tpause.dateCreated: \(created)")
+                    Logger.debug("\t\tpause.firstDayEffective: \(first)")
+                    Logger.debug("\t\tpause.lastDayEffective: \(last)")
+                    Logger.debug("")
+
+                } else {
+                    Logger.debug("\t\tNo Pause.")
+                }
+                Logger.debug("")
             }
+            Logger.debug("")
+        }
+        
+        
+        let allPauses = Pause.getPauses(context: context)!
+        
+        Logger.debug("allPauses:")
+        Logger.debug("\(allPauses.count) pauses")
+
+        for pause in allPauses {
+            
+            Logger.debug("\t\tPause:")
+            let created = dateFormatter.string(from: pause.dateCreated!)
+            let first = pause.firstDayEffective!.string(formatter: dateFormatter)
+            let last = pause.lastDayEffective!.string(formatter: dateFormatter)
+            
+            Logger.debug("\t\tpause.shortDescription: \(pause.shortDescription!)")
+            Logger.debug("\t\tpause.dateCreated: \(created)")
+            Logger.debug("\t\tpause.firstDayEffective: \(first)")
+            Logger.debug("\t\tpause.lastDayEffective: \(last)")
             Logger.debug("")
         }
     }

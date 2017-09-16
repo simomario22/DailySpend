@@ -109,20 +109,34 @@ public class Pause: NSManagedObject {
             }
             pause.dateCreated = date
         } else {
-            Logger.debug("coulnd't unwrap dateCreated in Pause")
+            Logger.debug("couldn't unwrap dateCreated in Pause")
             return nil
+        }
+        
+        let pauses = Pause.getPauses(context: context)
+        for otherPause in pauses! {
+            if otherPause.objectID != pause.objectID && pause.overlapsWith(pause: otherPause)! {
+                Logger.debug("pause overlapped with another pause")
+                return nil
+            }
         }
         
         // Get relevant days.
         let relevantDays = Day.getRelevantDaysForPause(pause: pause, context: context)
         pause.daysAffected = Set<Day>(relevantDays)
         
+
+        
         return pause
     }
     
-    class func getAllPauses(context: NSManagedObjectContext) -> [Pause] {
+    class func getPauses(context: NSManagedObjectContext,
+                        predicate: NSPredicate? = nil,
+                        sortDescriptors: [NSSortDescriptor]? = nil) -> [Pause]? {
         let fetchRequest: NSFetchRequest<Pause> = Pause.fetchRequest()
-        let pauseResults = try! context.fetch(fetchRequest)
+        fetchRequest.predicate = predicate
+        fetchRequest.sortDescriptors = sortDescriptors
+        let pauseResults = try? context.fetch(fetchRequest)
         
         return pauseResults
     }
@@ -160,8 +174,8 @@ public class Pause: NSManagedObject {
             return (false, "The pause must have a date created.")
         }
         
-        let pauses = Pause.getAllPauses(context: context)
-        for pause in pauses {
+        let pauses = Pause.getPauses(context: context)
+        for pause in pauses! {
             if pause.objectID != self.objectID && self.overlapsWith(pause: pause)! {
                 // This a different pause whose date range overlaps with ours.
                 let dateFormatter = DateFormatter()
@@ -172,9 +186,8 @@ public class Pause: NSManagedObject {
                 return (false,
                         "The date range overlaps with another pause with the description " +
                         "\"\(pause.shortDescription!)\" from \(formattedFirstDate) to " +
-                        "\(formattedLastDate). Change the date range so it doesn't overlap" +
-                        "with any other pauses, or change the date range of the overlapping " +
-                        "pauses before creating a new one.")
+                        "\(formattedLastDate). Change the date range so it doesn't overlap " +
+                        "with any other pauses.")
             }
         }
         

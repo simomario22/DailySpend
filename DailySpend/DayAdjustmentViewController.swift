@@ -54,11 +54,7 @@ class DayAdjustmentViewController: UIViewController {
             // Set right bar button item
             tabBarCtrl.navigationItem.rightBarButtonItem = saveButton
             
-            let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel,
-                                               target: self,
-                                               action: #selector(cancel))
             navigationItem.rightBarButtonItem = saveButton
-            tabBarCtrl.navigationItem.leftBarButtonItem = cancelButton
         } else {
             navigationItem.rightBarButtonItem = saveButton
         }
@@ -81,11 +77,7 @@ class DayAdjustmentViewController: UIViewController {
             // Set right bar button item
             tabBarCtrl.navigationItem.rightBarButtonItem = saveButton
             
-            let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel,
-                                               target: self,
-                                               action: #selector(cancel))
             navigationItem.rightBarButtonItem = saveButton
-            tabBarCtrl.navigationItem.leftBarButtonItem = cancelButton
         } else {
             navigationItem.rightBarButtonItem = saveButton
         }
@@ -94,10 +86,6 @@ class DayAdjustmentViewController: UIViewController {
     func resignResponders() {
         self.amountField.resignFirstResponder()
         self.reasonField.resignFirstResponder()
-    }
-    
-    func cancel() {
-        self.tabBarController?.dismiss(animated: true, completion: nil)
     }
     
     func save() {
@@ -132,7 +120,7 @@ class DayAdjustmentViewController: UIViewController {
             
             appDelegate.saveContext()
             
-            tabBarController?.navigationController?.dismiss(animated: true, completion: nil)
+            tabBarController?.navigationController?.popViewController(animated: true)
             if shouldChangePopVC {
                 if let day = Day.get(context: context, calDay: selectedDay!) {
                     var vcs = navigationController!.viewControllers

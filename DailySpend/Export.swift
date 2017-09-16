@@ -121,6 +121,34 @@ class Exporter {
             }
         }
         
+        
+        
+        // Write closing JSON array character, separating JSON character, 
+        // a key for "pauses" and an opening JSON array character.
+        os.write("],\"pauses\":[".data(using: encoding)!)
+        
+        // Fetch all months
+        let pauseSortDesc = NSSortDescriptor(key: "dateCreated_", ascending: true)
+        guard let pauses = Pause.getPauses(context: context,
+                                           sortDescriptors: [pauseSortDesc]) else {
+            os.closeFile()
+            return nil
+        }
+        
+        for (i, pause) in pauses.enumerated() {
+            if let pauseData = pause.serialize() {
+                os.write(pauseData)
+            } else {
+                os.closeFile()
+                return nil
+            }
+            if i < pauses.count - 1 {
+                // Write separating JSON character if there are more pauses
+                // after this one.
+                os.write(",".data(using: encoding)!)
+            }
+        }
+        
         // Write closing JSON array and dictionary characters
         os.write("]}".data(using: encoding)!)
         
@@ -349,6 +377,16 @@ class Importer {
                 // This import failed. Reset to normal.
                 try revert()
                 throw ExportError.recoveredFromBadFormatWithContextChange
+            }
+        }
+        
+        if let pauses = jsonObj["pauses"] as? [[String: Any]] {
+            for jsonPause in pauses {
+                if Pause.create(context: context, json: jsonPause) == nil {
+                    // This import failed. Reset to normal.
+                    try revert()
+                    throw ExportError.recoveredFromBadFormatWithContextChange
+                }
             }
         }
         
