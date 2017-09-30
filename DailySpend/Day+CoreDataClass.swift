@@ -199,6 +199,18 @@ public class Day: NSManagedObject {
         return dayResults[0]
     }
     
+    class func get(context: NSManagedObjectContext,
+                   predicate: NSPredicate? = nil,
+                   sortDescriptors: [NSSortDescriptor]? = nil,
+                   fetchLimit: Int = 0) -> [Day]? {
+        let fetchRequest: NSFetchRequest<Day> = Day.fetchRequest()
+        fetchRequest.predicate = predicate
+        fetchRequest.sortDescriptors = sortDescriptors
+        let dayResults = try? context.fetch(fetchRequest)
+        
+        return dayResults
+    }
+    
     
     /*
      * Return the day object that a date is in, or nil if it doesn't exist.
@@ -236,16 +248,19 @@ public class Day: NSManagedObject {
      * Creates consecutive days in data store inclusive of beginning date and
      * exclusive of ending date
      */
-    class func createDays(context: NSManagedObjectContext, from: CalendarDay, to: CalendarDay) {
+    class func createDays(context: NSManagedObjectContext, from: CalendarDay, to: CalendarDay) -> Int {
         if from > to {
-            return
+            return 0
         }
+        var numCreated = 0
         var currentDay = from
         while (currentDay != to) {
             let calMonth = CalendarMonth(day: currentDay)
             if let month = Month.get(context: context, calMonth: calMonth) {
                 // Create the day
                 _ = Day.create(context: context, calDay: currentDay, month: month)
+                numCreated += 1
+                
                 currentDay = currentDay.add(days: 1)
             } else {
                 // This month doesn't yet exist.
@@ -253,6 +268,7 @@ public class Day: NSManagedObject {
                 _ = Month.create(context: context, calMonth: calMonth)
             }
         }
+        return numCreated
     }
     
     // Accessor functions (for Swift 3 classes)

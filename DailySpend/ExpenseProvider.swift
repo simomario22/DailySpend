@@ -105,7 +105,7 @@ class ExpenseProvider: NSObject, ExpenseViewDataSource {
         let earliestDay = earliestDayCreated()
         if calDay < earliestDay {
             // Create from the selectedDate to the earliest day available.
-            Day.createDays(context: context, from: calDay, to: earliestDay)
+            _ = Day.createDays(context: context, from: calDay, to: earliestDay)
             appDelegate.saveContext()
         }
         
@@ -145,11 +145,10 @@ class ExpenseProvider: NSObject, ExpenseViewDataSource {
     
     func earliestDayCreated() -> CalendarDay {
         // Find the earliest day that has already been created.
-        let earliestDayFR: NSFetchRequest<Day> = Day.fetchRequest()
         let earliestDaySD = NSSortDescriptor(key: "date_", ascending: true)
-        earliestDayFR.sortDescriptors = [earliestDaySD]
-        earliestDayFR.fetchLimit = 1
-        let earliestDays = try! context.fetch(earliestDayFR)
+        let earliestDays = Day.get(context: context,
+                                   sortDescriptors: [earliestDaySD],
+                                   fetchLimit: 1)!
         return earliestDays.first!.calendarDay!
     }
     
@@ -209,6 +208,10 @@ class ExpenseProvider: NSObject, ExpenseViewDataSource {
                 }
             }
         }
+    }
+    
+    func setDayToToday() {
+        self.calDay = CalendarDay()
     }
     
     func makeImagesDirectory() {

@@ -58,16 +58,25 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
     var settingsBarButton: UIBarButtonItem?
     
     @IBOutlet weak var tableView: UITableView!
+    
     // Required for unwind segue
     @IBAction override func prepare(for segue: UIStoryboardSegue, sender: Any?) {}
     
-
+    func promptForDailyTargetSpend() {
+        let sb = storyboard!
+        let id = "InitialSpend"
+        let navController = sb.instantiateViewController(withIdentifier: id)
+        
+        navController.modalPresentationStyle = .fullScreen
+        navController.modalTransitionStyle = .coverVertical
+        self.present(navController, animated: true, completion: nil)
+    }
+    
     func willEnterForeground() {
-        let latestDayFetchReq: NSFetchRequest<Day> = Day.fetchRequest()
-        let latestDaySortDesc = NSSortDescriptor(key: "date_", ascending: false)
-        latestDayFetchReq.sortDescriptors = [latestDaySortDesc]
-        latestDayFetchReq.fetchLimit = 1
-        let latestDayResults = try! context.fetch(latestDayFetchReq)
+        let sortDesc = NSSortDescriptor(key: "date_", ascending: false)
+        let latestDayResults = Day.get(context: context,
+                                       sortDescriptors: [sortDesc],
+                                       fetchLimit: 1)!
         if latestDayResults.count > 0 &&
             latestDayResults[0].calendarDay! < CalendarDay() {
             // The day has changed since we last opened the app.
@@ -77,60 +86,45 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
                 nc.post(name: NSNotification.Name.init("CancelAddingExpense"),
                         object: UIApplication.shared)
             }
+            
             viewWillAppear(false)
         }
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
         if UserDefaults.standard.double(forKey: "dailyTargetSpend") <= 0 {
-            let sb = storyboard!
-            let id = "InitialSpend"
-            let navController = sb.instantiateViewController(withIdentifier: id)
-            
-            navController.modalPresentationStyle = .fullScreen
-            navController.modalTransitionStyle = .coverVertical
-            self.present(navController, animated: true, completion: nil)
+            promptForDailyTargetSpend()
             return
         }
         
-        // Check if any months exist
-        let latestMonthFetchReq: NSFetchRequest<Month> = Month.fetchRequest()
-        let latestMonthSortDesc = NSSortDescriptor(key: "month_", ascending: false)
-        latestMonthFetchReq.sortDescriptors = [latestMonthSortDesc]
-        latestMonthFetchReq.fetchLimit = 1
-        let latestMonthResults = try! context.fetch(latestMonthFetchReq)
+        // Create days up to today.
+        appDelegate.createUpToToday(notify: false)
         
-        if (latestMonthResults.count < 1) {
-            // To satisfy requirement of createDays, create month for this month
-            _ = Month.create(context: context, calMonth: CalendarMonth())
-            appDelegate.saveContext()
+        refreshData()
+        
+        Logger.printAllCoreData()
+        
+        // Reload the data, in case we are coming back a different view that 
+        // changed our data.
+        tableView.reloadData()
+    }
+    
+    func refreshData() {
+        // Populate daysThisMonth and months
+        
+        // Fetch all months
+        let monthSortDesc = NSSortDescriptor(key: "month_", ascending: true)
+        months = Month.get(context: context, sortDescriptors: [monthSortDesc])!
+        
+        // Pop this month and get its days.
+        if let thisMonth = months.popLast() {
+            let today = CalendarDay()
+            daysThisMonth = thisMonth.sortedDays!.filter { $0.calendarDay! <= today }
         }
         
-        if UserDefaults.standard.bool(forKey: "timezoneFix1Applied") == false {
-            TimezoneFix1.fix()
-            UserDefaults.standard.set(true, forKey: "timezoneFix1Applied")
-        }
-        
-        // Fetch the latest day created.
-        let latestDayFetchReq: NSFetchRequest<Day> = Day.fetchRequest()
-        let latestDaySortDesc = NSSortDescriptor(key: "date_", ascending: false)
-        latestDayFetchReq.sortDescriptors = [latestDaySortDesc]
-        latestDayFetchReq.fetchLimit = 1
-        let latestDayResults = try! context.fetch(latestDayFetchReq)
-        
-        // Start from one after the latest created date (or today) and go to
-        // today
-        let from = latestDayResults.first?.calendarDay?.add(days: 1) ?? CalendarDay()
-        let to = CalendarDay().add(days: 1)
-        Day.createDays(context: context, from: from, to: to)
-        appDelegate.saveContext()
-        
-        fetchMonthsAndDays()
-        
-        printAllCoreData()
-        
-        self.tableView.reloadData()
+        tableView.reloadData()
     }
     
     override func viewDidLoad() {
@@ -148,10 +142,18 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.tableFooterView = UIView()
-        NotificationCenter.default.addObserver(self,
+        
+        let nc = NotificationCenter.default
+        nc.addObserver(self,
                        selector: #selector(willEnterForeground),
                        name: NSNotification.Name.UIApplicationWillEnterForeground,
                        object: nil)
+        nc.addObserver(self,
+                       selector: #selector(refreshData),
+                       name: Notification.Name.init("AddedNewDays"),
+                       object: nil)
+
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.0001) {
             if UserDefaults.standard.double(forKey: "dailyTargetSpend") > 0 {
                 let currentDayPath = IndexPath(row: self.currentDayCellIndex,
@@ -169,29 +171,13 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
     
     /* Functions for managment of CoreData */
 
-    func fetchMonthsAndDays() {
-        // Populate daysThisMonth and months
-
-        // Fetch all  months
-        let monthsFetchReq: NSFetchRequest<Month> = Month.fetchRequest()
-        let monthSortDesc = NSSortDescriptor(key: "month_", ascending: true)
-        monthsFetchReq.sortDescriptors = [monthSortDesc]
-        months = try! context.fetch(monthsFetchReq)
-        
-        // Pop this month and get its days.
-        if let thisMonth = months.popLast() {
-            let today = CalendarDay()
-            daysThisMonth = thisMonth.sortedDays!.filter { $0.calendarDay! <= today }
-        }
-    }
-
     /*
      * Calculates the number of on-screen spots for expenses (including "see
      * additional" spots) while keeping addExpenseMinPxVisible pixels visible in
      * the addExpense cell
      */
     var maxExpenseSpots: Int {
-        // Let's do something simple like integer division. Oh, what a joy.
+        // Swift integer division...
         let spaceForExpenses = visibleHeight - currentDayHeight - addExpenseMinPxVisible
         return Int(floor(Double(spaceForExpenses) / Double(standardCellHeight)))
     }
@@ -201,8 +187,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
      * number of expenses.
      */
     var numExpenseSpots: Int {
-        let totalExpenses = daysThisMonth.last == nil ?
-                            0 : daysThisMonth.last!.expenses!.count
+        let totalExpenses = daysThisMonth.last?.expenses?.count ?? 0
         return min(totalExpenses, maxExpenseSpots)
     }
     
@@ -239,7 +224,23 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
     }
     
     /* Table view data source methods */
-    
+
+//    enum TodayViewCellType {
+//        case MonthCell
+//        case DayCell
+//        case TodayCell
+//        case ExpenseCell
+//        case ExtraExpensesCell
+//        case AddExpenseCell
+//    }
+//
+//    func cellTypeForIndexPath(indexPath: IndexPath) -> TodayViewCellType {
+//        let section = indexPath.section
+//        let row = indexPath.row
+//
+//        return .MonthCell
+//    }
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return months.count +
               daysThisMonth.count +
@@ -514,11 +515,11 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
 
     }
     
-    func setRightBBI(_ bbi: UIBarButtonItem) {
+    func setRightBBI(_ bbi: UIBarButtonItem?) {
         navigationItem.rightBarButtonItem = bbi
     }
     
-    func setLeftBBI(_ bbi: UIBarButtonItem) {
+    func setLeftBBI(_ bbi: UIBarButtonItem?) {
         navigationItem.leftBarButtonItem = bbi
     }
     
@@ -542,145 +543,5 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
         navigationItem.titleView!.layer.add(titleAnimation, forKey: "changeTitle")
         
         (navigationItem.titleView as! UILabel).text = newTitle
-        //(navigationItem.titleView as! UILabel).sizeToFit()
     }
-
-    func printAllCoreData() {
-        Logger.debug("\(months.count) months (not including this one)")
-        Logger.debug("\(daysThisMonth.count) days this month")
-        
-        let monthsFetchReq: NSFetchRequest<Month> = Month.fetchRequest()
-        let monthSortDesc = NSSortDescriptor(key: "month_", ascending: true)
-        monthsFetchReq.sortDescriptors = [monthSortDesc]
-        let allMonths = try! context.fetch(monthsFetchReq)
-        
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .full
-        dateFormatter.timeStyle = .full
-
-        
-        for (index, month) in allMonths.enumerated() {
-            Logger.debug("allMonths[\(index)]")
-
-            let humanMonth = dateFormatter.monthSymbols[month.calendarMonth!.month - 1]
-            let humanMonthYear = humanMonth + " \(month.calendarMonth!.year)"
-            
-            let fullDate = month.calendarMonth!.string(formatter: dateFormatter)
-            
-            Logger.debug("\(humanMonthYear) - \(fullDate)")
-            Logger.debug("month.dailyBaseTargetSpend: \(month.dailyBaseTargetSpend!)")
-            Logger.debug("month.dateCreated: \(dateFormatter.string(from: month.dateCreated!))")
-            Logger.debug("")
-            
-            if (month.adjustments!.count > 0) {
-                Logger.debug("\tMonthAdjustments:")
-            } else {
-                Logger.debug("\tNo MonthAdjustments.")
-            }
-            for monthAdjustment in month.sortedAdjustments! {
-                let created = dateFormatter.string(from: monthAdjustment.dateCreated!)
-                let effective = monthAdjustment.calendarDayEffective!.string(formatter: dateFormatter)
-                Logger.debug("\tmonthAdjustment.amount: \(monthAdjustment.amount!)")
-                Logger.debug("\tmonthAdjustment.dateCreated: \(created)")
-                Logger.debug("\tmonthAdjustment.dateEffective: \(effective)")
-                Logger.debug("\tmonthAdjustment.reason: \(monthAdjustment.reason!)")
-                Logger.debug("")
-            }
-            
-            
-            if (month.days!.count > 0) {
-                Logger.debug("\tDays:")
-            } else {
-                Logger.debug("\tNo Days.")
-            }
-            for day in month.sortedDays! {
-                Logger.debug("\tday.baseTargetSpend: \(day.baseTargetSpend!)")
-                Logger.debug("\tday.date: \(day.calendarDay!.string(formatter: dateFormatter))")
-                Logger.debug("\tday.dateCreated: \(dateFormatter.string(from: day.dateCreated!))")
-                Logger.debug("")
-                
-                if (day.adjustments!.count > 0) {
-                    Logger.debug("\t\tDayAdjustments:")
-                } else {
-                    Logger.debug("\t\tNo DayAdjustments.")
-                }
-                for dayAdjustment in day.sortedAdjustments! {
-                    let created = dateFormatter.string(from: dayAdjustment.dateCreated!)
-                    let affected = dayAdjustment.calendarDayAffected!.string(formatter: dateFormatter)
-                    Logger.debug("\t\tdayAdjustment.amount: \(dayAdjustment.amount!)")
-                    Logger.debug("\t\tdayAdjustment.dateAffected: \(created)")
-                    Logger.debug("\t\tdayAdjustment.dateCreated: \(affected)")
-                    Logger.debug("\t\tdayAdjustment.reason: \(dayAdjustment.reason!)")
-                    Logger.debug("")
-                }
-                
-                
-                if (day.expenses!.count > 0) {
-                    Logger.debug("\t\tExpenses:")
-                } else {
-                    Logger.debug("\t\tNo Expenses.")
-                }
-                for expense in day.sortedExpenses! {
-                    let created = dateFormatter.string(from: expense.dateCreated!)
-                    Logger.debug("\t\texpense.amount: \(expense.amount!)")
-                    Logger.debug("\t\texpense.dateCreated: \(created)")
-                    Logger.debug("\t\texpense.notes: \(expense.notes ?? "")")
-                    Logger.debug("\t\texpense.shortDescription: \(expense.shortDescription!)")
-                    Logger.debug("")
-                    
-                    if (expense.images!.count > 0) {
-                        Logger.debug("\t\t\tImages:")
-                    } else {
-                        Logger.debug("\t\t\tNo Images.")
-                    }
-                    for image in expense.sortedImages! {
-                        let created = dateFormatter.string(from: expense.dateCreated!)
-                        Logger.debug("\t\t\timage.imageName: \(image.imageName!)")
-                        Logger.debug("\t\t\timage.dateCreated: \(created)")
-                        Logger.debug("")
-                    }
-                }
-                Logger.debug("")
-                
-                if let pause = day.pause {
-                    Logger.debug("\t\tPause:")
-                    let created = dateFormatter.string(from: pause.dateCreated!)
-                    let first = pause.firstDayEffective!.string(formatter: dateFormatter)
-                    let last = pause.lastDayEffective!.string(formatter: dateFormatter)
-
-                    Logger.debug("\t\tpause.shortDescription: \(pause.shortDescription!)")
-                    Logger.debug("\t\tpause.dateCreated: \(created)")
-                    Logger.debug("\t\tpause.firstDayEffective: \(first)")
-                    Logger.debug("\t\tpause.lastDayEffective: \(last)")
-                    Logger.debug("")
-
-                } else {
-                    Logger.debug("\t\tNo Pause.")
-                }
-                Logger.debug("")
-            }
-            Logger.debug("")
-        }
-        
-        
-        let allPauses = Pause.getPauses(context: context)!
-        
-        Logger.debug("allPauses:")
-        Logger.debug("\(allPauses.count) pauses")
-
-        for pause in allPauses {
-            
-            Logger.debug("\t\tPause:")
-            let created = dateFormatter.string(from: pause.dateCreated!)
-            let first = pause.firstDayEffective!.string(formatter: dateFormatter)
-            let last = pause.lastDayEffective!.string(formatter: dateFormatter)
-            
-            Logger.debug("\t\tpause.shortDescription: \(pause.shortDescription!)")
-            Logger.debug("\t\tpause.dateCreated: \(created)")
-            Logger.debug("\t\tpause.firstDayEffective: \(first)")
-            Logger.debug("\t\tpause.lastDayEffective: \(last)")
-            Logger.debug("")
-        }
-    }
-
 }

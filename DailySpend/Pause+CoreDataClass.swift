@@ -113,7 +113,7 @@ public class Pause: NSManagedObject {
             return nil
         }
         
-        let pauses = Pause.getPauses(context: context)
+        let pauses = Pause.get(context: context)
         for otherPause in pauses! {
             if otherPause.objectID != pause.objectID && pause.overlapsWith(pause: otherPause)! {
                 Logger.debug("pause overlapped with another pause")
@@ -130,12 +130,15 @@ public class Pause: NSManagedObject {
         return pause
     }
     
-    class func getPauses(context: NSManagedObjectContext,
-                        predicate: NSPredicate? = nil,
-                        sortDescriptors: [NSSortDescriptor]? = nil) -> [Pause]? {
+    class func get(context: NSManagedObjectContext,
+                    predicate: NSPredicate? = nil,
+                    sortDescriptors: [NSSortDescriptor]? = nil,
+                    fetchLimit: Int = 0) -> [Pause]? {
         let fetchRequest: NSFetchRequest<Pause> = Pause.fetchRequest()
         fetchRequest.predicate = predicate
         fetchRequest.sortDescriptors = sortDescriptors
+        fetchRequest.fetchLimit = fetchLimit
+        
         let pauseResults = try? context.fetch(fetchRequest)
         
         return pauseResults
@@ -174,7 +177,7 @@ public class Pause: NSManagedObject {
             return (false, "The pause must have a date created.")
         }
         
-        let pauses = Pause.getPauses(context: context)
+        let pauses = Pause.get(context: context)
         for pause in pauses! {
             if pause.objectID != self.objectID && self.overlapsWith(pause: pause)! {
                 // This a different pause whose date range overlaps with ours.

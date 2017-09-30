@@ -65,15 +65,12 @@ class PauseViewController: UIViewController, UITableViewDelegate, UITableViewDat
     func getRelevantPauses() -> [Pause]? {
         let sortDescriptors = [NSSortDescriptor(key: "lastDateEffective_", ascending: false)]
         let predicate = NSPredicate(format: "lastDateEffective_ >= %@", CalendarDay().gmtDate as CVarArg)
-        return Pause.getPauses(context: context,
-                               predicate: predicate,
-                               sortDescriptors: sortDescriptors)
+        return Pause.get(context: context, predicate: predicate, sortDescriptors: sortDescriptors)
     }
     
     func getAllPauses() -> [Pause]? {
         let sortDescriptors = [NSSortDescriptor(key: "lastDateEffective_", ascending: false)]
-        return Pause.getPauses(context: context,
-                               sortDescriptors: sortDescriptors)
+        return Pause.get(context: context, sortDescriptors: sortDescriptors)
     }
     
     @IBAction func toggleShowingAll(_ sender: UIButton) {

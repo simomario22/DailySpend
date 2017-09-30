@@ -112,9 +112,7 @@ UITableViewCell, ExpenseViewDelegate {
     
     func popRightBBI(sender: Any?) {
         _ = rightBBIStack.popLast()
-        if let bbi = rightBBIStack.last {
-            delegate?.setRightBBI(bbi)
-        }
+        delegate?.setRightBBI(rightBBIStack.last)
     }
     
     func pushLeftBBI(_ bbi: UIBarButtonItem, sender: Any?) {
@@ -124,9 +122,7 @@ UITableViewCell, ExpenseViewDelegate {
     
     func popLeftBBI(sender: Any?) {
         _ = leftBBIStack.popLast()
-        if let bbi = leftBBIStack.last {
-            delegate?.setLeftBBI(bbi)
-        }
+        delegate?.setLeftBBI(leftBBIStack.last)
     }
     
     func disableRightBBI(sender: Any?) {
@@ -162,8 +158,8 @@ protocol AddExpenseTableViewCellDelegate: class {
     func expandCell(sender: ExpenseTableViewCell)
     func collapseCell(sender: ExpenseTableViewCell)
     func addedExpense(expense: Expense)
-    func setRightBBI(_ bbi: UIBarButtonItem)
-    func setLeftBBI(_ bbi: UIBarButtonItem)
+    func setRightBBI(_ bbi: UIBarButtonItem?)
+    func setLeftBBI(_ bbi: UIBarButtonItem?)
     func present(_ vc: UIViewController, animated: Bool, completion: (() -> Void)?, sender: Any?)
     var visibleHeight: CGFloat { get }
 }

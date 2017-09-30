@@ -99,10 +99,9 @@ class Exporter {
         os.write(",\"months\":[".data(using: encoding)!)
         
         // Fetch all months
-        let monthsFetchReq: NSFetchRequest<Month> = Month.fetchRequest()
         let monthSortDesc = NSSortDescriptor(key: "month_", ascending: true)
-        monthsFetchReq.sortDescriptors = [monthSortDesc]
-        guard let months = try? context.fetch(monthsFetchReq) else {
+        guard let months = Month.get(context: context,
+                                     sortDescriptors: [monthSortDesc]) else {
             os.closeFile()
             return nil
         }
@@ -129,8 +128,7 @@ class Exporter {
         
         // Fetch all months
         let pauseSortDesc = NSSortDescriptor(key: "dateCreated_", ascending: true)
-        guard let pauses = Pause.getPauses(context: context,
-                                           sortDescriptors: [pauseSortDesc]) else {
+        guard let pauses = Pause.get(context: context, sortDescriptors: [pauseSortDesc]) else {
             os.closeFile()
             return nil
         }
