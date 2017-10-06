@@ -15,11 +15,11 @@ class ReviewTableViewCell: UITableViewCell {
     @IBOutlet weak var overUnderLabel: UILabel!
     @IBOutlet weak var overUnderAmountButton: UIButton!
     
-    let redColor = UIColor(colorLiteralRed: 179.0/255.0,
+    let redColor = UIColor(red: 179.0/255.0,
                            green: 0.0/255.0,
                            blue: 0.0/255.0,
                            alpha: 1)
-    let greenColor = UIColor(colorLiteralRed: 0.0/255.0,
+    let greenColor = UIColor(red: 0.0/255.0,
                              green: 179.0/255.0,
                              blue: 0.0/255.0,
                              alpha: 1)

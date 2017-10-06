@@ -291,10 +291,10 @@ class MonthAdjustmentViewController: UIViewController {
             let dBFrame = self.dismissButton.frame.offsetBy(dx: 0, dy: offset)
             self.datePicker.frame = dPFrame
             self.dismissButton.frame = dBFrame
-            self.dismissButton.backgroundColor = UIColor.init(colorLiteralRed: 0,
-                                                              green: 0,
-                                                              blue: 0,
-                                                              alpha: 0.1)
+            self.dismissButton.backgroundColor = UIColor(red: 0,
+                                                          green: 0,
+                                                          blue: 0,
+                                                          alpha: 0.1)
         })
     }
     

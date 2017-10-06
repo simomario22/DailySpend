@@ -10,7 +10,7 @@ import UIKit
 
 class CurrentDayTableViewCell: UITableViewCell {
     
-    let redColor = UIColor(colorLiteralRed: 179.0/255.0,
+    let redColor = UIColor(red: 179.0/255.0,
                            green: 0.0/255.0,
                            blue: 0.0/255.0,
                            alpha: 1)

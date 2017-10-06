@@ -463,7 +463,7 @@ extension ExpenseView: UITextFieldDelegate {
         notesView.text = dataSource.notes
         notesView.isEditable = true
         notesView.font = UIFont.systemFont(ofSize: 24)
-        let grey = UIColor(colorLiteralRed: 245.0/255.0,
+        let grey = UIColor(red: 245.0/255.0,
                            green: 245.0/255.0,
                            blue: 245.0/255.0,
                            alpha: 1)
