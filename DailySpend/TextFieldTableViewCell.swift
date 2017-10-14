@@ -45,7 +45,7 @@ class TextFieldTableViewCell: UITableViewCell, UITextFieldDelegate {
         editingCallback?(textField)
     }
     
-    func textFieldChanged(field: UITextField!) {
+    @objc func textFieldChanged(field: UITextField!) {
         changedCallback?(field)
     }
     

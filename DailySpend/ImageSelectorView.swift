@@ -86,7 +86,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIScrollViewDel
         if let image = imageWithColor(buttonBgColor) {
             addButton.setBackgroundImage(image, for: .highlighted)
         }
-        let font = UIFont.systemFont(ofSize: 40, weight: UIFontWeightLight)
+        let font = UIFont.systemFont(ofSize: 40, weight: UIFont.Weight.light)
         addButton.setTitle("＋", for: .normal)
         addButton.titleLabel?.font = font
         addButton.addTarget(self,
@@ -122,7 +122,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIScrollViewDel
             deleteButton.layer.cornerRadius = deleteButtonRadius
             deleteButton.clipsToBounds = true
             deleteButton.backgroundColor = UIColor.white
-            let font = UIFont.systemFont(ofSize: 15, weight: UIFontWeightBold)
+            let font = UIFont.systemFont(ofSize: 15, weight: UIFont.Weight.bold)
             deleteButton.titleLabel?.font = font
             deleteButton.setTitle("✕", for: .normal)
             deleteButton.addTarget(self,
@@ -173,7 +173,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIScrollViewDel
     private func showImagePickerForCamera(_ action: UIAlertAction) {
         // The user wants to take a photo from the camera.
         // Check to make sure they have access, or ask for it.
-        let status = AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo)
+        let status = AVCaptureDevice.authorizationStatus(for: AVMediaType.video)
         
         switch status {
         case .denied:
@@ -189,7 +189,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIScrollViewDel
         case .notDetermined:
             // The user has not yet been presented with the option to grant
             // access to the camera hardware. Ask for it.
-            AVCaptureDevice.requestAccess(forMediaType: AVMediaTypeVideo,
+            AVCaptureDevice.requestAccess(for: AVMediaType.video,
                                           completionHandler:
                 { (granted: Bool) in
                     // If access was denied, we do not set the setup error

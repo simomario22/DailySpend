@@ -143,8 +143,8 @@ class ExpenseView: UIView {
         let newWidth = bounds.size.width
         
         func setFrameForButton(_ button: UIButton, previousButton: UIButton?) {
-            let attr = [NSFontAttributeName: button.titleLabel!.font!]
-            let size = button.titleLabel!.text!.size(attributes: attr)
+            let attr = [NSAttributedStringKey.font: button.titleLabel!.font!]
+            let size = button.titleLabel!.text!.size(withAttributes: attr)
         
             button.frame = CGRect(
                 x: sideMargin,
@@ -242,7 +242,7 @@ class ExpenseView: UIView {
 
     }
     
-    func save() {
+    @objc func save() {
         if dataSource.amount == nil ||
             dataSource.amount!.doubleValue <= 0 ||
             dataSource.shortDescription!.characters.count == 0 {
@@ -277,7 +277,7 @@ class ExpenseView: UIView {
         delegate?.present(alert, animated: true, completion: nil, sender: self)
     }
     
-    func cancel() {
+    @objc func cancel() {
         resignTextFieldsAsFirstResponder()
         dismissButton?.removeFromSuperview()
         delegate.popRightBBI(sender: self)
@@ -337,7 +337,7 @@ class ExpenseView: UIView {
         scrollView.insertSubview(dismissButton!, belowSubview: under ?? amountField)
     }
     
-    func keyboardWillChangeFrame(notification: NSNotification) {
+    @objc func keyboardWillChangeFrame(notification: NSNotification) {
         let key = notification.userInfo?[UIKeyboardFrameEndUserInfoKey]
         if let frame = (key as? NSValue)?.cgRectValue {
             keyboardHeight = frame.size.height
@@ -524,14 +524,14 @@ extension ExpenseView: UITextFieldDelegate {
     }
 
     
-    func amountChanged(_ sender: UITextField) {
+    @objc func amountChanged(_ sender: UITextField) {
         let amount = sender.text!.parseValidAmount(maxLength: 8)
         self.dataSource.amount = Decimal(amount)
         
         sender.text = String.formatAsCurrency(amount: amount)
     }
     
-    func descriptionChanged(_ sender: UITextField) {
+    @objc func descriptionChanged(_ sender: UITextField) {
         self.dataSource.shortDescription = sender.text!
         
         // Determine max font size that can fit in the space available.
@@ -540,19 +540,19 @@ extension ExpenseView: UITextFieldDelegate {
         var fontSize: CGFloat = 24
         let minFontSize: CGFloat = 17
         
-        let font = UIFont.systemFont(ofSize: fontSize, weight: UIFontWeightLight)
-        var attr = [NSFontAttributeName: font]
+        let font = UIFont.systemFont(ofSize: fontSize, weight: UIFont.Weight.light)
+        var attr = [NSAttributedStringKey.font: font]
         
-        var width = descriptionField.text!.size(attributes: attr).width
+        var width = descriptionField.text!.size(withAttributes: attr).width
         
         while width > maxWidth && fontSize > minFontSize {
             fontSize -= 1
-            attr = [NSFontAttributeName: UIFont.systemFont(ofSize: fontSize,
-                                                           weight: UIFontWeightLight)]
-            width = descriptionField.text!.size(attributes: attr).width
+            attr = [NSAttributedStringKey.font: UIFont.systemFont(ofSize: fontSize,
+                                                           weight: UIFont.Weight.light)]
+            width = descriptionField.text!.size(withAttributes: attr).width
         }
         descriptionField.font = UIFont.systemFont(ofSize: fontSize,
-                                                  weight: UIFontWeightLight)
+                                                  weight: UIFont.Weight.light)
     }
 }
 

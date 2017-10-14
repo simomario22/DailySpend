@@ -32,7 +32,7 @@ class ReviewTableViewCell: UITableViewCell {
     var alreadyHighlighted = false
     
     var overUnderAbsNS: NSNumber {
-        return Decimal.abs(overUnder) as NSNumber
+        return abs(overUnder) as NSNumber
     }
     var yesterdayNS: NSNumber {
         return yesterdayCarry as NSNumber
@@ -110,7 +110,7 @@ class ReviewTableViewCell: UITableViewCell {
         }
     }
     
-    func setCarryLabel() {
+    @objc func setCarryLabel() {
         // Create strings.
         let yesterdayCarryString = currencyFormatter.string(from: yesterdayNS)!
         let overUnderString = currencyFormatter.string(from: overUnderAbsNS)!
@@ -125,7 +125,7 @@ class ReviewTableViewCell: UITableViewCell {
         let attributedText = NSMutableAttributedString(string: equationString)
         
         let addAttribute = {(color: UIColor, start: Int, len: Int) in
-            attributedText.addAttribute(NSForegroundColorAttributeName,
+            attributedText.addAttribute(NSAttributedStringKey.foregroundColor,
                                         value: color,
                                         range: NSMakeRange(start, len))
         }
@@ -160,7 +160,7 @@ class ReviewTableViewCell: UITableViewCell {
         // Initialization code
         
         let font = UIFont.systemFont(ofSize: 22,
-                                     weight: UIFontWeightLight)
+                                     weight: UIFont.Weight.light)
         spentAmountLabel.font = font
         goalAmountLabel.font = font
         overUnderAmountButton.titleLabel!.font = font

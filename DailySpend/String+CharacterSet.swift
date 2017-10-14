@@ -34,7 +34,8 @@ extension String {
         if length == 0 {
             s = "0"
         } else if maxLength != nil && length > maxLength! {
-            s = s.substring(to: s.index(s.endIndex, offsetBy: maxLength! - length))
+            let endIndex = s.index(s.endIndex, offsetBy: maxLength! - length)
+            s = String(s[..<endIndex])
         }
         
         return (Double(s)! / 100) * (negative ? -1 : 1)

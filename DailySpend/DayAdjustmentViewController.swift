@@ -83,12 +83,12 @@ class DayAdjustmentViewController: UIViewController {
         }
     }
     
-    func resignResponders() {
+    @objc func resignResponders() {
         self.amountField.resignFirstResponder()
         self.reasonField.resignFirstResponder()
     }
     
-    func save() {
+    @objc func save() {
         let posNeg: Decimal = addDeductControl.selectedSegmentIndex == 1 ? 1 : -1
         let amount = Decimal(amountField.text!.parseValidAmount(maxLength: 8)) * posNeg
         let reason = reasonField.text!
@@ -175,20 +175,20 @@ class DayAdjustmentViewController: UIViewController {
         var fontSize: CGFloat = 28
         let minFontSize: CGFloat = 17
         
-        let font = UIFont.systemFont(ofSize: fontSize, weight: UIFontWeightLight)
-        var attr = [NSFontAttributeName: font]
+        let font = UIFont.systemFont(ofSize: fontSize, weight: UIFont.Weight.light)
+        var attr = [NSAttributedStringKey.font: font]
         
         //var attr = [NSFontAttributeName: descriptionField.font!.withSize(fontSize)]
-        var width = reasonField.text!.size(attributes: attr).width
+        var width = reasonField.text!.size(withAttributes: attr).width
         
         while width > maxWidth && fontSize > minFontSize {
             fontSize -= 1
-            attr = [NSFontAttributeName: UIFont.systemFont(ofSize: fontSize,
-                                                           weight: UIFontWeightLight)]
-            width = reasonField.text!.size(attributes: attr).width
+            attr = [NSAttributedStringKey.font: UIFont.systemFont(ofSize: fontSize,
+                                                           weight: UIFont.Weight.light)]
+            width = reasonField.text!.size(withAttributes: attr).width
         }
         reasonField.font = UIFont.systemFont(ofSize: fontSize,
-                                             weight: UIFontWeightLight)
+                                             weight: UIFont.Weight.light)
         
         // Update widths of text fields (with constraints).
         if reasonConstraint == nil {
@@ -285,11 +285,11 @@ class DayAdjustmentViewController: UIViewController {
         })
     }
     
-    func datePickerChanged(sender: UIDatePicker) {
+    @objc func datePickerChanged(sender: UIDatePicker) {
         selectedDay = CalendarDay(dateInGMTDay: sender.date)
     }
     
-    func dismissDatePicker() {        
+    @objc func dismissDatePicker() {        
         setDateLabel(day: selectedDay!)
         
         // Animate slide down.

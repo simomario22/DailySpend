@@ -43,7 +43,7 @@ UITableViewCell, ExpenseViewDelegate {
         super.prepareForReuse()
     }
     
-    func resetView() {
+    @objc func resetView() {
         expenseView.dataSource = ExpenseProvider(expense: nil)
         expenseView.updateFieldValues()
         

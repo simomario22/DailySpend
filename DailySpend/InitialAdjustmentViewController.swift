@@ -33,7 +33,7 @@ class InitialAdjustmentViewController: UIViewController {
     }
     
     
-    func save(_ sender: UIBarButtonItem) {
+    @objc func save(_ sender: UIBarButtonItem) {
         UserDefaults.standard.set(amount, forKey: "initialMonthAdjustment")
         self.dismiss(animated: true, completion: nil)
     }

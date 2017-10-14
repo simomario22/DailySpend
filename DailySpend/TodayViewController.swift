@@ -71,7 +71,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
         self.present(navController, animated: true, completion: nil)
     }
     
-    func willEnterForeground() {
+    @objc func willEnterForeground() {
         let sortDesc = NSSortDescriptor(key: "date_", ascending: false)
         let latestDayResults = Day.get(context: context,
                                        sortDescriptors: [sortDesc],
@@ -110,7 +110,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
         tableView.reloadData()
     }
     
-    func refreshData() {
+    @objc func refreshData() {
         // Populate daysThisMonth and months
         
         // Fetch all months

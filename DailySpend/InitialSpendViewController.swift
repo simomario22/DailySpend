@@ -48,7 +48,7 @@ class InitialSpendViewController: UIViewController {
         self.tabBarController?.navigationItem.rightBarButtonItem = saveButton
     }
     
-    func resignResponders() {
+    @objc func resignResponders() {
         self.monthlyField.resignFirstResponder()
         self.dailyField.resignFirstResponder()
     }
@@ -74,13 +74,13 @@ class InitialSpendViewController: UIViewController {
         var fontSize: CGFloat = 28
         let minFontSize: CGFloat = 8
         
-        var attr = [NSFontAttributeName: monthlyField.font!.withSize(fontSize)]
-        var width = monthlyField.text!.size(attributes: attr).width
+        var attr = [NSAttributedStringKey.font: monthlyField.font!.withSize(fontSize)]
+        var width = monthlyField.text!.size(withAttributes: attr).width
         
         while width > maxWidth && fontSize > minFontSize {
             fontSize -= 1
-            attr = [NSFontAttributeName: monthlyField.font!.withSize(fontSize)]
-            width = monthlyField.text!.size(attributes: attr).width
+            attr = [NSAttributedStringKey.font: monthlyField.font!.withSize(fontSize)]
+            width = monthlyField.text!.size(withAttributes: attr).width
         }
         monthlyField.font = monthlyField.font!.withSize(fontSize)
         dailyField.font = dailyField.font!.withSize(fontSize)

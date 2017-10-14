@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import ZipArchive
 
 class ExportViewController: UITableViewController {
     
@@ -115,7 +116,7 @@ class ExportViewController: UITableViewController {
         self.present(activityView, animated: true, completion: nil)
     }
 
-    func exportPressed() {
+    @objc func exportPressed() {
         let containsPhotos = itemsToExport.contains(.Photos)
         let containsData = itemsToExport.contains(.Data)
         guard containsData || containsPhotos else {

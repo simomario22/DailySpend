@@ -36,7 +36,7 @@ class DatePickerTableViewCell: UITableViewCell {
         super.init(coder: aDecoder)
     }
 
-    func datePickerChanged(picker: UIDatePicker!) {
+    @objc func datePickerChanged(picker: UIDatePicker!) {
         changedCallback?(picker)
     }
     
