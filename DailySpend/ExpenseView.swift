@@ -134,7 +134,7 @@ class ExpenseView: UIView {
     override convenience init(frame: CGRect) {
         self.init(optionalFrame: frame)
     }
-    
+
     func updateSubviewFrames() {
         let sideMargin: CGFloat = 16.0
         let innerHorizontalMargin: CGFloat = 10.0
@@ -300,6 +300,10 @@ class ExpenseView: UIView {
                                                action: #selector(cancel))
             delegate.pushRightBBI(saveButton, sender: self)
             delegate.pushLeftBBI(cancelButton, sender: self)
+
+            // Make sure that "today" is set to today.
+            dataSource.setDayToToday()
+            updateFieldValues()
         }
     }
     
@@ -421,6 +425,8 @@ extension ExpenseView: UITextFieldDelegate {
         func animateDismiss() {
             // Animate slide down.
             UIView.animate(withDuration: 0.2, animations: {
+                self.delegate.popRightBBI(sender: self)
+                self.delegate.popLeftBBI(sender: self)
                 let pickerHeight = datePicker.frame.height
                 datePicker.frame = datePicker.frame.offsetBy(dx: 0, dy: pickerHeight)
                 
@@ -429,20 +435,25 @@ extension ExpenseView: UITextFieldDelegate {
             }, completion:  { (finished: Bool) in
                 datePicker.removeFromSuperview()
                 self.dismissButton?.removeFromSuperview()
-                self.delegate.enableRightBBI(sender: self)
-                self.delegate.popLeftBBI(sender: self)
             })
         }
         
         insertDismissButton(removeOnPress: false, under: datePicker, dismiss: animateDismiss)
         
+        // Wrap cancel and save buttons with a dismiss call to dismiss the date
+        // picker.
         let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel) {
-            self.delegate.popLeftBBI(sender: self)
             animateDismiss()
             self.cancel()
         }
         
+        let saveButton = UIBarButtonItem(barButtonSystemItem: .save) {
+            animateDismiss()
+            self.save()
+        }
+
         delegate.pushLeftBBI(cancelButton, sender: self)
+        delegate.pushRightBBI(saveButton, sender: self)
         
         // Animate slide up.
         UIView.animate(withDuration: 0.2) {
@@ -602,7 +613,7 @@ protocol ExpenseViewDataSource: class {
     var notes: String? { get set }
     var imageContainers: [ImageContainer]? { get }
     
-    
+    func setDayToToday()
     func addImage(container: ImageContainer)
     func removeImage(index: Int)
     func save() -> Expense?

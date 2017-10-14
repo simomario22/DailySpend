@@ -73,7 +73,7 @@ class MonthAdjustmentViewController: UIViewController {
             navigationItem.rightBarButtonItem = saveButton
         }
     }
-    
+
     func resignResponders() {
         self.amountField.resignFirstResponder()
         self.reasonField.resignFirstResponder()
@@ -241,18 +241,13 @@ class MonthAdjustmentViewController: UIViewController {
     }
     
     @IBAction func editDate(_ sender: UIButton?) {
-        // Find earliest day.
-        let earliestDayFetchReq: NSFetchRequest<Day> = Day.fetchRequest()
-        let earliestDaySortDesc = NSSortDescriptor(key: "date_", ascending: true)
-        earliestDayFetchReq.sortDescriptors = [earliestDaySortDesc]
-        earliestDayFetchReq.fetchLimit = 1
-        let earliestDayResults = try! context.fetch(earliestDayFetchReq)
-        
-        
         // Set up date picker.
+        let earliestDaySD = NSSortDescriptor(key: "date_", ascending: true)
+        let earliestDays = Day.get(context: context,
+                                   sortDescriptors: [earliestDaySD],
+                                   fetchLimit: 1)!
+        let earliestDate = earliestDays[0].calendarDay!.gmtDate
         datePicker.timeZone = CalendarDay.gmtTimeZone
-
-        let earliestDate = earliestDayResults[0].calendarDay!.gmtDate
         datePicker.minimumDate = earliestDate
         datePicker.maximumDate = Date()
         datePicker.setDate(selectedDay?.gmtDate ?? CalendarDay().gmtDate, animated: false)

@@ -17,6 +17,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+
+        if UserDefaults.standard.bool(forKey: "timezoneFix1Applied") == false {
+            TimezoneFix1.fix()
+            UserDefaults.standard.set(true, forKey: "timezoneFix1Applied")
+        }
+
         return true
     }
     
@@ -168,9 +174,46 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return nil
     }
 
+    func createUpToToday(notify: Bool = true) {
+        if UserDefaults.standard.double(forKey: "dailyTargetSpend") <= 0 {
+            // The app hasn't been set up yet.
+            return
+        }
+        // Check if any months exist
+        let latestMonthSortDesc = NSSortDescriptor(key: "month_", ascending: false)
+        let latestMonthResults = Month.get(context: context,
+                                           sortDescriptors: [latestMonthSortDesc],
+                                           fetchLimit: 1)!
+
+        if (latestMonthResults.count < 1) {
+            // To satisfy requirement of createDays, create month for this month
+            _ = Month.create(context: context, calMonth: CalendarMonth())
+            self.saveContext()
+        }
+
+        // Fetch the latest day created.
+        let sortDesc = NSSortDescriptor(key: "date_", ascending: false)
+        let latestDayResults = Day.get(context: context,
+                                       sortDescriptors: [sortDesc],
+                                       fetchLimit: 1)
+
+        // Start from one after the latest created date (or today) and go to
+        // today
+        let from = latestDayResults?.first?.calendarDay?.add(days: 1) ?? CalendarDay()
+        let to = CalendarDay().add(days: 1)
+
+        let numCreated = Day.createDays(context: context, from: from, to: to)
+        if numCreated > 0 && notify {
+            let nc = NotificationCenter.default
+            nc.post(name: Notification.Name.init("AddedNewDays"), object: nil)
+            self.saveContext()
+        }
+    }
+
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
+        //NotificationCenter.default.removeObserver(self, name: Notification.Name.NSCalendarDayChanged, object: nil)
     }
 
     func applicationDidEnterBackground(_ application: UIApplication) {
@@ -184,6 +227,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+        //NotificationCenter.default.addObserver(self, selector: #selector(createUpToToday), name: Notification.Name.NSCalendarDayChanged, object: nil)
     }
 
     func applicationWillTerminate(_ application: UIApplication) {

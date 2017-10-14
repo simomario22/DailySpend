@@ -10,8 +10,6 @@
 		C503F13A1EA1A8A200FA95A7 /* Export.swift in Sources */ = {isa = PBXBuildFile; fileRef = C503F1391EA1A8A100FA95A7 /* Export.swift */; };
 		C517B1FE1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = C517B1EA1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt */; };
 		C517B1FF1EBC134200CDAA17 /* UICountingLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = C517B1EC1EBC134200CDAA17 /* UICountingLabel.m */; };
-		C51879171F00416F00881FB6 /* FLAnimatedImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C5A81A771F0040540032D9F1 /* FLAnimatedImage.framework */; };
-		C51879181F00416F00881FB6 /* NYTPhotoViewer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C5A81A781F0040540032D9F1 /* NYTPhotoViewer.framework */; };
 		C51879191F00416F00881FB6 /* NYTPhotoViewerCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C5A81A791F0040540032D9F1 /* NYTPhotoViewerCore.framework */; };
 		C518791A1F00416F00881FB6 /* ZipArchive.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C5A81A7A1F0040540032D9F1 /* ZipArchive.framework */; };
 		C518791F1F00461000881FB6 /* PhotoBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = C518791E1F00461000881FB6 /* PhotoBox.swift */; };
@@ -186,8 +184,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C51879171F00416F00881FB6 /* FLAnimatedImage.framework in Frameworks */,
-				C51879181F00416F00881FB6 /* NYTPhotoViewer.framework in Frameworks */,
 				C51879191F00416F00881FB6 /* NYTPhotoViewerCore.framework in Frameworks */,
 				C518791A1F00416F00881FB6 /* ZipArchive.framework in Frameworks */,
 			);

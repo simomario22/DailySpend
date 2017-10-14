@@ -193,6 +193,18 @@ public class Month: NSManagedObject {
         return monthResults[0]
     }
     
+    class func get(context: NSManagedObjectContext,
+                    predicate: NSPredicate? = nil,
+                    sortDescriptors: [NSSortDescriptor]? = nil,
+                    fetchLimit: Int = 0) -> [Month]? {
+        let fetchRequest: NSFetchRequest<Month> = Month.fetchRequest()
+        fetchRequest.predicate = predicate
+        fetchRequest.sortDescriptors = sortDescriptors
+        let monthResults = try? context.fetch(fetchRequest)
+
+        return monthResults
+    }
+
     /*
      * Create and return a month.
      */
