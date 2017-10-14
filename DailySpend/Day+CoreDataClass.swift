@@ -22,19 +22,6 @@ public class Day: NSManagedObject {
             return nil
         }
         
-        if let adjs = sortedAdjustments {
-            var jsonAdjs = [[String: Any]]()
-            for adjustment in adjs {
-                if let jsonAdj = adjustment.json() {
-                    jsonAdjs.append(jsonAdj)
-                } else {
-                    Logger.debug("couldn't unwrap jsonAdj in Day")
-                    return nil
-                }
-            }
-            jsonObj["adjustments"] = jsonAdjs
-        }
-        
         if let exps = sortedExpenses {
             var jsonExps = [[String: Any]]()
             for expense in exps {
@@ -90,17 +77,6 @@ public class Day: NSManagedObject {
             return nil
         }
         
-        if let jsonAdjs = json["adjustments"] as? [[String: Any]] {
-            for jsonAdj in jsonAdjs {
-                if let dayAdj = DayAdjustment.create(context: context, json: jsonAdj) {
-                    dayAdj.day = day
-                } else {
-                    Logger.debug("couldn't create dayAdj in Day")
-                    return nil
-                }
-            }
-        }
-        
         if let jsonExps = json["expenses"] as? [[String: Any]] {
             for jsonExp in jsonExps {
                 if let expense = Expense.create(context: context, json: jsonExp) {
@@ -125,58 +101,15 @@ public class Day: NSManagedObject {
         }
         
         
-        // Get relevant pause.
+        // Get relevant Pause.
         let relevantPause = Pause.getRelevantPauseForDay(day: day, context: context)
         day.pause = relevantPause
         
+        // Get relevant Adjustments.
+        let relevantAdjustments = Adjustment.getRelevantAdjustmentsForDay(day: day, context: context)
+        day.adjustments = Set<Adjustment>(relevantAdjustments)
+        
         return day
-    }
-    
-    // Helper functions
-    func totalAdjustments() -> Decimal {
-        var total: Decimal = 0
-        
-        if let dayAdjustments = self.adjustments {
-            for dayAdjustment in dayAdjustments {
-                total += dayAdjustment.amount ?? 0
-            }
-        }
-        
-        for monthAdjustment in relevantMonthAdjustments {
-            let calendarDay = self.calendarDay!
-            let calendarDayEffective = monthAdjustment.calendarDayEffective!
-            
-            let calMonth = CalendarMonth(day: calendarDay)
-            let daysAcross = calMonth.daysInMonth - calendarDayEffective.day + 1
-            
-            if let amount = monthAdjustment.amount {
-                // This is the amount of this adjustment that affects this day.
-                total += amount / Decimal(daysAcross)
-            }
-        }
-        
-        return total
-    }
-    
-    var relevantMonthAdjustments: [MonthAdjustment] {
-        guard let calendarDay = self.calendarDay,
-              let monthAdjustments = self.month?.adjustments else {
-            return []
-        }
-        
-        // Get all applicable month adjustments, those for which this day is 
-        // after or on the same day as the effective day.
-        var monthAdj: [MonthAdjustment] = []
-        for monthAdjustment in monthAdjustments {
-            if let calendarDayEffective = monthAdjustment.calendarDayEffective {
-                if calendarDay >= calendarDayEffective {
-                    // This adjustments affects today.
-                    monthAdj.append(monthAdjustment)
-                }
-            }
-        }
-        
-        return monthAdj.sorted(by: { $0.dateCreated! < $1.dateCreated! })
     }
     
     /*
@@ -210,35 +143,60 @@ public class Day: NSManagedObject {
 
         return dayResults
     }
+    
+    class private func getRelevantDaysForRange(firstDay: CalendarDay,
+                                               lastDay: CalendarDay,
+                                               context: NSManagedObjectContext) -> [Day] {
+        let fetchRequest: NSFetchRequest<Day> = Day.fetchRequest()
+        let pred = NSPredicate(format: "date_ >= %@ AND date_ <= %@",
+        firstDay.gmtDate as CVarArg, lastDay.gmtDate as CVarArg)
+        fetchRequest.predicate = pred
+        let sortDesc = NSSortDescriptor(key: "date_", ascending: true)
+        fetchRequest.sortDescriptors = [sortDesc]
+        let dayResults = try! context.fetch(fetchRequest)
+    
+        return dayResults
+    }
 
     /*
-     * Return the day object that a date is in, or nil if it doesn't exist.
+     * Return the Days affected by a particular Pause.
      */
     class func getRelevantDaysForPause(pause: Pause, context: NSManagedObjectContext) -> [Day] {
         guard let firstDayEffective = pause.firstDayEffective,
             let lastDayEffective = pause.lastDayEffective else {
             return []
         }
-        let fetchRequest: NSFetchRequest<Day> = Day.fetchRequest()
-        let pred = NSPredicate(format: "date_ >= %@ AND date_ <= %@",
-                               firstDayEffective.gmtDate as CVarArg, lastDayEffective.gmtDate as CVarArg)
-        fetchRequest.predicate = pred
-        let sortDesc = NSSortDescriptor(key: "date_", ascending: true)
-        fetchRequest.sortDescriptors = [sortDesc]
-        let dayResults = try! context.fetch(fetchRequest)
-        
-        return dayResults
+        return getRelevantDaysForRange(firstDay: firstDayEffective,
+                                       lastDay: lastDayEffective,
+                                       context: context)
     }
     
+    /*
+     * Return the Days affected by a particular Adjustment.
+     */
+    class func getRelevantDaysForAdjustment(adjustment: Adjustment, context: NSManagedObjectContext) -> [Day] {
+        guard let firstDayEffective = adjustment.firstDayEffective,
+            let lastDayEffective = adjustment.lastDayEffective else {
+                return []
+        }
+        return getRelevantDaysForRange(firstDay: firstDayEffective,
+                                       lastDay: lastDayEffective,
+                                       context: context)
+    }
+
     class func create(context: NSManagedObjectContext, calDay: CalendarDay, month: Month) -> Day {
         let day = Day(context: context)
         day.calendarDay = calDay
         day.month = month
         day.dateCreated = Date()
         
-        // Get relevant pause.
+        // Get relevant Pause.
         let relevantPause = Pause.getRelevantPauseForDay(day: day, context: context)
         day.pause = relevantPause
+        
+        // Get relevant Adjustments.
+        let relevantAdjustments = Adjustment.getRelevantAdjustmentsForDay(day: day, context: context)
+        day.adjustments = Set<Adjustment>(relevantAdjustments)
         
         return day
     }
@@ -297,14 +255,60 @@ public class Day: NSManagedObject {
         }
     }
     
-    public var fullTargetSpend: Decimal? {
-        guard let baseTargetSpend = baseTargetSpend else {
-            return nil
+    
+    /*
+     * The amount that the baseTargetSpend for this day should be adjusted by
+     * due to recorded Adjustments.
+     */
+    func totalAdjustments() -> Decimal {
+        var total: Decimal = 0
+        
+        for adjustment in adjustments ?? [] {
+            total += adjustment.amountPerDay ?? 0
         }
-        return baseTargetSpend + totalAdjustments()
+        
+        return total
     }
     
-    public var leftToCarry: Decimal {
+    /*
+     * The amount spent on this day, affected by expenses and pauses.
+     */
+    public func amountSpent() -> Decimal {
+        if pause != nil {
+            // Since this day is paused, there is no money accrued.
+            return 0
+        }
+        
+        var spent: Decimal = 0
+        
+        for expense in expenses ?? [] {
+            spent += expense.amount ?? 0
+        }
+        
+        return spent
+    }
+
+    
+    /*
+     * The amount accured on this day, after adjustments and pauses.
+     */
+    public func fullTargetSpend() -> Decimal {
+        if pause != nil {
+            // Since this day is paused, there is no money accrued.
+            return 0
+        }
+        
+        // Assume 0 if there is no base target spend.
+        let base = self.baseTargetSpend ?? 0;
+        
+        return base + totalAdjustments()
+    }
+    
+    /*
+     * The amount to be carried to the day following this day, including all
+     * expenses, pauses, and adjustments from days this month.
+     */
+    public func leftToCarry() -> Decimal {
         guard let daysThisMonth = month!.days,
               let calendarDay = self.calendarDay else {
             return 0
@@ -314,12 +318,9 @@ public class Day: NSManagedObject {
             guard let otherCalDay = day.calendarDay else {
                 return 0
             }
-            if otherCalDay <= calendarDay && day.pause == nil {
-                dailySpend += day.baseTargetSpend ?? 0
-                dailySpend += day.totalAdjustments()
-                for expense in day.expenses ?? [] {
-                    dailySpend -= expense.amount ?? 0
-                }
+            if otherCalDay <= calendarDay {
+                dailySpend += day.fullTargetSpend()
+                dailySpend -= day.amountSpent()
             }
         }
         return dailySpend
@@ -342,7 +343,7 @@ public class Day: NSManagedObject {
         }
     }
     
-    public var sortedAdjustments: [DayAdjustment]? {
+    public var sortedAdjustments: [Adjustment]? {
         if let adj = adjustments {
             return adj.sorted(by: { $0.dateCreated! < $1.dateCreated! })
         } else {
@@ -350,7 +351,7 @@ public class Day: NSManagedObject {
         }
     }
     
-    public var adjustments: Set<DayAdjustment>? {
+    public var adjustments: Set<Adjustment>? {
         get {
             return adjustments_ as! Set?
         }
@@ -403,22 +404,22 @@ public class Day: NSManagedObject {
     }
     
     @objc(addAdjustmentsObject:)
-    public func addToAdjustments(_ value: DayAdjustment) {
+    public func addToAdjustments(_ value: Adjustment) {
         addToAdjustments_(value)
     }
     
     @objc(removeAdjustmentsObject:)
-    public func removeFromAdjustments(_ value: DayAdjustment) {
+    public func removeFromAdjustments(_ value: Adjustment) {
         removeFromAdjustments_(value)
     }
     
     @objc(addAdjustments:)
-    public func addToAdjustments(_ values: Set<DayAdjustment>) {
+    public func addToAdjustments(_ values: Set<Adjustment>) {
         addToAdjustments_(NSSet(set: values))
     }
     
     @objc(removeAdjustments:)
-    public func removeFromAdjustments(_ values: Set<DayAdjustment>) {
+    public func removeFromAdjustments(_ values: Set<Adjustment>) {
         removeFromAdjustments_(NSSet(set: values))
     }
 

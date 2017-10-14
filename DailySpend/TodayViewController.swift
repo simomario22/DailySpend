@@ -263,7 +263,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
                 
                 let primaryText = month.calendarMonth!.string(formatter: dateFormatter)
                 let detailText = String.formatAsCurrency(amount: month.actualSpend!.doubleValue)
-                let textColor = month.actualSpend! > month.fullTargetSpend! ? redColor : greenColor
+                let textColor = month.actualSpend! > month.fullTargetSpend() ? redColor : greenColor
                 
                 prevDayCell.textLabel?.text = primaryText
                 prevDayCell.detailTextLabel?.text = detailText
@@ -276,7 +276,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
                 let primaryText = day.calendarDay!.string(formatter: dateFormatter)
                 let detailText = String.formatAsCurrency(amount: day.actualSpend.doubleValue)
                 
-                var textColor = day.leftToCarry < 0 ? redColor : greenColor
+                var textColor = day.leftToCarry() < 0 ? redColor : greenColor
                 if day.pause != nil {
                     textColor = blueColor
                 }
@@ -292,7 +292,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
                                                      for: indexPath)
             let currentDayCell = cell as! CurrentDayTableViewCell
             if let today = daysThisMonth.last {
-                let dailySpend = today.leftToCarry
+                let dailySpend = today.leftToCarry()
                 currentDayCell.setAndFormatLabels(dailySpendLeft: dailySpend,
                                                   previousDailySpendLeft: previousDailySpendLeft,
                                                   expensesToday: today.expenses!.count > 0)
@@ -421,27 +421,14 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
                   indexPath.row == currentDayCellIndex {
             // Bonus expense selected
             // Show today.
-            let vc = storyboard!.instantiateViewController(withIdentifier: "Review")
-            let reviewVC = vc as! ReviewTableViewController
-            reviewVC.day = daysThisMonth.last!
-            reviewVC.mode = .Days
-            self.navigationController?.pushViewController(reviewVC, animated: true)
+
         } else if indexPath.row < currentDayCellIndex {
             if indexPath.row < months.count {
                 // Month selected
-                let vc = storyboard!.instantiateViewController(withIdentifier: "Review")
-                let reviewVC = vc as! ReviewTableViewController
-                reviewVC.month = months[indexPath.row]
-                reviewVC.mode = .Months
-                self.navigationController?.pushViewController(reviewVC, animated: true)
+
             } else {
                 // Day selected
-                let index = indexPath.row - months.count
-                let vc = storyboard!.instantiateViewController(withIdentifier: "Review")
-                let reviewVC = vc as! ReviewTableViewController
-                reviewVC.day = daysThisMonth[index]
-                reviewVC.mode = .Days
-                self.navigationController?.pushViewController(reviewVC, animated: true)
+                
             }
         }
     }

@@ -19,25 +19,7 @@ extension Month {
     @NSManaged public var month_: NSDate?
     @NSManaged public var dateCreated_: NSDate?
     @NSManaged public var dailyBaseTargetSpend_: NSDecimalNumber?
-    @NSManaged public var adjustments_: NSSet?
     @NSManaged public var days_: NSSet?
-
-}
-
-// MARK: Generated accessors for adjustments_
-extension Month {
-
-    @objc(addAdjustments_Object:)
-    @NSManaged public func addToAdjustments_(_ value: MonthAdjustment)
-
-    @objc(removeAdjustments_Object:)
-    @NSManaged public func removeFromAdjustments_(_ value: MonthAdjustment)
-
-    @objc(addAdjustments_:)
-    @NSManaged public func addToAdjustments_(_ values: NSSet)
-
-    @objc(removeAdjustments_:)
-    @NSManaged public func removeFromAdjustments_(_ values: NSSet)
 
 }
 

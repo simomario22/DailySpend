@@ -31,19 +31,6 @@ public class Month: NSManagedObject {
             return nil
         }
         
-        if let adjs = sortedAdjustments {
-            var jsonAdjs = [[String: Any]]()
-            for adjustment in adjs {
-                if let jsonAdj = adjustment.json() {
-                    jsonAdjs.append(jsonAdj)
-                } else {
-                    Logger.debug("couldn't unwrap jsonAdj in Month")
-                    return nil
-                }
-            }
-            jsonObj["adjustments"] = jsonAdjs
-        }
-        
         if let days = sortedDays {
             var jsonDays = [[String: Any]]()
             for day in days {
@@ -111,17 +98,6 @@ public class Month: NSManagedObject {
             return nil
         }
         
-        if let jsonAdjs = json["adjustments"] as? [[String: Any]] {
-            for jsonAdj in jsonAdjs {
-                if let monthAdj = MonthAdjustment.create(context: context, json: jsonAdj) {
-                    monthAdj.month = month
-                } else {
-                    Logger.debug("couldn't create monthAdj in Month")
-                    return nil
-                }
-            }
-        }
-        
         if let jsonDays = json["days"] as? [[String: Any]] {
             for jsonDay in jsonDays {
                 if let day = Day.create(context: context, json: jsonDay) {
@@ -153,25 +129,6 @@ public class Month: NSManagedObject {
     }
     
     // Helper functions
-    
-    
-    /*
-     * Return the total number of adjustments to be added to the base total for
-     * this month.
-     */
-    func totalAdjustments() -> Decimal {
-        var total: Decimal = 0
-        for monthAdjustment in self.adjustments! {
-            total += monthAdjustment.amount!
-        }
-        
-        for day in self.days! {
-            for dayAdjustment in day.adjustments! {
-                total += dayAdjustment.amount!
-            }
-        }
-        return total
-    }
     
     /*
      * Return the month object that a day is in, or nil if it doesn't exist.
@@ -219,8 +176,6 @@ public class Month: NSManagedObject {
 
         return month
     }
-    
-    
     
     // Accessor functions (for Swift 3 classes)
     public var actualSpend: Decimal? {
@@ -282,6 +237,11 @@ public class Month: NSManagedObject {
         }
     }
     
+    /*
+     * The base amount available to spend this month, NOT taking into account
+     * adjustments, pauses, or expenses, but adjusted for the number of days in
+     * the month.
+     */
     public var baseTargetSpend: Decimal? {
         guard let daysInMonth = daysInMonth,
               let days = days else {
@@ -311,32 +271,24 @@ public class Month: NSManagedObject {
         }
     }
     
-    public var fullTargetSpend: Decimal? {
-        guard let baseTargetSpend = baseTargetSpend else {
-            return nil
-        }
-        return baseTargetSpend + totalAdjustments()
-    }
-    
-    public var sortedAdjustments: [MonthAdjustment]? {
-        if let adj = adjustments {
-            return adj.sorted(by: { $0.dateCreated! < $1.dateCreated! })
-        } else {
-            return nil
-        }
-    }
-    
-    public var adjustments: Set<MonthAdjustment>? {
-        get {
-            return adjustments_ as! Set?
-        }
-        set {
-            if newValue != nil {
-                adjustments_ = NSSet(set: newValue!)
-            } else {
-                adjustments_ = nil
+    /*
+     * The amount available to spend this month, taking into account adjustments
+     * and pauses.
+     */
+    public func fullTargetSpend() -> Decimal {
+        var adjustments: Decimal = 0
+
+        for day in days ?? [] {
+            adjustments += day.totalAdjustments()
+            if day.pause != nil {
+                adjustments -= day.baseTargetSpend ?? 0
             }
         }
+        
+        // Assume 0 if there is no base target spend.
+        let base = self.baseTargetSpend ?? 0;
+
+        return base + adjustments
     }
     
     public var sortedDays: [Day]? {
@@ -359,28 +311,6 @@ public class Month: NSManagedObject {
             }
         }
     }
-    
-    @objc(addAdjustmentsObject:)
-    public func addToAdjustments(_ value: MonthAdjustment) {
-        addToAdjustments_(value)
-    }
-    
-    @objc(removeAdjustmentsObject:)
-    public func removeFromAdjustments(_ value: MonthAdjustment) {
-        removeFromAdjustments_(value)
-    }
-    
-    @objc(addAdjustments:)
-    public func addToAdjustments(_ values: Set<MonthAdjustment>) {
-        addToAdjustments_(NSSet(set: values))
-    }
-    
-    @objc(removeAdjustments:)
-    public func removeFromAdjustments(_ values: Set<MonthAdjustment>) {
-        removeFromAdjustments_(NSSet(set: values))
-    }
-    
-    
     
     @objc(addDaysObject:)
     public func addToDays(_ value: Day) {

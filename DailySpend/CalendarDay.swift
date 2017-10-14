@@ -66,6 +66,12 @@ public class CalendarDay {
         return self.add(days: -days, months: -months)
     }
     
+    func daysBetween(day: CalendarDay) -> Int {
+        return abs(CalendarDay.gmtCal.dateComponents([.day],
+                                                 from: self.gmtDate,
+                                                 to: day.gmtDate).day!)
+    }
+    
     func string(formatter: DateFormatter) -> String {
         let origTZ = formatter.timeZone
         formatter.timeZone = CalendarDay.gmtTimeZone
