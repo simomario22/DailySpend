@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C502DB301F92B36C004136E5 /* Adjustment+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C502DB2D1F92B36C004136E5 /* Adjustment+CoreDataClass.swift */; };
-		C502DB311F92B36C004136E5 /* Adjustment+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C502DB2E1F92B36C004136E5 /* Adjustment+CoreDataProperties.swift */; };
 		C503F13A1EA1A8A200FA95A7 /* Export.swift in Sources */ = {isa = PBXBuildFile; fileRef = C503F1391EA1A8A100FA95A7 /* Export.swift */; };
 		C517B1FE1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = C517B1EA1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt */; };
 		C517B1FF1EBC134200CDAA17 /* UICountingLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = C517B1EC1EBC134200CDAA17 /* UICountingLabel.m */; };
@@ -69,6 +67,8 @@
 		C5EDC2271EBBC12400DA5CB7 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5EDC2261EBBC12400DA5CB7 /* SettingsViewController.swift */; };
 		C5EE62A31E85769700CAEEE7 /* String+CharacterSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5EE62A21E85769700CAEEE7 /* String+CharacterSet.swift */; };
 		C5F4712E1F053BB600859A4C /* ExpenseProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5F4712D1F053BB600859A4C /* ExpenseProvider.swift */; };
+		C5F885F91F92F29A0006B731 /* Adjustment+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5F885F71F92F2990006B731 /* Adjustment+CoreDataProperties.swift */; };
+		C5F885FA1F92F29A0006B731 /* Adjustment+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5F885F81F92F29A0006B731 /* Adjustment+CoreDataClass.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -90,8 +90,6 @@
 
 /* Begin PBXFileReference section */
 		C502DB2B1F92B24C004136E5 /* DailySpend 5.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "DailySpend 5.xcdatamodel"; sourceTree = "<group>"; };
-		C502DB2D1F92B36C004136E5 /* Adjustment+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Adjustment+CoreDataClass.swift"; sourceTree = "<group>"; };
-		C502DB2E1F92B36C004136E5 /* Adjustment+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Adjustment+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		C503F1391EA1A8A100FA95A7 /* Export.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Export.swift; sourceTree = "<group>"; };
 		C517B1EA1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "UICountingLabel-LICENSE.txt"; sourceTree = "<group>"; };
 		C517B1EB1EBC134200CDAA17 /* UICountingLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICountingLabel.h; sourceTree = "<group>"; };
@@ -166,6 +164,8 @@
 		C5EDC2261EBBC12400DA5CB7 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		C5EE62A21E85769700CAEEE7 /* String+CharacterSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+CharacterSet.swift"; sourceTree = "<group>"; };
 		C5F4712D1F053BB600859A4C /* ExpenseProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpenseProvider.swift; sourceTree = "<group>"; };
+		C5F885F71F92F2990006B731 /* Adjustment+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Adjustment+CoreDataProperties.swift"; path = "DailySpend/Adjustment+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		C5F885F81F92F29A0006B731 /* Adjustment+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Adjustment+CoreDataClass.swift"; path = "DailySpend/Adjustment+CoreDataClass.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -231,15 +231,15 @@
 			name = "Extensions and Subclasses";
 			sourceTree = "<group>";
 		};
-		C56500201E837F3A009D64F0 /* CoreData Classes */ = {
+		C56500201E837F3A009D64F0 /* Managed Object Classes */ = {
 			isa = PBXGroup;
 			children = (
 				C56F7ED21F64771700639F8D /* Pause+CoreDataClass.swift */,
 				C56F7ED31F64771700639F8D /* Pause+CoreDataProperties.swift */,
-				C502DB2D1F92B36C004136E5 /* Adjustment+CoreDataClass.swift */,
-				C502DB2E1F92B36C004136E5 /* Adjustment+CoreDataProperties.swift */,
 				C51B8C531F04F490008AC0C6 /* Image+CoreDataClass.swift */,
 				C51B8C541F04F490008AC0C6 /* Image+CoreDataProperties.swift */,
+				C5F885F81F92F29A0006B731 /* Adjustment+CoreDataClass.swift */,
+				C5F885F71F92F2990006B731 /* Adjustment+CoreDataProperties.swift */,
 				C56500121E837F37009D64F0 /* Expense+CoreDataClass.swift */,
 				C56500131E837F37009D64F0 /* Expense+CoreDataProperties.swift */,
 				C56500101E837F37009D64F0 /* Day+CoreDataClass.swift */,
@@ -247,7 +247,7 @@
 				C565000C1E837F37009D64F0 /* Month+CoreDataClass.swift */,
 				C565000D1E837F37009D64F0 /* Month+CoreDataProperties.swift */,
 			);
-			name = "CoreData Classes";
+			name = "Managed Object Classes";
 			path = ..;
 			sourceTree = "<group>";
 		};
@@ -259,7 +259,6 @@
 				C5781DA41E6E2060006BBC03 /* Assets.xcassets */,
 				C5781DA61E6E2060006BBC03 /* LaunchScreen.storyboard */,
 				C5781DA91E6E2060006BBC03 /* Info.plist */,
-				C5781DA11E6E2060006BBC03 /* DailySpend.xcdatamodeld */,
 				C5781DB11E6E2060006BBC03 /* DailySpendTests */,
 				C5781DBC1E6E2060006BBC03 /* DailySpendUITests */,
 				C5781D981E6E2060006BBC03 /* Products */,
@@ -298,7 +297,7 @@
 				C594F1D51F494CD6006CA097 /* Logger.swift */,
 				C5AA87D61F36D5B7001B9F08 /* Expense View */,
 				C5316C2A1E7B241200BC2918 /* Extensions and Subclasses */,
-				C56500201E837F3A009D64F0 /* CoreData Classes */,
+				C5F885F61F92EB9A0006B731 /* Core Data */,
 				C51A224D1EBFB32D00B53C24 /* LICENSE.md */,
 				C5BFEA7A1E8F43E300528878 /* Unused */,
 				C5CF5F6A1E7BB68B00C35539 /* Images */,
@@ -361,6 +360,15 @@
 				C53BCAA61E9203BC000B5EE1 /* cal_recur@3x.png */,
 			);
 			name = Images;
+			sourceTree = "<group>";
+		};
+		C5F885F61F92EB9A0006B731 /* Core Data */ = {
+			isa = PBXGroup;
+			children = (
+				C5781DA11E6E2060006BBC03 /* DailySpend.xcdatamodeld */,
+				C56500201E837F3A009D64F0 /* Managed Object Classes */,
+			);
+			name = "Core Data";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -542,16 +550,17 @@
 				C56F7ED61F64776E00639F8D /* Pause+CoreDataClass.swift in Sources */,
 				C56F7ED71F64776E00639F8D /* Pause+CoreDataProperties.swift in Sources */,
 				C517B1FF1EBC134200CDAA17 /* UICountingLabel.m in Sources */,
+				C5F885F91F92F29A0006B731 /* Adjustment+CoreDataProperties.swift in Sources */,
 				C5316BF61E78D80F00BC2918 /* ExpenseTableViewCell.swift in Sources */,
 				C5DD5A831E83B383008F7FC6 /* CurrentDayTableViewCell.swift in Sources */,
 				C5C65A221EBBFBC6002D1B12 /* ExportViewController.swift in Sources */,
+				C5F885FA1F92F29A0006B731 /* Adjustment+CoreDataClass.swift in Sources */,
 				C56500171E837F37009D64F0 /* Month+CoreDataProperties.swift in Sources */,
 				C5EE62A31E85769700CAEEE7 /* String+CharacterSet.swift in Sources */,
 				C5F4712E1F053BB600859A4C /* ExpenseProvider.swift in Sources */,
 				C594F1D01F47F206006CA097 /* CalendarMonth.swift in Sources */,
 				C5BA55B31E8D92C800256E7A /* InitialAdjustmentViewController.swift in Sources */,
 				C56CA07A1F64BDEB00874FA8 /* TextFieldTableViewCell.swift in Sources */,
-				C502DB311F92B36C004136E5 /* Adjustment+CoreDataProperties.swift in Sources */,
 				C5781DCC1E6E23B2006BBC03 /* TodayViewController.swift in Sources */,
 				C51B8C561F04F490008AC0C6 /* Image+CoreDataProperties.swift in Sources */,
 				C5A261A41F66645B007CBB21 /* PauseViewController.swift in Sources */,
@@ -574,7 +583,6 @@
 				C5EDC2271EBBC12400DA5CB7 /* SettingsViewController.swift in Sources */,
 				C556D2521F2466EB008CA20E /* ExpenseViewController.swift in Sources */,
 				C51B8C551F04F490008AC0C6 /* Image+CoreDataClass.swift in Sources */,
-				C502DB301F92B36C004136E5 /* Adjustment+CoreDataClass.swift in Sources */,
 				C565001D1E837F37009D64F0 /* Expense+CoreDataProperties.swift in Sources */,
 				C5BA55B51E8DAB0E00256E7A /* ReviewTableViewCell.swift in Sources */,
 				C56500161E837F37009D64F0 /* Month+CoreDataClass.swift in Sources */,
@@ -892,8 +900,7 @@
 				C5781DA21E6E2060006BBC03 /* DailySpend.xcdatamodel */,
 			);
 			currentVersion = C502DB2B1F92B24C004136E5 /* DailySpend 5.xcdatamodel */;
-			name = DailySpend.xcdatamodeld;
-			path = DailySpend/DailySpend.xcdatamodeld;
+			path = DailySpend.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};

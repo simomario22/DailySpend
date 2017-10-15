@@ -43,11 +43,11 @@
         <relationship name="daysAffected_" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Day" inverseName="pause_" inverseEntity="Day" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Adjustment" positionX="-54" positionY="-45" width="128" height="135"/>
+        <element name="Adjustment" positionX="162" positionY="-72" width="128" height="135"/>
         <element name="Day" positionX="-63" positionY="27" width="128" height="135"/>
-        <element name="Expense" positionX="-263" positionY="11" width="128" height="135"/>
-        <element name="Image" positionX="-45" positionY="-36" width="128" height="90"/>
-        <element name="Month" positionX="-54" positionY="-198" width="128" height="105"/>
-        <element name="Pause" positionX="-54" positionY="-45" width="128" height="120"/>
+        <element name="Expense" positionX="-263" positionY="36" width="128" height="135"/>
+        <element name="Image" positionX="-207" positionY="-99" width="128" height="90"/>
+        <element name="Month" positionX="18" positionY="-126" width="128" height="105"/>
+        <element name="Pause" positionX="124" positionY="81" width="128" height="120"/>
     </elements>
 </model>
