@@ -10,7 +10,7 @@ import Foundation
 
 class Logger {
     
-    private static func isTesting() -> Bool {
+    static func isTesting() -> Bool {
         let bundleID = Bundle.main.bundleIdentifier!
         return bundleID.contains("com.joshsherick.DailySpendTesting")
     }

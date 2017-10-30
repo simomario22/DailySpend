@@ -161,7 +161,7 @@ public class Day: NSManagedObject {
     /*
      * Return the Days affected by a particular Pause.
      */
-    class func getRelevantDaysForPause(pause: Pause, context: NSManagedObjectContext) -> [Day] {
+    class func getRelevantDaysForPause(_ pause: Pause, context: NSManagedObjectContext) -> [Day] {
         guard let firstDayEffective = pause.firstDayEffective,
             let lastDayEffective = pause.lastDayEffective else {
             return []
@@ -174,7 +174,7 @@ public class Day: NSManagedObject {
     /*
      * Return the Days affected by a particular Adjustment.
      */
-    class func getRelevantDaysForAdjustment(adjustment: Adjustment, context: NSManagedObjectContext) -> [Day] {
+    class func getRelevantDaysForAdjustment(_ adjustment: Adjustment, context: NSManagedObjectContext) -> [Day] {
         guard let firstDayEffective = adjustment.firstDayEffective,
             let lastDayEffective = adjustment.lastDayEffective else {
                 return []

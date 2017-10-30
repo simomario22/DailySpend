@@ -122,11 +122,9 @@ public class Pause: NSManagedObject {
         }
         
         // Get relevant days.
-        let relevantDays = Day.getRelevantDaysForPause(pause: pause, context: context)
+        let relevantDays = Day.getRelevantDaysForPause(pause, context: context)
         pause.daysAffected = Set<Day>(relevantDays)
-        
 
-        
         return pause
     }
     
@@ -288,7 +286,7 @@ public class Pause: NSManagedObject {
                 // Get relevant days.
                 firstDateEffective_ = newValue!.gmtDate as NSDate
 
-                let relevantDays = Day.getRelevantDaysForPause(pause: self, context: context)
+                let relevantDays = Day.getRelevantDaysForPause(self, context: context)
                 self.daysAffected = Set<Day>(relevantDays)
             } else {
                 self.daysAffected = Set<Day>()
@@ -309,7 +307,7 @@ public class Pause: NSManagedObject {
             if newValue != nil {
                 lastDateEffective_ = newValue!.gmtDate as NSDate
                 
-                let relevantDays = Day.getRelevantDaysForPause(pause: self, context: context)
+                let relevantDays = Day.getRelevantDaysForPause(self, context: context)
                 self.daysAffected = Set<Day>(relevantDays)
             } else {
                 lastDateEffective_ = nil

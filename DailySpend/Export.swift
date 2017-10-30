@@ -146,6 +146,31 @@ class Exporter {
                 os.write(",".data(using: encoding)!)
             }
         }
+
+        // Write closing JSON array character, separating JSON character,
+        // a key for "adjustments" and an opening JSON array character.
+        os.write("],\"adjustments\":[".data(using: encoding)!)
+        
+        // Fetch all months
+        let adjustmentsSortDesc = NSSortDescriptor(key: "dateCreated_", ascending: true)
+        guard let adjustments = Adjustment.get(context: context, sortDescriptors: [adjustmentsSortDesc]) else {
+            os.closeFile()
+            return nil
+        }
+        
+        for (i, adjustment) in adjustments.enumerated() {
+            if let adjustmentData = adjustment.serialize() {
+                os.write(adjustmentData)
+            } else {
+                os.closeFile()
+                return nil
+            }
+            if i < adjustments.count - 1 {
+                // Write separating JSON character if there are more adjustments
+                // after this one.
+                os.write(",".data(using: encoding)!)
+            }
+        }
         
         // Write closing JSON array and dictionary characters
         os.write("]}".data(using: encoding)!)
@@ -241,9 +266,14 @@ class Importer {
             throw ExportError.recoveredFromBadFormat
         }
         
-        if let contents = try? fm.contentsOfDirectory(at: unzippedUrl,
-                                                     includingPropertiesForKeys: nil,
-                                                     options: []) {
+        var contents: [URL]? = nil
+        do {
+            contents = try fm.contentsOfDirectory(at: unzippedUrl,
+                                       includingPropertiesForKeys: nil,
+                                       options: [])
+        }
+        
+        if let contents = contents {
             for fileUrl in contents {
                 if fileUrl.lastPathComponent.contains(".dailyspend") {
                     // This is a data file, let's import that
@@ -387,7 +417,18 @@ class Importer {
                 }
             }
         }
+
         
+        if let adjustments = jsonObj["adjustments"] as? [[String: Any]] {
+            for jsonAdjustment in adjustments {
+                if Adjustment.create(context: context, json: jsonAdjustment) == nil {
+                    // This import failed. Reset to normal.
+                    try revert()
+                    throw ExportError.recoveredFromBadFormatWithContextChange
+                }
+            }
+        }
+
         // If there is a defaults array, set some defaults.
         if let defaults = jsonObj["defaults"] as? [String: Any] {
             for key in defaults.keys {

@@ -72,8 +72,8 @@ public class Adjustment: NSManagedObject {
 
         if let amountPerDay = json["amountPerDay"] as? NSNumber {
             let decimal = Decimal(amountPerDay.doubleValue)
-            if decimal <= 0 {
-                Logger.debug("amountPerDay less than 0 in Adjustment")
+            if decimal == 0 {
+                Logger.debug("amountPerDay equal to 0 in Adjustment")
                 return nil
             }
             adjustment.amountPerDay = decimal
@@ -135,7 +135,7 @@ public class Adjustment: NSManagedObject {
         }
 
         // Get relevant days.
-        let relevantDays = Day.getRelevantDaysForAdjustment(adjustment: adjustment, context: context)
+        let relevantDays = Day.getRelevantDaysForAdjustment(adjustment, context: context)
         adjustment.daysAffected = Set<Day>(relevantDays)
 
         return adjustment
@@ -265,7 +265,7 @@ public class Adjustment: NSManagedObject {
                 // Get relevant days.
                 firstDateEffective_ = newValue!.gmtDate as NSDate
                 
-                let relevantDays = Day.getRelevantDaysForAdjustment(adjustment: self, context: context)
+                let relevantDays = Day.getRelevantDaysForAdjustment(self, context: context)
                 self.daysAffected = Set<Day>(relevantDays)
             } else {
                 self.daysAffected = Set<Day>()
@@ -286,7 +286,7 @@ public class Adjustment: NSManagedObject {
             if newValue != nil {
                 lastDateEffective_ = newValue!.gmtDate as NSDate
                 
-                let relevantDays = Day.getRelevantDaysForAdjustment(adjustment: self, context: context)
+                let relevantDays = Day.getRelevantDaysForAdjustment(self, context: context)
                 self.daysAffected = Set<Day>(relevantDays)
             } else {
                 lastDateEffective_ = nil
