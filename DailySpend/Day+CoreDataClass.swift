@@ -228,7 +228,10 @@ public class Day: NSManagedObject {
     }
     
     // Accessor functions (for Swift 3 classes)
-    public var actualSpend: Decimal {
+    /**
+     * The amount spent on this day
+     */
+    public func totalExpenses() -> Decimal {
         var totalSpend: Decimal = 0
         for expense in expenses ?? [] {
            totalSpend += expense.amount ?? 0
@@ -256,7 +259,7 @@ public class Day: NSManagedObject {
     }
     
     
-    /*
+    /**
      * The amount that the baseTargetSpend for this day should be adjusted by
      * due to recorded Adjustments.
      */
@@ -270,7 +273,7 @@ public class Day: NSManagedObject {
         return total
     }
     
-    /*
+    /**
      * The amount spent on this day, affected by expenses and pauses.
      */
     public func amountSpent() -> Decimal {
@@ -289,7 +292,7 @@ public class Day: NSManagedObject {
     }
 
     
-    /*
+    /**
      * The amount accured on this day, after adjustments and pauses.
      */
     public func fullTargetSpend() -> Decimal {
@@ -304,7 +307,7 @@ public class Day: NSManagedObject {
         return base + totalAdjustments()
     }
     
-    /*
+    /**
      * The amount to be carried to the day following this day, including all
      * expenses, pauses, and adjustments from days this month.
      */

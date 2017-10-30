@@ -212,7 +212,7 @@ class ExpenseView: UIView {
     func updateFieldValues() {
         // Populate text fields with expense data from dataSource
         if let amount = dataSource.amount {
-            let amt = String.formatAsCurrency(amount: amount.doubleValue)
+            let amt = String.formatAsCurrency(amount: amount)
             self.amountField.text = amt
         } else {
             self.amountField.text = nil
@@ -245,7 +245,7 @@ class ExpenseView: UIView {
     @objc func save() {
         if dataSource.amount == nil ||
             dataSource.amount!.doubleValue <= 0 ||
-            dataSource.shortDescription!.characters.count == 0 {
+            dataSource.shortDescription!.count == 0 {
             let message = "Please enter values for amount and description."
             let alert = UIAlertController(title: "Invalid Fields",
                                           message: message,
@@ -533,26 +533,7 @@ extension ExpenseView: UITextFieldDelegate {
     
     @objc func descriptionChanged(_ sender: UITextField) {
         self.dataSource.shortDescription = sender.text!
-        
-        // Determine max font size that can fit in the space available.
-        let maxWidth = self.descriptionField.frame.size.width
-        
-        var fontSize: CGFloat = 24
-        let minFontSize: CGFloat = 17
-        
-        let font = UIFont.systemFont(ofSize: fontSize, weight: UIFont.Weight.light)
-        var attr = [NSAttributedStringKey.font: font]
-        
-        var width = descriptionField.text!.size(withAttributes: attr).width
-        
-        while width > maxWidth && fontSize > minFontSize {
-            fontSize -= 1
-            attr = [NSAttributedStringKey.font: UIFont.systemFont(ofSize: fontSize,
-                                                           weight: UIFont.Weight.light)]
-            width = descriptionField.text!.size(withAttributes: attr).width
-        }
-        descriptionField.font = UIFont.systemFont(ofSize: fontSize,
-                                                  weight: UIFont.Weight.light)
+        descriptionField.resizeFontToFit(desiredFontSize: 24, minFontSize: 17)
     }
 }
 

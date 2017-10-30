@@ -262,8 +262,8 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
                 dateFormatter.dateFormat = monthsYear != currentYear ? "MMMM YYYY" : "MMMM"
                 
                 let primaryText = month.calendarMonth!.string(formatter: dateFormatter)
-                let detailText = String.formatAsCurrency(amount: month.actualSpend!.doubleValue)
-                let textColor = month.actualSpend! > month.fullTargetSpend() ? redColor : greenColor
+                let detailText = String.formatAsCurrency(amount: month.totalExpenses())
+                let textColor = month.totalExpenses() > month.fullTargetSpend() ? redColor : greenColor
                 
                 prevDayCell.textLabel?.text = primaryText
                 prevDayCell.detailTextLabel?.text = detailText
@@ -274,7 +274,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
                 let dateFormatter = DateFormatter()
                 dateFormatter.dateFormat = "E, M/d"
                 let primaryText = day.calendarDay!.string(formatter: dateFormatter)
-                let detailText = String.formatAsCurrency(amount: day.actualSpend.doubleValue)
+                let detailText = String.formatAsCurrency(amount: day.totalExpenses())
                 
                 var textColor = day.leftToCarry() < 0 ? redColor : greenColor
                 if day.pause != nil {
@@ -310,7 +310,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
                 for expense in expenses.suffix(from: numExpenseSpots - 1) {
                     total += expense.amount!
                 }
-                let detailText = String.formatAsCurrency(amount: total.doubleValue)
+                let detailText = String.formatAsCurrency(amount: total)
                 expenseCell.detailTextLabel?.text = detailText
             } else {
                 let index = indexPath.row - (currentDayCellIndex + 1)
@@ -421,6 +421,9 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
                   indexPath.row == currentDayCellIndex {
             // Bonus expense selected
             // Show today.
+            let dayReviewVC = DayReviewViewController(nibName: nil, bundle: nil)
+            dayReviewVC.day = daysThisMonth.last!
+            self.navigationController?.pushViewController(dayReviewVC, animated: true)
 
         } else if indexPath.row < currentDayCellIndex {
             if indexPath.row < months.count {
@@ -428,7 +431,9 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
 
             } else {
                 // Day selected
-                
+                let dayReviewVC = DayReviewViewController(nibName: nil, bundle: nil)
+                dayReviewVC.day = daysThisMonth[indexPath.row - months.count]
+                self.navigationController?.pushViewController(dayReviewVC, animated: true)
             }
         }
     }

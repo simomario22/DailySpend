@@ -138,25 +138,7 @@ class PauseViewController: UIViewController, UITableViewDelegate, UITableViewDat
         
         let pause = pauses[indexPath.row]
         cell.textLabel!.text = pause.shortDescription
-        
-        // Format the dates like 3/6 or 3/6/16.
-        let thisYear = CalendarDay().year
-        let dateFormatter = DateFormatter()
-        if pause.firstDayEffective!.year == thisYear &&
-            pause.lastDayEffective!.year == thisYear {
-            dateFormatter.dateFormat = "M/d"
-        } else {
-            dateFormatter.dateFormat = "M/d/yy"
-        }
-        
-        let firstDay = pause.firstDayEffective!.string(formatter: dateFormatter)
-        if pause.firstDayEffective! == pause.lastDayEffective! {
-            cell.detailTextLabel!.text = "\(firstDay)"
-        } else {
-            let lastDay = pause.lastDayEffective!.string(formatter: dateFormatter)
-            cell.detailTextLabel!.text = "\(firstDay) - \(lastDay)"
-        }
-        
+        cell.detailTextLabel!.text = pause.humanReadableRange()
 
         return cell
     }

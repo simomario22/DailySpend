@@ -66,10 +66,10 @@ public class CalendarDay {
         return self.add(days: -days, months: -months)
     }
     
-    func daysBetween(day: CalendarDay) -> Int {
+    static func daysInRange(start: CalendarDay, end: CalendarDay) -> Int {
         return abs(CalendarDay.gmtCal.dateComponents([.day],
-                                                 from: self.gmtDate,
-                                                 to: day.gmtDate).day!)
+                                                 from: start.gmtDate,
+                                                 to: end.gmtDate).day!)
     }
     
     func string(formatter: DateFormatter) -> String {

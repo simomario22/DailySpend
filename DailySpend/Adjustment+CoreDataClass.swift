@@ -112,7 +112,7 @@ public class Adjustment: NSManagedObject {
         }
 
         if let shortDescription = json["shortDescription"] as? String {
-            if shortDescription.characters.count == 0 {
+            if shortDescription.count == 0 {
                 Logger.debug("shortDescription empty in Adjustment")
                 return nil
             }
@@ -170,24 +170,48 @@ public class Adjustment: NSManagedObject {
         return adjustmentResults
     }
     
-    func validate(context: NSManagedObjectContext) -> (valid: Bool, problem: String?) {
-        if self.amountPerDay == nil || self.amountPerDay! <= 0 {
-            return (false, "This adjustment must have an amount greater than 0.")
-        }
+    /**
+     * Accepts all members of Adjustment. If the passed variables, attached to
+     * corresponding variables on an Adjustment object, will form a valid
+     * object, this function will assign the passed variables to this object
+     * and return `(valid: true, problem: nil)`. Otherwise, this function will
+     * return `(valid: false, problem: ...)` with problem set to a user
+     * readable string describing why this adjustment wouldn't be valid.
+     */
+    func propose(shortDescription: String?? = nil,
+                amountPerDay: Decimal?? = nil,
+                firstDayEffective: CalendarDay?? = nil,
+                lastDayEffective: CalendarDay?? = nil,
+                dateCreated: Date?? = nil) -> (valid: Bool, problem: String?) {
         
-        if self.shortDescription == nil || self.shortDescription!.characters.count == 0 {
+        let _shortDescription = shortDescription ?? self.shortDescription
+        let _amountPerDay = amountPerDay ?? self.amountPerDay
+        let _firstDayEffective = firstDayEffective ?? self.firstDayEffective
+        let _lastDayEffective = lastDayEffective ?? self.lastDayEffective
+        let _dateCreated = dateCreated ?? self.dateCreated
+        
+        if _shortDescription == nil || _shortDescription!.count == 0 {
             return (false, "This adjustment must have a description.")
         }
         
-        if self.firstDayEffective == nil || self.lastDayEffective == nil ||
-            self.firstDayEffective! > self.lastDayEffective! {
-            return (false, "The first day effective must not be after the last day effective.")
+        if _amountPerDay == nil || _amountPerDay! == 0 {
+            return (false, "This adjustment must have an amount specified.")
         }
         
-        if self.dateCreated == nil {
+        if _firstDayEffective == nil || _lastDayEffective == nil ||
+            _firstDayEffective! > _lastDayEffective! {
+            return (false, "The first day effective be before the last day effective.")
+        }
+        
+        if _dateCreated == nil {
             return (false, "The pause must have a date created.")
         }
-
+        
+        self.shortDescription = _shortDescription
+        self.amountPerDay = _amountPerDay
+        self.firstDayEffective = _firstDayEffective
+        self.lastDayEffective = _lastDayEffective
+        self.dateCreated = _dateCreated
         return (true, nil)
     }
     

@@ -70,21 +70,6 @@ class InitialSpendViewController: UIViewController {
         let center = (midMonthX + midDayX) / 2
         let maxWidth = (center - 5 - midMonthX) * 2
 
-        // Determine max font size that can fit in the space available.
-        var fontSize: CGFloat = 28
-        let minFontSize: CGFloat = 8
-        
-        var attr = [NSAttributedStringKey.font: monthlyField.font!.withSize(fontSize)]
-        var width = monthlyField.text!.size(withAttributes: attr).width
-        
-        while width > maxWidth && fontSize > minFontSize {
-            fontSize -= 1
-            attr = [NSAttributedStringKey.font: monthlyField.font!.withSize(fontSize)]
-            width = monthlyField.text!.size(withAttributes: attr).width
-        }
-        monthlyField.font = monthlyField.font!.withSize(fontSize)
-        dailyField.font = dailyField.font!.withSize(fontSize)
-
         // Update widths of text fields (with constraints).
         if dayConstraint != nil {
             self.view.removeConstraint(dayConstraint!)
@@ -92,24 +77,27 @@ class InitialSpendViewController: UIViewController {
         if monthConstraint != nil {
             self.view.removeConstraint(monthConstraint!)
         }
-
+        
         dayConstraint = NSLayoutConstraint(item: dailyField,
-                                          attribute: .width,
-                                          relatedBy: .equal,
-                                          toItem: nil,
-                                          attribute: .notAnAttribute,
-                                          multiplier: 1,
-                                          constant: maxWidth)
+                                           attribute: .width,
+                                           relatedBy: .equal,
+                                           toItem: nil,
+                                           attribute: .notAnAttribute,
+                                           multiplier: 1,
+                                           constant: maxWidth)
         
         monthConstraint = NSLayoutConstraint(item: monthlyField,
-                                            attribute: .width,
-                                            relatedBy: .equal,
-                                            toItem: nil,
-                                            attribute: .notAnAttribute,
-                                            multiplier: 1,
-                                            constant: maxWidth)
+                                             attribute: .width,
+                                             relatedBy: .equal,
+                                             toItem: nil,
+                                             attribute: .notAnAttribute,
+                                             multiplier: 1,
+                                             constant: maxWidth)
         
         self.view.addConstraints([dayConstraint!, monthConstraint!])
+        
+        monthlyField.resizeFontToFit(desiredFontSize: 28, minFontSize: 8)
+        dailyField.font = monthlyField.font
     }
 
 

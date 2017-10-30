@@ -91,7 +91,7 @@ public class Pause: NSManagedObject {
         }
         
         if let shortDescription = json["shortDescription"] as? String {
-            if shortDescription.characters.count == 0 {
+            if shortDescription.count == 0 {
                 Logger.debug("shortDescription empty in Pause")
                 return nil
             }
@@ -157,29 +157,48 @@ public class Pause: NSManagedObject {
         let pauseResults = try! context.fetch(fetchRequest)
 
         if pauseResults.count > 1 {
-            fatalError("There are overlapping pauses.")
+            Logger.warning("There are overlapping pauses.")
         }
         
         return pauseResults.isEmpty ? nil : pauseResults[0]
     }
     
-    func validate(context: NSManagedObjectContext) -> (valid: Bool, problem: String?) {
-        if self.shortDescription == nil || self.shortDescription!.characters.count == 0 {
+    func propose(shortDescription: String?? = nil,
+                 firstDayEffective: CalendarDay?? = nil,
+                 lastDayEffective: CalendarDay?? = nil,
+                 dateCreated: Date?? = nil) -> (valid: Bool, problem: String?) {
+        let _shortDescription = shortDescription ?? self.shortDescription
+        let _firstDayEffective = firstDayEffective ?? self.firstDayEffective
+        let _lastDayEffective = lastDayEffective ?? self.lastDayEffective
+        let _dateCreated = dateCreated ?? self.dateCreated
+        
+        if _shortDescription == nil || _shortDescription!.count == 0 {
             return (false, "This pause must have a description.")
         }
         
-        if self.firstDayEffective == nil || self.lastDayEffective == nil ||
-            self.firstDayEffective! > self.lastDayEffective! {
-            return (false, "The first day effective must not be after the last day effective.")
+        if _firstDayEffective == nil || _lastDayEffective == nil ||
+            _firstDayEffective! > _lastDayEffective! {
+            return (false, "The first day effective must be before the last day effective.")
         }
         
-        if self.dateCreated == nil {
+        if _dateCreated == nil {
             return (false, "The pause must have a date created.")
         }
         
-        let pauses = Pause.get(context: context)
-        for pause in pauses! {
-            if pause.objectID != self.objectID && self.overlapsWith(pause: pause)! {
+        // Check for overlapping pauses.
+        let fetchRequest: NSFetchRequest<Pause> = Pause.fetchRequest()
+        let pred = NSPredicate(format: "%@ <= lastDateEffective_ AND %@ >= firstDateEffective_",
+                               _firstDayEffective!.gmtDate as CVarArg,
+                               _lastDayEffective!.gmtDate as CVarArg)
+        fetchRequest.predicate = pred
+        let pauseResults = try! context.fetch(fetchRequest)
+        
+        if pauseResults.count > 1 {
+            Logger.warning("There are overlapping pauses.")
+        }
+        
+        if let pause = pauseResults.first {
+            if pause.objectID != self.objectID {
                 // This a different pause whose date range overlaps with ours.
                 let dateFormatter = DateFormatter()
                 dateFormatter.dateFormat = "MMM d, yyyy"
@@ -188,12 +207,16 @@ public class Pause: NSManagedObject {
                 
                 return (false,
                         "The date range overlaps with another pause with the description " +
-                        "\"\(pause.shortDescription!)\" from \(formattedFirstDate) to " +
-                        "\(formattedLastDate). Change the date range so it doesn't overlap " +
-                        "with any other pauses.")
+                            "\"\(pause.shortDescription!)\" from \(formattedFirstDate) to " +
+                            "\(formattedLastDate). Change the date range so it doesn't overlap " +
+                            "with any other pauses.")
             }
         }
         
+        self.shortDescription = _shortDescription
+        self.firstDayEffective = _firstDayEffective
+        self.lastDayEffective = _lastDayEffective
+        self.dateCreated = _dateCreated
         return (true, nil)
     }
     
@@ -206,6 +229,26 @@ public class Pause: NSManagedObject {
         }
         return self.firstDayEffective! <= pause.lastDayEffective! &&
                 self.lastDayEffective! >= pause.firstDayEffective!
+    }
+    
+    func humanReadableRange() -> String {
+        // Format the dates like 3/6 or 3/6/16.
+        let thisYear = CalendarDay().year
+        let dateFormatter = DateFormatter()
+        if firstDayEffective!.year == thisYear &&
+            lastDayEffective!.year == thisYear {
+            dateFormatter.dateFormat = "M/d"
+        } else {
+            dateFormatter.dateFormat = "M/d/yy"
+        }
+        
+        let firstDay = firstDayEffective!.string(formatter: dateFormatter)
+        if firstDayEffective! == lastDayEffective! {
+            return "\(firstDay)"
+        } else {
+            let lastDay = lastDayEffective!.string(formatter: dateFormatter)
+            return "\(firstDay) - \(lastDay)"
+        }
     }
     
     // Accessor functions (for Swift 3 classes)

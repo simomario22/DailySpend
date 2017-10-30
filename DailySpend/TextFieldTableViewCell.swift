@@ -15,15 +15,24 @@ class TextFieldTableViewCell: UITableViewCell, UITextFieldDelegate {
     
     var textField: UITextField!
     
+    var hasTitle = false
+    
     private var changedCallback: ((UITextField) -> ())?
-    private var editingCallback: ((UITextField) -> ())?
+    private var beginEditingCallback: ((UITextField) -> ())?
+    private var endEditingCallback: ((UITextField) -> ())?
     
     override func layoutSubviews() {
         super.layoutSubviews()
         if textField != nil {
-            var insetBounds = bounds.insetBy(dx: margin, dy: margin)
-            insetBounds.origin.x += (inset - margin)
-            textField.frame = insetBounds
+            var frame = bounds.insetBy(dx: margin, dy: margin)
+            if hasTitle {
+                frame.size.width = (bounds.size.width / 2) - inset
+                frame.origin.x = bounds.size.width - frame.size.width - inset
+            } else {
+                frame.origin.x += (inset - margin)
+            }
+            textField.frame = frame
+
         }
     }
     
@@ -42,18 +51,34 @@ class TextFieldTableViewCell: UITableViewCell, UITextFieldDelegate {
     }
 
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        editingCallback?(textField)
+        beginEditingCallback?(textField)
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        endEditingCallback?(textField)
     }
     
     @objc func textFieldChanged(field: UITextField!) {
         changedCallback?(field)
     }
     
-    func setEditingCallback(_ cb: @escaping ((UITextField) -> ())) {
-        editingCallback = cb
+    func setBeginEditingCallback(_ cb: ((UITextField) -> ())?) {
+        beginEditingCallback = cb
     }
     
-    func setChangedCallback(_ cb: @escaping ((UITextField) -> ())) {
+    func setEndEditingCallback(_ cb: ((UITextField) -> ())?) {
+        endEditingCallback = cb
+    }
+    
+    func setChangedCallback(_ cb: ((UITextField) -> ())?) {
         changedCallback = cb
+    }
+    
+    func setHasTitle(_ newValue: Bool) {
+        if newValue != hasTitle {
+            hasTitle = newValue
+            textField.textAlignment = hasTitle ? .right : .left
+            self.setNeedsLayout()
+        }
     }
 }

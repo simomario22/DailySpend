@@ -178,15 +178,16 @@ public class Month: NSManagedObject {
     }
     
     // Accessor functions (for Swift 3 classes)
-    public var actualSpend: Decimal? {
-        guard let days = days else {
-            return nil
-        }
+    
+    /**
+     * The amount spent on this day.
+     */
+    func totalExpenses() -> Decimal {
         var totalSpend: Decimal = 0
-        for day in days {
-            totalSpend += day.actualSpend
+        for day in days ?? [] {
+            totalSpend += day.totalExpenses()
         }
-        return totalSpend as Decimal
+        return totalSpend
     }
     
     public var dailyBaseTargetSpend: Decimal? {
@@ -201,7 +202,6 @@ public class Month: NSManagedObject {
             }
         }
     }
-    
     
     public var daysInMonth: Int? {
         return calendarMonth?.daysInMonth
