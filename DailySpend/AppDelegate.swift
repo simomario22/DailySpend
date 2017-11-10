@@ -105,7 +105,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 // Catch-all to satisfy function type requirements.
                 title = "Failed"
                 message = "There was an unknown error."
-                print("\(error)")
+                Logger.debug("\(error)")
             }
             
             // Create and present alert.

@@ -266,14 +266,9 @@ class Importer {
             throw ExportError.recoveredFromBadFormat
         }
         
-        var contents: [URL]? = nil
-        do {
-            contents = try fm.contentsOfDirectory(at: unzippedUrl,
-                                       includingPropertiesForKeys: nil,
-                                       options: [])
-        }
-        
-        if let contents = contents {
+        if let contents = try? fm.contentsOfDirectory(at: unzippedUrl,
+                                                     includingPropertiesForKeys: nil,
+                                                     options: []) {
             for fileUrl in contents {
                 if fileUrl.lastPathComponent.contains(".dailyspend") {
                     // This is a data file, let's import that
