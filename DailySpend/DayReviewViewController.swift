@@ -50,7 +50,7 @@ class DayReviewViewController: UIViewController, UITableViewDelegate, UITableVie
         
         reviewCellData.append(ReviewCellDatum(description: "Yesterday's Balance",
                                               value: formattedYesterdayCarry,
-                                              color: carriedFromYesterday < 0 ? .Red : .Black,
+                                              color: carriedFromYesterday < 0 ? .overspent : .black,
                                               sign: .None))
         
         if !adjustments.isEmpty {
@@ -58,7 +58,7 @@ class DayReviewViewController: UIViewController, UITableViewDelegate, UITableVie
             let formattedAdjustments = String.formatAsCurrency(amount: totalAdjustments)!
             reviewCellData.append(ReviewCellDatum(description: "Adjustments",
                                                   value: formattedAdjustments,
-                                                  color: .Black,
+                                                  color: .black,
                                                   sign: totalAdjustments < 0 ? .Minus : .Plus))
         }
         
@@ -67,7 +67,7 @@ class DayReviewViewController: UIViewController, UITableViewDelegate, UITableVie
             let formattedExpenses = String.formatAsCurrency(amount: totalExpenses)!
             reviewCellData.append(ReviewCellDatum(description: "Expenses",
                                                   value: formattedExpenses,
-                                                  color: .Black,
+                                                  color: .black,
                                                   sign: totalExpenses < 0 ? .Minus : .Plus))
         }
         
@@ -78,7 +78,7 @@ class DayReviewViewController: UIViewController, UITableViewDelegate, UITableVie
         let formattedCarry = String.formatAsCurrency(amount: leftToCarry)!
         reviewCellData.append(ReviewCellDatum(description: "Today's Balance",
                                               value: formattedCarry,
-                                              color: leftToCarry < 0 ? .Red : .Black,
+                                              color: leftToCarry < 0 ? .overspent : .black,
                                               sign: .None))
         if day.pause != nil {
             reviewCell.showPausedNote(true)

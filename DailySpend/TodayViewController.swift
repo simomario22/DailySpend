@@ -36,19 +36,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
     var context: NSManagedObjectContext {
         return appDelegate.persistentContainer.viewContext
     }
-    let redColor = UIColor(red: 179.0/255.0,
-                           green: 0.0/255.0,
-                           blue: 0.0/255.0,
-                           alpha: 1)
-    let greenColor = UIColor(red: 0.0/255.0,
-                             green: 179.0/255.0,
-                             blue: 0.0/255.0,
-                             alpha: 1)
-    let blueColor = UIColor(red: 0.0/255.0,
-                             green: 0.0/255.0,
-                             blue: 179.0/255.0,
-                             alpha: 1)
-    
+
     var daysThisMonth: [Day] = []
     var months: [Month] = []
     var addingExpense = false
@@ -263,7 +251,7 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
                 
                 let primaryText = month.calendarMonth!.string(formatter: dateFormatter)
                 let detailText = String.formatAsCurrency(amount: month.totalExpenses())
-                let textColor = month.totalExpenses() > month.fullTargetSpend() ? redColor : greenColor
+                let textColor = month.totalExpenses() > month.fullTargetSpend() ? UIColor.overspent : UIColor.underspent
                 
                 prevDayCell.textLabel?.text = primaryText
                 prevDayCell.detailTextLabel?.text = detailText
@@ -276,9 +264,9 @@ AddExpenseTableViewCellDelegate, UITableViewDataSource, UITableViewDelegate {
                 let primaryText = day.calendarDay!.string(formatter: dateFormatter)
                 let detailText = String.formatAsCurrency(amount: day.totalExpenses())
                 
-                var textColor = day.leftToCarry() < 0 ? redColor : greenColor
+                var textColor = day.leftToCarry() < 0 ? UIColor.overspent : UIColor.underspent
                 if day.pause != nil {
-                    textColor = blueColor
+                    textColor = UIColor.paused
                 }
                 
                 prevDayCell.textLabel?.text = primaryText

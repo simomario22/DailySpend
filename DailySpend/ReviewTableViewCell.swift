@@ -201,7 +201,7 @@ class ReviewTableViewCell: UITableViewCell {
                              "equal to the previous day's balance."
         let attributedText = NSMutableAttributedString(string: pausedNoteText)
         let pausedAttrs: [NSAttributedStringKey : Any] = [
-            .foregroundColor: UIColor(red255: 0, green: 0, blue: 179),
+            .foregroundColor: UIColor.paused,
             .font: UIFont.boldSystemFont(ofSize: size)
         ]
         attributedText.addAttributes(pausedAttrs, range: NSMakeRange(20, 6))
@@ -262,8 +262,7 @@ class ReviewTableViewCell: UITableViewCell {
             descriptionLabels.append(makeLabel(datum.description, weight: .bold, size: desiredFontSize))
             addSubview(descriptionLabels.last!)
             
-            let uiColor = colorForValueColor(datum.color)
-            valueLabels.append(makeLabel(datum.value, color: uiColor, size: desiredFontSize, align: .right))
+            valueLabels.append(makeLabel(datum.value, color: datum.color, size: desiredFontSize, align: .right))
             addSubview(valueLabels.last!)
 
             switch datum.sign {
@@ -285,19 +284,6 @@ class ReviewTableViewCell: UITableViewCell {
         self.setNeedsLayout()
     }
     
-    func colorForValueColor(_ valueColor: ReviewCellDatum.ValueColor) -> UIColor {
-        switch valueColor {
-        case .Red:
-            return UIColor(red255: 179, green: 0, blue: 0)
-        case .Green:
-            return UIColor(red255: 0, green: 179, blue: 0)
-        case .Blue:
-            return UIColor(red255: 0, green: 0, blue: 179)
-        case .Black:
-            return UIColor.black
-        }
-    }
-    
     func desiredHeightForCurrentState() -> CGFloat {
         if !layedOut {
             layoutLabels(multiplier: findMultiplier())
@@ -315,13 +301,6 @@ class ReviewTableViewCell: UITableViewCell {
 }
 
 struct ReviewCellDatum {
-    enum ValueColor {
-        case Red
-        case Green
-        case Blue
-        case Black
-    }
-    
     enum ValueSign {
         case Plus
         case Minus
@@ -330,6 +309,6 @@ struct ReviewCellDatum {
     
     var description: String
     var value: String
-    var color: ValueColor
+    var color: UIColor
     var sign: ValueSign
 }
