@@ -14,9 +14,6 @@ class InitialSpendViewController: UIViewController {
     @IBOutlet weak var dailyField: UITextField!
     
     @IBOutlet weak var effectLabel: UILabel!
-    
-    var dayConstraint: NSLayoutConstraint?
-    var monthConstraint: NSLayoutConstraint?
         
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,10 +28,10 @@ class InitialSpendViewController: UIViewController {
         
         self.view.insertSubview(resignAllButton, at: 0)
         
-        if tabBarController == nil {
+        let dailyTargetSpend = UserDefaults.standard.double(forKey: "dailyTargetSpend")
+        if dailyTargetSpend == 0 {
             effectLabel.isHidden = true
         } else {
-            let dailyTargetSpend = UserDefaults.standard.double(forKey: "dailyTargetSpend")
             self.dailyField.text = String.formatAsCurrency(amount: dailyTargetSpend)
             self.monthlyField.text = String.formatAsCurrency(amount: dailyTargetSpend * 30)
             fixFrames()
@@ -69,32 +66,12 @@ class InitialSpendViewController: UIViewController {
         let midDayX = (dailyField.frame.origin.x * 2 + dailyField.frame.width) / 2
         let center = (midMonthX + midDayX) / 2
         let maxWidth = (center - 5 - midMonthX) * 2
-
-        // Update widths of text fields (with constraints).
-        if dayConstraint != nil {
-            self.view.removeConstraint(dayConstraint!)
-        }
-        if monthConstraint != nil {
-            self.view.removeConstraint(monthConstraint!)
-        }
+        let maxHeight: CGFloat = 33
         
-        dayConstraint = NSLayoutConstraint(item: dailyField,
-                                           attribute: .width,
-                                           relatedBy: .equal,
-                                           toItem: nil,
-                                           attribute: .notAnAttribute,
-                                           multiplier: 1,
-                                           constant: maxWidth)
-        
-        monthConstraint = NSLayoutConstraint(item: monthlyField,
-                                             attribute: .width,
-                                             relatedBy: .equal,
-                                             toItem: nil,
-                                             attribute: .notAnAttribute,
-                                             multiplier: 1,
-                                             constant: maxWidth)
-        
-        self.view.addConstraints([dayConstraint!, monthConstraint!])
+        dailyField.frame.size.width = maxWidth
+        monthlyField.frame.size.width = maxWidth
+        dailyField.frame.size.height = maxHeight
+        monthlyField.frame.size.height = maxHeight
         
         monthlyField.resizeFontToFit(desiredFontSize: 28, minFontSize: 8)
         dailyField.font = monthlyField.font
@@ -116,8 +93,8 @@ class InitialSpendViewController: UIViewController {
     @IBAction func save(_ sender: UIBarButtonItem) {
         let dailyAmount = dailyField.text!.parseValidAmount(maxLength: 8)
         if dailyAmount <= 0 {
-            let message = "You need to pick a spend greater than 0."
-            let alert = UIAlertController(title: "Can't have 0 spend",
+            let message = "You need to pick a spend greater than $0."
+            let alert = UIAlertController(title: "Couldn't Save",
                                           message: message,
                                           preferredStyle: UIAlertControllerStyle.alert)
             alert.addAction(UIAlertAction(title: "Okay", style: .default, handler: nil))

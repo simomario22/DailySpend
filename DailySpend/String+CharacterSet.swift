@@ -20,10 +20,16 @@ extension String {
         return withoutChars
     }
     
+    /**
+     * - Returns:
+     * The decimal representation of the number created by removing
+     * all non numerical characters from the string and dividing the result
+     * by 100.
+     */
     func parseValidAmount(maxLength: Int?) -> Double {
         var negative = false
         if self.count > 0 &&
-            self.characters[self.startIndex] == "-" &&
+            self[startIndex] == "-" &&
             self.components(separatedBy: "-").count == 1 {
             negative = true
         }
