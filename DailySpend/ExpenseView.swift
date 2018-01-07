@@ -51,7 +51,7 @@ class ExpenseView: UIView {
         
         let lightFont = UIFont(name: "HelveticaNeue-Light", size: 24.0)
         let normalFont = UIFont(name: "HelveticaNeue", size: 24.0)
-        let borderColor = UIColor(red:0.71, green:0.73, blue:0.76, alpha:1.00)
+        let borderColor = UIColor(red255: 181, green: 186 , blue: 194)
         let borderWidth: CGFloat = 1.0
         
         func setup(button: UIButton, _ text: String, touchUpInside: (() -> ())? = nil) {
@@ -212,7 +212,7 @@ class ExpenseView: UIView {
     func updateFieldValues() {
         // Populate text fields with expense data from dataSource
         if let amount = dataSource.amount {
-            let amt = String.formatAsCurrency(amount: amount.doubleValue)
+            let amt = String.formatAsCurrency(amount: amount)
             self.amountField.text = amt
         } else {
             self.amountField.text = nil
@@ -462,7 +462,7 @@ extension ExpenseView: UITextFieldDelegate {
             
             let h = self.bounds.size.height - datePicker.frame.size.height
             let w = self.bounds.width
-            let bgColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.1)
+            let bgColor = UIColor(red255: 0, green: 0, blue: 0, alpha: 0.1)
             self.dismissButton!.backgroundColor = bgColor
             self.dismissButton!.frame = CGRect(x: 0, y: 0, width: w, height: h)
 
@@ -474,10 +474,7 @@ extension ExpenseView: UITextFieldDelegate {
         notesView.text = dataSource.notes
         notesView.isEditable = true
         notesView.font = UIFont.systemFont(ofSize: 24)
-        let grey = UIColor(red: 245.0/255.0,
-                           green: 245.0/255.0,
-                           blue: 245.0/255.0,
-                           alpha: 1)
+        let grey = UIColor(red255: 245, green: 245, blue: 245)
         notesView.backgroundColor = grey
         notesView.frame = CGRect(x: 0,
                              y: bounds.size.height,
@@ -533,26 +530,7 @@ extension ExpenseView: UITextFieldDelegate {
     
     @objc func descriptionChanged(_ sender: UITextField) {
         self.dataSource.shortDescription = sender.text!
-        
-        // Determine max font size that can fit in the space available.
-        let maxWidth = self.descriptionField.frame.size.width
-        
-        var fontSize: CGFloat = 24
-        let minFontSize: CGFloat = 17
-        
-        let font = UIFont.systemFont(ofSize: fontSize, weight: UIFont.Weight.light)
-        var attr = [NSAttributedStringKey.font: font]
-        
-        var width = descriptionField.text!.size(withAttributes: attr).width
-        
-        while width > maxWidth && fontSize > minFontSize {
-            fontSize -= 1
-            attr = [NSAttributedStringKey.font: UIFont.systemFont(ofSize: fontSize,
-                                                           weight: UIFont.Weight.light)]
-            width = descriptionField.text!.size(withAttributes: attr).width
-        }
-        descriptionField.font = UIFont.systemFont(ofSize: fontSize,
-                                                  weight: UIFont.Weight.light)
+        descriptionField.resizeFontToFit(desiredFontSize: 24, minFontSize: 17)
     }
 }
 

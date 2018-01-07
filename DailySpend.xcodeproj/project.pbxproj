@@ -16,6 +16,7 @@
 		C51B8C511F04DE65008AC0C6 /* ExpenseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C51B8C501F04DE65008AC0C6 /* ExpenseView.swift */; };
 		C51B8C551F04F490008AC0C6 /* Image+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C51B8C531F04F490008AC0C6 /* Image+CoreDataClass.swift */; };
 		C51B8C561F04F490008AC0C6 /* Image+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C51B8C541F04F490008AC0C6 /* Image+CoreDataProperties.swift */; };
+		C521651C1F9DCC610056A6D5 /* NYTPhotoViewer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C521651B1F9DCC610056A6D5 /* NYTPhotoViewer.framework */; };
 		C5316BF61E78D80F00BC2918 /* ExpenseTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5316BF51E78D80F00BC2918 /* ExpenseTableViewCell.swift */; };
 		C538FAB91E85696200295062 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C538FAB71E85696200295062 /* Main.storyboard */; };
 		C53BCAA71E9203BC000B5EE1 /* cal_recur.png in Resources */ = {isa = PBXBuildFile; fileRef = C53BCAA41E9203BC000B5EE1 /* cal_recur.png */; };
@@ -25,22 +26,17 @@
 		C54E4F491EFD3984006A1CA3 /* ImageSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54E4F481EFD3984006A1CA3 /* ImageSelectorView.swift */; };
 		C556D2521F2466EB008CA20E /* ExpenseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C556D2511F2466EB008CA20E /* ExpenseViewController.swift */; };
 		C556D2541F247C6B008CA20E /* UIControl+Closures.swift in Sources */ = {isa = PBXBuildFile; fileRef = C556D2531F247C6B008CA20E /* UIControl+Closures.swift */; };
+		C55CCFD11F9D44E4001EF0B4 /* UIColor+255.swift in Sources */ = {isa = PBXBuildFile; fileRef = C55CCFD01F9D44E4001EF0B4 /* UIColor+255.swift */; };
 		C56500161E837F37009D64F0 /* Month+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C565000C1E837F37009D64F0 /* Month+CoreDataClass.swift */; };
 		C56500171E837F37009D64F0 /* Month+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C565000D1E837F37009D64F0 /* Month+CoreDataProperties.swift */; };
-		C56500181E837F37009D64F0 /* DayAdjustment+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C565000E1E837F37009D64F0 /* DayAdjustment+CoreDataClass.swift */; };
-		C56500191E837F37009D64F0 /* DayAdjustment+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C565000F1E837F37009D64F0 /* DayAdjustment+CoreDataProperties.swift */; };
 		C565001A1E837F37009D64F0 /* Day+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56500101E837F37009D64F0 /* Day+CoreDataClass.swift */; };
 		C565001B1E837F37009D64F0 /* Day+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56500111E837F37009D64F0 /* Day+CoreDataProperties.swift */; };
 		C565001C1E837F37009D64F0 /* Expense+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56500121E837F37009D64F0 /* Expense+CoreDataClass.swift */; };
 		C565001D1E837F37009D64F0 /* Expense+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56500131E837F37009D64F0 /* Expense+CoreDataProperties.swift */; };
-		C565001E1E837F37009D64F0 /* MonthAdjustment+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56500141E837F37009D64F0 /* MonthAdjustment+CoreDataClass.swift */; };
-		C565001F1E837F37009D64F0 /* MonthAdjustment+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56500151E837F37009D64F0 /* MonthAdjustment+CoreDataProperties.swift */; };
 		C56CA07A1F64BDEB00874FA8 /* TextFieldTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56CA0791F64BDEB00874FA8 /* TextFieldTableViewCell.swift */; };
 		C56F7ED61F64776E00639F8D /* Pause+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56F7ED21F64771700639F8D /* Pause+CoreDataClass.swift */; };
 		C56F7ED71F64776E00639F8D /* Pause+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56F7ED31F64771700639F8D /* Pause+CoreDataProperties.swift */; };
 		C56F7ED91F64A22B00639F8D /* DatePickerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56F7ED81F64A22B00639F8D /* DatePickerTableViewCell.swift */; };
-		C57095231E8F86A200004709 /* MonthAdjustmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C57095221E8F86A200004709 /* MonthAdjustmentViewController.swift */; };
-		C57095251E8F86AE00004709 /* DayAdjustmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C57095241E8F86AE00004709 /* DayAdjustmentViewController.swift */; };
 		C5781D9B1E6E2060006BBC03 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5781D9A1E6E2060006BBC03 /* AppDelegate.swift */; };
 		C5781DA31E6E2060006BBC03 /* DailySpend.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C5781DA11E6E2060006BBC03 /* DailySpend.xcdatamodeld */; };
 		C5781DA51E6E2060006BBC03 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C5781DA41E6E2060006BBC03 /* Assets.xcassets */; };
@@ -53,15 +49,14 @@
 		C58681401F2E91E6008D3AEE /* UIView+MultipleSubviews.swift in Sources */ = {isa = PBXBuildFile; fileRef = C586813F1F2E91E6008D3AEE /* UIView+MultipleSubviews.swift */; };
 		C594F1CE1F47EDFE006CA097 /* CalendarDay.swift in Sources */ = {isa = PBXBuildFile; fileRef = C594F1CD1F47EDFE006CA097 /* CalendarDay.swift */; };
 		C594F1D01F47F206006CA097 /* CalendarMonth.swift in Sources */ = {isa = PBXBuildFile; fileRef = C594F1CF1F47F206006CA097 /* CalendarMonth.swift */; };
-		C594F1D21F490076006CA097 /* TimezoneFix1.swift in Sources */ = {isa = PBXBuildFile; fileRef = C594F1D11F490076006CA097 /* TimezoneFix1.swift */; };
 		C594F1D61F494CD6006CA097 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = C594F1D51F494CD6006CA097 /* Logger.swift */; };
 		C5A261A41F66645B007CBB21 /* PauseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5A261A31F66645B007CBB21 /* PauseViewController.swift */; };
+		C5A4AF901FA6B52900101809 /* TableViewCellHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5A4AF8F1FA6B52900101809 /* TableViewCellHelper.swift */; };
 		C5B367CF1EBBD65E006B5ADC /* cog.png in Resources */ = {isa = PBXBuildFile; fileRef = C5B367CC1EBBD65E006B5ADC /* cog.png */; };
 		C5B367D01EBBD65E006B5ADC /* cog@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5B367CD1EBBD65E006B5ADC /* cog@2x.png */; };
 		C5B367D11EBBD65E006B5ADC /* cog@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5B367CE1EBBD65E006B5ADC /* cog@3x.png */; };
 		C5BA55B31E8D92C800256E7A /* InitialAdjustmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5BA55B21E8D92C800256E7A /* InitialAdjustmentViewController.swift */; };
 		C5BA55B51E8DAB0E00256E7A /* ReviewTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5BA55B41E8DAB0E00256E7A /* ReviewTableViewCell.swift */; };
-		C5BFEA791E8F0BDC00528878 /* ReviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5BFEA781E8F0BDC00528878 /* ReviewViewController.swift */; };
 		C5C65A221EBBFBC6002D1B12 /* ExportViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5C65A211EBBFBC6002D1B12 /* ExportViewController.swift */; };
 		C5CF5F641E7BB68600C35539 /* cal.png in Resources */ = {isa = PBXBuildFile; fileRef = C5CF5F5E1E7BB68600C35539 /* cal.png */; };
 		C5CF5F651E7BB68600C35539 /* cal@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5CF5F5F1E7BB68600C35539 /* cal@2x.png */; };
@@ -70,11 +65,19 @@
 		C5CF5F681E7BB68600C35539 /* today@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5CF5F621E7BB68600C35539 /* today@2x.png */; };
 		C5CF5F691E7BB68600C35539 /* today@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5CF5F631E7BB68600C35539 /* today@3x.png */; };
 		C5D3FF331F646B1300D3C7A4 /* AddPauseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5D3FF321F646B1300D3C7A4 /* AddPauseViewController.swift */; };
+		C5D4DAB81F931D250013A6F3 /* SegmentedControlTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5D4DAB71F931D240013A6F3 /* SegmentedControlTableViewCell.swift */; };
 		C5DD5A831E83B383008F7FC6 /* CurrentDayTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5DD5A821E83B383008F7FC6 /* CurrentDayTableViewCell.swift */; };
 		C5DD5A851E83B4AC008F7FC6 /* InitialSpendViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5DD5A841E83B4AC008F7FC6 /* InitialSpendViewController.swift */; };
+		C5E339011F930F5700785085 /* AdjustmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5E339001F930F5700785085 /* AdjustmentViewController.swift */; };
+		C5E339031F930F6600785085 /* AddAdjustmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5E339021F930F6600785085 /* AddAdjustmentViewController.swift */; };
 		C5EDC2271EBBC12400DA5CB7 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5EDC2261EBBC12400DA5CB7 /* SettingsViewController.swift */; };
 		C5EE62A31E85769700CAEEE7 /* String+CharacterSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5EE62A21E85769700CAEEE7 /* String+CharacterSet.swift */; };
 		C5F4712E1F053BB600859A4C /* ExpenseProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5F4712D1F053BB600859A4C /* ExpenseProvider.swift */; };
+		C5F75FF01F9D5A75005F3510 /* UILabel+Size.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5F75FEF1F9D5A75005F3510 /* UILabel+Size.swift */; };
+		C5F75FF21F9D6A29005F3510 /* UITextField+Size.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5F75FF11F9D6A29005F3510 /* UITextField+Size.swift */; };
+		C5F75FF41F9DB01E005F3510 /* DayReviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5F75FF31F9DB01E005F3510 /* DayReviewViewController.swift */; };
+		C5F885F91F92F29A0006B731 /* Adjustment+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5F885F71F92F2990006B731 /* Adjustment+CoreDataProperties.swift */; };
+		C5F885FA1F92F29A0006B731 /* Adjustment+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5F885F81F92F29A0006B731 /* Adjustment+CoreDataClass.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -95,6 +98,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C502DB2B1F92B24C004136E5 /* DailySpend 5.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "DailySpend 5.xcdatamodel"; sourceTree = "<group>"; };
 		C503F1391EA1A8A100FA95A7 /* Export.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Export.swift; sourceTree = "<group>"; };
 		C517B1EA1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "UICountingLabel-LICENSE.txt"; sourceTree = "<group>"; };
 		C517B1EB1EBC134200CDAA17 /* UICountingLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICountingLabel.h; sourceTree = "<group>"; };
@@ -107,6 +111,7 @@
 		C51B8C521F04EDE5008AC0C6 /* DailySpend 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "DailySpend 3.xcdatamodel"; sourceTree = "<group>"; };
 		C51B8C531F04F490008AC0C6 /* Image+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Image+CoreDataClass.swift"; path = "DailySpend/Image+CoreDataClass.swift"; sourceTree = "<group>"; };
 		C51B8C541F04F490008AC0C6 /* Image+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Image+CoreDataProperties.swift"; path = "DailySpend/Image+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		C521651B1F9DCC610056A6D5 /* NYTPhotoViewer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NYTPhotoViewer.framework; path = Carthage/Build/iOS/NYTPhotoViewer.framework; sourceTree = "<group>"; };
 		C5316BF51E78D80F00BC2918 /* ExpenseTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpenseTableViewCell.swift; sourceTree = "<group>"; };
 		C538FAB81E85696200295062 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		C53BCAA41E9203BC000B5EE1 /* cal_recur.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cal_recur.png; sourceTree = "<group>"; };
@@ -115,22 +120,17 @@
 		C54E4F481EFD3984006A1CA3 /* ImageSelectorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageSelectorView.swift; sourceTree = "<group>"; };
 		C556D2511F2466EB008CA20E /* ExpenseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpenseViewController.swift; sourceTree = "<group>"; };
 		C556D2531F247C6B008CA20E /* UIControl+Closures.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIControl+Closures.swift"; sourceTree = "<group>"; };
+		C55CCFD01F9D44E4001EF0B4 /* UIColor+255.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+255.swift"; sourceTree = "<group>"; };
 		C565000C1E837F37009D64F0 /* Month+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; name = "Month+CoreDataClass.swift"; path = "DailySpend/Month+CoreDataClass.swift"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		C565000D1E837F37009D64F0 /* Month+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Month+CoreDataProperties.swift"; path = "DailySpend/Month+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		C565000E1E837F37009D64F0 /* DayAdjustment+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "DayAdjustment+CoreDataClass.swift"; path = "DailySpend/DayAdjustment+CoreDataClass.swift"; sourceTree = "<group>"; };
-		C565000F1E837F37009D64F0 /* DayAdjustment+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "DayAdjustment+CoreDataProperties.swift"; path = "DailySpend/DayAdjustment+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		C56500101E837F37009D64F0 /* Day+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Day+CoreDataClass.swift"; path = "DailySpend/Day+CoreDataClass.swift"; sourceTree = "<group>"; };
 		C56500111E837F37009D64F0 /* Day+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Day+CoreDataProperties.swift"; path = "DailySpend/Day+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		C56500121E837F37009D64F0 /* Expense+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Expense+CoreDataClass.swift"; path = "DailySpend/Expense+CoreDataClass.swift"; sourceTree = "<group>"; };
 		C56500131E837F37009D64F0 /* Expense+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Expense+CoreDataProperties.swift"; path = "DailySpend/Expense+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		C56500141E837F37009D64F0 /* MonthAdjustment+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "MonthAdjustment+CoreDataClass.swift"; path = "DailySpend/MonthAdjustment+CoreDataClass.swift"; sourceTree = "<group>"; };
-		C56500151E837F37009D64F0 /* MonthAdjustment+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "MonthAdjustment+CoreDataProperties.swift"; path = "DailySpend/MonthAdjustment+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		C56CA0791F64BDEB00874FA8 /* TextFieldTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextFieldTableViewCell.swift; sourceTree = "<group>"; };
 		C56F7ED21F64771700639F8D /* Pause+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Pause+CoreDataClass.swift"; path = "DailySpend/Pause+CoreDataClass.swift"; sourceTree = "<group>"; };
 		C56F7ED31F64771700639F8D /* Pause+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Pause+CoreDataProperties.swift"; path = "DailySpend/Pause+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		C56F7ED81F64A22B00639F8D /* DatePickerTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatePickerTableViewCell.swift; sourceTree = "<group>"; };
-		C57095221E8F86A200004709 /* MonthAdjustmentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MonthAdjustmentViewController.swift; sourceTree = "<group>"; };
-		C57095241E8F86AE00004709 /* DayAdjustmentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DayAdjustmentViewController.swift; sourceTree = "<group>"; };
 		C5781D971E6E2060006BBC03 /* DailySpend.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DailySpend.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C5781D9A1E6E2060006BBC03 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C5781DA21E6E2060006BBC03 /* DailySpend.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DailySpend.xcdatamodel; sourceTree = "<group>"; };
@@ -149,10 +149,10 @@
 		C586813F1F2E91E6008D3AEE /* UIView+MultipleSubviews.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+MultipleSubviews.swift"; sourceTree = "<group>"; };
 		C594F1CD1F47EDFE006CA097 /* CalendarDay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalendarDay.swift; sourceTree = "<group>"; };
 		C594F1CF1F47F206006CA097 /* CalendarMonth.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CalendarMonth.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
-		C594F1D11F490076006CA097 /* TimezoneFix1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimezoneFix1.swift; sourceTree = "<group>"; };
 		C594F1D51F494CD6006CA097 /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		C5A261A31F66645B007CBB21 /* PauseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PauseViewController.swift; sourceTree = "<group>"; };
 		C5A287C41EC1741200D3479A /* DailySpend 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "DailySpend 2.xcdatamodel"; sourceTree = "<group>"; };
+		C5A4AF8F1FA6B52900101809 /* TableViewCellHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewCellHelper.swift; sourceTree = "<group>"; };
 		C5A81A771F0040540032D9F1 /* FLAnimatedImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FLAnimatedImage.framework; path = Carthage/Build/iOS/FLAnimatedImage.framework; sourceTree = "<group>"; };
 		C5A81A781F0040540032D9F1 /* NYTPhotoViewer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NYTPhotoViewer.framework; path = Carthage/Build/iOS/NYTPhotoViewer.framework; sourceTree = "<group>"; };
 		C5A81A7A1F0040540032D9F1 /* ZipArchive.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ZipArchive.framework; path = Carthage/Build/iOS/ZipArchive.framework; sourceTree = "<group>"; };
@@ -161,7 +161,6 @@
 		C5B367CE1EBBD65E006B5ADC /* cog@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cog@3x.png"; sourceTree = "<group>"; };
 		C5BA55B21E8D92C800256E7A /* InitialAdjustmentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InitialAdjustmentViewController.swift; sourceTree = "<group>"; };
 		C5BA55B41E8DAB0E00256E7A /* ReviewTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReviewTableViewCell.swift; sourceTree = "<group>"; };
-		C5BFEA781E8F0BDC00528878 /* ReviewViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReviewViewController.swift; sourceTree = "<group>"; };
 		C5C65A211EBBFBC6002D1B12 /* ExportViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExportViewController.swift; sourceTree = "<group>"; };
 		C5CF5F5E1E7BB68600C35539 /* cal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cal.png; sourceTree = "<group>"; };
 		C5CF5F5F1E7BB68600C35539 /* cal@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cal@2x.png"; sourceTree = "<group>"; };
@@ -171,11 +170,19 @@
 		C5CF5F631E7BB68600C35539 /* today@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "today@3x.png"; sourceTree = "<group>"; };
 		C5D3FF321F646B1300D3C7A4 /* AddPauseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddPauseViewController.swift; sourceTree = "<group>"; };
 		C5D3FF341F646BF300D3C7A4 /* DailySpend 4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "DailySpend 4.xcdatamodel"; sourceTree = "<group>"; };
+		C5D4DAB71F931D240013A6F3 /* SegmentedControlTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentedControlTableViewCell.swift; sourceTree = "<group>"; };
 		C5DD5A821E83B383008F7FC6 /* CurrentDayTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrentDayTableViewCell.swift; sourceTree = "<group>"; };
 		C5DD5A841E83B4AC008F7FC6 /* InitialSpendViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InitialSpendViewController.swift; sourceTree = "<group>"; };
+		C5E339001F930F5700785085 /* AdjustmentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdjustmentViewController.swift; sourceTree = "<group>"; };
+		C5E339021F930F6600785085 /* AddAdjustmentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddAdjustmentViewController.swift; sourceTree = "<group>"; };
 		C5EDC2261EBBC12400DA5CB7 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		C5EE62A21E85769700CAEEE7 /* String+CharacterSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+CharacterSet.swift"; sourceTree = "<group>"; };
 		C5F4712D1F053BB600859A4C /* ExpenseProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpenseProvider.swift; sourceTree = "<group>"; };
+		C5F75FEF1F9D5A75005F3510 /* UILabel+Size.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UILabel+Size.swift"; sourceTree = "<group>"; };
+		C5F75FF11F9D6A29005F3510 /* UITextField+Size.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextField+Size.swift"; sourceTree = "<group>"; };
+		C5F75FF31F9DB01E005F3510 /* DayReviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayReviewViewController.swift; sourceTree = "<group>"; };
+		C5F885F71F92F2990006B731 /* Adjustment+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Adjustment+CoreDataProperties.swift"; path = "DailySpend/Adjustment+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		C5F885F81F92F29A0006B731 /* Adjustment+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Adjustment+CoreDataClass.swift"; path = "DailySpend/Adjustment+CoreDataClass.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -208,6 +215,7 @@
 		C517B1BC1EBC125600CDAA17 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C521651B1F9DCC610056A6D5 /* NYTPhotoViewer.framework */,
 				C5A81A771F0040540032D9F1 /* FLAnimatedImage.framework */,
 				C5A81A781F0040540032D9F1 /* NYTPhotoViewer.framework */,
 				C5A81A7A1F0040540032D9F1 /* ZipArchive.framework */,
@@ -232,6 +240,9 @@
 				C594F1CF1F47F206006CA097 /* CalendarMonth.swift */,
 				C556D2531F247C6B008CA20E /* UIControl+Closures.swift */,
 				C5EE62A21E85769700CAEEE7 /* String+CharacterSet.swift */,
+				C55CCFD01F9D44E4001EF0B4 /* UIColor+255.swift */,
+				C5F75FEF1F9D5A75005F3510 /* UILabel+Size.swift */,
+				C5F75FF11F9D6A29005F3510 /* UITextField+Size.swift */,
 				C518B5991E88C7F0009CA4BB /* Decimal+DoubleValue.swift */,
 				C586813F1F2E91E6008D3AEE /* UIView+MultipleSubviews.swift */,
 				C586813D1F2E8BF2008D3AEE /* CGRect+Edges.swift */,
@@ -240,17 +251,15 @@
 			name = "Extensions and Subclasses";
 			sourceTree = "<group>";
 		};
-		C56500201E837F3A009D64F0 /* CoreData Classes */ = {
+		C56500201E837F3A009D64F0 /* Managed Object Classes */ = {
 			isa = PBXGroup;
 			children = (
 				C56F7ED21F64771700639F8D /* Pause+CoreDataClass.swift */,
 				C56F7ED31F64771700639F8D /* Pause+CoreDataProperties.swift */,
-				C56500141E837F37009D64F0 /* MonthAdjustment+CoreDataClass.swift */,
-				C56500151E837F37009D64F0 /* MonthAdjustment+CoreDataProperties.swift */,
-				C565000E1E837F37009D64F0 /* DayAdjustment+CoreDataClass.swift */,
-				C565000F1E837F37009D64F0 /* DayAdjustment+CoreDataProperties.swift */,
 				C51B8C531F04F490008AC0C6 /* Image+CoreDataClass.swift */,
 				C51B8C541F04F490008AC0C6 /* Image+CoreDataProperties.swift */,
+				C5F885F81F92F29A0006B731 /* Adjustment+CoreDataClass.swift */,
+				C5F885F71F92F2990006B731 /* Adjustment+CoreDataProperties.swift */,
 				C56500121E837F37009D64F0 /* Expense+CoreDataClass.swift */,
 				C56500131E837F37009D64F0 /* Expense+CoreDataProperties.swift */,
 				C56500101E837F37009D64F0 /* Day+CoreDataClass.swift */,
@@ -258,7 +267,7 @@
 				C565000C1E837F37009D64F0 /* Month+CoreDataClass.swift */,
 				C565000D1E837F37009D64F0 /* Month+CoreDataProperties.swift */,
 			);
-			name = "CoreData Classes";
+			name = "Managed Object Classes";
 			path = ..;
 			sourceTree = "<group>";
 		};
@@ -270,7 +279,6 @@
 				C5781DA41E6E2060006BBC03 /* Assets.xcassets */,
 				C5781DA61E6E2060006BBC03 /* LaunchScreen.storyboard */,
 				C5781DA91E6E2060006BBC03 /* Info.plist */,
-				C5781DA11E6E2060006BBC03 /* DailySpend.xcdatamodeld */,
 				C5781DB11E6E2060006BBC03 /* DailySpendTests */,
 				C5781DBC1E6E2060006BBC03 /* DailySpendUITests */,
 				C5781D981E6E2060006BBC03 /* Products */,
@@ -294,26 +302,25 @@
 				C538FAB71E85696200295062 /* Main.storyboard */,
 				C5781D9A1E6E2060006BBC03 /* AppDelegate.swift */,
 				C5781DCB1E6E23B2006BBC03 /* TodayViewController.swift */,
-				C594F1D11F490076006CA097 /* TimezoneFix1.swift */,
-				C5BFEA781E8F0BDC00528878 /* ReviewViewController.swift */,
 				C5BA55B41E8DAB0E00256E7A /* ReviewTableViewCell.swift */,
+				C5F75FF31F9DB01E005F3510 /* DayReviewViewController.swift */,
 				C5316BF51E78D80F00BC2918 /* ExpenseTableViewCell.swift */,
-				C56F7ED81F64A22B00639F8D /* DatePickerTableViewCell.swift */,
-				C56CA0791F64BDEB00874FA8 /* TextFieldTableViewCell.swift */,
 				C556D2511F2466EB008CA20E /* ExpenseViewController.swift */,
 				C5DD5A821E83B383008F7FC6 /* CurrentDayTableViewCell.swift */,
 				C5EDC2261EBBC12400DA5CB7 /* SettingsViewController.swift */,
-				C57095221E8F86A200004709 /* MonthAdjustmentViewController.swift */,
-				C57095241E8F86AE00004709 /* DayAdjustmentViewController.swift */,
 				C5DD5A841E83B4AC008F7FC6 /* InitialSpendViewController.swift */,
+				C5A4AF8F1FA6B52900101809 /* TableViewCellHelper.swift */,
 				C5A261A31F66645B007CBB21 /* PauseViewController.swift */,
 				C5D3FF321F646B1300D3C7A4 /* AddPauseViewController.swift */,
+				C5E339001F930F5700785085 /* AdjustmentViewController.swift */,
+				C5E339021F930F6600785085 /* AddAdjustmentViewController.swift */,
 				C5C65A211EBBFBC6002D1B12 /* ExportViewController.swift */,
 				C503F1391EA1A8A100FA95A7 /* Export.swift */,
 				C594F1D51F494CD6006CA097 /* Logger.swift */,
+				C5D4DAB91F931D3E0013A6F3 /* Control-based Table View Cells */,
 				C5AA87D61F36D5B7001B9F08 /* Expense View */,
 				C5316C2A1E7B241200BC2918 /* Extensions and Subclasses */,
-				C56500201E837F3A009D64F0 /* CoreData Classes */,
+				C5F885F61F92EB9A0006B731 /* Core Data */,
 				C51A224D1EBFB32D00B53C24 /* LICENSE.md */,
 				C5BFEA7A1E8F43E300528878 /* Unused */,
 				C5CF5F6A1E7BB68B00C35539 /* Images */,
@@ -376,6 +383,25 @@
 				C53BCAA61E9203BC000B5EE1 /* cal_recur@3x.png */,
 			);
 			name = Images;
+			sourceTree = "<group>";
+		};
+		C5D4DAB91F931D3E0013A6F3 /* Control-based Table View Cells */ = {
+			isa = PBXGroup;
+			children = (
+				C56F7ED81F64A22B00639F8D /* DatePickerTableViewCell.swift */,
+				C56CA0791F64BDEB00874FA8 /* TextFieldTableViewCell.swift */,
+				C5D4DAB71F931D240013A6F3 /* SegmentedControlTableViewCell.swift */,
+			);
+			name = "Control-based Table View Cells";
+			sourceTree = "<group>";
+		};
+		C5F885F61F92EB9A0006B731 /* Core Data */ = {
+			isa = PBXGroup;
+			children = (
+				C5781DA11E6E2060006BBC03 /* DailySpend.xcdatamodeld */,
+				C56500201E837F3A009D64F0 /* Managed Object Classes */,
+			);
+			name = "Core Data";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -528,19 +554,17 @@
 /* Begin PBXShellScriptBuildPhase section */
 		C518791B1F00417400881FB6 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 12;
 			files = (
 			);
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/iOS/FLAnimatedImage.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/NYTPhotoViewer.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/NYTPhotoViewerCore.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/ZipArchive.framework",
 			);
 			outputPaths = (
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/FLAnimatedImage.framework",
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/NYTPhotoViewer.framework",
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/NYTPhotoViewerCore.framework",
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/ZipArchive.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -556,19 +580,22 @@
 			files = (
 				C56F7ED61F64776E00639F8D /* Pause+CoreDataClass.swift in Sources */,
 				C56F7ED71F64776E00639F8D /* Pause+CoreDataProperties.swift in Sources */,
-				C565001E1E837F37009D64F0 /* MonthAdjustment+CoreDataClass.swift in Sources */,
 				C517B1FF1EBC134200CDAA17 /* UICountingLabel.m in Sources */,
+				C5F885F91F92F29A0006B731 /* Adjustment+CoreDataProperties.swift in Sources */,
 				C5316BF61E78D80F00BC2918 /* ExpenseTableViewCell.swift in Sources */,
 				C5DD5A831E83B383008F7FC6 /* CurrentDayTableViewCell.swift in Sources */,
-				C565001F1E837F37009D64F0 /* MonthAdjustment+CoreDataProperties.swift in Sources */,
+				C5E339011F930F5700785085 /* AdjustmentViewController.swift in Sources */,
+				C5E339031F930F6600785085 /* AddAdjustmentViewController.swift in Sources */,
 				C5C65A221EBBFBC6002D1B12 /* ExportViewController.swift in Sources */,
+				C5F75FF41F9DB01E005F3510 /* DayReviewViewController.swift in Sources */,
+				C5F885FA1F92F29A0006B731 /* Adjustment+CoreDataClass.swift in Sources */,
 				C56500171E837F37009D64F0 /* Month+CoreDataProperties.swift in Sources */,
 				C5EE62A31E85769700CAEEE7 /* String+CharacterSet.swift in Sources */,
 				C5F4712E1F053BB600859A4C /* ExpenseProvider.swift in Sources */,
 				C594F1D01F47F206006CA097 /* CalendarMonth.swift in Sources */,
+				C5F75FF21F9D6A29005F3510 /* UITextField+Size.swift in Sources */,
 				C5BA55B31E8D92C800256E7A /* InitialAdjustmentViewController.swift in Sources */,
 				C56CA07A1F64BDEB00874FA8 /* TextFieldTableViewCell.swift in Sources */,
-				C57095231E8F86A200004709 /* MonthAdjustmentViewController.swift in Sources */,
 				C5781DCC1E6E23B2006BBC03 /* TodayViewController.swift in Sources */,
 				C51B8C561F04F490008AC0C6 /* Image+CoreDataProperties.swift in Sources */,
 				C5A261A41F66645B007CBB21 /* PauseViewController.swift in Sources */,
@@ -578,30 +605,29 @@
 				C54E4F491EFD3984006A1CA3 /* ImageSelectorView.swift in Sources */,
 				C5DD5A851E83B4AC008F7FC6 /* InitialSpendViewController.swift in Sources */,
 				C518B59A1E88C7F0009CA4BB /* Decimal+DoubleValue.swift in Sources */,
-				C56500181E837F37009D64F0 /* DayAdjustment+CoreDataClass.swift in Sources */,
 				C518791F1F00461000881FB6 /* PhotoBox.swift in Sources */,
-				C57095251E8F86AE00004709 /* DayAdjustmentViewController.swift in Sources */,
-				C56500191E837F37009D64F0 /* DayAdjustment+CoreDataProperties.swift in Sources */,
 				C5781DA31E6E2060006BBC03 /* DailySpend.xcdatamodeld in Sources */,
 				C594F1D61F494CD6006CA097 /* Logger.swift in Sources */,
 				C565001B1E837F37009D64F0 /* Day+CoreDataProperties.swift in Sources */,
+				C5D4DAB81F931D250013A6F3 /* SegmentedControlTableViewCell.swift in Sources */,
 				C56F7ED91F64A22B00639F8D /* DatePickerTableViewCell.swift in Sources */,
 				C594F1CE1F47EDFE006CA097 /* CalendarDay.swift in Sources */,
 				C565001C1E837F37009D64F0 /* Expense+CoreDataClass.swift in Sources */,
-				C5BFEA791E8F0BDC00528878 /* ReviewViewController.swift in Sources */,
 				C5D3FF331F646B1300D3C7A4 /* AddPauseViewController.swift in Sources */,
 				C5781D9B1E6E2060006BBC03 /* AppDelegate.swift in Sources */,
 				C586813E1F2E8BF2008D3AEE /* CGRect+Edges.swift in Sources */,
 				C5EDC2271EBBC12400DA5CB7 /* SettingsViewController.swift in Sources */,
+				C5A4AF901FA6B52900101809 /* TableViewCellHelper.swift in Sources */,
 				C556D2521F2466EB008CA20E /* ExpenseViewController.swift in Sources */,
+				C55CCFD11F9D44E4001EF0B4 /* UIColor+255.swift in Sources */,
 				C51B8C551F04F490008AC0C6 /* Image+CoreDataClass.swift in Sources */,
 				C565001D1E837F37009D64F0 /* Expense+CoreDataProperties.swift in Sources */,
 				C5BA55B51E8DAB0E00256E7A /* ReviewTableViewCell.swift in Sources */,
 				C56500161E837F37009D64F0 /* Month+CoreDataClass.swift in Sources */,
 				C503F13A1EA1A8A200FA95A7 /* Export.swift in Sources */,
 				C51B8C511F04DE65008AC0C6 /* ExpenseView.swift in Sources */,
+				C5F75FF01F9D5A75005F3510 /* UILabel+Size.swift in Sources */,
 				C556D2541F247C6B008CA20E /* UIControl+Closures.swift in Sources */,
-				C594F1D21F490076006CA097 /* TimezoneFix1.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -771,6 +797,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
+					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = DailySpend/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -792,6 +819,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
+					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = DailySpend/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -812,7 +840,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = joshsherick.DailySpendTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 4.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/DailySpend.app/DailySpend";
 			};
@@ -827,7 +855,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = joshsherick.DailySpendTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 4.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/DailySpend.app/DailySpend";
 			};
@@ -841,7 +869,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = joshsherick.DailySpendUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 4.0;
 				TEST_TARGET_NAME = DailySpend;
 			};
@@ -855,7 +883,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = joshsherick.DailySpendUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 4.0;
 				TEST_TARGET_NAME = DailySpend;
 			};
@@ -906,14 +934,14 @@
 		C5781DA11E6E2060006BBC03 /* DailySpend.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				C502DB2B1F92B24C004136E5 /* DailySpend 5.xcdatamodel */,
 				C5D3FF341F646BF300D3C7A4 /* DailySpend 4.xcdatamodel */,
 				C51B8C521F04EDE5008AC0C6 /* DailySpend 3.xcdatamodel */,
 				C5A287C41EC1741200D3479A /* DailySpend 2.xcdatamodel */,
 				C5781DA21E6E2060006BBC03 /* DailySpend.xcdatamodel */,
 			);
-			currentVersion = C5D3FF341F646BF300D3C7A4 /* DailySpend 4.xcdatamodel */;
-			name = DailySpend.xcdatamodeld;
-			path = DailySpend/DailySpend.xcdatamodeld;
+			currentVersion = C502DB2B1F92B24C004136E5 /* DailySpend 5.xcdatamodel */;
+			path = DailySpend.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};

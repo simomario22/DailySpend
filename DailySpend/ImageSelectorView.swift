@@ -79,10 +79,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIScrollViewDel
         
         // Add the plus button.
         let addButton = makeButton(index: 0)
-        let buttonBgColor = UIColor(red: 150 / 255,
-                                    green: 150 / 255,
-                                    blue: 150 / 255,
-                                    alpha: 1)
+        let buttonBgColor = UIColor(red255: 150, green: 150, blue: 150)
         if let image = imageWithColor(buttonBgColor) {
             addButton.setBackgroundImage(image, for: .highlighted)
         }

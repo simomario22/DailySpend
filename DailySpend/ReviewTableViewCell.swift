@@ -2,168 +2,311 @@
 //  ReviewTableViewCell.swift
 //  DailySpend
 //
-//  Created by Josh Sherick on 3/30/17.
+//  Created by Josh Sherick on 9/9/17.
 //  Copyright © 2017 Josh Sherick. All rights reserved.
 //
 
 import UIKit
 
 class ReviewTableViewCell: UITableViewCell {
-
-    @IBOutlet weak var spentAmountLabel: UILabel!
-    @IBOutlet weak var goalAmountLabel: UILabel!
-    @IBOutlet weak var overUnderLabel: UILabel!
-    @IBOutlet weak var overUnderAmountButton: UIButton!
+    var descriptionLabels = [UILabel]()
+    var valueLabels = [UILabel]()
+    var signLabels = [UILabel?]()
+    var pausedNoteLabel: UILabel!
+    var equalsLineView: UIView!
     
-    let redColor = UIColor(red: 179.0/255.0,
-                           green: 0.0/255.0,
-                           blue: 0.0/255.0,
-                           alpha: 1)
-    let greenColor = UIColor(red: 0.0/255.0,
-                             green: 179.0/255.0,
-                             blue: 0.0/255.0,
-                             alpha: 1)
+    var paused = false
     
-    // Necessary since we can't have closures for button press events :(
-    var currencyFormatter: NumberFormatter!
-    var yesterdayCarry: Decimal!
-    var overUnder: Decimal!
-    var todayCarry: Decimal!
-    var alreadyHighlighted = false
+    let xMargin: CGFloat = 15
+    let yMargin: CGFloat = 15
+    let innerYMargin: CGFloat = 15
     
-    var overUnderAbsNS: NSNumber {
-        return abs(overUnder) as NSNumber
-    }
-    var yesterdayNS: NSNumber {
-        return yesterdayCarry as NSNumber
-    }
-    var todayNS: NSNumber {
-        return todayCarry as NSNumber
-    }
+    let signMargin: CGFloat = 5
+    let equalsLineMargin: CGFloat = 5
     
-    /*
-     * Sets and format currency labels and message based on currency labels.
-     */
-    func setAndFormatLabels(spentAmount spent: Decimal,
-                            goalAmount goal: Decimal,
-                            carryFromYesterday _yesterdayCarry: Decimal? = nil,
-                            lastDayOfMonth lastDay: Bool = false) {
-        yesterdayCarry = _yesterdayCarry
-        currencyFormatter = NumberFormatter()
-        currencyFormatter.numberStyle = .currency
+    let signLabelsYOffset: CGFloat = -5
+    
+    let desiredFontSize: CGFloat = 17
+    let signLabelsDesiredFontSize: CGFloat = 23
+    
+    private var layedOut = false
 
-        overUnder = goal - spent
-
-        goalAmountLabel.text = currencyFormatter.string(from: goal as NSNumber)
-        spentAmountLabel.text = currencyFormatter.string(from: spent as NSNumber)
-
+    override func layoutSubviews() {
+        super.layoutSubviews()
         
-        if yesterdayCarry != nil {
-            todayCarry = (yesterdayCarry! + overUnder)
+        if !layedOut {
+            layoutLabels(multiplier: findMultiplier())
+        }
+    }
+    
+    /**
+     * Find the number needed to multiply fontSizes and horizontal margins by
+     * to have all lines fit within bounds.width
+     */
+    func findMultiplier() -> CGFloat {
+        let numLabels = descriptionLabels.count
+        
+        var multiplier: CGFloat = 1
+        
+        var greatestWidthIndex = 0
+        var greatestWidth: CGFloat = 0
+        
+        for i in 0..<numLabels {
+            let totalWidth = totalWidthForIndex(i, multiplier: multiplier)
+            if totalWidth > greatestWidth {
+                greatestWidth = totalWidth
+                greatestWidthIndex = i
+            }
+        }
+        
+        if greatestWidth > bounds.size.width {
+            // We need to resize the font to make everything fit side by side.
             
-            let color = todayCarry < 0 ? redColor : greenColor
-            overUnderAmountButton.setTitleColor(color, for: .normal)
+            // We have found the index with the greatest width, so if we find a
+            // font size that makes that one fit, we know all of the rest of
+            // the label groups at that font size will fit.
             
-            overUnderLabel.text = lastDay ?
-                                 "Left over this month" : "Carried To Tomorrow"
+            let i = greatestWidthIndex
             
-            let formattedString = currencyFormatter.string(from: todayCarry as NSNumber)!
-            overUnderAmountButton.setTitle(formattedString, for: .normal)
+            // Come up with an initial estimate for the multiplier.
+            multiplier = (greatestWidth / bounds.size.width)
+            multiplier = round(100.0 * multiplier) / 100.0 // Round to nearest 0.01
+            var width = totalWidthForIndex(i, multiplier: multiplier)
             
-            overUnderAmountButton.removeTarget(self,
-                                               action: #selector(setCarryLabel),
-                                               for: .touchUpInside)
-            overUnderAmountButton.addTarget(self,
-                                            action: #selector(setCarryLabel),
-                                            for: .touchUpInside)
-            overUnderAmountButton.isUserInteractionEnabled = true
-            if !alreadyHighlighted {
-                // Animate to show that this is a button
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                    UIView.transition(with: self.overUnderAmountButton,
-                      duration: 0.25,
-                      options: .transitionCrossDissolve,
-                      animations: {
-                        self.overUnderAmountButton.isHighlighted = true
-                    }, completion: {(completed) in
-                        UIView.transition(with: self.overUnderAmountButton,
-                          duration: 0.25,
-                          options: .transitionCrossDissolve,
-                          animations: {
-                            self.overUnderAmountButton.isHighlighted = false
-                        })
-                    })
-                }
-                alreadyHighlighted = true
+            var candidateMultiplier = multiplier + (width < bounds.size.width ? 0.01 : -0.01)
+            var candidateWidth = totalWidthForIndex(i, multiplier: candidateMultiplier)
+            
+            while (candidateWidth < bounds.size.width) == (width < bounds.size.width) &&
+                    multiplier > 0.01 &&
+                    candidateMultiplier > 0.01 {
+                multiplier = candidateMultiplier
+                width = candidateWidth
+                candidateMultiplier = multiplier + (width < bounds.size.width ? 0.01 : -0.01)
+                candidateWidth = totalWidthForIndex(i, multiplier: candidateMultiplier)
+            }
+            
+            // We want the one that is under with a minimum of 0.01 so things
+            // don't crash (although if it's 0.01, something has gone wrong).
+            multiplier = min(min(candidateMultiplier, multiplier), 0.01)
+        }
+        
+        return multiplier
+    }
+    
+    
+    func totalWidthForIndex(_ index: Int, multiplier: CGFloat) -> CGFloat {
+        let dlText = descriptionLabels[index].text!
+        let dlFontSize = descriptionLabels[index].font!.pointSize * multiplier
+        let dlFont = descriptionLabels[index].font!.withSize(dlFontSize)
+
+        let signLabelText = signLabels[index]?.text!
+        let signLabelFontSize = (signLabels[index]?.font!.pointSize ?? 1) * multiplier
+        let signLabelFont = signLabels[index]?.font!.withSize(signLabelFontSize) ?? UIFont.systemFont(ofSize: signLabelFontSize)
+        
+        let valueLabelText = valueLabels[index].text!
+        let valueLabelFontSize = valueLabels[index].font!.pointSize * multiplier
+        let valueLabelFont = valueLabels[index].font!.withSize(valueLabelFontSize)
+        
+        let combinedWidth = dlText.size(withAttributes: [.font: dlFont]).width +
+                            valueLabelText.size(withAttributes: [.font: valueLabelFont]).width +
+                            (signLabelText?.size(withAttributes: [.font: signLabelFont]).width ?? 0)
+        
+        return combinedWidth + (multiplier * 2 * xMargin) + (multiplier * signMargin)
+    }
+    
+    func layoutLabels(multiplier: CGFloat) {
+        if descriptionLabels.count != valueLabels.count ||
+            descriptionLabels.count != signLabels.count ||
+            descriptionLabels.count == 0 {
+            return
+        }
+        
+        func setIntrinsicFrame(_ label: UILabel, _ x: CGFloat, _ y: CGFloat) {
+            let w = label.textIntrinsicSize.width
+            let h = label.textIntrinsicSize.height
+            label.frame = CGRect(x: x, y: y, width: w, height: h)
+        }
+        
+        let numLabels = descriptionLabels.count
+
+        var y: CGFloat = yMargin
+        
+        for i in 0..<numLabels {
+            let descriptionLabel = descriptionLabels[i]
+            let signLabel = signLabels[i]
+            let valueLabel = valueLabels[i]
+            
+            // Set adjusted font sizes for labels.
+            let dlFontSize = descriptionLabel.font!.pointSize * multiplier
+            descriptionLabel.font = descriptionLabel.font!.withSize(dlFontSize)
+            
+            let signLabelFontSize = (signLabel?.font!.pointSize ?? 1) * multiplier
+            signLabel?.font = signLabel?.font!.withSize(signLabelFontSize)
+            
+            let valueLabelFontSize = valueLabel.font!.pointSize * multiplier
+            valueLabel.font = valueLabel.font!.withSize(valueLabelFontSize)
+            
+            // Set description frame.
+            setIntrinsicFrame(descriptionLabel, xMargin * multiplier, y)
+
+            // Set valueLabel frame.
+            var x = bounds.size.width - (xMargin * multiplier) - valueLabel.textIntrinsicSize.width
+            setIntrinsicFrame(valueLabel, x, y)
+            
+            // Set signLabel frame if it exists.
+            if let signLabel = signLabel {
+                x = valueLabel.frame.leftEdge - (signMargin * multiplier) - signLabel.textIntrinsicSize.width
+                setIntrinsicFrame(signLabel, x, y + signLabelsYOffset)
+            }
+            
+            // Set up for next round.
+            y = descriptionLabel.frame.bottomEdge + yMargin
+        }
+
+        if numLabels >= 2 {
+            // Set frame for equalsLineView.
+            let under = numLabels - 2
+            
+            let signFontSize = signLabelsDesiredFontSize * multiplier
+            let signFont = UIFont.systemFont(ofSize: signFontSize)
+            let signWidth = "+".size(withAttributes: [.font: signFont]).width
+            let signMargin = (self.signMargin * multiplier)
+            
+            let x = valueLabels[under].frame.leftEdge - signMargin - signWidth
+            let y = valueLabels[under].frame.bottomEdge + equalsLineMargin
+            let w = valueLabels[under].frame.rightEdge - x
+            
+            equalsLineView.frame = CGRect(x: x, y: y, width: w, height: 1.0)
+        }
+        
+        if paused {
+            let x = xMargin * multiplier
+            let y = valueLabels.last!.frame.bottomEdge + yMargin
+            let w = bounds.size.width - (xMargin * multiplier * 2)
+            pausedNoteLabel.frame = CGRect(x: x, y: y, width: w, height: 0)
+            pausedNoteLabel.sizeToFit()
+        }
+        
+        layedOut = true
+    }
+    
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        equalsLineView = UILabel()
+        equalsLineView.backgroundColor = UIColor.black
+        
+        let size: CGFloat = 17
+        let pausedNoteText = "Because this day is paused, its balance is " +
+                             "equal to the previous day's balance."
+        let attributedText = NSMutableAttributedString(string: pausedNoteText)
+        let pausedAttrs: [NSAttributedStringKey : Any] = [
+            .foregroundColor: UIColor.paused,
+            .font: UIFont.boldSystemFont(ofSize: size)
+        ]
+        attributedText.addAttributes(pausedAttrs, range: NSMakeRange(20, 6))
+        
+        pausedNoteLabel = UILabel()
+        pausedNoteLabel.font = UIFont.systemFont(ofSize: size)
+        pausedNoteLabel.attributedText = attributedText
+        pausedNoteLabel.numberOfLines = 0
+        pausedNoteLabel.lineBreakMode = .byWordWrapping
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+    
+    func showPausedNote(_ showPausedMessage: Bool) {
+        layedOut = false
+        paused = showPausedMessage
+        
+        if paused {
+            if pausedNoteLabel.superview != nil {
+                self.addSubview(pausedNoteLabel)
             }
         } else {
-            let formattedString = currencyFormatter.string(from: overUnderAbsNS)!
-            overUnderAmountButton.setTitle(formattedString, for: .normal)
-            if overUnder < 0 {
-                overUnderLabel.text = "Over goal"
-                overUnderAmountButton.setTitleColor(redColor, for: .normal)
-            } else {
-                overUnderLabel.text = "Under goal"
-                overUnderAmountButton.setTitleColor(greenColor, for: .normal)
+            pausedNoteLabel.removeFromSuperview()
+        }
+    }
+    
+    
+    
+    func setLabelData(_ data:[ReviewCellDatum]) {
+        layedOut = false
+        func makeLabel(_ text: String,
+                       color: UIColor = UIColor.black,
+                       weight: UIFont.Weight = .regular,
+                       // There is a compiler bug that prevents us from using
+                       // desiredFontSize as a default here.
+                       size: CGFloat,
+                       align: NSTextAlignment = .left) -> UILabel {
+            let label = UILabel()
+            label.text = text
+            label.textColor = color
+            label.font = UIFont.systemFont(ofSize: size, weight: weight)
+            label.textAlignment = align
+            return label
+        }
+
+        
+        // Remove all labels.
+        while let label = descriptionLabels.popLast() { label.removeFromSuperview() }
+        while let label = valueLabels.popLast() { label.removeFromSuperview() }
+        while let label = signLabels.popLast() { label?.removeFromSuperview() }
+        equalsLineView.removeFromSuperview()
+        
+        for datum in data {
+            descriptionLabels.append(makeLabel(datum.description, weight: .bold, size: desiredFontSize))
+            addSubview(descriptionLabels.last!)
+            
+            valueLabels.append(makeLabel(datum.value, color: datum.color, size: desiredFontSize, align: .right))
+            addSubview(valueLabels.last!)
+
+            switch datum.sign {
+            case .Plus:
+                self.signLabels.append(makeLabel("+",  weight: .light, size: signLabelsDesiredFontSize))
+                self.addSubview(signLabels.last!!)
+            case .Minus:
+                self.signLabels.append(makeLabel("−", weight: .light, size: signLabelsDesiredFontSize))
+                self.addSubview(signLabels.last!!)
+            case .None:
+                self.signLabels.append(nil)
             }
-            overUnderAmountButton.isUserInteractionEnabled = false
-        }
-    }
-    
-    @objc func setCarryLabel() {
-        // Create strings.
-        let yesterdayCarryString = currencyFormatter.string(from: yesterdayNS)!
-        let overUnderString = currencyFormatter.string(from: overUnderAbsNS)!
-        let todayCarryString = currencyFormatter.string(from: todayNS)!
-        
-        let plusOrMinus = overUnder! < 0 ? " - " : " + "
-        let equationString = yesterdayCarryString +
-                             plusOrMinus +
-                             overUnderString +
-                             " = " +
-                             todayCarryString
-        let attributedText = NSMutableAttributedString(string: equationString)
-        
-        let addAttribute = {(color: UIColor, start: Int, len: Int) in
-            attributedText.addAttribute(NSAttributedStringKey.foregroundColor,
-                                        value: color,
-                                        range: NSMakeRange(start, len))
         }
         
-        // Add colors to all the strings.
-        var start = 0
-        var len = yesterdayCarryString.count
-        var color = yesterdayCarry < 0 ? redColor : greenColor
-        addAttribute(color, start, len)
+        if data.count > 2 {
+            self.addSubview(equalsLineView)
+        }
         
-        addAttribute(UIColor.black, start + len, 3)
-        
-        start = len + 3
-        len = overUnderString.count
-        color = overUnder < 0 ? redColor : greenColor
-        addAttribute(color, start, len)
-
-        addAttribute(UIColor.black, start + len, 3)
-        
-        start = start + len + 3
-        len = todayCarryString.count
-        color = todayCarry < 0 ? redColor : greenColor
-        addAttribute(color, start, len)
-
-        overUnderAmountButton.setAttributedTitle(attributedText, for: .normal)
-        overUnderAmountButton.isUserInteractionEnabled = false
+        self.setNeedsLayout()
     }
     
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        // Initialization code
-        
-        let font = UIFont.systemFont(ofSize: 22,
-                                     weight: UIFont.Weight.light)
-        spentAmountLabel.font = font
-        goalAmountLabel.font = font
-        overUnderAmountButton.titleLabel!.font = font
-        self.selectionStyle = .none
+    func desiredHeightForCurrentState() -> CGFloat {
+        if !layedOut {
+            layoutLabels(multiplier: findMultiplier())
+        }
+        if paused {
+            return pausedNoteLabel.frame.bottomEdge + yMargin
+        } else if descriptionLabels.count == valueLabels.count ||
+                  descriptionLabels.count == signLabels.count ||
+                  descriptionLabels.count != 0 {
+            return descriptionLabels.last!.frame.bottomEdge + yMargin
+        } else {
+            return 0
+        }
     }
+}
+
+struct ReviewCellDatum {
+    enum ValueSign {
+        case Plus
+        case Minus
+        case None
+    }
+    
+    var description: String
+    var value: String
+    var color: UIColor
+    var sign: ValueSign
 }

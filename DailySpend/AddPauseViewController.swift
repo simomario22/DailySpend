@@ -15,6 +15,8 @@ class AddPauseViewController: UIViewController, UITableViewDelegate, UITableView
         return appDelegate.persistentContainer.viewContext
     }
     
+    var cellCreator: TableViewCellHelper!
+    
     var delegate: AddPauseDelegate?
     
     var tableView: UITableView!
@@ -22,13 +24,15 @@ class AddPauseViewController: UIViewController, UITableViewDelegate, UITableView
     var editingFirstDate = false
     var editingLastDate = false
     
-    var pause: Pause!
+    var pause: Pause?
+    
+    var shortDescription: String! = ""
+    var firstDayEffective: CalendarDay!
+    var lastDayEffective: CalendarDay!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        //self.view.backgroundColor = UIColor.white
-        
+
         // Set up table view.
         tableView = UITableView(frame: view.bounds, style: .grouped)
         tableView.keyboardDismissMode = .onDrag
@@ -36,28 +40,25 @@ class AddPauseViewController: UIViewController, UITableViewDelegate, UITableView
         tableView.dataSource = self
         self.view.addSubview(tableView)
         
-        if pause == nil {
-            pause = Pause(context: context)
-            pause.firstDayEffective = CalendarDay()
-            pause.lastDayEffective = CalendarDay()
+        cellCreator = TableViewCellHelper(tableView: tableView, view: view)
+        
+        if let pause = self.pause {
+            self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save, save)
+            self.navigationItem.title = "Edit Pause"
+            
+            shortDescription = pause.shortDescription
+            firstDayEffective = pause.firstDayEffective
+            lastDayEffective = pause.lastDayEffective
+        } else {
+            firstDayEffective = CalendarDay()
+            lastDayEffective = CalendarDay()
             self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Add", style: .done, save)
             self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel) {
                 self.view.endEditing(false)
                 self.dismiss(animated: true, completion: nil)
             }
             self.navigationItem.title = "New Pause"
-        } else {
-            self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save, save)
-
-            self.navigationItem.title = "Edit Pause"
         }
-        
-        
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        // Roll back any uncommitted changes
-        context.rollback()
     }
 
     override func didReceiveMemoryWarning() {
@@ -66,19 +67,32 @@ class AddPauseViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func save() {
-        pause.dateCreated = Date()
-        let validation = pause.validate(context: context)
+        var justCreated = false
+        if pause == nil {
+            justCreated = true
+            pause = Pause(context: context)
+            pause!.dateCreated = Date()
+        }
+        
+        let validation = pause!.propose(shortDescription: shortDescription,
+                                         firstDayEffective: firstDayEffective,
+                                         lastDayEffective: lastDayEffective)
         if validation.valid {
             appDelegate.saveContext()
             self.view.endEditing(false)
-            delegate?.addedOrChangedPause(pause)
+            delegate?.addedOrChangedPause(pause!)
             if self.navigationController!.viewControllers[0] == self {
                 self.navigationController!.dismiss(animated: true, completion: nil)
             } else {
                 self.navigationController!.popViewController(animated: true)
             }
         } else {
-            let alert = UIAlertController(title: "Error",
+            if justCreated {
+                context.delete(pause!)
+                pause = nil
+                appDelegate.saveContext()
+            }
+            let alert = UIAlertController(title: "Couldn't Save",
                                           message: validation.problem!,
                                           preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "Okay",
@@ -137,129 +151,77 @@ class AddPauseViewController: UIViewController, UITableViewDelegate, UITableView
             return nil
         }
         
-        guard let firstDayEffective = pause.firstDayEffective,
-              let lastDayEffective = pause.lastDayEffective else {
-            return nil
-        }
-        
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "MMM d, yyyy"
         
         if firstDayEffective == lastDayEffective {
             let formattedDate = firstDayEffective.string(formatter: dateFormatter)
             return "Any expenses and money accrued on \(formattedDate) will be " +
-                    "ignored when calculating the daily amount left to spend and " +
-                    "any monthly goals."
+                    "ignored when calculating the daily balance and any monthly " +
+                    "goals."
         } else {
             let formattedFirstDate = firstDayEffective.string(formatter: dateFormatter)
             let formattedLastDate = lastDayEffective.string(formatter: dateFormatter)
             return "Any expenses and money accrued from \(formattedFirstDate) to " +
                     "\(formattedLastDate) will be ignored when calculating the " +
-                    "daily amount left to spend and any monthly goals."
+                    "daily balance and any monthly goals."
         }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let firstDayEffective = pause.firstDayEffective!
-        let lastDayEffective = pause.lastDayEffective!
-
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "E, MMM d, yyyy"
-        
-        func dateDisplayCell(label: String, day: CalendarDay, shouldTintDetailText: () -> Bool) -> UITableViewCell {
-            var cell: UITableViewCell! = tableView.dequeueReusableCell(withIdentifier: "dateDisplay")
-            if cell == nil {
-                cell = UITableViewCell(style: .value1, reuseIdentifier: "dateDisplay")
-            }
-            
-            cell.textLabel!.text = label
-            cell.detailTextLabel!.text = day.string(formatter: dateFormatter)
-            if (shouldTintDetailText()) {
-                cell.detailTextLabel!.textColor = view.tintColor
-            } else {
-                cell.detailTextLabel!.textColor = UIColor.black
-            }
-            return cell
-        }
-
-        func textFieldDisplayCell(placeholder: String, text: String?,
-                                  didBeginEditing: @escaping (UITextField) -> (),
-                                  changedToText: @escaping (String) -> ()) -> UITableViewCell {
-            var cell: TextFieldTableViewCell! = tableView.dequeueReusableCell(withIdentifier: "textFieldDisplay") as? TextFieldTableViewCell
-            if cell == nil {
-                cell = TextFieldTableViewCell(style: .default, reuseIdentifier: "textFieldDisplay")
-            }
-            
-            cell.textField.placeholder = placeholder
-            cell.textField.text = text == "" ? nil : text
-            cell.setEditingCallback(didBeginEditing)
-            cell.setChangedCallback { (textField: UITextField) in
-                let text = textField.text
-                changedToText(text!)
-            }
-            
-            return cell
-        }
-
-        func datePickerCell(day: CalendarDay, changedToDay: @escaping (CalendarDay) -> ()) -> UITableViewCell {
-            var cell: DatePickerTableViewCell! = tableView.dequeueReusableCell(withIdentifier: "datePicker") as? DatePickerTableViewCell
-            if cell == nil {
-                cell = DatePickerTableViewCell(style: .default, reuseIdentifier: "datePicker")
-            }
-            
-            cell.datePicker.datePickerMode = .date
-            cell.datePicker.timeZone = CalendarDay.gmtTimeZone
-            cell.datePicker.setDate(day.gmtDate, animated: false)
-            cell.setCallback { (datePicker: UIDatePicker) in
-                let day = CalendarDay(dateInGMTDay: datePicker.date)
-                changedToDay(day)
-            }
-            
-            return cell
+        if cellCreator == nil {
+            return UITableViewCell()
         }
         
         switch cellTypeForIndexPath(indexPath: indexPath) {
         case .DescriptionCell:
-            return textFieldDisplayCell(placeholder: "Description (e.g. \"Vacation in Hawaii\")",
-                                        text: pause.shortDescription, didBeginEditing: { _ in
-                if self.editingFirstDate {
-                    self.editingFirstDate = false
-                    tableView.beginUpdates()
-                    tableView.reloadRows(at: [IndexPath(row: 0, section: 1)], with: .fade)
-                    tableView.deleteRows(at: [IndexPath(row: 1, section: 1)], with: .fade)
-                    tableView.endUpdates()
-                } else if self.editingLastDate {
-                    self.editingLastDate = false
-                    tableView.beginUpdates()
-                    tableView.reloadRows(at: [IndexPath(row: 1, section: 1)], with: .fade)
-                    tableView.deleteRows(at: [IndexPath(row: 2, section: 1)], with: .fade)
-                    tableView.endUpdates()
-                }
-            }, changedToText: { (text: String) in
-                self.pause.shortDescription = text
+            return cellCreator.textFieldDisplayCell(
+                placeholder: "Description (e.g. \"Vacation in Hawaii\")",
+                text: shortDescription,
+                changedToText: { (text: String, _) in
+                    self.shortDescription = text
+                },
+                didBeginEditing: { _ in
+                    if self.editingFirstDate {
+                        self.editingFirstDate = false
+                        tableView.beginUpdates()
+                        tableView.reloadRows(at: [IndexPath(row: 0, section: 1)], with: .fade)
+                        tableView.deleteRows(at: [IndexPath(row: 1, section: 1)], with: .fade)
+                        tableView.endUpdates()
+                    } else if self.editingLastDate {
+                        self.editingLastDate = false
+                        tableView.beginUpdates()
+                        tableView.reloadRows(at: [IndexPath(row: 1, section: 1)], with: .fade)
+                        tableView.deleteRows(at: [IndexPath(row: 2, section: 1)], with: .fade)
+                        tableView.endUpdates()
+                    }
             })
             
         case .FirstDayEffectiveDisplayCell:
-            return dateDisplayCell(label: "Start", day: firstDayEffective) { self.editingFirstDate }
+            return cellCreator.dateDisplayCell(label: "Start",
+                                               day: firstDayEffective,
+                                               tintDetailText: editingFirstDate)
             
         case .FirstDayEffectiveDatePickerCell:
-            return datePickerCell(day: firstDayEffective) { (day: CalendarDay) in
-                self.pause.firstDayEffective = day
-                if self.pause.firstDayEffective! > self.pause.lastDayEffective! {
-                    self.pause.lastDayEffective = self.pause.firstDayEffective
+            return cellCreator.datePickerCell(day: firstDayEffective)
+            { (day: CalendarDay) in
+                self.firstDayEffective = day
+                if self.firstDayEffective! > self.lastDayEffective! {
+                    self.lastDayEffective = self.firstDayEffective
                 }
                 tableView.reloadSections(IndexSet(integer: 1), with: .fade)
             }
             
         case .LastDayEffectiveDisplayCell:
-            return dateDisplayCell(label: "End", day: lastDayEffective) { self.editingLastDate }
-            
+            return cellCreator.dateDisplayCell(label: "End",
+                                               day: lastDayEffective,
+                                               tintDetailText: editingLastDate,
+                                               strikeText: firstDayEffective! > lastDayEffective!)
+
         case .LastDayEffectiveDatePickerCell:
-            return datePickerCell(day: lastDayEffective) { (day: CalendarDay) in
-                self.pause.lastDayEffective = day
-                if self.pause.firstDayEffective! > self.pause.lastDayEffective! {
-                    self.pause.firstDayEffective = self.pause.lastDayEffective
-                }
+            return cellCreator.datePickerCell(day: lastDayEffective)
+            { (day: CalendarDay) in
+                self.lastDayEffective = day
                 tableView.reloadSections(IndexSet(integer: 1), with: .fade)
             }
         }

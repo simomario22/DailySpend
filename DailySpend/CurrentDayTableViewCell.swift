@@ -9,11 +9,6 @@
 import UIKit
 
 class CurrentDayTableViewCell: UITableViewCell {
-    
-    let redColor = UIColor(red: 179.0/255.0,
-                           green: 0.0/255.0,
-                           blue: 0.0/255.0,
-                           alpha: 1)
 
     @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var spendLeftLabel: UICountingLabel!
@@ -30,7 +25,8 @@ class CurrentDayTableViewCell: UITableViewCell {
         let currencyFormatter = NumberFormatter()
         currencyFormatter.numberStyle = .currency
         
-        self.dateLabel.text = dateFormatter.string(from: Date())
+        let formattedDate = dateFormatter.string(from: Date())
+        self.dateLabel.text = "\(formattedDate)"
         spendLeftLabel.count(from: CGFloat(previousDailySpendLeft.doubleValue),
                              to: CGFloat(dailySpendLeft.doubleValue))
     
@@ -48,7 +44,7 @@ class CurrentDayTableViewCell: UITableViewCell {
 
         spendLeftLabel.formatBlock = { (value: CGFloat) -> String? in
             if (value < 0) {
-                self.spendLeftLabel.textColor = self.redColor
+                self.spendLeftLabel.textColor = UIColor.overspent
             } else {
                 self.spendLeftLabel.textColor = UIColor.black
             }

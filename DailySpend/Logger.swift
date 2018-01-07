@@ -10,7 +10,7 @@ import Foundation
 
 class Logger {
     
-    private static func isTesting() -> Bool {
+    static func isTesting() -> Bool {
         let bundleID = Bundle.main.bundleIdentifier!
         return bundleID.contains("com.joshsherick.DailySpendTesting")
     }
@@ -54,22 +54,6 @@ class Logger {
             print("month.dateCreated: \(dateFormatter.string(from: month.dateCreated!))")
             print("")
             
-            if (month.adjustments!.count > 0) {
-                print("\tMonthAdjustments:")
-            } else {
-                print("\tNo MonthAdjustments.")
-            }
-            for monthAdjustment in month.sortedAdjustments! {
-                let created = dateFormatter.string(from: monthAdjustment.dateCreated!)
-                let effective = monthAdjustment.calendarDayEffective!.string(formatter: dateFormatter)
-                print("\tmonthAdjustment.amount: \(monthAdjustment.amount!)")
-                print("\tmonthAdjustment.dateCreated: \(created)")
-                print("\tmonthAdjustment.dateEffective: \(effective)")
-                print("\tmonthAdjustment.reason: \(monthAdjustment.reason!)")
-                print("")
-            }
-            
-            
             if (month.days!.count > 0) {
                 print("\tDays:")
             } else {
@@ -80,22 +64,6 @@ class Logger {
                 print("\tday.date: \(day.calendarDay!.string(formatter: dateFormatter))")
                 print("\tday.dateCreated: \(dateFormatter.string(from: day.dateCreated!))")
                 print("")
-                
-                if (day.adjustments!.count > 0) {
-                    print("\t\tDayAdjustments:")
-                } else {
-                    print("\t\tNo DayAdjustments.")
-                }
-                for dayAdjustment in day.sortedAdjustments! {
-                    let created = dateFormatter.string(from: dayAdjustment.dateCreated!)
-                    let affected = dayAdjustment.calendarDayAffected!.string(formatter: dateFormatter)
-                    print("\t\tdayAdjustment.amount: \(dayAdjustment.amount!)")
-                    print("\t\tdayAdjustment.dateAffected: \(created)")
-                    print("\t\tdayAdjustment.dateCreated: \(affected)")
-                    print("\t\tdayAdjustment.reason: \(dayAdjustment.reason!)")
-                    print("")
-                }
-                
                 
                 if (day.expenses!.count > 0) {
                     print("\t\tExpenses:")
@@ -140,6 +108,27 @@ class Logger {
                     print("\t\tNo Pause.")
                 }
                 print("")
+                
+                if (day.adjustments!.count > 0) {
+                    print("\t\tAdjustments:")
+                } else {
+                    print("\t\tNo Adjustments.")
+                }
+                for adjustment in day.sortedAdjustments! {
+                    print("\t\tAdjustment:")
+                    let created = dateFormatter.string(from: adjustment.dateCreated!)
+                    let first = adjustment.firstDayEffective!.string(formatter: dateFormatter)
+                    let last = adjustment.lastDayEffective!.string(formatter: dateFormatter)
+                    
+                    print("\t\tadjustment.amountPerDay: \(adjustment.amountPerDay!)")
+                    print("\t\tadjustment.shortDescription: \(adjustment.shortDescription!)")
+                    print("\t\tadjustment.dateCreated: \(created)")
+                    print("\t\tadjustment.firstDayEffective: \(first)")
+                    print("\t\tadjustment.lastDayEffective: \(last)")
+                    print("")
+                    
+                }
+                print("")
             }
             print("")
         }
@@ -153,15 +142,36 @@ class Logger {
         
         for pause in allPauses {
             
-            print("\t\tPause:")
+            print("Pause:")
             let created = dateFormatter.string(from: pause.dateCreated!)
             let first = pause.firstDayEffective!.string(formatter: dateFormatter)
             let last = pause.lastDayEffective!.string(formatter: dateFormatter)
             
-            print("\t\tpause.shortDescription: \(pause.shortDescription!)")
-            print("\t\tpause.dateCreated: \(created)")
-            print("\t\tpause.firstDayEffective: \(first)")
-            print("\t\tpause.lastDayEffective: \(last)")
+            print("pause.shortDescription: \(pause.shortDescription!)")
+            print("pause.dateCreated: \(created)")
+            print("pause.firstDayEffective: \(first)")
+            print("pause.lastDayEffective: \(last)")
+            print("")
+        }
+        
+        
+        let adjustmentSortDesc = NSSortDescriptor(key: "dateCreated_", ascending: true)
+        let allAdjustments = Adjustment.get(context: context, sortDescriptors: [adjustmentSortDesc])!
+        
+        print("allAdjustments:")
+        print("\(allAdjustments.count) adjustments")
+        
+        for adjustment in allAdjustments {
+            print("Adjustment:")
+            let created = dateFormatter.string(from: adjustment.dateCreated!)
+            let first = adjustment.firstDayEffective!.string(formatter: dateFormatter)
+            let last = adjustment.lastDayEffective!.string(formatter: dateFormatter)
+            
+            print("adjustment.amountPerDay: \(adjustment.amountPerDay!)")
+            print("adjustment.shortDescription: \(adjustment.shortDescription!)")
+            print("adjustment.dateCreated: \(created)")
+            print("adjustment.firstDayEffective: \(first)")
+            print("adjustment.lastDayEffective: \(last)")
             print("")
         }
     }

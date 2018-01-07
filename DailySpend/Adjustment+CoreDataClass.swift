@@ -1,23 +1,32 @@
 //
-//  Pause+CoreDataClass.swift
+//  Adjustment+CoreDataClass.swift
 //  DailySpend
 //
-//  Created by Josh Sherick on 9/9/17.
+//  Created by Josh Sherick on 10/14/17.
 //  Copyright © 2017 Josh Sherick. All rights reserved.
+//
 //
 
 import Foundation
 import CoreData
 
-@objc(Pause)
-public class Pause: NSManagedObject {
+@objc(Adjustment)
+public class Adjustment: NSManagedObject {
     public func json() -> [String: Any]? {
         var jsonObj = [String: Any]()
+
+        if let amountPerDay = amountPerDay {
+            let num = amountPerDay as NSNumber
+            jsonObj["amountPerDay"] = num
+        } else {
+            Logger.debug("couldn't unwrap amountPerDay in Adjustment")
+            return nil
+        }
 
         if let shortDescription = shortDescription {
             jsonObj["shortDescription"] = shortDescription
         } else {
-            Logger.debug("couldn't unwrap shortDescription in Pause")
+            Logger.debug("couldn't unwrap shortDescription in Adjustment")
             return nil
         }
         
@@ -25,7 +34,7 @@ public class Pause: NSManagedObject {
             let num = date.timeIntervalSince1970 as NSNumber
             jsonObj["firstDateEffective"] = num
         } else {
-            Logger.debug("couldn't unwrap firstDateEffective in Pause")
+            Logger.debug("couldn't unwrap firstDateEffective in Adjustment")
             return nil
         }
         
@@ -33,7 +42,7 @@ public class Pause: NSManagedObject {
             let num = date.timeIntervalSince1970 as NSNumber
             jsonObj["lastDateEffective"] = num
         } else {
-            Logger.debug("couldn't unwrap lastDateEffective in Pause")
+            Logger.debug("couldn't unwrap lastDateEffective in Adjustment")
             return nil
         }
         
@@ -41,10 +50,10 @@ public class Pause: NSManagedObject {
             let num = dateCreated.timeIntervalSince1970 as NSNumber
             jsonObj["dateCreated"] = num
         } else {
-            Logger.debug("couldn't unwrap dateCreated in Pause")
+            Logger.debug("couldn't unwrap dateCreated in Adjustment")
             return nil
         }
-        
+
         return jsonObj
     }
     
@@ -53,204 +62,161 @@ public class Pause: NSManagedObject {
             let serialization = try? JSONSerialization.data(withJSONObject: jsonObj)
             return serialization
         }
-        
+
         return nil
     }
     
     class func create(context: NSManagedObjectContext,
-                      json: [String: Any]) -> Pause? {
-        let pause = Pause(context: context)
-        
+                      json: [String: Any]) -> Adjustment? {
+        let adjustment = Adjustment(context: context)
+
+        if let amountPerDay = json["amountPerDay"] as? NSNumber {
+            let decimal = Decimal(amountPerDay.doubleValue)
+            if decimal == 0 {
+                Logger.debug("amountPerDay equal to 0 in Adjustment")
+                return nil
+            }
+            adjustment.amountPerDay = decimal
+        } else {
+            Logger.debug("couldn't unwrap amountPerDay in Adjustment")
+            return nil
+        }
+
         if let dateNumber = json["firstDateEffective"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateNumber.doubleValue)
             let calDay = CalendarDay(dateInGMTDay: date)
             if calDay.gmtDate != date {
                 // The date isn't a beginning of day
-                Logger.debug("The firstDateEffective isn't a beginning of day in Pause")
+                Logger.debug("The firstDateEffective isn't a beginning of day in Adjustment")
                 return nil
             }
-            pause.firstDayEffective = calDay
+            adjustment.firstDayEffective = calDay
         } else {
-            Logger.debug("couldn't unwrap firstDateEffective in Pause")
+            Logger.debug("couldn't unwrap firstDateEffective in Adjustment")
             return nil
         }
-        
+
         if let dateNumber = json["lastDateEffective"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateNumber.doubleValue)
             let calDay = CalendarDay(dateInGMTDay: date)
             if calDay.gmtDate != date ||
-                calDay < pause.firstDayEffective! {
+                calDay < adjustment.firstDayEffective! {
                 // The date isn't a beginning of day
-                Logger.debug("The lastDateEffective isn't a beginning of day or is earlier than firstDateEffective in Pause")
+                Logger.debug("The lastDateEffective isn't a beginning of day or is earlier than firstDateEffective in Adjustment")
                 return nil
             }
-            pause.lastDayEffective = calDay
+            adjustment.lastDayEffective = calDay
         } else {
-            Logger.debug("couldn't unwrap lastDateEffective in Pause")
+            Logger.debug("couldn't unwrap lastDateEffective in Adjustment")
             return nil
         }
-        
+
         if let shortDescription = json["shortDescription"] as? String {
             if shortDescription.count == 0 {
-                Logger.debug("shortDescription empty in Pause")
+                Logger.debug("shortDescription empty in Adjustment")
                 return nil
             }
-            pause.shortDescription = shortDescription
+            adjustment.shortDescription = shortDescription
         } else {
-            Logger.debug("couldn't unwrap shortDescription in Pause")
+            Logger.debug("couldn't unwrap shortDescription in Adjustment")
             return nil
         }
-        
+
         if let dateCreated = json["dateCreated"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateCreated.doubleValue)
             if date > Date() {
-                Logger.debug("dateCreated after today in Pause")
+                Logger.debug("dateCreated after today in Adjustment")
                 return nil
             }
-            pause.dateCreated = date
+            adjustment.dateCreated = date
         } else {
-            Logger.debug("couldn't unwrap dateCreated in Pause")
+            Logger.debug("couldn't unwrap dateCreated in Adjustment")
             return nil
         }
-        
-        let pauses = Pause.get(context: context)
-        for otherPause in pauses! {
-            if otherPause.objectID != pause.objectID && pause.overlapsWith(pause: otherPause)! {
-                Logger.debug("pause overlapped with another pause")
-                return nil
-            }
-        }
-        
-        // Get relevant days.
-        let relevantDays = Day.getRelevantDaysForPause(pause, context: context)
-        pause.daysAffected = Set<Day>(relevantDays)
 
-        return pause
+        // Get relevant days.
+        let relevantDays = Day.getRelevantDaysForAdjustment(adjustment, context: context)
+        adjustment.daysAffected = Set<Day>(relevantDays)
+
+        return adjustment
     }
     
     class func get(context: NSManagedObjectContext,
-                    predicate: NSPredicate? = nil,
-                    sortDescriptors: [NSSortDescriptor]? = nil,
-                    fetchLimit: Int = 0) -> [Pause]? {
-        let fetchRequest: NSFetchRequest<Pause> = Pause.fetchRequest()
+                   predicate: NSPredicate? = nil,
+                   sortDescriptors: [NSSortDescriptor]? = nil,
+                   fetchLimit: Int = 0) -> [Adjustment]? {
+        let fetchRequest: NSFetchRequest<Adjustment> = Adjustment.fetchRequest()
         fetchRequest.predicate = predicate
         fetchRequest.sortDescriptors = sortDescriptors
         fetchRequest.fetchLimit = fetchLimit
         
-        let pauseResults = try? context.fetch(fetchRequest)
+        let adjustmentResults = try? context.fetch(fetchRequest)
         
-        return pauseResults
+        return adjustmentResults
     }
     
     /*
-     * Return the pause that affects a certain day.
+     * Return the adjustments that affect a certain day.
      */
-    class func getRelevantPauseForDay(day: Day, context: NSManagedObjectContext) -> Pause? {
-        let fetchRequest: NSFetchRequest<Pause> = Pause.fetchRequest()
+    class func getRelevantAdjustmentsForDay(day: Day, context: NSManagedObjectContext) -> [Adjustment] {
+        let fetchRequest: NSFetchRequest<Adjustment> = Adjustment.fetchRequest()
         let pred = NSPredicate(format: "firstDateEffective_ <= %@ AND lastDateEffective_ >= %@",
                                day.calendarDay!.gmtDate as CVarArg, day.calendarDay!.gmtDate as CVarArg)
         fetchRequest.predicate = pred
         let sortDesc = NSSortDescriptor(key: "dateCreated_", ascending: true)
         fetchRequest.sortDescriptors = [sortDesc]
-        let pauseResults = try! context.fetch(fetchRequest)
-
-        if pauseResults.count > 1 {
-            Logger.warning("There are overlapping pauses.")
-        }
+        let adjustmentResults = try! context.fetch(fetchRequest)
         
-        return pauseResults.isEmpty ? nil : pauseResults[0]
+        return adjustmentResults
     }
     
+    /**
+     * Accepts all members of Adjustment. If the passed variables, attached to
+     * corresponding variables on an Adjustment object, will form a valid
+     * object, this function will assign the passed variables to this object
+     * and return `(valid: true, problem: nil)`. Otherwise, this function will
+     * return `(valid: false, problem: ...)` with problem set to a user
+     * readable string describing why this adjustment wouldn't be valid.
+     */
     func propose(shortDescription: String?? = nil,
-                 firstDayEffective: CalendarDay?? = nil,
-                 lastDayEffective: CalendarDay?? = nil,
-                 dateCreated: Date?? = nil) -> (valid: Bool, problem: String?) {
+                amountPerDay: Decimal?? = nil,
+                firstDayEffective: CalendarDay?? = nil,
+                lastDayEffective: CalendarDay?? = nil,
+                dateCreated: Date?? = nil) -> (valid: Bool, problem: String?) {
+        
         let _shortDescription = shortDescription ?? self.shortDescription
+        let _amountPerDay = amountPerDay ?? self.amountPerDay
         let _firstDayEffective = firstDayEffective ?? self.firstDayEffective
         let _lastDayEffective = lastDayEffective ?? self.lastDayEffective
         let _dateCreated = dateCreated ?? self.dateCreated
         
         if _shortDescription == nil || _shortDescription!.count == 0 {
-            return (false, "This pause must have a description.")
+            return (false, "This adjustment must have a description.")
+        }
+        
+        if _amountPerDay == nil || _amountPerDay! == 0 {
+            return (false, "This adjustment must have an amount specified.")
         }
         
         if _firstDayEffective == nil || _lastDayEffective == nil ||
             _firstDayEffective! > _lastDayEffective! {
-            return (false, "The first day effective must be before the last day effective.")
+            return (false, "The first day effective be before the last day effective.")
         }
         
         if _dateCreated == nil {
             return (false, "The pause must have a date created.")
         }
         
-        // Check for overlapping pauses.
-        let fetchRequest: NSFetchRequest<Pause> = Pause.fetchRequest()
-        let pred = NSPredicate(format: "%@ <= lastDateEffective_ AND %@ >= firstDateEffective_",
-                               _firstDayEffective!.gmtDate as CVarArg,
-                               _lastDayEffective!.gmtDate as CVarArg)
-        fetchRequest.predicate = pred
-        let pauseResults = try! context.fetch(fetchRequest)
-        
-        if pauseResults.count > 1 {
-            Logger.warning("There are overlapping pauses.")
-        }
-        
-        if let pause = pauseResults.first {
-            if pause.objectID != self.objectID {
-                // This a different pause whose date range overlaps with ours.
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "MMM d, yyyy"
-                let formattedFirstDate = pause.firstDayEffective!.string(formatter: dateFormatter)
-                let formattedLastDate = pause.lastDayEffective!.string(formatter: dateFormatter)
-                
-                return (false,
-                        "The date range overlaps with another pause with the description " +
-                            "\"\(pause.shortDescription!)\" from \(formattedFirstDate) to " +
-                            "\(formattedLastDate). Change the date range so it doesn't overlap " +
-                            "with any other pauses.")
-            }
-        }
-        
         self.shortDescription = _shortDescription
+        self.amountPerDay = _amountPerDay
         self.firstDayEffective = _firstDayEffective
         self.lastDayEffective = _lastDayEffective
         self.dateCreated = _dateCreated
         return (true, nil)
     }
     
-    func overlapsWith(pause: Pause) -> Bool? {
-        guard self.firstDayEffective != nil &&
-              self.lastDayEffective != nil &&
-              pause.firstDayEffective != nil &&
-              pause.lastDayEffective != nil else {
-                return nil
-        }
-        return self.firstDayEffective! <= pause.lastDayEffective! &&
-                self.lastDayEffective! >= pause.firstDayEffective!
-    }
-    
-    func humanReadableRange() -> String {
-        // Format the dates like 3/6 or 3/6/16.
-        let thisYear = CalendarDay().year
-        let dateFormatter = DateFormatter()
-        if firstDayEffective!.year == thisYear &&
-            lastDayEffective!.year == thisYear {
-            dateFormatter.dateFormat = "M/d"
-        } else {
-            dateFormatter.dateFormat = "M/d/yy"
-        }
-        
-        let firstDay = firstDayEffective!.string(formatter: dateFormatter)
-        if firstDayEffective! == lastDayEffective! {
-            return "\(firstDay)"
-        } else {
-            let lastDay = lastDayEffective!.string(formatter: dateFormatter)
-            return "\(firstDay) - \(lastDay)"
-        }
-    }
-    
     // Accessor functions (for Swift 3 classes)
-
+    
     public var dateCreated: Date? {
         get {
             return dateCreated_ as Date?
@@ -273,6 +239,19 @@ public class Pause: NSManagedObject {
         }
     }
     
+    public var amountPerDay: Decimal? {
+        get {
+            return amountPerDay_ as Decimal?
+        }
+        set {
+            if newValue != nil {
+                amountPerDay_ = NSDecimalNumber(decimal: newValue!)
+            } else {
+                amountPerDay_ = nil
+            }
+        }
+    }
+    
     public var firstDayEffective: CalendarDay? {
         get {
             if let day = firstDateEffective_ as Date? {
@@ -285,8 +264,8 @@ public class Pause: NSManagedObject {
             if newValue != nil {
                 // Get relevant days.
                 firstDateEffective_ = newValue!.gmtDate as NSDate
-
-                let relevantDays = Day.getRelevantDaysForPause(self, context: context)
+                
+                let relevantDays = Day.getRelevantDaysForAdjustment(self, context: context)
                 self.daysAffected = Set<Day>(relevantDays)
             } else {
                 self.daysAffected = Set<Day>()
@@ -307,14 +286,13 @@ public class Pause: NSManagedObject {
             if newValue != nil {
                 lastDateEffective_ = newValue!.gmtDate as NSDate
                 
-                let relevantDays = Day.getRelevantDaysForPause(self, context: context)
+                let relevantDays = Day.getRelevantDaysForAdjustment(self, context: context)
                 self.daysAffected = Set<Day>(relevantDays)
             } else {
                 lastDateEffective_ = nil
             }
         }
     }
-
     
     public var sortedDaysAffected: [Day]? {
         if let affected = daysAffected {
