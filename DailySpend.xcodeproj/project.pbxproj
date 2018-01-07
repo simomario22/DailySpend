@@ -10,7 +10,6 @@
 		C503F13A1EA1A8A200FA95A7 /* Export.swift in Sources */ = {isa = PBXBuildFile; fileRef = C503F1391EA1A8A100FA95A7 /* Export.swift */; };
 		C517B1FE1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = C517B1EA1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt */; };
 		C517B1FF1EBC134200CDAA17 /* UICountingLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = C517B1EC1EBC134200CDAA17 /* UICountingLabel.m */; };
-		C51879191F00416F00881FB6 /* NYTPhotoViewerCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C5A81A791F0040540032D9F1 /* NYTPhotoViewerCore.framework */; };
 		C518791A1F00416F00881FB6 /* ZipArchive.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C5A81A7A1F0040540032D9F1 /* ZipArchive.framework */; };
 		C518791F1F00461000881FB6 /* PhotoBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = C518791E1F00461000881FB6 /* PhotoBox.swift */; };
 		C518B59A1E88C7F0009CA4BB /* Decimal+DoubleValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C518B5991E88C7F0009CA4BB /* Decimal+DoubleValue.swift */; };
@@ -22,6 +21,7 @@
 		C53BCAA71E9203BC000B5EE1 /* cal_recur.png in Resources */ = {isa = PBXBuildFile; fileRef = C53BCAA41E9203BC000B5EE1 /* cal_recur.png */; };
 		C53BCAA81E9203BC000B5EE1 /* cal_recur@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C53BCAA51E9203BC000B5EE1 /* cal_recur@2x.png */; };
 		C53BCAA91E9203BC000B5EE1 /* cal_recur@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C53BCAA61E9203BC000B5EE1 /* cal_recur@3x.png */; };
+		C54BF5B61FF8370F007F628D /* NYTPhotoViewer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C5A81A781F0040540032D9F1 /* NYTPhotoViewer.framework */; };
 		C54E4F491EFD3984006A1CA3 /* ImageSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54E4F481EFD3984006A1CA3 /* ImageSelectorView.swift */; };
 		C556D2521F2466EB008CA20E /* ExpenseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C556D2511F2466EB008CA20E /* ExpenseViewController.swift */; };
 		C556D2541F247C6B008CA20E /* UIControl+Closures.swift in Sources */ = {isa = PBXBuildFile; fileRef = C556D2531F247C6B008CA20E /* UIControl+Closures.swift */; };
@@ -155,7 +155,6 @@
 		C5A287C41EC1741200D3479A /* DailySpend 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "DailySpend 2.xcdatamodel"; sourceTree = "<group>"; };
 		C5A81A771F0040540032D9F1 /* FLAnimatedImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FLAnimatedImage.framework; path = Carthage/Build/iOS/FLAnimatedImage.framework; sourceTree = "<group>"; };
 		C5A81A781F0040540032D9F1 /* NYTPhotoViewer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NYTPhotoViewer.framework; path = Carthage/Build/iOS/NYTPhotoViewer.framework; sourceTree = "<group>"; };
-		C5A81A791F0040540032D9F1 /* NYTPhotoViewerCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NYTPhotoViewerCore.framework; path = Carthage/Build/iOS/NYTPhotoViewerCore.framework; sourceTree = "<group>"; };
 		C5A81A7A1F0040540032D9F1 /* ZipArchive.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ZipArchive.framework; path = Carthage/Build/iOS/ZipArchive.framework; sourceTree = "<group>"; };
 		C5B367CC1EBBD65E006B5ADC /* cog.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cog.png; sourceTree = "<group>"; };
 		C5B367CD1EBBD65E006B5ADC /* cog@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cog@2x.png"; sourceTree = "<group>"; };
@@ -184,8 +183,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C51879191F00416F00881FB6 /* NYTPhotoViewerCore.framework in Frameworks */,
 				C518791A1F00416F00881FB6 /* ZipArchive.framework in Frameworks */,
+				C54BF5B61FF8370F007F628D /* NYTPhotoViewer.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -211,7 +210,6 @@
 			children = (
 				C5A81A771F0040540032D9F1 /* FLAnimatedImage.framework */,
 				C5A81A781F0040540032D9F1 /* NYTPhotoViewer.framework */,
-				C5A81A791F0040540032D9F1 /* NYTPhotoViewerCore.framework */,
 				C5A81A7A1F0040540032D9F1 /* ZipArchive.framework */,
 			);
 			name = Frameworks;

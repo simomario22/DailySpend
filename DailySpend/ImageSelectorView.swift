@@ -283,9 +283,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIScrollViewDel
         // Present the NYTimes photos view controller.
         let photoId = sender.tag
 
-        let vc = NYTPhotosViewController(photos: boxes,
-                                         initialPhoto: boxes[photoId],
-                                         delegate: self)
+        let vc = NYTPhotosViewController(dataSource: NYTPhotoViewerArrayDataSource(photos: boxes), initialPhoto: boxes[photoId], delegate: self)
         selectorDelegate?.present(vc, animated: true, completion: nil, sender: self)
     }
     

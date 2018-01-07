@@ -83,7 +83,7 @@ public class Expense: NSManagedObject {
         }
         
         if let shortDescription = json["shortDescription"] as? String {
-            if shortDescription.characters.count == 0 {
+            if shortDescription.count == 0 {
                 Logger.debug("shortDescription empty in Expense")
                 return nil
             }

@@ -132,21 +132,21 @@ class ReviewTableViewCell: UITableViewCell {
         
         // Add colors to all the strings.
         var start = 0
-        var len = yesterdayCarryString.characters.count
+        var len = yesterdayCarryString.count
         var color = yesterdayCarry < 0 ? redColor : greenColor
         addAttribute(color, start, len)
         
         addAttribute(UIColor.black, start + len, 3)
         
         start = len + 3
-        len = overUnderString.characters.count
+        len = overUnderString.count
         color = overUnder < 0 ? redColor : greenColor
         addAttribute(color, start, len)
 
         addAttribute(UIColor.black, start + len, 3)
         
         start = start + len + 3
-        len = todayCarryString.characters.count
+        len = todayCarryString.count
         color = todayCarry < 0 ? redColor : greenColor
         addAttribute(color, start, len)
 

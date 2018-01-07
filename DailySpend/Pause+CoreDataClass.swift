@@ -91,7 +91,7 @@ public class Pause: NSManagedObject {
         }
         
         if let shortDescription = json["shortDescription"] as? String {
-            if shortDescription.characters.count == 0 {
+            if shortDescription.count == 0 {
                 Logger.debug("shortDescription empty in Pause")
                 return nil
             }
@@ -164,7 +164,7 @@ public class Pause: NSManagedObject {
     }
     
     func validate(context: NSManagedObjectContext) -> (valid: Bool, problem: String?) {
-        if self.shortDescription == nil || self.shortDescription!.characters.count == 0 {
+        if self.shortDescription == nil || self.shortDescription!.count == 0 {
             return (false, "This pause must have a description.")
         }
         

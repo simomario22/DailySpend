@@ -91,7 +91,7 @@ public class DayAdjustment: NSManagedObject {
         }
         
         if let reason = json["reason"] as? String {
-            if reason.characters.count == 0 {
+            if reason.count == 0 {
                 Logger.debug("reason is empty in DayAdjustment")
                 return nil
             }

@@ -22,8 +22,8 @@ extension String {
     
     func parseValidAmount(maxLength: Int?) -> Double {
         var negative = false
-        if self.characters.count > 0 &&
-            self.characters[self.startIndex] == "-" &&
+        if self.count > 0 &&
+            self[self.startIndex] == "-" &&
             self.components(separatedBy: "-").count == 1 {
             negative = true
         }

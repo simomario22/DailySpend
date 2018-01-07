@@ -93,7 +93,7 @@ class DayAdjustmentViewController: UIViewController {
         let amount = Decimal(amountField.text!.parseValidAmount(maxLength: 8)) * posNeg
         let reason = reasonField.text!
         if amount == 0 ||
-            reason.characters.count == 0 ||
+            reason.count == 0 ||
             selectedDay == nil {
             let message = "Please enter valid values for amount, reaons, and date received."
             let alert = UIAlertController(title: "Invalid Fields",

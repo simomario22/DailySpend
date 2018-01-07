@@ -245,7 +245,7 @@ class ExpenseView: UIView {
     @objc func save() {
         if dataSource.amount == nil ||
             dataSource.amount!.doubleValue <= 0 ||
-            dataSource.shortDescription!.characters.count == 0 {
+            dataSource.shortDescription!.count == 0 {
             let message = "Please enter values for amount and description."
             let alert = UIAlertController(title: "Invalid Fields",
                                           message: message,

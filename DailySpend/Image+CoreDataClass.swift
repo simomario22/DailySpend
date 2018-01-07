@@ -47,7 +47,7 @@ public class Image: NSManagedObject {
         let image = Image(context: context)
         
         if let imageName = json["imageName"] as? String {
-            if imageName.characters.count == 0 {
+            if imageName.count == 0 {
                 Logger.debug("imageName is empty in Image")
                 return nil
             }

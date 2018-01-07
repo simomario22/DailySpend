@@ -90,7 +90,7 @@ public class MonthAdjustment: NSManagedObject {
         }
         
         if let reason = json["reason"] as? String {
-            if reason.characters.count == 0 {
+            if reason.count == 0 {
                 Logger.debug("reason is empty in MonthAdjustment")
                 return nil
             }
