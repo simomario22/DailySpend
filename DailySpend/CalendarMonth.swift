@@ -27,23 +27,13 @@ public class CalendarMonth {
     }
 
     /*
-     * @param dateInLocalMonth A date representing a point in time that is in 
+     * @param dateInLocalMonth A date representing a point in time that is in
      * the desired month when using the system's current time zone.
      */
     convenience init(dateInLocalMonth date: Date) {
-        // Convert to the beginning of the date's month in GMT
-        
-        let systemCal = Calendar(identifier: .gregorian)
-        
-        let componentSet: Set<Calendar.Component> = [.year, .month, .day]
-        
-        var dateComponents = systemCal.dateComponents(componentSet, from: date)
-        dateComponents.setValue(1, for: .day)
-
-        let beginningOfMonthInGMT = CalendarMonth.gmtCal.date(from: dateComponents)!
-        
-        self.init(dateInGMTMonth: beginningOfMonthInGMT)
+        self.init(day: CalendarDay(dateInLocalDay: date))
     }
+    
     
     convenience init(day: CalendarDay) {
         self.init(dateInGMTMonth: day.gmtDate)
@@ -57,7 +47,7 @@ public class CalendarMonth {
      * Returns a date by adding days then months by incrementing those values 
      * in that order.
      */
-    func add(months: Int = 0) -> CalendarMonth {
+    func add(months: Int) -> CalendarMonth {
         let cal = CalendarMonth.gmtCal
 
         // Get interval for months
@@ -71,7 +61,7 @@ public class CalendarMonth {
         return CalendarMonth(dateInGMTMonth: datePlusInterval)
     }
     
-    func subtract(months: Int = 0) -> CalendarMonth {
+    func subtract(months: Int) -> CalendarMonth {
         return self.add(months: -months)
     }
     
@@ -89,11 +79,20 @@ public class CalendarMonth {
     func contains(day: CalendarDay) -> Bool {
         return day.month == self.month && day.year == self.year
     }
+    
+    func contains(week: CalendarWeek) -> Bool {
+        return week.month == self.month && week.year == self.year
+    }
 
     var daysInMonth: Int {
         return CalendarMonth.gmtCal.range(of: .day, in: .month, for: self.date)!.count
     }
-
+    
+    var weeksInMonth: Int {
+        // determine how many sundays in a particular month
+        return CalendarMonth.gmtCal.range(of: .day, in: .month, for: self.date)!.count
+    }
+    
     var month: Int {
         return CalendarMonth.gmtCal.component(.month, from: self.date)
     }
@@ -104,6 +103,14 @@ public class CalendarMonth {
     
     static var gmtTimeZone: TimeZone {
         return TimeZone(secondsFromGMT: 0)!
+    }
+    
+    static var typicalDaysInMonth: Int {
+        return 30
+    }
+    
+    static var typicalWeeksInMonth: Int {
+        return 4
     }
 
     private static var gmtCal: Calendar {

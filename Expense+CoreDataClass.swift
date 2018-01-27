@@ -32,6 +32,14 @@ public class Expense: NSManagedObject {
         if let notes = notes {
             jsonObj["notes"] = notes
         }
+
+        if let transactionDate = transactionDate {
+            let num = transactionDate.timeIntervalSince1970 as NSNumber
+            jsonObj["transactionDate"] = num
+        } else {
+            Logger.debug("couldn't unwrap transactionDate in Expense")
+            return nil
+        }
         
         if let dateCreated = dateCreated {
             let num = dateCreated.timeIntervalSince1970 as NSNumber
@@ -108,6 +116,18 @@ public class Expense: NSManagedObject {
             }
         }
         
+        if let transactionDate = json["transactionDate"] as? NSNumber {
+            let date = Date(timeIntervalSince1970: transactionDate.doubleValue)
+            if date > Date() {
+                Logger.debug("transactionDate after today in Expense")
+                return nil
+            }
+            expense.transactionDate = date
+        } else {
+            Logger.debug("coulnd't unwrap transactionDate in Expense")
+            return nil
+        }
+        
         if let dateCreated = json["dateCreated"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateCreated.doubleValue)
             if date > Date() {
@@ -124,7 +144,7 @@ public class Expense: NSManagedObject {
     }
     
     // Accessor functions (for Swift 3 classes)
-
+    
     public var amount: Decimal? {
         get {
             return amount_ as Decimal?
@@ -134,6 +154,19 @@ public class Expense: NSManagedObject {
                 amount_ = NSDecimalNumber(decimal: newValue!)
             } else {
                 amount_ = nil
+            }
+        }
+    }
+    
+    public var transactionDate: Date? {
+        get {
+            return transactionDate_ as Date?
+        }
+        set {
+            if newValue != nil {
+                transactionDate_ = newValue! as NSDate
+            } else {
+                transactionDate_ = nil
             }
         }
     }
@@ -150,7 +183,7 @@ public class Expense: NSManagedObject {
             }
         }
     }
-
+    
     public var shortDescription: String? {
         get {
             return shortDescription_
@@ -169,13 +202,24 @@ public class Expense: NSManagedObject {
         }
     }
     
+    public var sortedGoals: [Goal]? {
+        if let g = goals {
+            return g.sorted(by: { $0.dateCreated! < $1.dateCreated! })
+        } else {
+            return nil
+        }
+    }
     
-    public var day: Day? {
+    public var goals: Set<Goal>? {
         get {
-            return day_
+            return goals_ as! Set?
         }
         set {
-            day_ = newValue
+            if newValue != nil {
+                goals_ = NSSet(set: newValue!)
+            } else {
+                goals_ = nil
+            }
         }
     }
     
@@ -200,3 +244,4 @@ public class Expense: NSManagedObject {
         }
     }
 }
+

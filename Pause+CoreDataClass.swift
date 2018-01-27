@@ -13,7 +13,7 @@ import CoreData
 public class Pause: NSManagedObject {
     public func json() -> [String: Any]? {
         var jsonObj = [String: Any]()
-
+        
         if let shortDescription = shortDescription {
             jsonObj["shortDescription"] = shortDescription
         } else {
@@ -121,17 +121,13 @@ public class Pause: NSManagedObject {
             }
         }
         
-        // Get relevant days.
-        let relevantDays = Day.getRelevantDaysForPause(pause, context: context)
-        pause.daysAffected = Set<Day>(relevantDays)
-
         return pause
     }
     
     class func get(context: NSManagedObjectContext,
-                    predicate: NSPredicate? = nil,
-                    sortDescriptors: [NSSortDescriptor]? = nil,
-                    fetchLimit: Int = 0) -> [Pause]? {
+                   predicate: NSPredicate? = nil,
+                   sortDescriptors: [NSSortDescriptor]? = nil,
+                   fetchLimit: Int = 0) -> [Pause]? {
         let fetchRequest: NSFetchRequest<Pause> = Pause.fetchRequest()
         fetchRequest.predicate = predicate
         fetchRequest.sortDescriptors = sortDescriptors
@@ -140,25 +136,6 @@ public class Pause: NSManagedObject {
         let pauseResults = try? context.fetch(fetchRequest)
         
         return pauseResults
-    }
-    
-    /*
-     * Return the pause that affects a certain day.
-     */
-    class func getRelevantPauseForDay(day: Day, context: NSManagedObjectContext) -> Pause? {
-        let fetchRequest: NSFetchRequest<Pause> = Pause.fetchRequest()
-        let pred = NSPredicate(format: "firstDateEffective_ <= %@ AND lastDateEffective_ >= %@",
-                               day.calendarDay!.gmtDate as CVarArg, day.calendarDay!.gmtDate as CVarArg)
-        fetchRequest.predicate = pred
-        let sortDesc = NSSortDescriptor(key: "dateCreated_", ascending: true)
-        fetchRequest.sortDescriptors = [sortDesc]
-        let pauseResults = try! context.fetch(fetchRequest)
-
-        if pauseResults.count > 1 {
-            Logger.warning("There are overlapping pauses.")
-        }
-        
-        return pauseResults.isEmpty ? nil : pauseResults[0]
     }
     
     func propose(shortDescription: String?? = nil,
@@ -207,7 +184,7 @@ public class Pause: NSManagedObject {
                         "The date range overlaps with another pause with the description " +
                             "\"\(pause.shortDescription!)\" from \(formattedFirstDate) to " +
                             "\(formattedLastDate). Change the date range so it doesn't overlap " +
-                            "with any other pauses.")
+                    "with any other pauses.")
             }
         }
         
@@ -220,13 +197,13 @@ public class Pause: NSManagedObject {
     
     func overlapsWith(pause: Pause) -> Bool? {
         guard self.firstDayEffective != nil &&
-              self.lastDayEffective != nil &&
-              pause.firstDayEffective != nil &&
-              pause.lastDayEffective != nil else {
+            self.lastDayEffective != nil &&
+            pause.firstDayEffective != nil &&
+            pause.lastDayEffective != nil else {
                 return nil
         }
         return self.firstDayEffective! <= pause.lastDayEffective! &&
-                self.lastDayEffective! >= pause.firstDayEffective!
+            self.lastDayEffective! >= pause.firstDayEffective!
     }
     
     func humanReadableRange() -> String {
@@ -250,7 +227,7 @@ public class Pause: NSManagedObject {
     }
     
     // Accessor functions (for Swift 3 classes)
-
+    
     public var dateCreated: Date? {
         get {
             return dateCreated_ as Date?
@@ -283,13 +260,8 @@ public class Pause: NSManagedObject {
         }
         set {
             if newValue != nil {
-                // Get relevant days.
                 firstDateEffective_ = newValue!.gmtDate as NSDate
-
-                let relevantDays = Day.getRelevantDaysForPause(self, context: context)
-                self.daysAffected = Set<Day>(relevantDays)
             } else {
-                self.daysAffected = Set<Day>()
                 firstDateEffective_ = nil
             }
         }
@@ -306,34 +278,31 @@ public class Pause: NSManagedObject {
         set {
             if newValue != nil {
                 lastDateEffective_ = newValue!.gmtDate as NSDate
-                
-                let relevantDays = Day.getRelevantDaysForPause(self, context: context)
-                self.daysAffected = Set<Day>(relevantDays)
             } else {
                 lastDateEffective_ = nil
             }
         }
     }
-
     
-    public var sortedDaysAffected: [Day]? {
-        if let affected = daysAffected {
-            return affected.sorted(by: { $0.calendarDay! < $1.calendarDay! })
+    public var sortedGoals: [Goal]? {
+        if let g = goals {
+            return g.sorted(by: { $0.dateCreated! < $1.dateCreated! })
         } else {
             return nil
         }
     }
     
-    public var daysAffected: Set<Day>? {
+    public var goals: Set<Goal>? {
         get {
-            return daysAffected_ as! Set?
+            return goals_ as! Set?
         }
         set {
             if newValue != nil {
-                daysAffected_ = NSSet(set: newValue!)
+                goals_ = NSSet(set: newValue!)
             } else {
-                daysAffected_ = nil
+                goals_ = nil
             }
         }
     }
 }
+

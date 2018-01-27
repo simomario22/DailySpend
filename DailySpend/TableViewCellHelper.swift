@@ -131,5 +131,22 @@ class TableViewCellHelper {
         
         return cell
     }
+    
+    /**
+     * Return a cell with a date picker.
+     */
+    public func expenseCell(expense: Expense?,
+                           day: CalendarDay,
+                           addedExpense: @escaping (_ shortDescription: String, _ amount: Decimal) -> (),
+                           selectedDetailDisclosure: @escaping () -> (),
+                           beganEditing: @escaping (_ newHeight: Int) -> (),
+                           endedEditing: @escaping (_ newHeight: Int) -> ()) -> UITableViewCell {
+        var cell: ExpenseTableViewCell! = tableView.dequeueReusableCell(withIdentifier: "addExpense") as? ExpenseTableViewCell
+        if cell == nil {
+            cell = ExpenseTableViewCell(style: .default, reuseIdentifier: "addExpense")
+        }
+        
+        return cell
+    }
 
 }

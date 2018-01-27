@@ -1,165 +1,86 @@
 //
-//  AddExpenseTableViewCell.swift
+//  DatePickerTableViewCell.swift
 //  DailySpend
 //
-//  Created by Josh Sherick on 3/14/17.
+//  Created by Josh Sherick on 9/9/17.
 //  Copyright © 2017 Josh Sherick. All rights reserved.
 //
 
 import UIKit
-import CoreData
 
-class ExpenseTableViewCell:
-UITableViewCell, ExpenseViewDelegate {
-    var delegate: AddExpenseTableViewCellDelegate?
-    var expenseView: ExpenseView!
-    @IBOutlet weak var addExpenseLabel: UILabel!
+class ExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
     
-    var leftBBIStack = [UIBarButtonItem]()
-    var rightBBIStack = [UIBarButtonItem]()
+    let margin: CGFloat = 8
+    let inset: CGFloat = 15
     
-    let topMargin: CGFloat = 8
-
+    var textField: UITextField!
+    
+    var dataSource: ExpenseViewDataSource!
+    
+    private var beganEditing: ((UITextField) -> ())?
+    private var endedEditing: ((UITextField) -> ())?
+    private var addedExpense: ((UITextField, Expense) -> ())?
+    private var selectedDetailDisclosure: ((UITextField) -> ())?
+    
     override func layoutSubviews() {
-        if expenseView != nil {
-            expenseView.frame = CGRect(x: 0, y: addExpenseLabel.frame.bottomEdge,
-                                       width: bounds.width, height: bounds.height)
+        super.layoutSubviews()
+        if textField != nil {
+            var frame = bounds.insetBy(dx: margin, dy: margin)
+            if hasTitle {
+                frame.size.width = (bounds.size.width / 2) - inset
+                frame.origin.x = bounds.size.width - frame.size.width - inset
+            } else {
+                frame.origin.x += (inset - margin)
+            }
+            textField.frame = frame
+            
         }
     }
     
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        expenseView = ExpenseView()
-        expenseView.delegate = self
-        insertSubview(expenseView, belowSubview: addExpenseLabel)
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(resetView),
-                                               name: NSNotification.Name.init("CancelAddingExpense"),
-                                               object: UIApplication.shared)
-        resetView()
+        textField = UITextField()
+        textField.borderStyle = .none
+        textField.delegate = self
+        self.addSubview(textField)
+        textField.addTarget(self, action: #selector(textFieldChanged(field:)), for: .editingChanged)
     }
     
-    override func prepareForReuse() {
-        super.prepareForReuse()
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
     }
     
-    @objc func resetView() {
-        expenseView.dataSource = ExpenseProvider(expense: nil)
-        expenseView.updateFieldValues()
-        
-        UIView.animate(withDuration: 0.2, animations: {
-            let top = self.topMargin + self.addExpenseLabel.frame.size.height
-            self.expenseView.frame = CGRect(x: 0,
-                                            y: top,
-                                            width: self.bounds.width,
-                                            height: self.bounds.height)
-        })
-        
-        UIView.animate(withDuration: 0.1, delay: 0.1, options: .curveEaseInOut,
-        animations: {
-            let frame = self.addExpenseLabel.frame
-            self.addExpenseLabel.frame = CGRect(origin:
-                                            CGPoint(x: frame.origin.x,
-                                                    y: self.topMargin),
-                                                size: frame.size)
-        }, completion: nil)
-    }
-
-    func present(_ vc: UIViewController, animated: Bool, completion: (() -> Void)?, sender: Any?) {
-        delegate?.present(vc, animated: animated, completion: completion, sender: sender)
-    }
-
-    func didBeginEditing(sender: ExpenseView) {
-        UIView.animate(withDuration: 0.2, animations: {
-            self.expenseView.frame = CGRect(x: 0,
-                                            y: 0,
-                                            width: self.bounds.width,
-                                            height: self.bounds.height)
-        })
-        
-        UIView.animate(withDuration: 0.1, delay: 0.1, options: .curveEaseInOut,
-        animations: {
-            let bottom = self.addExpenseLabel.frame.size.height + self.topMargin
-            let newFrame = self.addExpenseLabel.frame.offsetBy(dx: 0, dy: -bottom)
-            self.addExpenseLabel.frame = newFrame
-        }, completion: nil)
-        
-        let rightBBI = (delegate as? TodayViewController)?.navigationItem.rightBarButtonItem
-        let leftBBI = (delegate as? TodayViewController)?.navigationItem.leftBarButtonItem
-        if rightBBI != nil {
-            rightBBIStack.append(rightBBI!)
-        }
-        
-        if leftBBI != nil {
-            leftBBIStack.append(leftBBI!)
-        }
-        
-        delegate?.expandCell(sender: self)
-    }
-
-    func didEndEditing(sender: ExpenseView, expense: Expense?) {
-        if let expense = expense {
-            delegate?.addedExpense(expense: expense)
-        }
-        delegate?.collapseCell(sender: self)
-        resetView()
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        beginEditingCallback?(textField)
     }
     
-    func pushRightBBI(_ bbi: UIBarButtonItem, sender: Any?) {
-        rightBBIStack.append(bbi)
-        delegate?.setRightBBI(rightBBIStack.last!)
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        endEditingCallback?(textField)
     }
     
-    func popRightBBI(sender: Any?) {
-        _ = rightBBIStack.popLast()
-        delegate?.setRightBBI(rightBBIStack.last)
+    @objc func textFieldChanged(field: UITextField!) {
+        changedCallback?(field)
     }
     
-    func pushLeftBBI(_ bbi: UIBarButtonItem, sender: Any?) {
-        leftBBIStack.append(bbi)
-        delegate?.setLeftBBI(leftBBIStack.last!)
+    func setBeginEditingCallback(_ cb: ((UITextField) -> ())?) {
+        beginEditingCallback = cb
     }
     
-    func popLeftBBI(sender: Any?) {
-        _ = leftBBIStack.popLast()
-        delegate?.setLeftBBI(leftBBIStack.last)
+    func setEndEditingCallback(_ cb: ((UITextField) -> ())?) {
+        endEditingCallback = cb
     }
     
-    func disableRightBBI(sender: Any?) {
-        if let bbi = rightBBIStack.last {
-            bbi.isEnabled = false
-            delegate?.setRightBBI(bbi)
-        }
+    func setChangedCallback(_ cb: ((UITextField) -> ())?) {
+        changedCallback = cb
     }
     
-    func enableRightBBI(sender: Any?) {
-        if let bbi = rightBBIStack.last {
-            bbi.isEnabled = true
-            delegate?.setRightBBI(bbi)
-        }
-    }
-
-    func disableLeftBBI(sender: Any?) {
-        if let bbi = leftBBIStack.last {
-            bbi.isEnabled = false
-            delegate?.setLeftBBI(bbi)
-        }
-    }
-    
-    func enableLeftBBI(sender: Any?) {
-        if let bbi = leftBBIStack.last {
-            bbi.isEnabled = true
-            delegate?.setLeftBBI(bbi)
+    func setHasTitle(_ newValue: Bool) {
+        if newValue != hasTitle {
+            hasTitle = newValue
+            textField.textAlignment = hasTitle ? .right : .left
+            self.setNeedsLayout()
         }
     }
 }
 
-protocol AddExpenseTableViewCellDelegate: class {
-    func expandCell(sender: ExpenseTableViewCell)
-    func collapseCell(sender: ExpenseTableViewCell)
-    func addedExpense(expense: Expense)
-    func setRightBBI(_ bbi: UIBarButtonItem?)
-    func setLeftBBI(_ bbi: UIBarButtonItem?)
-    func present(_ vc: UIViewController, animated: Bool, completion: (() -> Void)?, sender: Any?)
-    var visibleHeight: CGFloat { get }
-}

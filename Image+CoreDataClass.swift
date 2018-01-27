@@ -56,7 +56,7 @@ public class Image: NSManagedObject {
             Logger.debug("couldn't unwrap imageName in Image")
             return nil
         }
-
+        
         if let dateCreated = json["dateCreated"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateCreated.doubleValue)
             if date > Date() {
@@ -71,7 +71,7 @@ public class Image: NSManagedObject {
         
         return image
     }
-
+    
     
     public var dateCreated: Date? {
         get {
@@ -134,3 +134,4 @@ public class Image: NSManagedObject {
         }
     }
 }
+

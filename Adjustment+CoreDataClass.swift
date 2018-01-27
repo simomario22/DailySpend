@@ -14,7 +14,7 @@ import CoreData
 public class Adjustment: NSManagedObject {
     public func json() -> [String: Any]? {
         var jsonObj = [String: Any]()
-
+        
         if let amountPerDay = amountPerDay {
             let num = amountPerDay as NSNumber
             jsonObj["amountPerDay"] = num
@@ -22,7 +22,7 @@ public class Adjustment: NSManagedObject {
             Logger.debug("couldn't unwrap amountPerDay in Adjustment")
             return nil
         }
-
+        
         if let shortDescription = shortDescription {
             jsonObj["shortDescription"] = shortDescription
         } else {
@@ -53,7 +53,7 @@ public class Adjustment: NSManagedObject {
             Logger.debug("couldn't unwrap dateCreated in Adjustment")
             return nil
         }
-
+        
         return jsonObj
     }
     
@@ -62,14 +62,14 @@ public class Adjustment: NSManagedObject {
             let serialization = try? JSONSerialization.data(withJSONObject: jsonObj)
             return serialization
         }
-
+        
         return nil
     }
     
     class func create(context: NSManagedObjectContext,
                       json: [String: Any]) -> Adjustment? {
         let adjustment = Adjustment(context: context)
-
+        
         if let amountPerDay = json["amountPerDay"] as? NSNumber {
             let decimal = Decimal(amountPerDay.doubleValue)
             if decimal == 0 {
@@ -81,7 +81,7 @@ public class Adjustment: NSManagedObject {
             Logger.debug("couldn't unwrap amountPerDay in Adjustment")
             return nil
         }
-
+        
         if let dateNumber = json["firstDateEffective"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateNumber.doubleValue)
             let calDay = CalendarDay(dateInGMTDay: date)
@@ -95,7 +95,7 @@ public class Adjustment: NSManagedObject {
             Logger.debug("couldn't unwrap firstDateEffective in Adjustment")
             return nil
         }
-
+        
         if let dateNumber = json["lastDateEffective"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateNumber.doubleValue)
             let calDay = CalendarDay(dateInGMTDay: date)
@@ -110,7 +110,7 @@ public class Adjustment: NSManagedObject {
             Logger.debug("couldn't unwrap lastDateEffective in Adjustment")
             return nil
         }
-
+        
         if let shortDescription = json["shortDescription"] as? String {
             if shortDescription.count == 0 {
                 Logger.debug("shortDescription empty in Adjustment")
@@ -121,7 +121,7 @@ public class Adjustment: NSManagedObject {
             Logger.debug("couldn't unwrap shortDescription in Adjustment")
             return nil
         }
-
+        
         if let dateCreated = json["dateCreated"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateCreated.doubleValue)
             if date > Date() {
@@ -133,11 +133,7 @@ public class Adjustment: NSManagedObject {
             Logger.debug("couldn't unwrap dateCreated in Adjustment")
             return nil
         }
-
-        // Get relevant days.
-        let relevantDays = Day.getRelevantDaysForAdjustment(adjustment, context: context)
-        adjustment.daysAffected = Set<Day>(relevantDays)
-
+        
         return adjustment
     }
     
@@ -155,21 +151,6 @@ public class Adjustment: NSManagedObject {
         return adjustmentResults
     }
     
-    /*
-     * Return the adjustments that affect a certain day.
-     */
-    class func getRelevantAdjustmentsForDay(day: Day, context: NSManagedObjectContext) -> [Adjustment] {
-        let fetchRequest: NSFetchRequest<Adjustment> = Adjustment.fetchRequest()
-        let pred = NSPredicate(format: "firstDateEffective_ <= %@ AND lastDateEffective_ >= %@",
-                               day.calendarDay!.gmtDate as CVarArg, day.calendarDay!.gmtDate as CVarArg)
-        fetchRequest.predicate = pred
-        let sortDesc = NSSortDescriptor(key: "dateCreated_", ascending: true)
-        fetchRequest.sortDescriptors = [sortDesc]
-        let adjustmentResults = try! context.fetch(fetchRequest)
-        
-        return adjustmentResults
-    }
-    
     /**
      * Accepts all members of Adjustment. If the passed variables, attached to
      * corresponding variables on an Adjustment object, will form a valid
@@ -179,10 +160,10 @@ public class Adjustment: NSManagedObject {
      * readable string describing why this adjustment wouldn't be valid.
      */
     func propose(shortDescription: String?? = nil,
-                amountPerDay: Decimal?? = nil,
-                firstDayEffective: CalendarDay?? = nil,
-                lastDayEffective: CalendarDay?? = nil,
-                dateCreated: Date?? = nil) -> (valid: Bool, problem: String?) {
+                 amountPerDay: Decimal?? = nil,
+                 firstDayEffective: CalendarDay?? = nil,
+                 lastDayEffective: CalendarDay?? = nil,
+                 dateCreated: Date?? = nil) -> (valid: Bool, problem: String?) {
         
         let _shortDescription = shortDescription ?? self.shortDescription
         let _amountPerDay = amountPerDay ?? self.amountPerDay
@@ -262,13 +243,8 @@ public class Adjustment: NSManagedObject {
         }
         set {
             if newValue != nil {
-                // Get relevant days.
                 firstDateEffective_ = newValue!.gmtDate as NSDate
-                
-                let relevantDays = Day.getRelevantDaysForAdjustment(self, context: context)
-                self.daysAffected = Set<Day>(relevantDays)
             } else {
-                self.daysAffected = Set<Day>()
                 firstDateEffective_ = nil
             }
         }
@@ -285,33 +261,31 @@ public class Adjustment: NSManagedObject {
         set {
             if newValue != nil {
                 lastDateEffective_ = newValue!.gmtDate as NSDate
-                
-                let relevantDays = Day.getRelevantDaysForAdjustment(self, context: context)
-                self.daysAffected = Set<Day>(relevantDays)
             } else {
                 lastDateEffective_ = nil
             }
         }
     }
     
-    public var sortedDaysAffected: [Day]? {
-        if let affected = daysAffected {
-            return affected.sorted(by: { $0.calendarDay! < $1.calendarDay! })
+    public var sortedGoals: [Goal]? {
+        if let g = goals {
+            return g.sorted(by: { $0.dateCreated! < $1.dateCreated! })
         } else {
             return nil
         }
     }
     
-    public var daysAffected: Set<Day>? {
+    public var goals: Set<Goal>? {
         get {
-            return daysAffected_ as! Set?
+            return goals_ as! Set?
         }
         set {
             if newValue != nil {
-                daysAffected_ = NSSet(set: newValue!)
+                goals_ = NSSet(set: newValue!)
             } else {
-                daysAffected_ = nil
+                goals_ = nil
             }
         }
     }
 }
+

@@ -44,26 +44,21 @@ public class CalendarDay {
      * Returns a date by adding days then months by incrementing those values 
      * in that order.
      */
-    func add(days: Int = 0, months: Int = 0) -> CalendarDay {
+    func add(days: Int) -> CalendarDay {
         let cal = CalendarDay.gmtCal
         
         // Get interval for days
-        var interval = self.date.timeIntervalSince(cal.date(byAdding: .day,
+        let interval = self.date.timeIntervalSince(cal.date(byAdding: .day,
                                                        value: days,
                                                        to: self.date)!)
-        // Get interval for months
-        interval += self.date.timeIntervalSince(cal.date(byAdding: .month,
-                                                    value: months,
-                                                    to: self.date)!)
-        
         // Add interval to a copy of self
         var datePlusInterval = self.date
         datePlusInterval.addTimeInterval(-interval)
         return CalendarDay(dateInGMTDay: datePlusInterval)
     }
     
-    func subtract(days: Int = 0, months: Int = 0) -> CalendarDay {
-        return self.add(days: -days, months: -months)
+    func subtract(days: Int) -> CalendarDay {
+        return self.add(days: -days)
     }
     
     static func daysInRange(start: CalendarDay, end: CalendarDay) -> Int {

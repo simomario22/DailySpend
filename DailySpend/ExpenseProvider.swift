@@ -9,6 +9,19 @@
 import UIKit
 import CoreData
 
+protocol ExpenseViewDataSource: class {
+    var calDay: CalendarDay! { get set }
+    var amount: Decimal? { get set }
+    var shortDescription: String? { get set }
+    var notes: String? { get set }
+    var imageContainers: [ImageContainer]? { get }
+    
+    func setDayToToday()
+    func addImage(container: ImageContainer)
+    func removeImage(index: Int)
+    func save() -> Expense?
+}
+
 struct ImageContainer {
     var image: UIImage
     var imageName: String
