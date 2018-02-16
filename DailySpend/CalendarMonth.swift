@@ -17,12 +17,12 @@ public class CalendarMonth {
      */
     init(dateInGMTMonth date: Date) {
         let gmtCal = CalendarMonth.gmtCal
-        
+
         let componentSet: Set<Calendar.Component> = [.year, .month, .day]
-        
+
         var dateComponents = gmtCal.dateComponents(componentSet, from: date)
         dateComponents.setValue(1, for: .day)
-        
+
         self.date = gmtCal.startOfDay(for: gmtCal.date(from: dateComponents)!)
     }
 
@@ -33,18 +33,18 @@ public class CalendarMonth {
     convenience init(dateInLocalMonth date: Date) {
         self.init(day: CalendarDay(dateInLocalDay: date))
     }
-    
-    
+
+
     convenience init(day: CalendarDay) {
         self.init(dateInGMTMonth: day.gmtDate)
     }
-    
+
     convenience init() {
         self.init(dateInLocalMonth: Date())
     }
-    
+
     /*
-     * Returns a date by adding days then months by incrementing those values 
+     * Returns a date by adding days then months by incrementing those values
      * in that order.
      */
     func add(months: Int) -> CalendarMonth {
@@ -54,32 +54,32 @@ public class CalendarMonth {
         let interval = self.date.timeIntervalSince(cal.date(byAdding: .month,
                                                     value: months,
                                                     to: self.date)!)
-        
+
         // Add interval to a copy of self
         var datePlusInterval = self.date
         datePlusInterval.addTimeInterval(-interval)
         return CalendarMonth(dateInGMTMonth: datePlusInterval)
     }
-    
+
     func subtract(months: Int) -> CalendarMonth {
         return self.add(months: -months)
     }
-    
+
     func string(formatter: DateFormatter) -> String {
         let origTZ = formatter.timeZone
         formatter.timeZone = CalendarMonth.gmtTimeZone
-        
+
         let s = formatter.string(from: date)
-        
+
         formatter.timeZone = origTZ
 
         return s
     }
-    
+
     func contains(day: CalendarDay) -> Bool {
         return day.month == self.month && day.year == self.year
     }
-    
+
     func contains(week: CalendarWeek) -> Bool {
         return week.month == self.month && week.year == self.year
     }
@@ -87,38 +87,72 @@ public class CalendarMonth {
     var daysInMonth: Int {
         return CalendarMonth.gmtCal.range(of: .day, in: .month, for: self.date)!.count
     }
-    
+
+    private func sundaysInMonth() -> Int {
+        var sundaysInMonth = 0
+
+        var dateComponents = CalendarMonth.gmtCal.dateComponents([.year, .month], from: self.date)
+        let originalMonth = dateComponents.month!
+        var week = 1
+        dateComponents.setValue(week, for: .weekOfMonth)
+        dateComponents.setValue(1, for: .weekday)
+
+        func getNewMonth(_ dc: DateComponents) -> Int {
+            let newDate = CalendarMonth.gmtCal.date(from: dc)!
+            return CalendarMonth.gmtCal.dateComponents([.month], from: newDate).month!
+        }
+
+        while originalMonth != getNewMonth(dateComponents) {
+            week += 1
+            dateComponents.setValue(week, for: .weekOfMonth)
+        }
+
+        repeat {
+            sundaysInMonth += 1
+            week += 1
+            dateComponents.setValue(week, for: .weekOfMonth)
+        } while originalMonth == getNewMonth(dateComponents)
+
+        return sundaysInMonth
+    }
+
     var weeksInMonth: Int {
-        // determine how many sundays in a particular month
-        return CalendarMonth.gmtCal.range(of: .day, in: .month, for: self.date)!.count
+        // We are count a week as "in" a month if the Sunday of that week is
+        // in this month.
+        return sundaysInMonth()
     }
-    
+
     var month: Int {
-        return CalendarMonth.gmtCal.component(.month, from: self.date)
+        return CalendarMonth.gmtCal.component(.month, from: self.gmtDate)
     }
-    
+
     var year: Int {
         return CalendarMonth.gmtCal.component(.year, from: self.date)
     }
-    
+
     static var gmtTimeZone: TimeZone {
         return TimeZone(secondsFromGMT: 0)!
     }
-    
+
     static var typicalDaysInMonth: Int {
         return 30
     }
-    
+
     static var typicalWeeksInMonth: Int {
         return 4
     }
 
+    private static var _gmtCal: Calendar?
     private static var gmtCal: Calendar {
+        if let cal = CalendarMonth._gmtCal {
+            return cal
+        }
         var cal = Calendar(identifier: .gregorian)
         cal.timeZone = CalendarMonth.gmtTimeZone
+        _gmtCal = cal
         return cal
     }
-    
+
     /*
      * This represents a point in time that is 12:00:00am on the first day of
      * the month that this CalendarMonth represents.
@@ -126,26 +160,26 @@ public class CalendarMonth {
     var gmtDate: Date {
         return date
     }
-    
+
 }
 
 extension CalendarMonth: Comparable {
     static public func == (lhs: CalendarMonth, rhs: CalendarMonth) -> Bool {
         return lhs.gmtDate == rhs.gmtDate
     }
-    
+
     static public func < (lhs: CalendarMonth, rhs: CalendarMonth) -> Bool {
         return lhs.gmtDate < rhs.gmtDate
     }
-    
+
     static public func > (lhs: CalendarMonth, rhs: CalendarMonth) -> Bool {
         return lhs.gmtDate > rhs.gmtDate
     }
-    
+
     static public func <= (lhs: CalendarMonth, rhs: CalendarMonth) -> Bool {
         return lhs.gmtDate <= rhs.gmtDate
     }
-    
+
     static public func >= (lhs: CalendarMonth, rhs: CalendarMonth) -> Bool {
         return lhs.gmtDate >= rhs.gmtDate
     }

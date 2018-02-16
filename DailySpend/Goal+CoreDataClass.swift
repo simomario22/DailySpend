@@ -31,6 +31,15 @@ public class Goal: NSManagedObject {
         }
     }
     
+    public var periodMultiplier: Int {
+        get {
+            return Int(periodMultiplier_)
+        }
+        set {
+            periodMultiplier_ = Int64(newValue)
+        }
+    }
+    
     public var reconciled: Int {
         get {
             return Int(reconciled_)
@@ -39,7 +48,7 @@ public class Goal: NSManagedObject {
             reconciled_ = Int64(newValue)
         }
     }
-  
+    
     public var jsonId: Int {
         get {
             return Int(jsonId_)
@@ -182,4 +191,31 @@ public class Goal: NSManagedObject {
             }
         }
     }
+    
+    public var parentGoal: Goal? {
+        get {
+            return parentGoal_
+        }
+        set {
+            if newValue != nil {
+                parentGoal_ = newValue
+            } else {
+                parentGoal_ = nil
+            }
+        }
+    }
+    
+    public var childGoals: Set<Goal>? {
+        get {
+            return childGoals_ as! Set?
+        }
+        set {
+            if newValue != nil {
+                childGoals_ = NSSet(set: newValue!)
+            } else {
+                childGoals_ = nil
+            }
+        }
+    }
 }
+

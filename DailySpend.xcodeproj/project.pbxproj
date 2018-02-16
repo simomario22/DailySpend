@@ -8,16 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		C503F13A1EA1A8A200FA95A7 /* Export.swift in Sources */ = {isa = PBXBuildFile; fileRef = C503F1391EA1A8A100FA95A7 /* Export.swift */; };
-		C5108982201BEF92005AA672 /* Pause+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5108978201BEF92005AA672 /* Pause+CoreDataClass.swift */; };
-		C5108983201BEF92005AA672 /* Pause+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5108979201BEF92005AA672 /* Pause+CoreDataProperties.swift */; };
-		C5108984201BEF92005AA672 /* Goal+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C510897A201BEF92005AA672 /* Goal+CoreDataClass.swift */; };
-		C5108985201BEF92005AA672 /* Goal+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C510897B201BEF92005AA672 /* Goal+CoreDataProperties.swift */; };
-		C5108986201BEF92005AA672 /* Expense+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C510897C201BEF92005AA672 /* Expense+CoreDataClass.swift */; };
-		C5108987201BEF92005AA672 /* Expense+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C510897D201BEF92005AA672 /* Expense+CoreDataProperties.swift */; };
-		C5108988201BEF92005AA672 /* Image+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C510897E201BEF92005AA672 /* Image+CoreDataClass.swift */; };
-		C5108989201BEF92005AA672 /* Image+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C510897F201BEF92005AA672 /* Image+CoreDataProperties.swift */; };
-		C510898A201BEF92005AA672 /* Adjustment+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5108980201BEF92005AA672 /* Adjustment+CoreDataClass.swift */; };
-		C510898B201BEF92005AA672 /* Adjustment+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5108981201BEF92005AA672 /* Adjustment+CoreDataProperties.swift */; };
 		C5117DB11FB94A410032F854 /* ExpenseTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5117DB01FB94A410032F854 /* ExpenseTableViewCell.swift */; };
 		C517B1FE1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = C517B1EA1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt */; };
 		C517B1FF1EBC134200CDAA17 /* UICountingLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = C517B1EC1EBC134200CDAA17 /* UICountingLabel.m */; };
@@ -37,6 +27,16 @@
 		C55CCFD11F9D44E4001EF0B4 /* UIColor+255.swift in Sources */ = {isa = PBXBuildFile; fileRef = C55CCFD01F9D44E4001EF0B4 /* UIColor+255.swift */; };
 		C56CA07A1F64BDEB00874FA8 /* TextFieldTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56CA0791F64BDEB00874FA8 /* TextFieldTableViewCell.swift */; };
 		C56F7ED91F64A22B00639F8D /* DatePickerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56F7ED81F64A22B00639F8D /* DatePickerTableViewCell.swift */; };
+		C573B9F420324C410025A5A2 /* Goal+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C573B9F220324C410025A5A2 /* Goal+CoreDataClass.swift */; };
+		C573B9F520324C410025A5A2 /* Goal+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C573B9F320324C410025A5A2 /* Goal+CoreDataProperties.swift */; };
+		C573B9FE20324CDA0025A5A2 /* Image+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C573B9F620324CDA0025A5A2 /* Image+CoreDataProperties.swift */; };
+		C573B9FF20324CDA0025A5A2 /* Pause+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C573B9F720324CDA0025A5A2 /* Pause+CoreDataProperties.swift */; };
+		C573BA0020324CDA0025A5A2 /* Image+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C573B9F820324CDA0025A5A2 /* Image+CoreDataClass.swift */; };
+		C573BA0120324CDA0025A5A2 /* Adjustment+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C573B9F920324CDA0025A5A2 /* Adjustment+CoreDataProperties.swift */; };
+		C573BA0220324CDA0025A5A2 /* Adjustment+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C573B9FA20324CDA0025A5A2 /* Adjustment+CoreDataClass.swift */; };
+		C573BA0320324CDA0025A5A2 /* Expense+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C573B9FB20324CDA0025A5A2 /* Expense+CoreDataProperties.swift */; };
+		C573BA0420324CDA0025A5A2 /* Expense+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C573B9FC20324CDA0025A5A2 /* Expense+CoreDataClass.swift */; };
+		C573BA0520324CDA0025A5A2 /* Pause+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C573B9FD20324CDA0025A5A2 /* Pause+CoreDataClass.swift */; };
 		C5741D4E1FB93EDC00EEDDDD /* TodayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5741D4D1FB93EDC00EEDDDD /* TodayViewController.swift */; };
 		C5781D9B1E6E2060006BBC03 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5781D9A1E6E2060006BBC03 /* AppDelegate.swift */; };
 		C5781DA31E6E2060006BBC03 /* DailySpend.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C5781DA11E6E2060006BBC03 /* DailySpend.xcdatamodeld */; };
@@ -101,16 +101,6 @@
 		C502DB2B1F92B24C004136E5 /* DailySpend 5.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "DailySpend 5.xcdatamodel"; sourceTree = "<group>"; };
 		C503F1391EA1A8A100FA95A7 /* Export.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Export.swift; sourceTree = "<group>"; };
 		C5108977201BE8A1005AA672 /* DailySpend 6.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "DailySpend 6.xcdatamodel"; sourceTree = "<group>"; };
-		C5108978201BEF92005AA672 /* Pause+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Pause+CoreDataClass.swift"; sourceTree = "<group>"; };
-		C5108979201BEF92005AA672 /* Pause+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Pause+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		C510897A201BEF92005AA672 /* Goal+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Goal+CoreDataClass.swift"; sourceTree = "<group>"; };
-		C510897B201BEF92005AA672 /* Goal+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Goal+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		C510897C201BEF92005AA672 /* Expense+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Expense+CoreDataClass.swift"; sourceTree = "<group>"; };
-		C510897D201BEF92005AA672 /* Expense+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Expense+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		C510897E201BEF92005AA672 /* Image+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Image+CoreDataClass.swift"; sourceTree = "<group>"; };
-		C510897F201BEF92005AA672 /* Image+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Image+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		C5108980201BEF92005AA672 /* Adjustment+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Adjustment+CoreDataClass.swift"; sourceTree = "<group>"; };
-		C5108981201BEF92005AA672 /* Adjustment+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Adjustment+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		C5117DB01FB94A410032F854 /* ExpenseTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseTableViewCell.swift; sourceTree = "<group>"; };
 		C517B1EA1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "UICountingLabel-LICENSE.txt"; sourceTree = "<group>"; };
 		C517B1EB1EBC134200CDAA17 /* UICountingLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICountingLabel.h; sourceTree = "<group>"; };
@@ -134,6 +124,16 @@
 		C55CCFD01F9D44E4001EF0B4 /* UIColor+255.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+255.swift"; sourceTree = "<group>"; };
 		C56CA0791F64BDEB00874FA8 /* TextFieldTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextFieldTableViewCell.swift; sourceTree = "<group>"; };
 		C56F7ED81F64A22B00639F8D /* DatePickerTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatePickerTableViewCell.swift; sourceTree = "<group>"; };
+		C573B9F220324C410025A5A2 /* Goal+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Goal+CoreDataClass.swift"; path = "DailySpend/Goal+CoreDataClass.swift"; sourceTree = "<group>"; };
+		C573B9F320324C410025A5A2 /* Goal+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Goal+CoreDataProperties.swift"; path = "DailySpend/Goal+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		C573B9F620324CDA0025A5A2 /* Image+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Image+CoreDataProperties.swift"; path = "DailySpend/Image+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		C573B9F720324CDA0025A5A2 /* Pause+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Pause+CoreDataProperties.swift"; path = "DailySpend/Pause+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		C573B9F820324CDA0025A5A2 /* Image+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Image+CoreDataClass.swift"; path = "DailySpend/Image+CoreDataClass.swift"; sourceTree = "<group>"; };
+		C573B9F920324CDA0025A5A2 /* Adjustment+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Adjustment+CoreDataProperties.swift"; path = "DailySpend/Adjustment+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		C573B9FA20324CDA0025A5A2 /* Adjustment+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Adjustment+CoreDataClass.swift"; path = "DailySpend/Adjustment+CoreDataClass.swift"; sourceTree = "<group>"; };
+		C573B9FB20324CDA0025A5A2 /* Expense+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Expense+CoreDataProperties.swift"; path = "DailySpend/Expense+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		C573B9FC20324CDA0025A5A2 /* Expense+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Expense+CoreDataClass.swift"; path = "DailySpend/Expense+CoreDataClass.swift"; sourceTree = "<group>"; };
+		C573B9FD20324CDA0025A5A2 /* Pause+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Pause+CoreDataClass.swift"; path = "DailySpend/Pause+CoreDataClass.swift"; sourceTree = "<group>"; };
 		C5741D4D1FB93EDC00EEDDDD /* TodayViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayViewController.swift; sourceTree = "<group>"; };
 		C5781D971E6E2060006BBC03 /* DailySpend.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DailySpend.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C5781D9A1E6E2060006BBC03 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -258,16 +258,16 @@
 		C56500201E837F3A009D64F0 /* Managed Object Classes */ = {
 			isa = PBXGroup;
 			children = (
-				C510897A201BEF92005AA672 /* Goal+CoreDataClass.swift */,
-				C510897B201BEF92005AA672 /* Goal+CoreDataProperties.swift */,
-				C5108978201BEF92005AA672 /* Pause+CoreDataClass.swift */,
-				C5108979201BEF92005AA672 /* Pause+CoreDataProperties.swift */,
-				C5108980201BEF92005AA672 /* Adjustment+CoreDataClass.swift */,
-				C5108981201BEF92005AA672 /* Adjustment+CoreDataProperties.swift */,
-				C510897C201BEF92005AA672 /* Expense+CoreDataClass.swift */,
-				C510897D201BEF92005AA672 /* Expense+CoreDataProperties.swift */,
-				C510897E201BEF92005AA672 /* Image+CoreDataClass.swift */,
-				C510897F201BEF92005AA672 /* Image+CoreDataProperties.swift */,
+				C573B9F220324C410025A5A2 /* Goal+CoreDataClass.swift */,
+				C573B9F320324C410025A5A2 /* Goal+CoreDataProperties.swift */,
+				C573B9FA20324CDA0025A5A2 /* Adjustment+CoreDataClass.swift */,
+				C573B9F920324CDA0025A5A2 /* Adjustment+CoreDataProperties.swift */,
+				C573B9FC20324CDA0025A5A2 /* Expense+CoreDataClass.swift */,
+				C573B9FB20324CDA0025A5A2 /* Expense+CoreDataProperties.swift */,
+				C573B9F820324CDA0025A5A2 /* Image+CoreDataClass.swift */,
+				C573B9F620324CDA0025A5A2 /* Image+CoreDataProperties.swift */,
+				C573B9FD20324CDA0025A5A2 /* Pause+CoreDataClass.swift */,
+				C573B9F720324CDA0025A5A2 /* Pause+CoreDataProperties.swift */,
 			);
 			name = "Managed Object Classes";
 			path = ..;
@@ -585,10 +585,8 @@
 			files = (
 				C517B1FF1EBC134200CDAA17 /* UICountingLabel.m in Sources */,
 				C5DD5A831E83B383008F7FC6 /* CurrentDayTableViewCell.swift in Sources */,
+				C573B9F520324C410025A5A2 /* Goal+CoreDataProperties.swift in Sources */,
 				C5E339011F930F5700785085 /* AdjustmentViewController.swift in Sources */,
-				C5108982201BEF92005AA672 /* Pause+CoreDataClass.swift in Sources */,
-				C5108985201BEF92005AA672 /* Goal+CoreDataProperties.swift in Sources */,
-				C5108986201BEF92005AA672 /* Expense+CoreDataClass.swift in Sources */,
 				C5E339031F930F6600785085 /* AddAdjustmentViewController.swift in Sources */,
 				C5C65A221EBBFBC6002D1B12 /* ExportViewController.swift in Sources */,
 				C5F75FF41F9DB01E005F3510 /* DayReviewViewController.swift in Sources */,
@@ -597,43 +595,45 @@
 				C594F1D01F47F206006CA097 /* CalendarMonth.swift in Sources */,
 				C5F75FF21F9D6A29005F3510 /* UITextField+Size.swift in Sources */,
 				C5BA55B31E8D92C800256E7A /* InitialAdjustmentViewController.swift in Sources */,
-				C510898B201BEF92005AA672 /* Adjustment+CoreDataProperties.swift in Sources */,
+				C573BA0420324CDA0025A5A2 /* Expense+CoreDataClass.swift in Sources */,
+				C573BA0220324CDA0025A5A2 /* Adjustment+CoreDataClass.swift in Sources */,
 				C56CA07A1F64BDEB00874FA8 /* TextFieldTableViewCell.swift in Sources */,
 				C5781DCC1E6E23B2006BBC03 /* OldTodayViewController.swift in Sources */,
 				C5A261A41F66645B007CBB21 /* PauseViewController.swift in Sources */,
 				C586813C1F2E85D5008D3AEE /* BorderedTextField.swift in Sources */,
 				C58681401F2E91E6008D3AEE /* UIView+MultipleSubviews.swift in Sources */,
-				C5108989201BEF92005AA672 /* Image+CoreDataProperties.swift in Sources */,
-				C5108984201BEF92005AA672 /* Goal+CoreDataClass.swift in Sources */,
 				C54E4F491EFD3984006A1CA3 /* ImageSelectorView.swift in Sources */,
 				C5DD5A851E83B4AC008F7FC6 /* InitialSpendViewController.swift in Sources */,
 				C518B59A1E88C7F0009CA4BB /* Decimal+DoubleValue.swift in Sources */,
-				C5108983201BEF92005AA672 /* Pause+CoreDataProperties.swift in Sources */,
 				C518791F1F00461000881FB6 /* PhotoBox.swift in Sources */,
 				C5117DB11FB94A410032F854 /* ExpenseTableViewCell.swift in Sources */,
-				C5108988201BEF92005AA672 /* Image+CoreDataClass.swift in Sources */,
 				C5781DA31E6E2060006BBC03 /* DailySpend.xcdatamodeld in Sources */,
 				C594F1D61F494CD6006CA097 /* Logger.swift in Sources */,
 				C5D4DAB81F931D250013A6F3 /* SegmentedControlTableViewCell.swift in Sources */,
 				C54BF5B51FF1911A007F628D /* ExpenseCellsController.swift in Sources */,
 				C56F7ED91F64A22B00639F8D /* DatePickerTableViewCell.swift in Sources */,
+				C573BA0120324CDA0025A5A2 /* Adjustment+CoreDataProperties.swift in Sources */,
 				C594F1CE1F47EDFE006CA097 /* CalendarDay.swift in Sources */,
 				C5D3FF331F646B1300D3C7A4 /* AddPauseViewController.swift in Sources */,
 				C5E02501201C011500831269 /* CalendarWeek.swift in Sources */,
+				C573B9FF20324CDA0025A5A2 /* Pause+CoreDataProperties.swift in Sources */,
+				C573BA0320324CDA0025A5A2 /* Expense+CoreDataProperties.swift in Sources */,
 				C5781D9B1E6E2060006BBC03 /* AppDelegate.swift in Sources */,
 				C586813E1F2E8BF2008D3AEE /* CGRect+Edges.swift in Sources */,
 				C5EDC2271EBBC12400DA5CB7 /* SettingsViewController.swift in Sources */,
 				C5A4AF901FA6B52900101809 /* TableViewCellHelper.swift in Sources */,
 				C556D2521F2466EB008CA20E /* ExpenseViewController.swift in Sources */,
 				C5741D4E1FB93EDC00EEDDDD /* TodayViewController.swift in Sources */,
-				C510898A201BEF92005AA672 /* Adjustment+CoreDataClass.swift in Sources */,
-				C5108987201BEF92005AA672 /* Expense+CoreDataProperties.swift in Sources */,
 				C55CCFD11F9D44E4001EF0B4 /* UIColor+255.swift in Sources */,
+				C573B9F420324C410025A5A2 /* Goal+CoreDataClass.swift in Sources */,
+				C573BA0520324CDA0025A5A2 /* Pause+CoreDataClass.swift in Sources */,
+				C573BA0020324CDA0025A5A2 /* Image+CoreDataClass.swift in Sources */,
 				C5BA55B51E8DAB0E00256E7A /* ReviewTableViewCell.swift in Sources */,
 				C503F13A1EA1A8A200FA95A7 /* Export.swift in Sources */,
 				C51B8C511F04DE65008AC0C6 /* ExpenseView.swift in Sources */,
 				C5F75FF01F9D5A75005F3510 /* UILabel+Size.swift in Sources */,
 				C556D2541F247C6B008CA20E /* UIControl+Closures.swift in Sources */,
+				C573B9FE20324CDA0025A5A2 /* Image+CoreDataProperties.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

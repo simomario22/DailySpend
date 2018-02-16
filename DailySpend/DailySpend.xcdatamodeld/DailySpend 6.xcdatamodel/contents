@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="13533" systemVersion="17C205" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="13533" systemVersion="17D47" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Adjustment" representedClassName="Adjustment" syncable="YES">
         <attribute name="amountPerDay_" optional="YES" attributeType="Decimal" defaultValueString="0.0" syncable="YES"/>
         <attribute name="dateCreated_" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
@@ -24,11 +24,14 @@
         <attribute name="end_" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="jsonId_" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="period_" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="periodMultiplier_" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="reconciled_" optional="YES" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="shortDescription_" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="start_" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <relationship name="adjustments_" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Adjustment" inverseName="goals_" inverseEntity="Adjustment" syncable="YES"/>
+        <relationship name="childGoals_" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Goal" inverseName="parentGoal_" inverseEntity="Goal" syncable="YES"/>
         <relationship name="expenses_" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Expense" inverseName="goals_" inverseEntity="Expense" syncable="YES"/>
+        <relationship name="parentGoal_" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Goal" inverseName="childGoals_" inverseEntity="Goal" syncable="YES"/>
         <relationship name="pauses_" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Pause" inverseName="goals_" inverseEntity="Pause" syncable="YES"/>
     </entity>
     <entity name="Image" representedClassName="Image" syncable="YES">
@@ -46,7 +49,7 @@
     <elements>
         <element name="Adjustment" positionX="162" positionY="-72" width="128" height="135"/>
         <element name="Expense" positionX="-263" positionY="36" width="128" height="150"/>
-        <element name="Goal" positionX="-54" positionY="27" width="128" height="225"/>
+        <element name="Goal" positionX="-54" positionY="27" width="128" height="270"/>
         <element name="Image" positionX="-207" positionY="-99" width="128" height="90"/>
         <element name="Pause" positionX="124" positionY="81" width="128" height="120"/>
     </elements>

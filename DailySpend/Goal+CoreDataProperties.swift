@@ -2,7 +2,7 @@
 //  Goal+CoreDataProperties.swift
 //  DailySpend
 //
-//  Created by Josh Sherick on 1/26/18.
+//  Created by Josh Sherick on 2/12/18.
 //  Copyright © 2018 Josh Sherick. All rights reserved.
 //
 //
@@ -17,34 +17,21 @@ extension Goal {
         return NSFetchRequest<Goal>(entityName: "Goal")
     }
 
+    @NSManaged public var amount_: NSDecimalNumber?
     @NSManaged public var archived_: Bool
+    @NSManaged public var dateCreated_: NSDate?
+    @NSManaged public var end_: NSDate?
+    @NSManaged public var jsonId_: Int64
     @NSManaged public var period_: Int64
     @NSManaged public var reconciled_: Int64
-    @NSManaged public var jsonId_: Int64
-    @NSManaged public var start_: NSDate?
-    @NSManaged public var end_: NSDate?
-    @NSManaged public var amount_: NSDate?
     @NSManaged public var shortDescription_: String?
-    @NSManaged public var dateCreated_: NSDate?
-    @NSManaged public var expenses_: NSSet?
+    @NSManaged public var start_: NSDate?
+    @NSManaged public var periodMultiplier_: Int64
     @NSManaged public var adjustments_: NSSet?
+    @NSManaged public var expenses_: NSSet?
     @NSManaged public var pauses_: NSSet?
-}
-
-// MARK: Generated accessors for expenses_
-extension Goal {
-
-    @objc(addExpenses_Object:)
-    @NSManaged public func addToExpenses_(_ value: Expense)
-
-    @objc(removeExpenses_Object:)
-    @NSManaged public func removeFromExpenses_(_ value: Expense)
-
-    @objc(addExpenses_:)
-    @NSManaged public func addToExpenses_(_ values: NSSet)
-
-    @objc(removeExpenses_:)
-    @NSManaged public func removeFromExpenses_(_ values: NSSet)
+    @NSManaged public var parentGoal_: Goal?
+    @NSManaged public var childGoals_: NSSet?
 
 }
 
@@ -65,6 +52,23 @@ extension Goal {
 
 }
 
+// MARK: Generated accessors for expenses_
+extension Goal {
+
+    @objc(addExpenses_Object:)
+    @NSManaged public func addToExpenses_(_ value: Expense)
+
+    @objc(removeExpenses_Object:)
+    @NSManaged public func removeFromExpenses_(_ value: Expense)
+
+    @objc(addExpenses_:)
+    @NSManaged public func addToExpenses_(_ values: NSSet)
+
+    @objc(removeExpenses_:)
+    @NSManaged public func removeFromExpenses_(_ values: NSSet)
+
+}
+
 // MARK: Generated accessors for pauses_
 extension Goal {
 
@@ -79,5 +83,22 @@ extension Goal {
 
     @objc(removePauses_:)
     @NSManaged public func removeFromPauses_(_ values: NSSet)
+
+}
+
+// MARK: Generated accessors for childGoals_
+extension Goal {
+
+    @objc(addChildGoals_Object:)
+    @NSManaged public func addToChildGoals_(_ value: Goal)
+
+    @objc(removeChildGoals_Object:)
+    @NSManaged public func removeFromChildGoals_(_ value: Goal)
+
+    @objc(addChildGoals_:)
+    @NSManaged public func addToChildGoals_(_ values: NSSet)
+
+    @objc(removeChildGoals_:)
+    @NSManaged public func removeFromChildGoals_(_ values: NSSet)
 
 }
