@@ -39,12 +39,14 @@ class Exporter {
                                        withIntermediateDirectories: false,
                                        attributes: nil)
             } catch {
+                Logger.debug("Could not create export directory.")
                 return nil
             }
         } else {
             do {
                 try fm.copyItem(at: imagesDirectory, to: exportDirectory)
             } catch {
+                Logger.debug("Could not copy images directory to export directory.")
                 return nil
             }
         }
@@ -69,15 +71,18 @@ class Exporter {
                                        withIntermediateDirectories: false,
                                        attributes: nil)
             } catch {
+                Logger.debug("Could not create directory for export file.")
                 return nil
             }
         }
         
         if !fm.createFile(atPath: fileUrl.path, contents: Data(), attributes: nil) {
+            Logger.debug("Could not create export file.")
             return nil
         }
         
         guard let os = FileHandle(forWritingAtPath: fileUrl.path) else {
+            Logger.debug("Could not get handle for export file.")
             return nil
         }
         
@@ -91,42 +96,78 @@ class Exporter {
         if let defaultsData = try? JSONSerialization.data(withJSONObject: defaults) {
             os.write(defaultsData)
         } else {
-            return nil
-        }
-        
-        // Write separating JSON character, a key for "months" and an opening
-        // JSON array character.
-        os.write(",\"months\":[".data(using: encoding)!)
-        
-        // Fetch all months
-        let monthSortDesc = NSSortDescriptor(key: "month_", ascending: true)
-        guard let months = Month.get(context: context,
-                                     sortDescriptors: [monthSortDesc]) else {
+            Logger.debug("Could not serialize defaults object.")
             os.closeFile()
             return nil
         }
         
-        for (i, month) in months.enumerated() {
-            if let monthData = month.serialize() {
-                os.write(monthData)
+        // Write separating JSON character, a key for "goals" and an opening
+        // JSON array character.
+        os.write(",\"goals\":[".data(using: encoding)!)
+        
+        // Fetch all goals
+        let goalSortDesc = NSSortDescriptor(key: "dateCreated_", ascending: true)
+        guard let goals = Goal.get(context: context,
+                                     sortDescriptors: [goalSortDesc]) else {
+            Logger.debug("Could not get goals.")
+            os.closeFile()
+            return nil
+        }
+        
+        var goalJsonIdMap = [NSManagedObjectID: Int]()
+        var currentJsonIdIndex = 0
+        
+        for goal in goals {
+            goalJsonIdMap[goal.objectID] = currentJsonIdIndex
+            currentJsonIdIndex += 1
+        }
+        
+        for (i, goal) in goals.enumerated() {
+            if let goalData = goal.serialize(jsonIds: goalJsonIdMap) {
+                os.write(goalData)
             } else {
+                Logger.debug("Could not serialize a Goal.")
                 os.closeFile()
                 return nil
             }
-            if i < months.count - 1 {
-                // Write separating JSON character if there are more months 
+            if i < goals.count - 1 {
+                // Write separating JSON character if there are more goals
                 // after this one.
                 os.write(",".data(using: encoding)!)
             }
         }
         
+        // Write closing JSON array character, separating JSON character,
+        // a key for "expenses" and an opening JSON array character.
+        os.write("],\"expenses\":[".data(using: encoding)!)
         
+        // Fetch all pauses
+        let expenseSortDesc = NSSortDescriptor(key: "dateCreated_", ascending: true)
+        guard let expenses = Expense.get(context: context, sortDescriptors: [expenseSortDesc]) else {
+            os.closeFile()
+            return nil
+        }
         
+        for (i, expense) in expenses.enumerated() {
+            if let expenseData = expense.serialize(jsonIds: goalJsonIdMap) {
+                os.write(expenseData)
+            } else {
+                Logger.debug("Could not serialize an Expense.")
+                os.closeFile()
+                return nil
+            }
+            if i < expenses.count - 1 {
+                // Write separating JSON character if there are more pauses
+                // after this one.
+                os.write(",".data(using: encoding)!)
+            }
+        }
+
         // Write closing JSON array character, separating JSON character, 
         // a key for "pauses" and an opening JSON array character.
         os.write("],\"pauses\":[".data(using: encoding)!)
         
-        // Fetch all months
+        // Fetch all pauses
         let pauseSortDesc = NSSortDescriptor(key: "dateCreated_", ascending: true)
         guard let pauses = Pause.get(context: context, sortDescriptors: [pauseSortDesc]) else {
             os.closeFile()
@@ -134,9 +175,10 @@ class Exporter {
         }
         
         for (i, pause) in pauses.enumerated() {
-            if let pauseData = pause.serialize() {
+            if let pauseData = pause.serialize(jsonIds: goalJsonIdMap) {
                 os.write(pauseData)
             } else {
+                Logger.debug("Could not serialize a Pause.")
                 os.closeFile()
                 return nil
             }
@@ -159,9 +201,10 @@ class Exporter {
         }
         
         for (i, adjustment) in adjustments.enumerated() {
-            if let adjustmentData = adjustment.serialize() {
+            if let adjustmentData = adjustment.serialize(jsonIds: goalJsonIdMap) {
                 os.write(adjustmentData)
             } else {
+                Logger.debug("Could not serialize an Adjustment.")
                 os.closeFile()
                 return nil
             }
@@ -196,6 +239,7 @@ class Importer {
         } else if url.lastPathComponent.contains(".zip") {
             try importZipUrl(url)
         } else {
+            Logger.debug("The format extension wasn't valid.")
             throw ExportError.recoveredFromBadFormat
         }
     }
@@ -219,6 +263,7 @@ class Importer {
                                        withIntermediateDirectories: false,
                                        attributes: nil)
             } catch {
+                Logger.debug("Couldn't move existing images directory or create new images directory.")
                 throw ExportError.recoveredFromFilesystemError
             }
             movedImages = true
@@ -228,6 +273,7 @@ class Importer {
                                         withIntermediateDirectories: false,
                                         attributes: nil)
             } catch {
+                Logger.debug("Couldn't create a new images directory.")
                 throw ExportError.recoveredFromFilesystemError
             }
         }
@@ -242,7 +288,10 @@ class Importer {
             do {
                 try fm.removeItem(at: url)
                 try fm.removeItem(at: unzippedUrl)
-            } catch { }
+            } catch {
+                // We don't actually care, just log the error.
+                Logger.debug("Could not remove zipped or unzipped URL.")
+            }
             
             if !movedImages {
                 // We never actually moved the images directory, we're done
@@ -255,6 +304,8 @@ class Importer {
                 try fm.removeItem(at: imagesDirectory)
                 try fm.moveItem(at: backupImagesDirectory, to: imagesDirectory)
             } catch {
+                Logger.debug("Couldn't not remove the images directory or " +
+                             "move the old images directory back.")
                 throw ExportError.unrecoverableFilesystemError
             }
         }
@@ -263,6 +314,7 @@ class Importer {
         if !SSZipArchive.unzipFile(atPath: url.path,
                                   toDestination: cacheDirectory.path) {
             try revert()
+            Logger.debug("Could not unzip archive.")
             throw ExportError.recoveredFromBadFormat
         }
         
@@ -282,12 +334,14 @@ class Importer {
                         try fm.moveItem(at: fileUrl, to: newUrl)
                     } catch {
                         try revert()
+                        Logger.debug("Could not move image.")
                         throw ExportError.recoveredFromFilesystemError
                     }
                 }
             }
         } else {
             try revert()
+            Logger.debug("Could not get contents of unzipped directory.")
             throw ExportError.recoveredFromFilesystemError
         }
         
@@ -311,28 +365,21 @@ class Importer {
         
         guard let ambiguousObj = try? JSONSerialization.jsonObject(with: stream, options: [])
         else {
-            throw ExportError.recoveredFromBadFormat
-        }
-        var jsonObj: [String: Any]!
-        if let months = ambiguousObj as? [[String: Any]] {
-            // This is an old .dailyspend format, attach it to a jsonObject 
-            // with months
-            jsonObj = [String: Any]()
-            jsonObj["months"] = months
-        } else {
-            jsonObj = ambiguousObj as? [String: Any]
-            if jsonObj == nil {
-                // We didn't understand the format
-                throw ExportError.recoveredFromBadFormat
-            }
-        }
-        guard let months = jsonObj["months"] as? [[String: Any]] else {
+            Logger.debug("Could not deserialize JSON.")
             throw ExportError.recoveredFromBadFormat
         }
         
+        guard let jsonObj = ambiguousObj as? [String: Any],
+                let goals = jsonObj["goals"] as? [[String: Any]] else {
+            // We didn't understand the format
+            Logger.debug("Could not extract goals, or JSON was not an object.")
+            throw ExportError.recoveredFromBadFormat
+        }
+
         let managedObjMod = appDelegate.persistentContainer.managedObjectModel
         let storeCoord = appDelegate.persistentContainer.persistentStoreCoordinator
         if storeCoord.persistentStores.count != 1 {
+            Logger.debug("There wasn't exactly one persistent store.")
             throw ExportError.recoveredFromPersistentStoreProblem
         }
         
@@ -348,6 +395,7 @@ class Importer {
                                                 at: storeURL,
                                                 options: storeOptions)
         } catch {
+            Logger.debug("There wasn't exactly one persistent store.")
             throw ExportError.recoveredFromPersistentStoreProblem
         }
         
@@ -369,6 +417,7 @@ class Importer {
                                               ofType: NSSQLiteStoreType,
                                               options: storeOptions)
         } catch {
+            Logger.debug("Could not migrate persistent store to backup or delete original store.")
             throw ExportError.recoveredFromPersistentStoreProblem
         }
         
@@ -390,39 +439,102 @@ class Importer {
                 appDelegate.persistentContainer = nil
             } catch {
                 // Reset failed.
+                Logger.debug("Could not restore backup persistent store or delete backup store file.")
                 throw ExportError.unrecoverableDatabaseInBadState
             }
         }
-
         
-        for jsonMonth in months {
-            if Month.create(context: context, json: jsonMonth) == nil {
+        func saveContext() throws {
+            do {
+                try context.save()
+            } catch {
                 // This import failed. Reset to normal.
                 try revert()
                 throw ExportError.recoveredFromBadFormatWithContextChange
             }
         }
+
+        var goalJsonIdMap = [Int: NSManagedObjectID]()
+        var maxIterations = goals.count
+        var currentIteration = 0
+        
+        var goalsQueue: Array<[String: Any]> = Array<[String: Any]>(goals)
+        
+        while currentIteration <= maxIterations && !goals.isEmpty {
+            currentIteration += 1
+            let jsonGoal = goalsQueue.popLast()!
+            
+            switch Goal.create(context: context, json: jsonGoal, jsonIds: goalJsonIdMap) {
+            case .Failure:
+                // This import failed. Reset to normal.
+                try revert()
+                Logger.debug("Could not import Goal.")
+                throw ExportError.recoveredFromBadFormatWithContextChange
+            case .NeedsOtherGoalsToBeCreatedFirst:
+                goalsQueue.insert(jsonGoal, at: 0)
+            case .Success(let goal):
+                 // Save so that the goal gets a permanent objectID.
+                try saveContext()
+                let id = goal.objectID
+                if let jsonId = jsonGoal["jsonId"] as? NSNumber {
+                    goalJsonIdMap[jsonId.intValue] = id
+                }
+                
+                // Since we popped a goal, we potentially have to iterate
+                // through the whole queue again to get a goal we can insert.
+                maxIterations = goalsQueue.count
+                currentIteration = 0
+            }
+        }
+        
+        if currentIteration > maxIterations {
+            // Circular parents or one goal's parent doesn't exist.
+            try revert()
+            Logger.debug("Goals had invalid parent goals (e.g. circular) or a " +
+                "specified parent goal doesn't exist.")
+            throw ExportError.recoveredFromBadFormatWithContextChange
+        }
+        
+        if let expenses = jsonObj["expenses"] as? [[String: Any]] {
+            for jsonExpense in expenses {
+                if Expense.create(context: context,
+                                  json: jsonExpense,
+                                  jsonIds: goalJsonIdMap) == nil {
+                    // This import failed. Reset to normal.
+                    try revert()
+                    Logger.debug("Could not import Expense.")
+                    throw ExportError.recoveredFromBadFormatWithContextChange
+                }
+            }
+        }
         
         if let pauses = jsonObj["pauses"] as? [[String: Any]] {
             for jsonPause in pauses {
-                if Pause.create(context: context, json: jsonPause) == nil {
+                if Pause.create(context: context,
+                                json: jsonPause,
+                                jsonIds: goalJsonIdMap) == nil {
                     // This import failed. Reset to normal.
                     try revert()
+                    Logger.debug("Could not import Pause.")
                     throw ExportError.recoveredFromBadFormatWithContextChange
                 }
             }
         }
-
         
         if let adjustments = jsonObj["adjustments"] as? [[String: Any]] {
             for jsonAdjustment in adjustments {
-                if Adjustment.create(context: context, json: jsonAdjustment) == nil {
+                if Adjustment.create(context: context,
+                                     json: jsonAdjustment,
+                                     jsonIds: goalJsonIdMap) == nil {
                     // This import failed. Reset to normal.
                     try revert()
+                    Logger.debug("Could not import Adjustment.")
                     throw ExportError.recoveredFromBadFormatWithContextChange
                 }
             }
         }
+        
+        try saveContext()
 
         // If there is a defaults array, set some defaults.
         if let defaults = jsonObj["defaults"] as? [String: Any] {
@@ -431,12 +543,14 @@ class Importer {
                 case "photoNumber":
                     guard let photoNumber = defaults[key] as? NSNumber else {
                         try revert()
+                        Logger.debug("Could not convert photo number to a number.")
                         throw ExportError.recoveredFromBadFormatWithContextChange
                     }
                     UserDefaults.standard.set(photoNumber.intValue, forKey: key)
                 case "dailyTargetSpend":
                     guard let dailyTargetSpend = defaults[key] as? NSNumber else {
                         try revert()
+                        Logger.debug("Could not convert daily target spend to a number.")
                         throw ExportError.recoveredFromBadFormatWithContextChange
                     }
                     UserDefaults.standard.set(dailyTargetSpend.doubleValue, forKey: key)

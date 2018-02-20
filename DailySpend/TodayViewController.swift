@@ -18,15 +18,12 @@ class TodayViewController: UIViewController, UITableViewDataSource, UITableViewD
     @IBOutlet weak var tableView: UITableView!
     var cellCreator: TableViewCellHelper!
     
-    var day: Day!
     var expenses = [(desc: String, amount: String)]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         cellCreator = TableViewCellHelper(tableView: tableView, view: view)
-        
-        day = Day.get(context: context, calDay: CalendarDay())
     }
 
     override func didReceiveMemoryWarning() {

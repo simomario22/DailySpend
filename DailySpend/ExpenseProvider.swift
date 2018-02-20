@@ -10,7 +10,7 @@ import UIKit
 import CoreData
 
 protocol ExpenseViewDataSource: class {
-    var calDay: CalendarDay! { get set }
+    var transactionDate: CalendarDay! { get set }
     var amount: Decimal? { get set }
     var shortDescription: String? { get set }
     var notes: String? { get set }
@@ -41,7 +41,7 @@ class ExpenseProvider: NSObject, ExpenseViewDataSource {
     
     // Attributes of the expense that we can change
     // The date of the Day that the expense should be associated with
-    var calDay: CalendarDay!
+    var transactionDate: CalendarDay!
     var amount: Decimal?
     var shortDescription: String?
     var notes: String?
@@ -56,13 +56,13 @@ class ExpenseProvider: NSObject, ExpenseViewDataSource {
         if let expense = expense {
             guard let amount = expense.amount,
                   let shortDescription = expense.shortDescription,
-                  let calDay = expense.day!.calendarDay else {
+                  let transactionDate = expense.transactionDate else {
                 return nil
             }
             
             self.amount = amount
             self.shortDescription = shortDescription
-            self.calDay = calDay
+            self.transactionDate = transactionDate
             
             self.notes = expense.notes
             
@@ -77,7 +77,7 @@ class ExpenseProvider: NSObject, ExpenseViewDataSource {
             }
             self.expense = expense
         } else {
-            self.calDay = CalendarDay()
+            self.transactionDate = CalendarDay()
             self.amount = nil
             self.shortDescription = nil
             self.notes = nil
@@ -107,27 +107,14 @@ class ExpenseProvider: NSObject, ExpenseViewDataSource {
         guard let expense = self.expense,
             let amount = self.amount,
             let shortDescription = self.shortDescription,
-            let calDay = self.calDay else {
+            let transactionDate = self.transactionDate else {
                 return nil
         }
         
         // Delete any images that the user has deleted.
         removeImages()
         
-        // Create new Days if we need to.
-        let earliestDay = earliestDayCreated()
-        if calDay < earliestDay {
-            // Create from the selectedDate to the earliest day available.
-            _ = Day.createDays(context: context, from: calDay, to: earliestDay)
-            appDelegate.saveContext()
-        }
-        
-        // Set all the properties on expense.
-        if let day = Day.get(context: context, calDay: calDay) {
-            expense.day = day
-        } else {
-            return nil
-        }
+        expense.transactionDate = transactionDate
         expense.amount = amount
         expense.shortDescription = shortDescription
         expense.notes = self.notes
@@ -155,16 +142,7 @@ class ExpenseProvider: NSObject, ExpenseViewDataSource {
 
         return expense
     }
-    
-    func earliestDayCreated() -> CalendarDay {
-        // Find the earliest day that has already been created.
-        let earliestDaySD = NSSortDescriptor(key: "date_", ascending: true)
-        let earliestDays = Day.get(context: context,
-                                   sortDescriptors: [earliestDaySD],
-                                   fetchLimit: 1)!
-        return earliestDays.first!.calendarDay!
-    }
-    
+
     func saveImage(container: ImageContainer) -> String? {
         makeImagesDirectory()
         var imageName = container.imageName
@@ -224,7 +202,7 @@ class ExpenseProvider: NSObject, ExpenseViewDataSource {
     }
     
     func setDayToToday() {
-        self.calDay = CalendarDay()
+        self.transactionDate = CalendarDay()
     }
 
     func makeImagesDirectory() {

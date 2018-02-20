@@ -21,9 +21,9 @@ extension Goal {
     @NSManaged public var archived_: Bool
     @NSManaged public var dateCreated_: NSDate?
     @NSManaged public var end_: NSDate?
-    @NSManaged public var jsonId_: Int64
     @NSManaged public var period_: Int64
-    @NSManaged public var reconciled_: Int64
+    @NSManaged public var reconcileFrequency_: Int64
+    @NSManaged public var reconcileFrequencyMultiplier_: Int64
     @NSManaged public var shortDescription_: String?
     @NSManaged public var start_: NSDate?
     @NSManaged public var periodMultiplier_: Int64

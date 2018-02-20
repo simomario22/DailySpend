@@ -53,7 +53,7 @@ public class CalendarWeek {
         // We currently define a week as always being 7 days, so add 7 days
         // times the number of weeks to the interval.
         let interval = self.date.timeIntervalSince(cal.date(byAdding: .day,
-                                                            value: weeks * self.daysInWeek,
+                                                            value: weeks * self.typicalDaysInWeek,
                                                             to: self.date)!)
 
         // Add interval to a copy of self

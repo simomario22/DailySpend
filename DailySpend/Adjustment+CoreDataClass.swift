@@ -12,7 +12,7 @@ import CoreData
 
 @objc(Adjustment)
 public class Adjustment: NSManagedObject {
-    public func json() -> [String: Any]? {
+    public func json(jsonIds: [NSManagedObjectID: Int]) -> [String: Any]? {
         var jsonObj = [String: Any]()
         
         if let amountPerDay = amountPerDay {
@@ -53,12 +53,28 @@ public class Adjustment: NSManagedObject {
             Logger.debug("couldn't unwrap dateCreated in Adjustment")
             return nil
         }
-        
+
+        if let goals = goals {
+            var goalJsonIds = [Int]()
+            for goal in goals {
+                if let jsonId = jsonIds[goal.objectID] {
+                    goalJsonIds.append(jsonId)
+                } else {
+                    Logger.debug("a goal didn't have an associated jsonId in Adjustment")
+                    return nil
+                }
+            }
+            jsonObj["goals"] = goalJsonIds
+        } else {
+            Logger.debug("couldn't unwrap goals in Adjustment")
+            return nil
+        }
+
         return jsonObj
     }
     
-    public func serialize() -> Data? {
-        if let jsonObj = self.json() {
+    public func serialize(jsonIds: [NSManagedObjectID: Int]) -> Data? {
+        if let jsonObj = self.json(jsonIds: jsonIds) {
             let serialization = try? JSONSerialization.data(withJSONObject: jsonObj)
             return serialization
         }
@@ -67,7 +83,8 @@ public class Adjustment: NSManagedObject {
     }
     
     class func create(context: NSManagedObjectContext,
-                      json: [String: Any]) -> Adjustment? {
+                      json: [String: Any],
+                      jsonIds: [Int: NSManagedObjectID]) -> Adjustment? {
         let adjustment = Adjustment(context: context)
         
         if let amountPerDay = json["amountPerDay"] as? NSNumber {
@@ -131,6 +148,21 @@ public class Adjustment: NSManagedObject {
             adjustment.dateCreated = date
         } else {
             Logger.debug("couldn't unwrap dateCreated in Adjustment")
+            return nil
+        }
+        
+        if let goalJsonIds = json["goals"] as? Array<Int> {
+            for goalJsonId in goalJsonIds {
+                if let objectID = jsonIds[goalJsonId],
+                    let goal = context.object(with: objectID) as? Goal {
+                    adjustment.addGoal(goal)
+                } else {
+                    Logger.debug("a goal didn't have an associated objectID in Adjustment")
+                    return nil
+                }
+            }
+        } else {
+            Logger.debug("couldn't unwrap goals in Adjustment")
             return nil
         }
         
@@ -286,6 +318,14 @@ public class Adjustment: NSManagedObject {
                 goals_ = nil
             }
         }
+    }
+    
+    public func addGoal(_ goal: Goal) {
+        addToGoals_(goal)
+    }
+    
+    public func removeGoal(_ goal: Goal) {
+        removeFromGoals_(goal)
     }
 }
 

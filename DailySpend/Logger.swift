@@ -33,106 +33,52 @@ class Logger {
         let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
         let context = appDelegate.persistentContainer.viewContext
         
-        let sortDesc = NSSortDescriptor(key: "month_", ascending: true)
-        let allMonths = Month.get(context: context, sortDescriptors: [sortDesc])!
+        let sortDesc = NSSortDescriptor(key: "dateCreated_", ascending: true)
+        let expenses = Expense.get(context: context,sortDescriptors: [sortDesc])!
         
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .full
-        dateFormatter.timeStyle = .full
+         dateFormatter.timeStyle = .full
         
-        
-        for (index, month) in allMonths.enumerated() {
-            print("allMonths[\(index)]")
-            
-            let humanMonth = dateFormatter.monthSymbols[month.calendarMonth!.month - 1]
-            let humanMonthYear = humanMonth + " \(month.calendarMonth!.year)"
-            
-            let fullDate = month.calendarMonth!.string(formatter: dateFormatter)
-            
-            print("\(humanMonthYear) - \(fullDate)")
-            print("month.dailyBaseTargetSpend: \(month.dailyBaseTargetSpend!)")
-            print("month.dateCreated: \(dateFormatter.string(from: month.dateCreated!))")
-            print("")
-            
-            if (month.days!.count > 0) {
-                print("\tDays:")
-            } else {
-                print("\tNo Days.")
-            }
-            for day in month.sortedDays! {
-                print("\tday.baseTargetSpend: \(day.baseTargetSpend!)")
-                print("\tday.date: \(day.calendarDay!.string(formatter: dateFormatter))")
-                print("\tday.dateCreated: \(dateFormatter.string(from: day.dateCreated!))")
-                print("")
-                
-                if (day.expenses!.count > 0) {
-                    print("\t\tExpenses:")
-                } else {
-                    print("\t\tNo Expenses.")
-                }
-                for expense in day.sortedExpenses! {
-                    let created = dateFormatter.string(from: expense.dateCreated!)
-                    print("\t\texpense.amount: \(expense.amount!)")
-                    print("\t\texpense.dateCreated: \(created)")
-                    print("\t\texpense.notes: \(expense.notes ?? "")")
-                    print("\t\texpense.shortDescription: \(expense.shortDescription!)")
-                    print("")
-                    
-                    if (expense.images!.count > 0) {
-                        print("\t\t\tImages:")
-                    } else {
-                        print("\t\t\tNo Images.")
-                    }
-                    for image in expense.sortedImages! {
-                        let created = dateFormatter.string(from: expense.dateCreated!)
-                        print("\t\t\timage.imageName: \(image.imageName!)")
-                        print("\t\t\timage.dateCreated: \(created)")
-                        print("")
-                    }
-                }
-                print("")
-                
-                if let pause = day.pause {
-                    print("\t\tPause:")
-                    let created = dateFormatter.string(from: pause.dateCreated!)
-                    let first = pause.firstDayEffective!.string(formatter: dateFormatter)
-                    let last = pause.lastDayEffective!.string(formatter: dateFormatter)
-                    
-                    print("\t\tpause.shortDescription: \(pause.shortDescription!)")
-                    print("\t\tpause.dateCreated: \(created)")
-                    print("\t\tpause.firstDayEffective: \(first)")
-                    print("\t\tpause.lastDayEffective: \(last)")
-                    print("")
-                    
-                } else {
-                    print("\t\tNo Pause.")
-                }
-                print("")
-                
-                if (day.adjustments!.count > 0) {
-                    print("\t\tAdjustments:")
-                } else {
-                    print("\t\tNo Adjustments.")
-                }
-                for adjustment in day.sortedAdjustments! {
-                    print("\t\tAdjustment:")
-                    let created = dateFormatter.string(from: adjustment.dateCreated!)
-                    let first = adjustment.firstDayEffective!.string(formatter: dateFormatter)
-                    let last = adjustment.lastDayEffective!.string(formatter: dateFormatter)
-                    
-                    print("\t\tadjustment.amountPerDay: \(adjustment.amountPerDay!)")
-                    print("\t\tadjustment.shortDescription: \(adjustment.shortDescription!)")
-                    print("\t\tadjustment.dateCreated: \(created)")
-                    print("\t\tadjustment.firstDayEffective: \(first)")
-                    print("\t\tadjustment.lastDayEffective: \(last)")
-                    print("")
-                    
-                }
-                print("")
-            }
-            print("")
+        if (expenses.count > 0) {
+            print("\t\tExpenses:")
+        } else {
+            print("\t\tNo Expenses.")
         }
-        
+        for expense in expenses {
+            let created = dateFormatter.string(from: expense.dateCreated!)
+            print("\t\texpense.amount: \(expense.amount!)")
+            print("\t\texpense.dateCreated: \(created)")
+            print("\t\texpense.notes: \(expense.notes ?? "")")
+            print("\t\texpense.shortDescription: \(expense.shortDescription!)")
+            print("")
+            
+            if (expense.images!.count > 0) {
+                print("\t\t\tImages:")
+            } else {
+                print("\t\t\tNo Images.")
+            }
+            for image in expense.sortedImages! {
+                let created = dateFormatter.string(from: expense.dateCreated!)
+                print("\t\t\timage.imageName: \(image.imageName!)")
+                print("\t\t\timage.dateCreated: \(created)")
+                print("")
+            }
+            
+            if (expense.goals!.count > 0) {
+                print("\t\t\tImages:")
+            } else {
+                print("\t\t\tNo Images.")
+            }
+            for image in expense.sortedImages! {
+                let created = dateFormatter.string(from: expense.dateCreated!)
+                print("\t\t\timage.imageName: \(image.imageName!)")
+                print("\t\t\timage.dateCreated: \(created)")
+                print("")
+            }
+
+        }
+        print("")
         
         let pauseSortDesc = NSSortDescriptor(key: "dateCreated_", ascending: true)
         let allPauses = Pause.get(context: context, sortDescriptors: [pauseSortDesc])!

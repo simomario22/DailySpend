@@ -141,9 +141,9 @@ class TableViewCellHelper {
                            selectedDetailDisclosure: @escaping () -> (),
                            beganEditing: @escaping (_ newHeight: Int) -> (),
                            endedEditing: @escaping (_ newHeight: Int) -> ()) -> UITableViewCell {
-        var cell: ExpenseTableViewCell! = tableView.dequeueReusableCell(withIdentifier: "addExpense") as? ExpenseTableViewCell
+        var cell: UITableViewCell! = tableView.dequeueReusableCell(withIdentifier: "addExpense")
         if cell == nil {
-            cell = ExpenseTableViewCell(style: .default, reuseIdentifier: "addExpense")
+            cell = UITableViewCell(style: .default, reuseIdentifier: "addExpense")
         }
         
         return cell

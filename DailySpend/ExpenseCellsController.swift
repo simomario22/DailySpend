@@ -10,10 +10,10 @@ import Foundation
 import CoreData
 
 class ExpenseCellsController {
-    private var day: Day
+    private var day: CalendarDay
     private var delegate: ExpenseCellsControllerDelegate
     
-    init(delegate: ExpenseCellsControllerDelegate, day: Day) {
+    init(delegate: ExpenseCellsControllerDelegate, day: CalendarDay) {
         self.delegate = delegate
         self.day = day
         

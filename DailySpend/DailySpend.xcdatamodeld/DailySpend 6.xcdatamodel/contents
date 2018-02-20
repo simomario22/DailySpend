@@ -22,10 +22,10 @@
         <attribute name="archived_" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="dateCreated_" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="end_" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
-        <attribute name="jsonId_" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="period_" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="periodMultiplier_" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
-        <attribute name="reconciled_" optional="YES" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="reconcileFrequency_" optional="YES" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="reconcileFrequencyMultiplier_" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="shortDescription_" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="start_" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <relationship name="adjustments_" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Adjustment" inverseName="goals_" inverseEntity="Adjustment" syncable="YES"/>

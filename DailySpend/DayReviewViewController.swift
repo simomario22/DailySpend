@@ -15,7 +15,6 @@ class DayReviewViewController: UIViewController, UITableViewDelegate, UITableVie
         return appDelegate.persistentContainer.viewContext
     }
 
-    var day: Day!
     var adjustments: [(desc: String, amount: String)]!
     var expenses: [(desc: String, amount: String)]!
     var formattedPause: (desc: String, range: String)?

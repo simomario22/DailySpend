@@ -11,7 +11,7 @@ import CoreData
 
 @objc(Expense)
 public class Expense: NSManagedObject {
-    public func json() -> [String: Any]? {
+    public func json(jsonIds: [NSManagedObjectID: Int]) -> [String: Any]? {
         var jsonObj = [String: Any]()
         
         if let amount = amount {
@@ -34,7 +34,7 @@ public class Expense: NSManagedObject {
         }
 
         if let transactionDate = transactionDate {
-            let num = transactionDate.timeIntervalSince1970 as NSNumber
+            let num = transactionDate.gmtDate.timeIntervalSince1970 as NSNumber
             jsonObj["transactionDate"] = num
         } else {
             Logger.debug("couldn't unwrap transactionDate in Expense")
@@ -62,11 +62,27 @@ public class Expense: NSManagedObject {
             jsonObj["images"] = jsonImgs
         }
         
+        if let goals = goals {
+            var goalJsonIds = [Int]()
+            for goal in goals {
+                if let jsonId = jsonIds[goal.objectID] {
+                    goalJsonIds.append(jsonId)
+                } else {
+                    Logger.debug("a goal didn't have an associated jsonId in Expense")
+                    return nil
+                }
+            }
+            jsonObj["goals"] = goalJsonIds
+        } else {
+            Logger.debug("couldn't unwrap goals in Expense")
+            return nil
+        }
+        
         return jsonObj
     }
     
-    public func serialize() -> Data? {
-        if let jsonObj = self.json() {
+    public func serialize(jsonIds: [NSManagedObjectID: Int]) -> Data? {
+        if let jsonObj = self.json(jsonIds: jsonIds) {
             let serialization = try? JSONSerialization.data(withJSONObject: jsonObj)
             return serialization
         }
@@ -75,7 +91,8 @@ public class Expense: NSManagedObject {
     }
     
     class func create(context: NSManagedObjectContext,
-                      json: [String: Any]) -> Expense? {
+                      json: [String: Any],
+                      jsonIds: [Int: NSManagedObjectID]) -> Expense? {
         let expense = Expense(context: context)
         
         if let amount = json["amount"] as? NSNumber {
@@ -118,11 +135,12 @@ public class Expense: NSManagedObject {
         
         if let transactionDate = json["transactionDate"] as? NSNumber {
             let date = Date(timeIntervalSince1970: transactionDate.doubleValue)
-            if date > Date() {
+            let calDay = CalendarDay(dateInGMTDay: date);
+            if date != calDay.gmtDate {
                 Logger.debug("transactionDate after today in Expense")
                 return nil
             }
-            expense.transactionDate = date
+            expense.transactionDate = calDay
         } else {
             Logger.debug("coulnd't unwrap transactionDate in Expense")
             return nil
@@ -140,7 +158,36 @@ public class Expense: NSManagedObject {
             return nil
         }
         
+        if let goalJsonIds = json["goals"] as? Array<Int> {
+            for goalJsonId in goalJsonIds {
+                if let objectID = jsonIds[goalJsonId],
+                    let goal = context.object(with: objectID) as? Goal {
+                    expense.addGoal(goal)
+                } else {
+                    Logger.debug("a goal didn't have an associated objectID in Expense")
+                    return nil
+                }
+            }
+        } else {
+            Logger.debug("couldn't unwrap goals in Expense")
+            return nil
+        }
+        
         return expense
+    }
+    
+    class func get(context: NSManagedObjectContext,
+                   predicate: NSPredicate? = nil,
+                   sortDescriptors: [NSSortDescriptor]? = nil,
+                   fetchLimit: Int = 0) -> [Expense]? {
+        let fetchRequest: NSFetchRequest<Expense> = Expense.fetchRequest()
+        fetchRequest.predicate = predicate
+        fetchRequest.sortDescriptors = sortDescriptors
+        fetchRequest.fetchLimit = fetchLimit
+        
+        let expenseResults = try? context.fetch(fetchRequest)
+        
+        return expenseResults
     }
     
     // Accessor functions (for Swift 3 classes)
@@ -158,13 +205,17 @@ public class Expense: NSManagedObject {
         }
     }
     
-    public var transactionDate: Date? {
+    public var transactionDate: CalendarDay? {
         get {
-            return transactionDate_ as Date?
+            if let date = transactionDate_ {
+                return CalendarDay(dateInGMTDay: date as Date)
+            } else {
+                return nil
+            }
         }
         set {
             if newValue != nil {
-                transactionDate_ = newValue! as NSDate
+                transactionDate_ = newValue!.gmtDate as NSDate
             } else {
                 transactionDate_ = nil
             }
@@ -221,6 +272,14 @@ public class Expense: NSManagedObject {
                 goals_ = nil
             }
         }
+    }
+    
+    public func addGoal(_ goal: Goal) {
+        addToGoals_(goal)
+    }
+    
+    public func removeGoal(_ goal: Goal) {
+        removeFromGoals_(goal)
     }
     
     public var sortedImages: [Image]? {
