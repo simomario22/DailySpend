@@ -11,12 +11,15 @@ import Foundation
 import CoreData
 
 public enum Period: Int {
+    case None = -1
     case Day = 0
     case Week = 1
     case Month = 2
     
     func string() -> String {
         switch self {
+        case .None:
+            return "None"
         case .Day:
             return "Day"
         case .Week:
@@ -48,6 +51,10 @@ public class Goal: NSManagedObject {
         }
         
         jsonObj["archived"] = archived
+        
+        jsonObj["alwaysCarryOver"] = alwaysCarryOver
+
+        jsonObj["adjustMonthAmountAutomatically"] = adjustMonthAmountAutomatically
 
         if let dateCreated = dateCreated {
             let num = dateCreated.timeIntervalSince1970 as NSNumber
@@ -68,9 +75,6 @@ public class Goal: NSManagedObject {
         if let date = end?.gmtDate {
             let num = date.timeIntervalSince1970 as NSNumber
             jsonObj["end"] = num
-        } else {
-            Logger.debug("couldn't unwrap end in Goal")
-            return nil
         }
         
         if let shortDescription = shortDescription {
@@ -83,8 +87,8 @@ public class Goal: NSManagedObject {
         jsonObj["period"] = period.rawValue as NSNumber
         jsonObj["periodMultiplier"] = periodMultiplier as NSNumber
         
-        jsonObj["reconcileFrequency"] = reconcileFrequency.rawValue as NSNumber
-        jsonObj["reconcileFrequencyMultiplier"] = reconcileFrequencyMultiplier as NSNumber
+        jsonObj["payFrequency"] = payFrequency.rawValue as NSNumber
+        jsonObj["payFrequencyMultiplier"] = payFrequencyMultiplier as NSNumber
 
         if let parentGoal = parentGoal {
             jsonObj["parentGoal"] = jsonIds[parentGoal.objectID]
@@ -128,6 +132,20 @@ public class Goal: NSManagedObject {
             return .Failure
         }
         
+        if let alwaysCarryOver = json["alwaysCarryOver"] as? NSNumber {
+            goal.alwaysCarryOver = alwaysCarryOver.boolValue
+        } else {
+            Logger.debug("couldn't unwrap alwaysCarryOver in Goal")
+            return .Failure
+        }
+        
+        if let adjustMonthAmountAutomatically = json["adjustMonthAmountAutomatically"] as? NSNumber {
+            goal.adjustMonthAmountAutomatically = adjustMonthAmountAutomatically.boolValue
+        } else {
+            Logger.debug("couldn't unwrap adjustMonthAmountAutomatically in Goal")
+            return .Failure
+        }
+        
         if let dateCreated = json["dateCreated"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateCreated.doubleValue)
             if date > Date() {
@@ -165,8 +183,7 @@ public class Goal: NSManagedObject {
             }
             goal.end = calDay
         } else {
-            Logger.debug("couldn't unwrap end in Goal")
-            return .Failure
+            goal.end = nil
         }
         
         if let shortDescription = json["shortDescription"] as? String {
@@ -204,27 +221,27 @@ public class Goal: NSManagedObject {
             return .Failure
         }
         
-        if let reconcileFrequencyNumber = json["reconcileFrequency"] as? NSNumber {
-            if let reconcileFrequency = Period(rawValue: reconcileFrequencyNumber.intValue) {
-                goal.reconcileFrequency = reconcileFrequency
+        if let payFrequencyNumber = json["payFrequency"] as? NSNumber {
+            if let payFrequency = Period(rawValue: payFrequencyNumber.intValue) {
+                goal.payFrequency = payFrequency
             } else {
-                Logger.debug("reconcileFrequency wasn't a valid number in Goal")
+                Logger.debug("payFrequency wasn't a valid number in Goal")
                 return .Failure
             }
         } else {
-            Logger.debug("couldn't unwrap reconcileFrequency in Goal")
+            Logger.debug("couldn't unwrap payFrequency in Goal")
             return .Failure
         }
         
-        if let reconcileFrequencyMultiplierNumber = json["reconcileFrequencyMultiplier"] as? NSNumber {
-            let reconcileFrequencyMultiplier = reconcileFrequencyMultiplierNumber.intValue
-            if reconcileFrequencyMultiplier < 0 {
-                Logger.debug("reconcileFrequencyMultiplier was less than 0 Goal")
+        if let payFrequencyMultiplierNumber = json["payFrequencyMultiplier"] as? NSNumber {
+            let payFrequencyMultiplier = payFrequencyMultiplierNumber.intValue
+            if payFrequencyMultiplier < 0 {
+                Logger.debug("payFrequencyMultiplier was less than 0 Goal")
                 return .Failure
             }
-            goal.reconcileFrequencyMultiplier = reconcileFrequencyMultiplier
+            goal.payFrequencyMultiplier = payFrequencyMultiplier
         } else {
-            Logger.debug("couldn't unwrap reconcileFrequencyMultiplier in Goal")
+            Logger.debug("couldn't unwrap payFrequencyMultiplier in Goal")
             return .Failure
         }
         
@@ -263,6 +280,24 @@ public class Goal: NSManagedObject {
         }
     }
     
+    public var alwaysCarryOver: Bool {
+        get {
+            return alwaysCarryOver_
+        }
+        set {
+            alwaysCarryOver_ = newValue
+        }
+    }
+    
+    public var adjustMonthAmountAutomatically: Bool {
+        get {
+            return adjustMonthAmountAutomatically_
+        }
+        set {
+            adjustMonthAmountAutomatically_ = newValue
+        }
+    }
+    
     public var period: Period {
         get {
             return Period(rawValue: Int(period_))!
@@ -281,7 +316,7 @@ public class Goal: NSManagedObject {
         }
     }
     
-    public var reconcileFrequency: Period {
+    public var payFrequency: Period {
         get {
             return Period(rawValue: Int(period_))!
         }
@@ -290,7 +325,7 @@ public class Goal: NSManagedObject {
         }
     }
     
-    public var reconcileFrequencyMultiplier: Int {
+    public var payFrequencyMultiplier: Int {
         get {
             return Int(periodMultiplier_)
         }

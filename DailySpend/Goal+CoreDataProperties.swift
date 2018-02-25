@@ -10,7 +10,6 @@
 import Foundation
 import CoreData
 
-
 extension Goal {
 
     @nonobjc public class func fetchRequest() -> NSFetchRequest<Goal> {
@@ -19,11 +18,13 @@ extension Goal {
 
     @NSManaged public var amount_: NSDecimalNumber?
     @NSManaged public var archived_: Bool
+    @NSManaged public var alwaysCarryOver_: Bool
+    @NSManaged public var adjustMonthAmountAutomatically_: Bool
     @NSManaged public var dateCreated_: NSDate?
     @NSManaged public var end_: NSDate?
     @NSManaged public var period_: Int64
-    @NSManaged public var reconcileFrequency_: Int64
-    @NSManaged public var reconcileFrequencyMultiplier_: Int64
+    @NSManaged public var payFrequency_: Int64
+    @NSManaged public var payFrequencyMultiplier_: Int64
     @NSManaged public var shortDescription_: String?
     @NSManaged public var start_: NSDate?
     @NSManaged public var periodMultiplier_: Int64

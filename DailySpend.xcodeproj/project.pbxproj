@@ -935,7 +935,7 @@
 				C5A287C41EC1741200D3479A /* DailySpend 2.xcdatamodel */,
 				C5781DA21E6E2060006BBC03 /* DailySpend.xcdatamodel */,
 			);
-			currentVersion = C502DB2B1F92B24C004136E5 /* DailySpend 5.xcdatamodel */;
+			currentVersion = C5108977201BE8A1005AA672 /* DailySpend 6.xcdatamodel */;
 			path = DailySpend.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
