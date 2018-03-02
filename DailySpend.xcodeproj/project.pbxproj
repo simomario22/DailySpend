@@ -46,6 +46,7 @@
 		C594F1CE1F47EDFE006CA097 /* CalendarDay.swift in Sources */ = {isa = PBXBuildFile; fileRef = C594F1CD1F47EDFE006CA097 /* CalendarDay.swift */; };
 		C594F1D01F47F206006CA097 /* CalendarMonth.swift in Sources */ = {isa = PBXBuildFile; fileRef = C594F1CF1F47F206006CA097 /* CalendarMonth.swift */; };
 		C594F1D61F494CD6006CA097 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = C594F1D51F494CD6006CA097 /* Logger.swift */; };
+		C5A0DD5C20429CC2004C6411 /* TodayViewGoalsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5A0DD5B20429CC2004C6411 /* TodayViewGoalsController.swift */; };
 		C5A261A41F66645B007CBB21 /* PauseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5A261A31F66645B007CBB21 /* PauseViewController.swift */; };
 		C5A4AF901FA6B52900101809 /* TableViewCellHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5A4AF8F1FA6B52900101809 /* TableViewCellHelper.swift */; };
 		C5B367CF1EBBD65E006B5ADC /* cog.png in Resources */ = {isa = PBXBuildFile; fileRef = C5B367CC1EBBD65E006B5ADC /* cog.png */; };
@@ -148,6 +149,7 @@
 		C594F1CD1F47EDFE006CA097 /* CalendarDay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalendarDay.swift; sourceTree = "<group>"; };
 		C594F1CF1F47F206006CA097 /* CalendarMonth.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CalendarMonth.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		C594F1D51F494CD6006CA097 /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+		C5A0DD5B20429CC2004C6411 /* TodayViewGoalsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayViewGoalsController.swift; sourceTree = "<group>"; };
 		C5A261A31F66645B007CBB21 /* PauseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PauseViewController.swift; sourceTree = "<group>"; };
 		C5A287C41EC1741200D3479A /* DailySpend 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "DailySpend 2.xcdatamodel"; sourceTree = "<group>"; };
 		C5A4AF8F1FA6B52900101809 /* TableViewCellHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewCellHelper.swift; sourceTree = "<group>"; };
@@ -298,6 +300,7 @@
 				C538FAB71E85696200295062 /* Main.storyboard */,
 				C5781D9A1E6E2060006BBC03 /* AppDelegate.swift */,
 				C5741D4D1FB93EDC00EEDDDD /* TodayViewController.swift */,
+				C5A0DD5B20429CC2004C6411 /* TodayViewGoalsController.swift */,
 				C5BA55B41E8DAB0E00256E7A /* ReviewTableViewCell.swift */,
 				C5F75FF31F9DB01E005F3510 /* DayReviewViewController.swift */,
 				C556D2511F2466EB008CA20E /* ExpenseViewController.swift */,
@@ -612,6 +615,7 @@
 				C586813E1F2E8BF2008D3AEE /* CGRect+Edges.swift in Sources */,
 				C5EDC2271EBBC12400DA5CB7 /* SettingsViewController.swift in Sources */,
 				C5A4AF901FA6B52900101809 /* TableViewCellHelper.swift in Sources */,
+				C5A0DD5C20429CC2004C6411 /* TodayViewGoalsController.swift in Sources */,
 				C5741D4E1FB93EDC00EEDDDD /* TodayViewController.swift in Sources */,
 				C55CCFD11F9D44E4001EF0B4 /* UIColor+255.swift in Sources */,
 				C573B9F420324C410025A5A2 /* Goal+CoreDataClass.swift in Sources */,

@@ -9,7 +9,10 @@
 import UIKit
 import CoreData
 
-class TodayViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class TodayViewController: UIViewController,
+UITableViewDataSource,
+UITableViewDelegate,
+TodayViewGoalsControllerDelegate {
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
     var context: NSManagedObjectContext {
         return appDelegate.persistentContainer.viewContext
@@ -17,13 +20,20 @@ class TodayViewController: UIViewController, UITableViewDataSource, UITableViewD
 
     @IBOutlet weak var tableView: UITableView!
     var cellCreator: TableViewCellHelper!
+    var goalsController: TodayViewGoalsController!
     
     var expenses = [(desc: String, amount: String)]()
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        goalsController = TodayViewGoalsController(
+            view: navigationController!.view,
+            navigationItem: navigationItem,
+            navigationBar: navigationController!.navigationBar,
+            delegate: self,
+            present: self.present)
         cellCreator = TableViewCellHelper(tableView: tableView, view: view)
+        
     }
 
     override func didReceiveMemoryWarning() {
@@ -37,7 +47,7 @@ class TodayViewController: UIViewController, UITableViewDataSource, UITableViewD
     }
     
     func cellTypeForIndexPath(indexPath: IndexPath) -> TodayViewCellType {
-        let section = indexPath.section
+//        let section = indexPath.section
         
         return .ExpenseCell
         
@@ -53,13 +63,16 @@ class TodayViewController: UIViewController, UITableViewDataSource, UITableViewD
         case .TodayCell:
             return UITableViewCell()
         case .ExpenseCell:
-            return cellCreator.addExpenseCell(day: day.calendarDay!, addedExpense:
-            {(shortDescription: String, amount: Decimal) in
-                print("expense added")
-            }, selectedDetailDisclosure:
-            {(cell: ExpenseTableViewCell) in
-                    print("expense added")
-            });
+            return cellCreator.expenseCell(expense: Expense(), day: CalendarDay(), addedExpense: {
+                (shortDescription: String, amount: Decimal) in
+                print("added expense with \(shortDescription), \(amount)")
+            }, selectedDetailDisclosure: {
+                print("selected detail disclosure")
+            }, beganEditing: { (i: Int) in
+                print("began editing")
+            }, endedEditing: { (i: Int) in
+                print("ended editing")
+            })
         }
     }
     
@@ -73,6 +86,10 @@ class TodayViewController: UIViewController, UITableViewDataSource, UITableViewD
     
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
+    }
+    
+    func goalChanged(newGoal: Goal?) {
+        print("Goal changed!")
     }
 
 }
