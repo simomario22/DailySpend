@@ -26,8 +26,9 @@ class TextFieldTableViewCell: UITableViewCell, UITextFieldDelegate {
         if textField != nil {
             var frame = bounds.insetBy(dx: margin, dy: margin)
             if hasTitle {
-                frame.size.width = (bounds.size.width / 2) - inset
-                frame.origin.x = bounds.size.width - frame.size.width - inset
+                let textWidth = textLabel?.intrinsicContentSize.width ?? (bounds.size.width / 2)
+                frame.origin.x = textWidth + inset + margin
+                frame.size.width = bounds.size.width - textWidth - inset - (2 * margin)
             } else {
                 frame.origin.x += (inset - margin)
             }

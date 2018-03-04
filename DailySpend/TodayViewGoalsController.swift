@@ -189,7 +189,8 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
             dimmingView = UIView()
             dimmingView.backgroundColor = UIColor.black
             dimmingView.alpha = 0
-            dimmingView.frame = view.frame
+            let dimmingViewFrame = CGRect(x: 0, y: 64, width: view.frame.size.width, height: view.frame.size.height)
+            dimmingView.frame = dimmingViewFrame
             view.insertSubview(dimmingView, belowSubview: goalTable)
         }
         
@@ -255,5 +256,12 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.row == goals.count {
+            let vc = GoalViewController(nibName: nil, bundle: nil)
+            let nvc = UINavigationController(rootViewController: vc)
+            present(nvc, true, nil)
+        }
+        
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }
