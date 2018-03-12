@@ -8,10 +8,7 @@
 
 import UIKit
 
-class TextFieldTableViewCell: UITableViewCell, UITextFieldDelegate, CalculatorTextFieldDelegate {
-    let margin: CGFloat = 8
-    let inset: CGFloat = 15
-    
+class TextFieldTableViewCell: ExplanatoryTextTableViewCell, UITextFieldDelegate, CalculatorTextFieldDelegate {
     var textField: UITextField!
     
     var hasTitle = false
@@ -26,11 +23,20 @@ class TextFieldTableViewCell: UITableViewCell, UITextFieldDelegate, CalculatorTe
     override func layoutSubviews() {
         super.layoutSubviews()
         if textField != nil {
-            var frame = bounds.insetBy(dx: margin, dy: margin)
+            var frame = controlAreaBounds.insetBy(dx: margin, dy: margin)
             if hasTitle {
-                let textWidth = textLabel?.intrinsicContentSize.width ?? (bounds.size.width / 2)
+                let textWidth = textLabel?.intrinsicContentSize.width ?? (controlAreaBounds.size.width / 2)
                 frame.origin.x = textWidth + inset + margin
-                frame.size.width = bounds.size.width - textWidth - (inset * 2) - margin
+                frame.size.width = controlAreaBounds.size.width - textWidth - (inset * 2) - margin
+                
+                if let titleFrame = textLabel?.frame {
+                    let newTitleFrame = CGRect(x: titleFrame.origin.x,
+                                               y: controlAreaBounds.topEdge + margin,
+                                               width: titleFrame.size.width,
+                                               height: controlAreaBounds.size.height - (margin * 2))
+                    textLabel!.frame = newTitleFrame
+                }
+                
             } else {
                 frame.origin.x += (inset - margin)
             }

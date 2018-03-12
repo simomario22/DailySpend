@@ -9,8 +9,17 @@
 import Foundation
 
 extension UILabel {
-    var textIntrinsicSize: CGSize {
-        return text == nil ? CGSize() : text!.size(withAttributes: [.font: font])
+    func intrinsicHeightForWidth(_ width: CGFloat) -> CGFloat {
+        // Set number of lines for this calculation to work properly.
+        let oldLines = numberOfLines
+        numberOfLines = 0
+        let height = sizeThatFits(CGSize(width: width, height: .greatestFiniteMagnitude)).height
+        numberOfLines = oldLines
+        return height
+    }
+    
+    func intrinsicWidthForHeight(_ height: CGFloat) -> CGFloat {
+        return sizeThatFits(CGSize(width: .greatestFiniteMagnitude, height: height)).width
     }
     
     func resizeFontToFit(desiredFontSize: CGFloat? = nil, minFontSize: CGFloat? = nil) {
@@ -21,14 +30,5 @@ extension UILabel {
         let sizedFont = desiredFontSize == nil ? font : font.withSize(desiredFontSize!)
         let newFontSize = text.maximumFontSize(sizedFont, maxWidth: bounds.size.width, maxHeight: bounds.size.height)
         self.font = font.withSize(max(newFontSize, minFontSize ?? 1))
-    }
-    
-    func textFitsInBounds() -> Bool {
-        guard let text = self.text,
-              let font = self.font else {
-                return true
-        }
-        let minSize = text.size(withAttributes: [.font: font])
-        return frame.size.width >= minSize.width && frame.size.height >= minSize.height
     }
 }

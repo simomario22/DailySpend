@@ -63,6 +63,7 @@ class TableViewCellHelper {
     public func textFieldDisplayCell(title: String? = nil,
                               placeholder: String,
                               text: String?,
+                              explanatoryText: String? = nil,
                               keyboardType: UIKeyboardType = .default,
                               changedToText: @escaping (String, UITextField) -> (),
                               didBeginEditing: ((UITextField) -> ())? = nil,
@@ -77,6 +78,7 @@ class TableViewCellHelper {
         cell.textField.keyboardType = keyboardType
         cell.textLabel?.text = title
         cell.setHasTitle(title != nil)
+        cell.setExplanatoryText(explanatoryText)
         cell.setBeginEditingCallback(didBeginEditing)
         cell.setEndEditingCallback(didEndEditing)
         cell.setChangedCallback { (textField: UITextField) in
@@ -118,6 +120,7 @@ class TableViewCellHelper {
     public func segmentedControlCell(segmentTitles: [String],
                               selectedSegmentIndex: Int,
                               title: String? = nil,
+                              explanatoryText: String? = nil,
                               changedToIndex: @escaping (Int) -> ()) -> UITableViewCell {
         var cell: SegmentedControlTableViewCell! = tableView.dequeueReusableCell(withIdentifier: "segmentedControlDisplay") as? SegmentedControlTableViewCell
         if cell == nil {
@@ -126,6 +129,7 @@ class TableViewCellHelper {
         
         cell.textLabel?.text = title
         cell.setHasTitle(title != nil)
+        cell.setExplanatoryText(explanatoryText)
         cell.setSegmentTitles(segmentTitles)
         cell.segmentedControl.selectedSegmentIndex = selectedSegmentIndex
         cell.setChangedCallback { (control: UISegmentedControl) in
@@ -135,6 +139,29 @@ class TableViewCellHelper {
         
         return cell
     }
+    
+    /**
+     * Return a cell with a segmented control.
+     */
+    public func switchCell(initialValue: Bool,
+                           title: String? = nil,
+                           explanatoryText: String? = nil,
+                           valueChanged: @escaping (Bool) -> ()) -> UITableViewCell {
+        var cell: SwitchTableViewCell! = tableView.dequeueReusableCell(withIdentifier: "switchDisplay") as? SwitchTableViewCell
+        if cell == nil {
+            cell = SwitchTableViewCell(style: .default, reuseIdentifier: "switchDisplay")
+        }
+        
+        cell.textLabel?.text = title
+        cell.setHasTitle(title != nil)
+        cell.setExplanatoryText(explanatoryText)
+        cell.setChangedCallback { (control: UISwitch) in
+            valueChanged(control.isOn)
+        }
+        
+        return cell
+    }
+
     
     /**
      * Return a cell with a date picker.

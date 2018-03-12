@@ -15,6 +15,14 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
         return appDelegate.persistentContainer.viewContext
     }
     
+    let autoAdjustExplanatoryText = "Adjust the amount per month based on the " +
+            "number of days in a month. (The amount will be for a 30 day month"
+    
+    let carryOverExplanatoryText = "Automatically create a carry-over " +
+            "adjustment with the balance at the end of each period. If this " +
+            "setting is off, you can do this manually in the review section " +
+            "for a period."
+    
     var cellCreator: TableViewCellHelper!
     
     var delegate: AddGoalDelegate?
@@ -162,8 +170,22 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
             )
         case .PeriodLengthCell: break
         case .PeriodLengthPickerCell: break
-        case .AutoAdjustMonthAmountCell: break
-        case .AlwaysCarryOverCell: break
+        case .AutoAdjustMonthAmountCell:
+            return cellCreator.switchCell(
+                initialValue: self.adjustMonthAmountAutomatically,
+                title: "Auto-Adjust Month Amount",
+                explanatoryText: autoAdjustExplanatoryText,
+                valueChanged: { (newValue) in
+                    self.adjustMonthAmountAutomatically = newValue
+            })
+        case .AlwaysCarryOverCell:
+            return cellCreator.switchCell(
+                initialValue: self.alwaysCarryOver,
+                title: "Always Carry Over",
+                explanatoryText: carryOverExplanatoryText,
+                valueChanged: { (newValue) in
+                    self.alwaysCarryOver = newValue
+            })
         case .IncrementalPaymentCell: break
         case .PayIntervalCell: break
         case .PayIntervalPickerCell: break
@@ -192,7 +214,15 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        func height(_ text: String) -> CGFloat {
+            return ExplanatoryTextTableViewCell.desiredHeightForExplanatoryText(text)
+        }
+        
         switch cellTypeForIndexPath(indexPath: indexPath) {
+        case .AutoAdjustMonthAmountCell:
+            return height(autoAdjustExplanatoryText)
+        case .AlwaysCarryOverCell:
+            return height(carryOverExplanatoryText)
         default:
             return 44
         }

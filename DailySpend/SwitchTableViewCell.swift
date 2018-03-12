@@ -8,21 +8,20 @@
 
 import UIKit
 
-class SegmentedControlTableViewCell: ExplanatoryTextTableViewCell, UITextFieldDelegate {
-    var segmentedControl: UISegmentedControl!
+class SwitchTableViewCell: ExplanatoryTextTableViewCell, UITextFieldDelegate {
+    var switchControl: UISwitch!
     
     var hasTitle = false
     
-    private var changedCallback: ((UISegmentedControl) -> ())?
+    private var changedCallback: ((UISwitch) -> ())?
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        if segmentedControl != nil {
+        if switchControl != nil {
             var frame = controlAreaBounds.insetBy(dx: margin, dy: margin)
             if hasTitle {
-                frame.size.width = segmentedControl.intrinsicContentSize.width
+                frame.size.width = switchControl.intrinsicContentSize.width
                 frame.origin.x = controlAreaBounds.size.width - frame.size.width - inset
-                
                 if let titleFrame = textLabel?.frame {
                     let newTitleFrame = CGRect(x: titleFrame.origin.x,
                                                y: controlAreaBounds.topEdge + margin,
@@ -33,36 +32,32 @@ class SegmentedControlTableViewCell: ExplanatoryTextTableViewCell, UITextFieldDe
             } else {
                 frame.origin.x += (inset - margin)
             }
-            segmentedControl.frame = frame
+            switchControl.frame = frame
         }
     }
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        segmentedControl = UISegmentedControl()
-        self.addSubview(segmentedControl)
-        segmentedControl.addTarget(self, action: #selector(segmentedControlChanged(control:)), for: .valueChanged)
+        switchControl = UISwitch()
+        self.addSubview(switchControl)
+        switchControl.addTarget(self, action: #selector(switchChanged(control:)), for: .valueChanged)
     }
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
     
-    @objc func segmentedControlChanged(control: UISegmentedControl!) {
+    @objc func switchChanged(control: UISwitch!) {
         changedCallback?(control)
     }
     
-    func setChangedCallback(_ cb: @escaping ((UISegmentedControl) -> ())) {
+    func setChangedCallback(_ cb: @escaping ((UISwitch) -> ())) {
         changedCallback = cb
     }
     
-    func setSegmentTitles(_ titles:[String]) {
-        segmentedControl.removeAllSegments()
-        for title in titles {
-            let lastIndex = segmentedControl.numberOfSegments
-            segmentedControl.insertSegment(withTitle: title, at: lastIndex, animated: false)
-        }
+    func setSwitchValue(_ value: Bool) {
+        switchControl.isOn = true
     }
     
     func setHasTitle(_ newValue: Bool) {

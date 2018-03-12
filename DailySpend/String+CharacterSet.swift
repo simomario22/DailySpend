@@ -88,6 +88,13 @@ extension String {
         return fontSize
     }
     
+    func heightWithConstrainingWidth(_ width: CGFloat, font: UIFont) -> CGFloat {
+        let label = UILabel()
+        label.text = self
+        label.font = font
+        return label.intrinsicHeightForWidth(width)
+    }
+    
     static func formatAsCurrency(amount: Decimal) -> String? {
         let currencyFormatter = NumberFormatter()
         currencyFormatter.numberStyle = .currency
