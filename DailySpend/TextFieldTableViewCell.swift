@@ -121,8 +121,6 @@ class TextFieldTableViewCell: UITableViewCell, UITextFieldDelegate, CalculatorTe
             textField.frame = oldFrame
             self.addSubview(textField)
             useCalcInputView = true
-            
-//            self.setNeedsLayout()
         } else if newValue == false && useCalcInputView == true {
             let oldFrame = textField.frame
             textField.removeFromSuperview()
@@ -130,7 +128,6 @@ class TextFieldTableViewCell: UITableViewCell, UITextFieldDelegate, CalculatorTe
             textField.frame = oldFrame
             self.addSubview(textField)
             useCalcInputView = false
-//            self.setNeedsLayout()
         }
     }
 }
