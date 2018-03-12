@@ -214,15 +214,11 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        func height(_ text: String) -> CGFloat {
-            return ExplanatoryTextTableViewCell.desiredHeightForExplanatoryText(text)
-        }
-        
         switch cellTypeForIndexPath(indexPath: indexPath) {
         case .AutoAdjustMonthAmountCell:
-            return height(autoAdjustExplanatoryText)
+            return SwitchTableViewCell.desiredHeight(autoAdjustExplanatoryText)
         case .AlwaysCarryOverCell:
-            return height(carryOverExplanatoryText)
+            return SwitchTableViewCell.desiredHeight(carryOverExplanatoryText)
         default:
             return 44
         }

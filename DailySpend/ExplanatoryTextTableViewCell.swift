@@ -14,9 +14,9 @@ class ExplanatoryTextTableViewCell: UITableViewCell {
     let margin: CGFloat = ExplanatoryTextTableViewCell.margin
     let inset: CGFloat = ExplanatoryTextTableViewCell.inset
     
-    var explanatoryTextLabel: UILabel?
+    var explanatoryTextView: UITextView?
     var controlAreaBounds: CGRect {
-        let height = explanatoryTextLabel == nil ? bounds.size.height : 44
+        let height = explanatoryTextView == nil ? bounds.size.height : 44
         return CGRect(x: 0, y: 0, width: bounds.size.width, height: height)
     }
     
@@ -24,58 +24,82 @@ class ExplanatoryTextTableViewCell: UITableViewCell {
     
     var explanatoryTextFont = ExplanatoryTextTableViewCell.defaultExplanatoryTextFont {
         didSet {
-            explanatoryTextLabel?.font = explanatoryTextFont
+            explanatoryTextView?.font = explanatoryTextFont
         }
     }
     
     var explanatoryTextColor = UIColor.lightGray {
         didSet {
-            explanatoryTextLabel?.textColor = explanatoryTextColor
+            explanatoryTextView?.textColor = explanatoryTextColor
         }
     }
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        if explanatoryTextLabel != nil {
+        if explanatoryTextView != nil {
             let width = bounds.size.width - (inset * 2)
-            let boundingSize = CGSize(width: width, height: .greatestFiniteMagnitude)
-            let height = explanatoryTextLabel!.sizeThatFits(boundingSize).height
+            let height = explanatoryTextView!.intrinsicHeightForWidth(width)
             
             let labelFrame = CGRect(x: inset,
-                                    y: controlAreaBounds.bottomEdge + (margin / 2),
-                                    width: width, height: height)
-            explanatoryTextLabel!.frame = labelFrame
+                                    y: controlAreaBounds.bottomEdge - (margin / 2),
+                                    width: width,
+                                    height: height)
+            explanatoryTextView!.frame = labelFrame
         }
     }
     
-    private func makeTextLabel() -> UILabel {
-        let label = UILabel()
-        label.font = explanatoryTextFont
-        label.textColor = explanatoryTextColor
-        label.numberOfLines = 0
-        return label
+    func addExclusionFrame(_ frame: CGRect) {
+        let convertedFrame = self.convert(frame, to: explanatoryTextView)
+        explanatoryTextView?.textContainer.exclusionPaths.append(UIBezierPath(rect: convertedFrame))
+    }
+    
+    private func makeTextView() -> UITextView {
+        let view = UITextViewWithoutMargins()
+        view.isScrollEnabled = false
+        view.isEditable = false
+        view.font = explanatoryTextFont
+        view.textColor = explanatoryTextColor
+        view.backgroundColor = UIColor.clear
+        view.textContainer.exclusionPaths = []
+        return view
     }
     
     func setExplanatoryText(_ text: String?) {
         if text == nil {
-            explanatoryTextLabel?.removeFromSuperview()
-            explanatoryTextLabel = nil
+            explanatoryTextView?.removeFromSuperview()
+            explanatoryTextView = nil
+            return
         }
-        if explanatoryTextLabel == nil {
-            explanatoryTextLabel = makeTextLabel()
+        if explanatoryTextView == nil {
+            explanatoryTextView = makeTextView()
         }
-        explanatoryTextLabel!.text = text
-        addSubview(explanatoryTextLabel!)
+        explanatoryTextView!.text = text
+        addSubview(explanatoryTextView!)
         self.setNeedsDisplay()
     }
     
-    static func desiredHeightForExplanatoryText(_ text: String,
-                                                font: UIFont = defaultExplanatoryTextFont,
-                                                width: CGFloat = UIScreen.main.bounds.size.width) -> CGFloat {
-        let label = UILabel()
-        label.text = text
-        label.font = font
+    static func desiredHeight(_ explanatoryText: String,
+                    font: UIFont = defaultExplanatoryTextFont,
+                    width: CGFloat = UIScreen.main.bounds.size.width,
+                    exclusionFrame: CGRect?) -> CGFloat {
+        let textView = UITextViewWithoutMargins()
+        textView.isScrollEnabled = false
+        textView.isEditable = false
+        textView.text = explanatoryText
+        textView.font = font
+        
+        if let exclusionFrame = exclusionFrame {
+            let textViewFrame = CGRect(x: inset,
+                                       y: 44 - (margin / 2),
+                                       width: width - (inset * 2),
+                                       height: exclusionFrame.bottomEdge + CGFloat(100))
+            let intersection = textViewFrame.intersection(exclusionFrame)
+            let convertedFrame = intersection.offsetBy(dx: -textViewFrame.origin.x,
+                                                       dy: -textViewFrame.origin.y)
+
+            textView.textContainer.exclusionPaths = [UIBezierPath(rect: convertedFrame)]
+        }
         let widthWithoutMargins = width - (inset * 2)
-        return label.intrinsicHeightForWidth(widthWithoutMargins) + 44 + (margin * 2)
+        return textView.intrinsicHeightForWidth(widthWithoutMargins) + (44 - (margin / 2)) + (margin * 1.5)
     }
 }

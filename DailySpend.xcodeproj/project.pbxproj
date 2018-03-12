@@ -14,6 +14,7 @@
 		C518791F1F00461000881FB6 /* PhotoBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = C518791E1F00461000881FB6 /* PhotoBox.swift */; };
 		C518B59A1E88C7F0009CA4BB /* Decimal+DoubleValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C518B5991E88C7F0009CA4BB /* Decimal+DoubleValue.swift */; };
 		C51D022820564C0F001946CA /* SwitchTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C51D022720564C0F001946CA /* SwitchTableViewCell.swift */; };
+		C51D022A20565A4E001946CA /* UITextView+Margins.swift in Sources */ = {isa = PBXBuildFile; fileRef = C51D022920565A4E001946CA /* UITextView+Margins.swift */; };
 		C5352729204B45CE0038E747 /* AddGoalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5352728204B45CE0038E747 /* AddGoalViewController.swift */; };
 		C535272B204B5E770038E747 /* NavigationBar+BorderLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = C535272A204B5E770038E747 /* NavigationBar+BorderLine.swift */; };
 		C5352754204C94750038E747 /* VENCalculatorIconBackspace.png in Resources */ = {isa = PBXBuildFile; fileRef = C5352746204C94740038E747 /* VENCalculatorIconBackspace.png */; };
@@ -113,6 +114,7 @@
 		C51B8C501F04DE65008AC0C6 /* ExpenseView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpenseView.swift; sourceTree = "<group>"; };
 		C51B8C521F04EDE5008AC0C6 /* DailySpend 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "DailySpend 3.xcdatamodel"; sourceTree = "<group>"; };
 		C51D022720564C0F001946CA /* SwitchTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwitchTableViewCell.swift; sourceTree = "<group>"; };
+		C51D022920565A4E001946CA /* UITextView+Margins.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextView+Margins.swift"; sourceTree = "<group>"; };
 		C521651B1F9DCC610056A6D5 /* NYTPhotoViewer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NYTPhotoViewer.framework; path = Carthage/Build/iOS/NYTPhotoViewer.framework; sourceTree = "<group>"; };
 		C5316BF51E78D80F00BC2918 /* OldExpenseTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OldExpenseTableViewCell.swift; sourceTree = "<group>"; };
 		C5352728204B45CE0038E747 /* AddGoalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddGoalViewController.swift; sourceTree = "<group>"; };
@@ -271,6 +273,7 @@
 				C556D2531F247C6B008CA20E /* UIControl+Closures.swift */,
 				C535272A204B5E770038E747 /* NavigationBar+BorderLine.swift */,
 				C5F75FEF1F9D5A75005F3510 /* UILabel+Size.swift */,
+				C51D022920565A4E001946CA /* UITextView+Margins.swift */,
 				C5F75FF11F9D6A29005F3510 /* UITextField+Size.swift */,
 				C586813F1F2E91E6008D3AEE /* UIView+MultipleSubviews.swift */,
 				C586813D1F2E8BF2008D3AEE /* CGRect+Edges.swift */,
@@ -650,6 +653,7 @@
 				C573BA0320324CDA0025A5A2 /* Expense+CoreDataProperties.swift in Sources */,
 				C5781D9B1E6E2060006BBC03 /* AppDelegate.swift in Sources */,
 				C586813E1F2E8BF2008D3AEE /* CGRect+Edges.swift in Sources */,
+				C51D022A20565A4E001946CA /* UITextView+Margins.swift in Sources */,
 				C54ABD9720562A9900334293 /* ExplanatoryTextTableViewCell.swift in Sources */,
 				C5352729204B45CE0038E747 /* AddGoalViewController.swift in Sources */,
 				C535275E204CF5A10038E747 /* CalculatorTextField.swift in Sources */,

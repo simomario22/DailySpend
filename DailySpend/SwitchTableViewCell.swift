@@ -26,13 +26,14 @@ class SwitchTableViewCell: ExplanatoryTextTableViewCell, UITextFieldDelegate {
                     let newTitleFrame = CGRect(x: titleFrame.origin.x,
                                                y: controlAreaBounds.topEdge + margin,
                                                width: titleFrame.size.width,
-                                               height: controlAreaBounds.size.height - (margin * 2))
+                                               height: switchControl.intrinsicContentSize.height)
                     textLabel!.frame = newTitleFrame
                 }
             } else {
                 frame.origin.x += (inset - margin)
             }
             switchControl.frame = frame
+            addExclusionFrame(frame.insetBy(dx: -margin, dy: -margin))
         }
     }
     
@@ -65,5 +66,16 @@ class SwitchTableViewCell: ExplanatoryTextTableViewCell, UITextFieldDelegate {
             hasTitle = newValue
             setNeedsLayout()
         }
+    }
+    
+    static func desiredHeight(_ explanatoryText: String,
+                font: UIFont = defaultExplanatoryTextFont,
+                width: CGFloat = UIScreen.main.bounds.size.width) -> CGFloat {
+        let switchSize = UISwitch().intrinsicContentSize
+        let exclusionFrame = CGRect(x: width - switchSize.width - inset - margin,
+                                    y: margin,
+                                    width: switchSize.width + margin,
+                                    height: switchSize.height + margin)
+        return super.desiredHeight(explanatoryText, font: font, width: width, exclusionFrame: exclusionFrame)
     }
 }

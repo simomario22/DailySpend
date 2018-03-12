@@ -107,6 +107,7 @@ class TableViewCellHelper {
         cell.textField.text = amount != nil ? String.formatAsCurrency(amount: amount!) : nil
         cell.textLabel?.text = title
         cell.setHasTitle(title != nil)
+        cell.setExplanatoryText(nil)
         cell.setChangedEvaluatedValueCallback { (_, newValue) in
             changedToAmount(newValue)
         }

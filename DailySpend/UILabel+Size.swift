@@ -17,11 +17,7 @@ extension UILabel {
         numberOfLines = oldLines
         return height
     }
-    
-    func intrinsicWidthForHeight(_ height: CGFloat) -> CGFloat {
-        return sizeThatFits(CGSize(width: .greatestFiniteMagnitude, height: height)).width
-    }
-    
+
     func resizeFontToFit(desiredFontSize: CGFloat? = nil, minFontSize: CGFloat? = nil) {
         guard let text = self.text,
               let font = self.font else {
