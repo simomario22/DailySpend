@@ -152,7 +152,14 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
                     self.setExpandedSection(.None)
                 }
             )
-        case .AmountPerPeriodCell: break
+        case .AmountPerPeriodCell:
+            return cellCreator.currencyDisplayCell(
+                title: "Amount",
+                amount: amount,
+                changedToAmount: { (newAmount) in
+                    self.amount = newAmount
+                }
+            )
         case .PeriodLengthCell: break
         case .PeriodLengthPickerCell: break
         case .AutoAdjustMonthAmountCell: break

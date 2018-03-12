@@ -86,6 +86,31 @@ class TableViewCellHelper {
         
         return cell
     }
+
+    /**
+     * Return a cell with an editable text field.
+     */
+    public func currencyDisplayCell(title: String? = nil,
+                                     amount: Decimal? = nil,
+                                     changedToAmount: @escaping (Decimal?) -> (),
+                                     didBeginEditing: ((UITextField) -> ())? = nil,
+                                     didEndEditing: ((UITextField) -> ())? = nil) -> UITableViewCell {
+        var cell: TextFieldTableViewCell! = tableView.dequeueReusableCell(withIdentifier: "textFieldDisplay") as? TextFieldTableViewCell
+        if cell == nil {
+            cell = TextFieldTableViewCell(style: .default, reuseIdentifier: "textFieldDisplay")
+        }
+
+        cell.setCalculatorTextField(true)
+        cell.textField.placeholder = "$0"
+        cell.textField.text = amount != nil ? String.formatAsCurrency(amount: amount!) : nil
+        cell.textLabel?.text = title
+        cell.setHasTitle(title != nil)
+        cell.setChangedEvaluatedValueCallback { (_, newValue) in
+            changedToAmount(newValue)
+        }
+        (cell.textField as! CalculatorTextField).maxValue = 1e7
+        return cell
+    }
     
     /**
      * Return a cell with a segmented control.

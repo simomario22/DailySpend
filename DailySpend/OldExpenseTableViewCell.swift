@@ -9,8 +9,7 @@
 import UIKit
 import CoreData
 
-class OldExpenseTableViewCell:
-UITableViewCell, ExpenseViewDelegate {
+class OldExpenseTableViewCell: UITableViewCell, ExpenseViewDelegate {
     var delegate: AddExpenseTableViewCellDelegate?
     var expenseView: ExpenseView!
     @IBOutlet weak var addExpenseLabel: UILabel!

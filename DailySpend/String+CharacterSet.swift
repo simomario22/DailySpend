@@ -20,31 +20,34 @@ extension String {
         return withoutChars
     }
     
-    /**
-     * - Returns:
-     * The decimal representation of the number created by removing
-     * all non numerical characters from the string and dividing the result
-     * by 100.
-     */
-    func parseValidAmount(maxLength: Int?) -> Double {
-        var negative = false
-        if self.count > 0 &&
-            self[startIndex] == "-" &&
-            self.components(separatedBy: "-").count == 1 {
-            negative = true
+    func countOccurrences(ofString needle: String) -> Int? {
+        if needle.isEmpty {
+            return nil
         }
-        let nonNumbers = CharacterSet(charactersIn: "0123456789").inverted
-        var s = self.removeCharactersWhichAreActuallyUnicodeScalarsSoBeCareful(in: nonNumbers)
-        
-        let length = s.lengthOfBytes(using: .ascii)
-        if length == 0 {
-            s = "0"
-        } else if maxLength != nil && length > maxLength! {
-            let endIndex = s.index(s.endIndex, offsetBy: maxLength! - length)
-            s = String(s[..<endIndex])
+        var searchRange: Range<String.Index>?
+        var count = 0
+        while let foundRange = range(of: needle, options: [], range: searchRange) {
+            searchRange = Range(uncheckedBounds: (lower: foundRange.upperBound, upper: endIndex))
+            count += 1
         }
-        
-        return (Double(s)! / 100) * (negative ? -1 : 1)
+        return count
+    }
+    
+    func countOccurrences(ofCharacters set: CharacterSet) -> Int? {
+        if set.isEmpty {
+            return nil
+        }
+        var searchRange: Range<String.Index>?
+        var count = 0
+        while let foundRange = rangeOfCharacter(from: set, options: [], range: searchRange) {
+            searchRange = Range(uncheckedBounds: (lower: foundRange.upperBound, upper: endIndex))
+            count += 1
+        }
+        return count
+    }
+
+    func containsAny(in set: CharacterSet) -> Bool {
+        return set.isEmpty || rangeOfCharacter(from: set) != nil
     }
     
     /**

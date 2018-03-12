@@ -18,7 +18,7 @@ class InitialAdjustmentViewController: UIViewController {
     @IBOutlet weak var monthlyField: UITextField!
     @IBOutlet weak var dailyField: UITextField!
     
-    var amount: Double = 0
+    var amount: Decimal = 0
         
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,7 +28,7 @@ class InitialAdjustmentViewController: UIViewController {
     }
 
     @IBAction func valueChanged(_ sender: UITextField) {
-        amount = sender.text!.parseValidAmount(maxLength: 8)
+        amount = sender.text!.parseValidAmount()
         sender.text = String.formatAsCurrency(amount: amount)
     }
     

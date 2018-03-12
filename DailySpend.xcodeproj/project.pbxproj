@@ -15,11 +15,17 @@
 		C518B59A1E88C7F0009CA4BB /* Decimal+DoubleValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C518B5991E88C7F0009CA4BB /* Decimal+DoubleValue.swift */; };
 		C5352729204B45CE0038E747 /* AddGoalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5352728204B45CE0038E747 /* AddGoalViewController.swift */; };
 		C535272B204B5E770038E747 /* NavigationBar+BorderLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = C535272A204B5E770038E747 /* NavigationBar+BorderLine.swift */; };
+		C5352754204C94750038E747 /* VENCalculatorIconBackspace.png in Resources */ = {isa = PBXBuildFile; fileRef = C5352746204C94740038E747 /* VENCalculatorIconBackspace.png */; };
+		C5352755204C94750038E747 /* VENCalculatorIconBackspace@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5352747204C94740038E747 /* VENCalculatorIconBackspace@3x.png */; };
+		C5352756204C94750038E747 /* VENCalculatorIconBackspace@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5352748204C94740038E747 /* VENCalculatorIconBackspace@2x.png */; };
+		C535275E204CF5A10038E747 /* CalculatorTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = C535275D204CF5A10038E747 /* CalculatorTextField.swift */; };
+		C5352765204CF8E10038E747 /* CalculatorInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5352764204CF8E10038E747 /* CalculatorInputView.swift */; };
 		C538FAB91E85696200295062 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C538FAB71E85696200295062 /* Main.storyboard */; };
 		C53BCAA71E9203BC000B5EE1 /* cal_recur.png in Resources */ = {isa = PBXBuildFile; fileRef = C53BCAA41E9203BC000B5EE1 /* cal_recur.png */; };
 		C53BCAA81E9203BC000B5EE1 /* cal_recur@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C53BCAA51E9203BC000B5EE1 /* cal_recur@2x.png */; };
 		C53BCAA91E9203BC000B5EE1 /* cal_recur@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C53BCAA61E9203BC000B5EE1 /* cal_recur@3x.png */; };
 		C546170D204A4AFF00689DED /* GoalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C546170C204A4AFF00689DED /* GoalViewController.swift */; };
+		C54ABD9520561DB100334293 /* LICENCE_VENMO.txt in Resources */ = {isa = PBXBuildFile; fileRef = C54ABD9420561DB100334293 /* LICENCE_VENMO.txt */; };
 		C54BF5B61FF8370F007F628D /* NYTPhotoViewer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C5A81A781F0040540032D9F1 /* NYTPhotoViewer.framework */; };
 		C54E4F491EFD3984006A1CA3 /* ImageSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54E4F481EFD3984006A1CA3 /* ImageSelectorView.swift */; };
 		C556D2541F247C6B008CA20E /* UIControl+Closures.swift in Sources */ = {isa = PBXBuildFile; fileRef = C556D2531F247C6B008CA20E /* UIControl+Closures.swift */; };
@@ -55,8 +61,6 @@
 		C5B367CF1EBBD65E006B5ADC /* cog.png in Resources */ = {isa = PBXBuildFile; fileRef = C5B367CC1EBBD65E006B5ADC /* cog.png */; };
 		C5B367D01EBBD65E006B5ADC /* cog@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5B367CD1EBBD65E006B5ADC /* cog@2x.png */; };
 		C5B367D11EBBD65E006B5ADC /* cog@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5B367CE1EBBD65E006B5ADC /* cog@3x.png */; };
-		C5BA55B31E8D92C800256E7A /* InitialAdjustmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5BA55B21E8D92C800256E7A /* InitialAdjustmentViewController.swift */; };
-		C5BA55B51E8DAB0E00256E7A /* ReviewTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5BA55B41E8DAB0E00256E7A /* ReviewTableViewCell.swift */; };
 		C5C65A221EBBFBC6002D1B12 /* ExportViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5C65A211EBBFBC6002D1B12 /* ExportViewController.swift */; };
 		C5CF5F641E7BB68600C35539 /* cal.png in Resources */ = {isa = PBXBuildFile; fileRef = C5CF5F5E1E7BB68600C35539 /* cal.png */; };
 		C5CF5F651E7BB68600C35539 /* cal@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5CF5F5F1E7BB68600C35539 /* cal@2x.png */; };
@@ -66,14 +70,11 @@
 		C5CF5F691E7BB68600C35539 /* today@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5CF5F631E7BB68600C35539 /* today@3x.png */; };
 		C5D3FF331F646B1300D3C7A4 /* AddPauseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5D3FF321F646B1300D3C7A4 /* AddPauseViewController.swift */; };
 		C5D4DAB81F931D250013A6F3 /* SegmentedControlTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5D4DAB71F931D240013A6F3 /* SegmentedControlTableViewCell.swift */; };
-		C5DD5A831E83B383008F7FC6 /* CurrentDayTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5DD5A821E83B383008F7FC6 /* CurrentDayTableViewCell.swift */; };
-		C5DD5A851E83B4AC008F7FC6 /* InitialSpendViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5DD5A841E83B4AC008F7FC6 /* InitialSpendViewController.swift */; };
 		C5E02501201C011500831269 /* CalendarWeek.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5E02500201C011500831269 /* CalendarWeek.swift */; };
 		C5E339011F930F5700785085 /* AdjustmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5E339001F930F5700785085 /* AdjustmentViewController.swift */; };
 		C5E339031F930F6600785085 /* AddAdjustmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5E339021F930F6600785085 /* AddAdjustmentViewController.swift */; };
 		C5EDC2271EBBC12400DA5CB7 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5EDC2261EBBC12400DA5CB7 /* SettingsViewController.swift */; };
 		C5EE62A31E85769700CAEEE7 /* String+CharacterSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5EE62A21E85769700CAEEE7 /* String+CharacterSet.swift */; };
-		C5F4712E1F053BB600859A4C /* ExpenseProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5F4712D1F053BB600859A4C /* ExpenseProvider.swift */; };
 		C5F75FF01F9D5A75005F3510 /* UILabel+Size.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5F75FEF1F9D5A75005F3510 /* UILabel+Size.swift */; };
 		C5F75FF21F9D6A29005F3510 /* UITextField+Size.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5F75FF11F9D6A29005F3510 /* UITextField+Size.swift */; };
 /* End PBXBuildFile section */
@@ -106,18 +107,24 @@
 		C518791E1F00461000881FB6 /* PhotoBox.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoBox.swift; sourceTree = "<group>"; };
 		C518B5991E88C7F0009CA4BB /* Decimal+DoubleValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Decimal+DoubleValue.swift"; sourceTree = "<group>"; };
 		C518B59B1E88D668009CA4BB /* DailySpend-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "DailySpend-Bridging-Header.h"; path = "DailySpend/DailySpend-Bridging-Header.h"; sourceTree = "<group>"; };
-		C51A224D1EBFB32D00B53C24 /* LICENSE.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = LICENSE.md; sourceTree = "<group>"; };
+		C51A224D1EBFB32D00B53C24 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		C51B8C501F04DE65008AC0C6 /* ExpenseView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpenseView.swift; sourceTree = "<group>"; };
 		C51B8C521F04EDE5008AC0C6 /* DailySpend 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "DailySpend 3.xcdatamodel"; sourceTree = "<group>"; };
 		C521651B1F9DCC610056A6D5 /* NYTPhotoViewer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NYTPhotoViewer.framework; path = Carthage/Build/iOS/NYTPhotoViewer.framework; sourceTree = "<group>"; };
 		C5316BF51E78D80F00BC2918 /* OldExpenseTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OldExpenseTableViewCell.swift; sourceTree = "<group>"; };
 		C5352728204B45CE0038E747 /* AddGoalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddGoalViewController.swift; sourceTree = "<group>"; };
 		C535272A204B5E770038E747 /* NavigationBar+BorderLine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NavigationBar+BorderLine.swift"; sourceTree = "<group>"; };
+		C5352746204C94740038E747 /* VENCalculatorIconBackspace.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VENCalculatorIconBackspace.png; sourceTree = "<group>"; };
+		C5352747204C94740038E747 /* VENCalculatorIconBackspace@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "VENCalculatorIconBackspace@3x.png"; sourceTree = "<group>"; };
+		C5352748204C94740038E747 /* VENCalculatorIconBackspace@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "VENCalculatorIconBackspace@2x.png"; sourceTree = "<group>"; };
+		C535275D204CF5A10038E747 /* CalculatorTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalculatorTextField.swift; sourceTree = "<group>"; };
+		C5352764204CF8E10038E747 /* CalculatorInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalculatorInputView.swift; sourceTree = "<group>"; };
 		C538FAB81E85696200295062 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		C53BCAA41E9203BC000B5EE1 /* cal_recur.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cal_recur.png; sourceTree = "<group>"; };
 		C53BCAA51E9203BC000B5EE1 /* cal_recur@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cal_recur@2x.png"; sourceTree = "<group>"; };
 		C53BCAA61E9203BC000B5EE1 /* cal_recur@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cal_recur@3x.png"; sourceTree = "<group>"; };
 		C546170C204A4AFF00689DED /* GoalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalViewController.swift; sourceTree = "<group>"; };
+		C54ABD9420561DB100334293 /* LICENCE_VENMO.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENCE_VENMO.txt; sourceTree = "<group>"; };
 		C54BF5B41FF1911A007F628D /* ExpenseCellsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseCellsController.swift; sourceTree = "<group>"; };
 		C54E4F481EFD3984006A1CA3 /* ImageSelectorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageSelectorView.swift; sourceTree = "<group>"; };
 		C556D2511F2466EB008CA20E /* ExpenseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpenseViewController.swift; sourceTree = "<group>"; };
@@ -238,24 +245,34 @@
 			path = UICountingLabel;
 			sourceTree = "<group>";
 		};
-		C5316C2A1E7B241200BC2918 /* Extensions and Subclasses */ = {
+		C5316C2A1E7B241200BC2918 /* Calendar Classes */ = {
 			isa = PBXGroup;
 			children = (
 				C594F1CD1F47EDFE006CA097 /* CalendarDay.swift */,
 				C5E02500201C011500831269 /* CalendarWeek.swift */,
 				C594F1CF1F47F206006CA097 /* CalendarMonth.swift */,
-				C556D2531F247C6B008CA20E /* UIControl+Closures.swift */,
-				C5EE62A21E85769700CAEEE7 /* String+CharacterSet.swift */,
+			);
+			name = "Calendar Classes";
+			sourceTree = "<group>";
+		};
+		C535275F204CF5B50038E747 /* Custom UI Elements */ = {
+			isa = PBXGroup;
+			children = (
+				C5352764204CF8E10038E747 /* CalculatorInputView.swift */,
+				C535275D204CF5A10038E747 /* CalculatorTextField.swift */,
+				C586813B1F2E85D5008D3AEE /* BorderedTextField.swift */,
+				C54E4F481EFD3984006A1CA3 /* ImageSelectorView.swift */,
+				C518791E1F00461000881FB6 /* PhotoBox.swift */,
 				C55CCFD01F9D44E4001EF0B4 /* UIColor+255.swift */,
+				C556D2531F247C6B008CA20E /* UIControl+Closures.swift */,
 				C535272A204B5E770038E747 /* NavigationBar+BorderLine.swift */,
 				C5F75FEF1F9D5A75005F3510 /* UILabel+Size.swift */,
 				C5F75FF11F9D6A29005F3510 /* UITextField+Size.swift */,
-				C518B5991E88C7F0009CA4BB /* Decimal+DoubleValue.swift */,
 				C586813F1F2E91E6008D3AEE /* UIView+MultipleSubviews.swift */,
 				C586813D1F2E8BF2008D3AEE /* CGRect+Edges.swift */,
-				C586813B1F2E85D5008D3AEE /* BorderedTextField.swift */,
+				C5D4DAB91F931D3E0013A6F3 /* Control-based Table View Cells */,
 			);
-			name = "Extensions and Subclasses";
+			name = "Custom UI Elements";
 			sourceTree = "<group>";
 		};
 		C56500201E837F3A009D64F0 /* Managed Object Classes */ = {
@@ -310,12 +327,7 @@
 				C5A0DD5B20429CC2004C6411 /* TodayViewGoalsController.swift */,
 				C546170C204A4AFF00689DED /* GoalViewController.swift */,
 				C5352728204B45CE0038E747 /* AddGoalViewController.swift */,
-				C5BA55B41E8DAB0E00256E7A /* ReviewTableViewCell.swift */,
-				C5F75FF31F9DB01E005F3510 /* DayReviewViewController.swift */,
-				C556D2511F2466EB008CA20E /* ExpenseViewController.swift */,
-				C5DD5A821E83B383008F7FC6 /* CurrentDayTableViewCell.swift */,
 				C5EDC2261EBBC12400DA5CB7 /* SettingsViewController.swift */,
-				C5DD5A841E83B4AC008F7FC6 /* InitialSpendViewController.swift */,
 				C5A261A31F66645B007CBB21 /* PauseViewController.swift */,
 				C5D3FF321F646B1300D3C7A4 /* AddPauseViewController.swift */,
 				C5E339001F930F5700785085 /* AdjustmentViewController.swift */,
@@ -323,13 +335,14 @@
 				C5C65A211EBBFBC6002D1B12 /* ExportViewController.swift */,
 				C503F1391EA1A8A100FA95A7 /* Export.swift */,
 				C594F1D51F494CD6006CA097 /* Logger.swift */,
-				C5781DCB1E6E23B2006BBC03 /* OldTodayViewController.swift */,
-				C5316BF51E78D80F00BC2918 /* OldExpenseTableViewCell.swift */,
-				C5D4DAB91F931D3E0013A6F3 /* Control-based Table View Cells */,
-				C5AA87D61F36D5B7001B9F08 /* Expense View */,
-				C5316C2A1E7B241200BC2918 /* Extensions and Subclasses */,
+				C5A4AF8F1FA6B52900101809 /* TableViewCellHelper.swift */,
+				C5EE62A21E85769700CAEEE7 /* String+CharacterSet.swift */,
+				C518B5991E88C7F0009CA4BB /* Decimal+DoubleValue.swift */,
+				C535275F204CF5B50038E747 /* Custom UI Elements */,
+				C5316C2A1E7B241200BC2918 /* Calendar Classes */,
 				C5F885F61F92EB9A0006B731 /* Core Data */,
-				C51A224D1EBFB32D00B53C24 /* LICENSE.md */,
+				C51A224D1EBFB32D00B53C24 /* LICENSE.txt */,
+				C54ABD9420561DB100334293 /* LICENCE_VENMO.txt */,
 				C5BFEA7A1E8F43E300528878 /* Unused */,
 				C5CF5F6A1E7BB68B00C35539 /* Images */,
 				C517B1E91EBC134200CDAA17 /* UICountingLabel */,
@@ -361,8 +374,6 @@
 				C51B8C501F04DE65008AC0C6 /* ExpenseView.swift */,
 				C5F4712D1F053BB600859A4C /* ExpenseProvider.swift */,
 				C54BF5B41FF1911A007F628D /* ExpenseCellsController.swift */,
-				C54E4F481EFD3984006A1CA3 /* ImageSelectorView.swift */,
-				C518791E1F00461000881FB6 /* PhotoBox.swift */,
 			);
 			name = "Expense View";
 			sourceTree = "<group>";
@@ -370,6 +381,14 @@
 		C5BFEA7A1E8F43E300528878 /* Unused */ = {
 			isa = PBXGroup;
 			children = (
+				C5AA87D61F36D5B7001B9F08 /* Expense View */,
+				C5BA55B41E8DAB0E00256E7A /* ReviewTableViewCell.swift */,
+				C5F75FF31F9DB01E005F3510 /* DayReviewViewController.swift */,
+				C556D2511F2466EB008CA20E /* ExpenseViewController.swift */,
+				C5DD5A821E83B383008F7FC6 /* CurrentDayTableViewCell.swift */,
+				C5DD5A841E83B4AC008F7FC6 /* InitialSpendViewController.swift */,
+				C5781DCB1E6E23B2006BBC03 /* OldTodayViewController.swift */,
+				C5316BF51E78D80F00BC2918 /* OldExpenseTableViewCell.swift */,
 				C5BA55B21E8D92C800256E7A /* InitialAdjustmentViewController.swift */,
 			);
 			name = Unused;
@@ -378,6 +397,9 @@
 		C5CF5F6A1E7BB68B00C35539 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				C5352746204C94740038E747 /* VENCalculatorIconBackspace.png */,
+				C5352748204C94740038E747 /* VENCalculatorIconBackspace@2x.png */,
+				C5352747204C94740038E747 /* VENCalculatorIconBackspace@3x.png */,
 				C5B367CC1EBBD65E006B5ADC /* cog.png */,
 				C5B367CD1EBBD65E006B5ADC /* cog@2x.png */,
 				C5B367CE1EBBD65E006B5ADC /* cog@3x.png */,
@@ -397,7 +419,6 @@
 		C5D4DAB91F931D3E0013A6F3 /* Control-based Table View Cells */ = {
 			isa = PBXGroup;
 			children = (
-				C5A4AF8F1FA6B52900101809 /* TableViewCellHelper.swift */,
 				C5117DB01FB94A410032F854 /* ExpenseTableViewCell.swift */,
 				C56F7ED81F64A22B00639F8D /* DatePickerTableViewCell.swift */,
 				C56CA0791F64BDEB00874FA8 /* TextFieldTableViewCell.swift */,
@@ -533,6 +554,7 @@
 				C5781DA81E6E2060006BBC03 /* LaunchScreen.storyboard in Resources */,
 				C53BCAA91E9203BC000B5EE1 /* cal_recur@3x.png in Resources */,
 				C5CF5F671E7BB68600C35539 /* today.png in Resources */,
+				C5352754204C94750038E747 /* VENCalculatorIconBackspace.png in Resources */,
 				C5CF5F681E7BB68600C35539 /* today@2x.png in Resources */,
 				C5781DA51E6E2060006BBC03 /* Assets.xcassets in Resources */,
 				C53BCAA81E9203BC000B5EE1 /* cal_recur@2x.png in Resources */,
@@ -540,9 +562,12 @@
 				C5CF5F691E7BB68600C35539 /* today@3x.png in Resources */,
 				C538FAB91E85696200295062 /* Main.storyboard in Resources */,
 				C5CF5F641E7BB68600C35539 /* cal.png in Resources */,
+				C54ABD9520561DB100334293 /* LICENCE_VENMO.txt in Resources */,
+				C5352755204C94750038E747 /* VENCalculatorIconBackspace@3x.png in Resources */,
 				C5B367CF1EBBD65E006B5ADC /* cog.png in Resources */,
 				C5CF5F651E7BB68600C35539 /* cal@2x.png in Resources */,
 				C53BCAA71E9203BC000B5EE1 /* cal_recur.png in Resources */,
+				C5352756204C94750038E747 /* VENCalculatorIconBackspace@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -590,16 +615,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				C517B1FF1EBC134200CDAA17 /* UICountingLabel.m in Sources */,
-				C5DD5A831E83B383008F7FC6 /* CurrentDayTableViewCell.swift in Sources */,
 				C573B9F520324C410025A5A2 /* Goal+CoreDataProperties.swift in Sources */,
 				C5E339011F930F5700785085 /* AdjustmentViewController.swift in Sources */,
 				C5E339031F930F6600785085 /* AddAdjustmentViewController.swift in Sources */,
 				C5C65A221EBBFBC6002D1B12 /* ExportViewController.swift in Sources */,
 				C5EE62A31E85769700CAEEE7 /* String+CharacterSet.swift in Sources */,
-				C5F4712E1F053BB600859A4C /* ExpenseProvider.swift in Sources */,
+				C5352765204CF8E10038E747 /* CalculatorInputView.swift in Sources */,
 				C594F1D01F47F206006CA097 /* CalendarMonth.swift in Sources */,
 				C5F75FF21F9D6A29005F3510 /* UITextField+Size.swift in Sources */,
-				C5BA55B31E8D92C800256E7A /* InitialAdjustmentViewController.swift in Sources */,
 				C573BA0420324CDA0025A5A2 /* Expense+CoreDataClass.swift in Sources */,
 				C573BA0220324CDA0025A5A2 /* Adjustment+CoreDataClass.swift in Sources */,
 				C56CA07A1F64BDEB00874FA8 /* TextFieldTableViewCell.swift in Sources */,
@@ -607,7 +630,6 @@
 				C586813C1F2E85D5008D3AEE /* BorderedTextField.swift in Sources */,
 				C58681401F2E91E6008D3AEE /* UIView+MultipleSubviews.swift in Sources */,
 				C54E4F491EFD3984006A1CA3 /* ImageSelectorView.swift in Sources */,
-				C5DD5A851E83B4AC008F7FC6 /* InitialSpendViewController.swift in Sources */,
 				C518B59A1E88C7F0009CA4BB /* Decimal+DoubleValue.swift in Sources */,
 				C518791F1F00461000881FB6 /* PhotoBox.swift in Sources */,
 				C5781DA31E6E2060006BBC03 /* DailySpend.xcdatamodeld in Sources */,
@@ -623,6 +645,7 @@
 				C5781D9B1E6E2060006BBC03 /* AppDelegate.swift in Sources */,
 				C586813E1F2E8BF2008D3AEE /* CGRect+Edges.swift in Sources */,
 				C5352729204B45CE0038E747 /* AddGoalViewController.swift in Sources */,
+				C535275E204CF5A10038E747 /* CalculatorTextField.swift in Sources */,
 				C5EDC2271EBBC12400DA5CB7 /* SettingsViewController.swift in Sources */,
 				C5A4AF901FA6B52900101809 /* TableViewCellHelper.swift in Sources */,
 				C5A0DD5C20429CC2004C6411 /* TodayViewGoalsController.swift in Sources */,
@@ -632,7 +655,6 @@
 				C535272B204B5E770038E747 /* NavigationBar+BorderLine.swift in Sources */,
 				C573BA0520324CDA0025A5A2 /* Pause+CoreDataClass.swift in Sources */,
 				C573BA0020324CDA0025A5A2 /* Image+CoreDataClass.swift in Sources */,
-				C5BA55B51E8DAB0E00256E7A /* ReviewTableViewCell.swift in Sources */,
 				C503F13A1EA1A8A200FA95A7 /* Export.swift in Sources */,
 				C5F75FF01F9D5A75005F3510 /* UILabel+Size.swift in Sources */,
 				C556D2541F247C6B008CA20E /* UIControl+Closures.swift in Sources */,

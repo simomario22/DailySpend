@@ -79,7 +79,7 @@ class InitialSpendViewController: UIViewController {
 
 
     @IBAction func valueChanged(_ sender: UITextField) {
-        let amount = sender.text!.parseValidAmount(maxLength: 8)
+        let amount = sender.text!.parseValidAmount()
         
         let dailyAmount = sender.tag == 2 ? amount : amount / 30
         let monthlyAmount = sender.tag == 1 ? amount : amount * 30
@@ -91,7 +91,7 @@ class InitialSpendViewController: UIViewController {
     
     
     @IBAction func save(_ sender: UIBarButtonItem) {
-        let dailyAmount = dailyField.text!.parseValidAmount(maxLength: 8)
+        let dailyAmount = dailyField.text!.parseValidAmount()
         if dailyAmount <= 0 {
             let message = "You need to pick a spend greater than $0."
             let alert = UIAlertController(title: "Couldn't Save",

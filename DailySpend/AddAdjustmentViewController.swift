@@ -255,21 +255,12 @@ class AddAdjustmentViewController: UIViewController, UITableViewDelegate, UITabl
                 didBeginEditing: { (_) in cancelDateEditing() }
             )
         case .AmountCell:
-            var formattedAmount: String? = nil
-            if self.rawAmount > 0 {
-                formattedAmount = String.formatAsCurrency(amount: self.rawAmount)
-            }
-            return cellCreator.textFieldDisplayCell(
-                title: "Amount",
-                placeholder: "$0.00",
-                text: formattedAmount,
-                keyboardType: .numberPad,
-                changedToText: { (text: String, field: UITextField) in
-                    self.rawAmount = Decimal(text.parseValidAmount(maxLength: 8))
-                    field.text = String.formatAsCurrency(amount: self.rawAmount)
+            return cellCreator.currencyDisplayCell(title: "Amount",
+                amount: self.rawAmount > 0 ? self.rawAmount : nil,
+                changedToAmount: { newValue in
+                    self.rawAmount = newValue ?? 0
                 },
-                didBeginEditing: { (field: UITextField) in
-                    self.editingAmountField = field
+                didBeginEditing: { _ in
                     cancelDateEditing()
                 },
                 didEndEditing: { (_) in
