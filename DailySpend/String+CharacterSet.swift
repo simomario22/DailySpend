@@ -88,6 +88,24 @@ extension String {
         return fontSize
     }
     
+    func calculatedHeightForWidth(_ width: CGFloat, font: UIFont?, exclusionPaths: [UIBezierPath]) -> CGFloat {
+        let textStorage = NSTextStorage(string: self)
+        let textContainer = NSTextContainer(size: CGSize(width: width, height: .greatestFiniteMagnitude))
+        let layoutManager = NSLayoutManager()
+        
+        layoutManager.addTextContainer(textContainer)
+        textStorage.addLayoutManager(layoutManager)
+        
+        if let font = font {
+            textStorage.addAttribute(.font, value: font, range: NSMakeRange(0, count))
+        }
+        textContainer.exclusionPaths = exclusionPaths
+        textContainer.lineFragmentPadding = 0
+        
+        layoutManager.glyphRange(for: textContainer)
+        return layoutManager.usedRect(for: textContainer).size.height
+    }
+    
     static func formatAsCurrency(amount: Decimal) -> String? {
         let currencyFormatter = NumberFormatter()
         currencyFormatter.numberStyle = .currency

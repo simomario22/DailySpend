@@ -10,7 +10,7 @@ import Foundation
 
 extension UITextView {
     func intrinsicHeightForWidth(_ width: CGFloat) -> CGFloat {
-        return sizeThatFits(CGSize(width: width, height: .greatestFiniteMagnitude)).height
+        return text.calculatedHeightForWidth(width, font: font, exclusionPaths: textContainer.exclusionPaths)
     }
 }
 

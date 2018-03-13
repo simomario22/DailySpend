@@ -33,7 +33,7 @@ class SwitchTableViewCell: ExplanatoryTextTableViewCell, UITextFieldDelegate {
                 frame.origin.x += (inset - margin)
             }
             switchControl.frame = frame
-            addExclusionFrame(frame.insetBy(dx: -margin, dy: -margin))
+            setExclusionFrame(frame.insetBy(dx: -margin, dy: -margin))
         }
     }
     

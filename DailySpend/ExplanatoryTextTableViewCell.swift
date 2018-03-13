@@ -48,9 +48,9 @@ class ExplanatoryTextTableViewCell: UITableViewCell {
         }
     }
     
-    func addExclusionFrame(_ frame: CGRect) {
+    func setExclusionFrame(_ frame: CGRect) {
         let convertedFrame = self.convert(frame, to: explanatoryTextView)
-        explanatoryTextView?.textContainer.exclusionPaths.append(UIBezierPath(rect: convertedFrame))
+        explanatoryTextView?.textContainer.exclusionPaths = [UIBezierPath(rect: convertedFrame)]
     }
     
     private func makeTextView() -> UITextView {
@@ -61,21 +61,27 @@ class ExplanatoryTextTableViewCell: UITableViewCell {
         view.textColor = explanatoryTextColor
         view.backgroundColor = UIColor.clear
         view.textContainer.exclusionPaths = []
+        view.isUserInteractionEnabled = false
         return view
     }
     
     func setExplanatoryText(_ text: String?) {
+        // For some reason we need to recreate this everytime... it doesn't
+        // properly size with exclusion paths if we re-use it.
+
         if text == nil {
             explanatoryTextView?.removeFromSuperview()
             explanatoryTextView = nil
+
             return
         }
+        
         if explanatoryTextView == nil {
             explanatoryTextView = makeTextView()
+            addSubview(explanatoryTextView!)
         }
         explanatoryTextView!.text = text
-        addSubview(explanatoryTextView!)
-        self.setNeedsDisplay()
+        setNeedsLayout()
     }
     
     static func desiredHeight(_ explanatoryText: String,
