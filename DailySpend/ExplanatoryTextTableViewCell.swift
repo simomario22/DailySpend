@@ -41,7 +41,7 @@ class ExplanatoryTextTableViewCell: UITableViewCell {
             let height = explanatoryTextView!.intrinsicHeightForWidth(width)
             
             let labelFrame = CGRect(x: inset,
-                                    y: controlAreaBounds.bottomEdge - (margin / 2),
+                                    y: controlAreaBounds.bottomEdge - margin,
                                     width: width,
                                     height: height)
             explanatoryTextView!.frame = labelFrame
@@ -96,7 +96,7 @@ class ExplanatoryTextTableViewCell: UITableViewCell {
         
         if let exclusionFrame = exclusionFrame {
             let textViewFrame = CGRect(x: inset,
-                                       y: 44 - (margin / 2),
+                                       y: 44 - margin,
                                        width: width - (inset * 2),
                                        height: exclusionFrame.bottomEdge + CGFloat(100))
             let intersection = textViewFrame.intersection(exclusionFrame)
@@ -106,6 +106,6 @@ class ExplanatoryTextTableViewCell: UITableViewCell {
             textView.textContainer.exclusionPaths = [UIBezierPath(rect: convertedFrame)]
         }
         let widthWithoutMargins = width - (inset * 2)
-        return textView.intrinsicHeightForWidth(widthWithoutMargins) + (44 - (margin / 2)) + (margin * 1.5)
+        return textView.intrinsicHeightForWidth(widthWithoutMargins) + 44 + (margin / 2)
     }
 }

@@ -38,11 +38,29 @@ class TableViewCellHelper {
             cell = UITableViewCell(style: .value1, reuseIdentifier: "dateDisplay")
         }
         
-        cell.textLabel!.text = label
-        
         let formattedDate = day.string(formatter: dateFormatter)
         
-        let attributedText = NSMutableAttributedString(string: formattedDate)
+        return valueDisplayCell(labelText: label,
+                                valueText: formattedDate,
+                                tintDetailText: tintDetailText,
+                                strikeText: strikeText)
+    }
+    
+    /**
+     * Cell to display a label and a value, which can be tinted or crossed out.
+     */
+    public func valueDisplayCell(labelText: String,
+                                 valueText: String,
+                                tintDetailText: Bool = false,
+                                strikeText: Bool = false) -> UITableViewCell {
+        var cell: UITableViewCell! = tableView.dequeueReusableCell(withIdentifier: "dateDisplay")
+        if cell == nil {
+            cell = UITableViewCell(style: .value1, reuseIdentifier: "dateDisplay")
+        }
+        
+        cell.textLabel!.text = labelText
+        
+        let attributedText = NSMutableAttributedString(string: valueText)
         let attr: [NSAttributedStringKey: Any] = [
             .foregroundColor: tintDetailText ? view.tintColor : UIColor.black,
             .strikethroughColor: tintDetailText ? view.tintColor : UIColor.black,
@@ -51,11 +69,12 @@ class TableViewCellHelper {
             // a better way.
             .strikethroughStyle: strikeText ? NSNumber(integerLiteral: 1) : NSNumber(integerLiteral: 0)
         ]
-        attributedText.addAttributes(attr, range: NSMakeRange(0, formattedDate.count))
+        attributedText.addAttributes(attr, range: NSMakeRange(0, valueText.count))
         cell.detailTextLabel!.attributedText = attributedText
         
         return cell
     }
+
     
     /**
      * Return a cell with an editable text field.
@@ -111,6 +130,8 @@ class TableViewCellHelper {
         cell.setChangedEvaluatedValueCallback { (_, newValue) in
             changedToAmount(newValue)
         }
+        cell.setBeginEditingCallback(didBeginEditing)
+        cell.setEndEditingCallback(didEndEditing)
         (cell.textField as! CalculatorTextField).maxValue = 1e7
         return cell
     }
