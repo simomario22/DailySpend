@@ -67,7 +67,17 @@ public class CalendarDay {
                                                  to: end.gmtDate).day!)
     }
 
-    func string(formatter: DateFormatter) -> String {
+    func string(formatter: DateFormatter, friendly: Bool = false) -> String {
+        if friendly {
+            let today = CalendarDay()
+            if self == today {
+                return "Today"
+            } else if self == today.add(days: 1) {
+                return "Tomorrow"
+            } else if self == today.subtract(days: 1) {
+                return "Yesterday"
+            }
+        }
         let origTZ = formatter.timeZone
         formatter.timeZone = CalendarDay.gmtTimeZone
 

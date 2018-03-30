@@ -30,18 +30,19 @@ class TableViewCellHelper {
      * Return a cell to format and display a CalendarDay.
      */
     public func dateDisplayCell(label: String,
-                         day: CalendarDay,
+                         day: CalendarDay?,
                          tintDetailText: Bool = false,
-                         strikeText: Bool = false) -> UITableViewCell {
+                         strikeText: Bool = false,
+                         alternateText: String? = nil) -> UITableViewCell {
         var cell: UITableViewCell! = tableView.dequeueReusableCell(withIdentifier: "dateDisplay")
         if cell == nil {
             cell = UITableViewCell(style: .value1, reuseIdentifier: "dateDisplay")
         }
-        
-        let formattedDate = day.string(formatter: dateFormatter)
+
+        let dateText = day?.string(formatter: dateFormatter, friendly: true) ?? alternateText ?? "None"
         
         return valueDisplayCell(labelText: label,
-                                valueText: formattedDate,
+                                valueText: dateText,
                                 tintDetailText: tintDetailText,
                                 strikeText: strikeText)
     }
@@ -51,14 +52,16 @@ class TableViewCellHelper {
      */
     public func valueDisplayCell(labelText: String,
                                  valueText: String,
+                                 explanatoryText: String? = nil,
                                 tintDetailText: Bool = false,
                                 strikeText: Bool = false) -> UITableViewCell {
-        var cell: UITableViewCell! = tableView.dequeueReusableCell(withIdentifier: "dateDisplay")
+        var cell: ValueTableViewCell! = tableView.dequeueReusableCell(withIdentifier: "valueDisplay") as? ValueTableViewCell
         if cell == nil {
-            cell = UITableViewCell(style: .value1, reuseIdentifier: "dateDisplay")
+            cell = ValueTableViewCell(style: .value1, reuseIdentifier: "valueDisplay")
         }
         
         cell.textLabel!.text = labelText
+        cell.setExplanatoryText(explanatoryText)
         
         let attributedText = NSMutableAttributedString(string: valueText)
         let attr: [NSAttributedStringKey: Any] = [
@@ -71,6 +74,8 @@ class TableViewCellHelper {
         ]
         attributedText.addAttributes(attr, range: NSMakeRange(0, valueText.count))
         cell.detailTextLabel!.attributedText = attributedText
+        
+        cell.valueWasSet()
         
         return cell
     }
@@ -116,9 +121,9 @@ class TableViewCellHelper {
                                      changedToAmount: @escaping (Decimal?) -> (),
                                      didBeginEditing: ((UITextField) -> ())? = nil,
                                      didEndEditing: ((UITextField) -> ())? = nil) -> UITableViewCell {
-        var cell: TextFieldTableViewCell! = tableView.dequeueReusableCell(withIdentifier: "textFieldDisplay") as? TextFieldTableViewCell
+        var cell: TextFieldTableViewCell! = tableView.dequeueReusableCell(withIdentifier: "currencyDisplay") as? TextFieldTableViewCell
         if cell == nil {
-            cell = TextFieldTableViewCell(style: .default, reuseIdentifier: "textFieldDisplay")
+            cell = TextFieldTableViewCell(style: .default, reuseIdentifier: "currencyDisplay")
         }
 
         cell.setCalculatorTextField(true)
@@ -177,6 +182,7 @@ class TableViewCellHelper {
         cell.textLabel?.text = title
         cell.setHasTitle(title != nil)
         cell.setExplanatoryText(explanatoryText)
+        cell.setSwitchValue(initialValue)
         cell.setChangedCallback { (control: UISwitch) in
             valueChanged(control.isOn)
         }
@@ -201,6 +207,37 @@ class TableViewCellHelper {
         cell.setCallback { (datePicker: UIDatePicker) in
             let day = CalendarDay(dateInGMTDay: datePicker.date)
             changedToDay(day)
+        }
+        
+        return cell
+    }
+    
+    /**
+     * Return a cell with a picker.
+     */
+    public func pickerCell(rows: [[String]],
+                           initialSelection: [Int]?,
+                           changedValues: @escaping ([String]) -> ()) -> UITableViewCell {
+        var cell: PickerTableViewCell! = tableView.dequeueReusableCell(withIdentifier: "picker") as? PickerTableViewCell
+        if cell == nil {
+            cell = PickerTableViewCell(style: .default, reuseIdentifier: "picker")
+        }
+        cell.setRows(rows)
+        if let selection = initialSelection {
+            for (i, row) in selection.enumerated() {
+                cell.picker.selectRow(row, inComponent: i, animated: false)
+            }
+        } else if !rows.isEmpty && !rows[0].isEmpty {
+            cell.picker.selectRow(0, inComponent: 0, animated: false)
+        }
+        
+        cell.setCallback { (pickerView) in
+            var values = [String]()
+            for component in 0..<rows.count {
+                let selected = pickerView.selectedRow(inComponent: component)
+                values.append(rows[component][selected])
+            }
+            changedValues(values)
         }
         
         return cell

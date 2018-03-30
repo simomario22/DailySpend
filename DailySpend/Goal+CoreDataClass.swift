@@ -28,6 +28,23 @@ public enum Period: Int {
             return "Month"
         }
     }
+    
+    func string(_ multiplier: Int) -> String {
+        return multiplier == 1 ? string() : "\(multiplier) " + string() + "s"
+    }
+    
+    init(_ value: String) {
+        switch value {
+        case "Day":
+            self = .Day
+        case "Week":
+            self = .Week
+        case "Month":
+            self = .Month
+        default:
+            self = .None
+        }
+    }
 }
 
 public enum CreateGoalFromJsonStatus {

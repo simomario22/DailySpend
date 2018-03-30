@@ -58,7 +58,7 @@ class SwitchTableViewCell: ExplanatoryTextTableViewCell, UITextFieldDelegate {
     }
     
     func setSwitchValue(_ value: Bool) {
-        switchControl.isOn = true
+        switchControl.isOn = value
     }
     
     func setHasTitle(_ newValue: Bool) {

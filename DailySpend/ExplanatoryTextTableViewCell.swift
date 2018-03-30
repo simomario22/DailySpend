@@ -87,7 +87,7 @@ class ExplanatoryTextTableViewCell: UITableViewCell {
     static func desiredHeight(_ explanatoryText: String,
                     font: UIFont = defaultExplanatoryTextFont,
                     width: CGFloat = UIScreen.main.bounds.size.width,
-                    exclusionFrame: CGRect?) -> CGFloat {
+                    exclusionFrame: CGRect? = nil) -> CGFloat {
         let textView = UITextViewWithoutMargins()
         textView.isScrollEnabled = false
         textView.isEditable = false

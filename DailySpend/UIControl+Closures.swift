@@ -22,10 +22,14 @@ class ClosureSleeve {
 }
 
 extension UIControl {
-    func add (for controlEvents: UIControlEvents, _ closure: @escaping ()->()) {
+    func add(for controlEvents: UIControlEvents, _ closure: @escaping ()->()) {
         let sleeve = ClosureSleeve(closure)
         addTarget(sleeve, action: #selector(ClosureSleeve.invoke), for: controlEvents)
-        objc_setAssociatedObject(self, String(format: "[%d]", arc4random()), sleeve, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN)
+        var key = String(format: "[%d]", arc4random())
+        while objc_getAssociatedObject(self, key) != nil {
+            key = String(format: "[%d]", arc4random())
+        }
+        objc_setAssociatedObject(self, key, sleeve, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN)
     }
 }
 
@@ -33,12 +37,20 @@ extension UIBarButtonItem {
     convenience init(title: String?, style: UIBarButtonItemStyle, _ closure: @escaping ()->()) {
         let sleeve = ClosureSleeve(closure)
         self.init(title: title, style: style, target: sleeve, action: #selector(ClosureSleeve.invoke))
-        objc_setAssociatedObject(self, String(format: "[%d]", arc4random()), sleeve, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN)
+        var key = String(format: "[%d]", arc4random())
+        while objc_getAssociatedObject(self, key) != nil {
+            key = String(format: "[%d]", arc4random())
+        }
+        objc_setAssociatedObject(self, key, sleeve, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN)
     }
     
     convenience init(barButtonSystemItem: UIBarButtonSystemItem, _ closure: @escaping ()->()) {
         let sleeve = ClosureSleeve(closure)
         self.init(barButtonSystemItem: barButtonSystemItem, target: sleeve, action: #selector(ClosureSleeve.invoke))
-        objc_setAssociatedObject(self, String(format: "[%d]", arc4random()), sleeve, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN)
+        var key = String(format: "[%d]", arc4random())
+        while objc_getAssociatedObject(self, key) != nil {
+            key = String(format: "[%d]", arc4random())
+        }
+        objc_setAssociatedObject(self, key, sleeve, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN)
     }
 }
