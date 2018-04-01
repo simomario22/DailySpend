@@ -21,7 +21,7 @@ extension UINavigationBar {
     private func findBorderLine() -> UIImageView! {
         return self.subviews
             .flatMap { $0.subviews }
-            .flatMap { $0 as? UIImageView }
+            .compactMap { $0 as? UIImageView }
             .filter { $0.bounds.size.width == self.bounds.size.width }
             .filter { $0.bounds.size.height <= 2 }
             .first
