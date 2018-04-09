@@ -47,19 +47,19 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
     var incrementalPayment = false
     var neverEnd = true
     var cellSizeCache = [GoalViewCellType: CGFloat]()
+    var unmodifiedStartDay: Date!
+    var unmodifiedEndDay: Date?
     
     // Goal Data
     var amount: Decimal?
-    var archived: Bool =  false
-    var alwaysCarryOver: Bool = false
-    var adjustMonthAmountAutomatically: Bool = true
-    var period: Period = .Day
-    var periodMultiplier: Int = 1
-    var payFrequency: Period = .Day
-    var payFrequencyMultiplier: Int = 1
     var shortDescription: String?
-    var start: CalendarDay? = CalendarDay()
-    var end: CalendarDay? = nil
+    var archived: Bool!
+    var alwaysCarryOver: Bool!
+    var adjustMonthAmountAutomatically: Bool!
+    var period: Period!
+    var payFrequency: Period!
+    var start: Date!
+    var end: Date?
     var parentGoal: Goal?
 
     override func viewDidLoad() {
@@ -96,10 +96,22 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
         
         cellCreator = TableViewCellHelper(tableView: tableView, view: view)
         
-        if self.goal != nil {
+        if let goal = self.goal {
             self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save, save)
             self.navigationItem.title = "Edit Goal"
-            
+
+            amount = goal.amount
+            shortDescription = goal.shortDescription
+            archived = goal.archived
+            alwaysCarryOver = goal.alwaysCarryOver
+            adjustMonthAmountAutomatically = goal.adjustMonthAmountAutomatically
+            period = goal.period
+            payFrequency = goal.payFrequency
+            start = goal.start
+            end = goal.end
+            unmodifiedStartDay = start
+            unmodifiedEndDay = end
+            parentGoal = goal.parentGoal
         } else {
             self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Add", style: .done, save)
             self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel) {
@@ -107,6 +119,14 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
                 self.dismiss(animated: true, completion: nil)
             }
             self.navigationItem.title = "New Goal"
+            
+            archived = false
+            alwaysCarryOver = false
+            adjustMonthAmountAutomatically = true
+            period = Period(scope: .Day, multiplier: 1)
+            payFrequency = Period(scope: .Day, multiplier: 1)
+            start = CalendarDay().gmtDate
+            unmodifiedStartDay = start
         }
     }
     
@@ -116,6 +136,48 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func save() {
+        var justCreated = false
+        if goal == nil {
+            justCreated = true
+            goal = Goal(context: context)
+            goal!.dateCreated = Date()
+        }
+        
+        let validation = goal!.propose(
+            shortDescription: shortDescription,
+            amount: amount,
+            start: start,
+            end: neverEnd ? nil : end,
+            period: recurring ? period : nil,
+            payFrequency: recurring && incrementalPayment ? payFrequency : nil,
+            parentGoal: parentGoal,
+            alwaysCarryOver: recurring ? alwaysCarryOver : nil,
+            adjustMonthAmountAutomatically: recurring && period.scope == .Month ? adjustMonthAmountAutomatically : nil
+        )
+
+        if validation.valid {
+            appDelegate.saveContext()
+            self.view.endEditing(false)
+            delegate?.addedOrChangedGoal(goal!)
+            if self.navigationController!.viewControllers[0] == self {
+                self.navigationController!.dismiss(animated: true, completion: nil)
+            } else {
+                self.navigationController!.popViewController(animated: true)
+            }
+        } else {
+            if justCreated {
+                context.delete(goal!)
+                goal = nil
+                appDelegate.saveContext()
+            }
+            let alert = UIAlertController(title: "Couldn't Save",
+                                          message: validation.problem!,
+                                          preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Okay",
+                                          style: .default,
+                                          handler: nil))
+            self.present(alert, animated: true, completion: nil)
+        }
     }
     
     
@@ -183,34 +245,36 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
         case .PeriodLengthCell:
             return cellCreator.valueDisplayCell(
                 labelText: "Period Length",
-                valueText: period.string(periodMultiplier),
+                valueText: period.string(),
                 explanatoryText: periodLengthExplanatoryText,
                 tintDetailText: expandedSection == .PeriodLengthPicker
             )
         case .PeriodLengthPickerCell:
-            let multiplierIndex = periodMultiplier - 1
-            let periodIndex = periodPickerRows[1].index(of: period.string()) ?? 0
+            let multiplierIndex = period.multiplier - 1
+            let periodIndex = periodPickerRows[1].index(of: period.scope.string()) ?? 0
             return cellCreator.pickerCell(
                 rows: periodPickerRows,
                 initialSelection: [multiplierIndex, periodIndex],
                 changedValues: { (values) in
                     if let multiplier = Int(values[0]) {
-                        self.periodMultiplier = multiplier
+                        self.period.multiplier = multiplier
                     } else {
-                        self.periodMultiplier = 1
+                        self.period.multiplier = 1
                     }
                     
-                    let newPeriod = Period(values[1])
+                    let oldPeriod = self.period.scope
+                    let newPeriod = PeriodScope(values[1])
                     
                     self.tableView.beginUpdates()
-                    if newPeriod == .Month && self.period != newPeriod {
+                    if newPeriod == .Month && self.period.scope != newPeriod {
                         self.insertAdjustMonthAmountAutomaticallyCell()
-                    } else if self.period == .Month && self.period != newPeriod {
+                    } else if self.period.scope == .Month && self.period.scope != newPeriod {
                         self.removeAdjustMonthAmountAutomaticallyCell()
                     }
                     
-                    self.period = newPeriod
+                    self.period.scope = newPeriod
                     
+                    self.updateStartAndEndToPeriod(from: oldPeriod)
                     self.reloadExpandedSectionLabel(.PeriodLengthPicker)
                     self.tableView.endUpdates()
             })
@@ -251,49 +315,47 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
         case .PayIntervalCell:
             return cellCreator.valueDisplayCell(
                 labelText: "Pay Interval",
-                valueText: "Every " + payFrequency.string(payFrequencyMultiplier),
+                valueText: "Every " + payFrequency.string(),
                 tintDetailText: expandedSection == .PayIntervalPicker,
-                strikeText: {
-                    if self.payFrequency.rawValue > self.period.rawValue {
-                        return true
-                    } else if self.payFrequency.rawValue < self.period.rawValue {
-                        return false
-                    } else {
-                        return self.payFrequencyMultiplier > self.periodMultiplier
-                    }
-                }()
+                strikeText: self.payFrequency > self.period
             )
         case .PayIntervalPickerCell:
-            let multiplierIndex = payFrequencyMultiplier - 1
-            let periodIndex = periodPickerRows[1].index(of: payFrequency.string()) ?? 0
+            let multiplierIndex = payFrequency.multiplier - 1
+            let periodIndex = periodPickerRows[1].index(of: payFrequency.scope.string()) ?? 0
             return cellCreator.pickerCell(
                 rows: periodPickerRows,
                 initialSelection: [multiplierIndex, periodIndex],
                 changedValues: { (values) in
                     if let multiplier = Int(values[0]) {
-                        self.payFrequencyMultiplier = multiplier
+                        self.payFrequency.multiplier = multiplier
                     } else {
-                        self.payFrequencyMultiplier = 1
+                        self.payFrequency.multiplier = 1
                     }
                     
-                    let newPeriod = Period(values[1])
+                    let newPeriod = PeriodScope(values[1])
                     
                     self.tableView.beginUpdates()
-                    self.payFrequency = newPeriod
+                    self.payFrequency.scope = newPeriod
                     self.reloadExpandedSectionLabel(.PayIntervalPicker)
                     self.tableView.endUpdates()
             })
         case .StartCell:
             return cellCreator.dateDisplayCell(
                 label: "Start",
-                day: start,
+                day: CalendarDay(dateInGMTDay: start),
                 tintDetailText: expandedSection == .StartDayPicker
             )
         case .StartPickerCell:
-            return cellCreator.datePickerCell(
-                day: start!,
-                changedToDay: { (day) in
-                    self.start = day
+            return cellCreator.periodPickerCell(
+                date: start,
+                scope: period.scope,
+                changedToDate: { (date: Date, scope: PeriodScope) in
+                    self.start = date
+                    
+                    // Update the unmodified days since we are making a direct
+                    // change.
+                    self.unmodifiedStartDay = self.start
+                    self.unmodifiedEndDay = self.end
                     
                     if self.end != nil && self.start! > self.end! {
                         self.end = self.start
@@ -303,7 +365,7 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
         case .EndCell:
             return cellCreator.dateDisplayCell(
                 label: "End",
-                day: self.neverEnd ? nil : end,
+                day: self.neverEnd ? nil : CalendarDay(dateInGMTDay: end!),
                 tintDetailText: expandedSection == .EndNeverAndDayPicker,
                 strikeText: !self.neverEnd && self.end != nil && self.start! > self.end!,
                 alternateText: "Never"
@@ -321,10 +383,17 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
                     self.reloadExpandedSectionLabel(.EndNeverAndDayPicker, scroll: true)
             })
         case .EndPickerCell:
-            return cellCreator.datePickerCell(
-                day: end!,
-                changedToDay: { (day) in
-                    self.end = day
+            return cellCreator.periodPickerCell(
+                date: end!,
+                scope: period.scope,
+                changedToDate: { (date: Date, scope: PeriodScope) in
+                    self.end = date
+                    
+                    // Update the unmodified days since we are making a direct
+                    // change.
+                    self.unmodifiedStartDay = self.start
+                    self.unmodifiedEndDay = self.end
+                    
                     self.reloadExpandedSectionLabel(.EndNeverAndDayPicker)
             })
         }
@@ -482,6 +551,31 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
+    func updateStartAndEndToPeriod(from oldPeriod: PeriodScope) {
+        let start: Date! = period.scope < oldPeriod ? unmodifiedStartDay : self.start
+        let end: Date? = period.scope < oldPeriod ? unmodifiedEndDay : self.end
+        switch period.scope {
+        case .Day:
+            self.start = CalendarDay(dateInGMTDay: start).gmtDate
+            self.end = end == nil ? nil : CalendarDay(dateInGMTDay: end!).gmtDate
+        case .Week:
+            self.start = CalendarWeek(dateInGMTWeek: start).gmtDate
+            self.end = end == nil ? nil : CalendarWeek(dateInGMTWeek: end!).gmtDate
+        case .Month:
+            self.start = CalendarMonth(dateInGMTMonth: start).gmtDate
+            self.end = end == nil ? nil : CalendarMonth(dateInGMTMonth: end!).gmtDate
+        case .None: break
+        }
+        let section = recurring ? 3 : 1
+        let startRow = 0
+        let endRow = expandedSection == .StartDayPicker ? 2 : 1
+        let paths = [
+            IndexPath(row: startRow, section: section),
+            IndexPath(row: endRow, section: section),
+        ]
+        tableView.reloadRows(at: paths, with: .fade)
+    }
+    
     func insertEndDayPickerCell() {
         let section = recurring ? 3 : 1
         let path = IndexPath(row: 3, section: section)
@@ -552,13 +646,13 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
             case 1:
                 if expandedSection == .PeriodLengthPicker {
                     return .PeriodLengthPickerCell
-                } else if period == .Month {
+                } else if period.scope == .Month {
                     return .AutoAdjustMonthAmountCell
                 } else {
                     return .AlwaysCarryOverCell
                 }
             case 2:
-                if expandedSection == .PeriodLengthPicker && period == .Month {
+                if expandedSection == .PeriodLengthPicker && period.scope == .Month {
                     return .AutoAdjustMonthAmountCell
                 } else {
                     return .AlwaysCarryOverCell
@@ -629,7 +723,7 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
         
         func rowsInPeriodSection() -> Int {
             var sections = 2
-            sections += period == .Month ? 1 : 0
+            sections += period.scope == .Month ? 1 : 0
             sections += expandedSection == .PeriodLengthPicker ? 1 : 0
             return sections
         }

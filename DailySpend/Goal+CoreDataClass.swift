@@ -10,43 +10,6 @@
 import Foundation
 import CoreData
 
-public enum Period: Int {
-    case None = -1
-    case Day = 0
-    case Week = 1
-    case Month = 2
-    
-    func string() -> String {
-        switch self {
-        case .None:
-            return "None"
-        case .Day:
-            return "Day"
-        case .Week:
-            return "Week"
-        case .Month:
-            return "Month"
-        }
-    }
-    
-    func string(_ multiplier: Int) -> String {
-        return multiplier == 1 ? string() : "\(multiplier) " + string() + "s"
-    }
-    
-    init(_ value: String) {
-        switch value {
-        case "Day":
-            self = .Day
-        case "Week":
-            self = .Week
-        case "Month":
-            self = .Month
-        default:
-            self = .None
-        }
-    }
-}
-
 public enum CreateGoalFromJsonStatus {
     case Success(Goal)
     case Failure
@@ -81,7 +44,7 @@ public class Goal: NSManagedObject {
             return nil
         }
         
-        if let date = start?.gmtDate {
+        if let date = start {
             let num = date.timeIntervalSince1970 as NSNumber
             jsonObj["start"] = num
         } else {
@@ -89,7 +52,7 @@ public class Goal: NSManagedObject {
             return nil
         }
         
-        if let date = end?.gmtDate {
+        if let date = end {
             let num = date.timeIntervalSince1970 as NSNumber
             jsonObj["end"] = num
         }
@@ -101,11 +64,11 @@ public class Goal: NSManagedObject {
             return nil
         }
         
-        jsonObj["period"] = period.rawValue as NSNumber
-        jsonObj["periodMultiplier"] = periodMultiplier as NSNumber
+        jsonObj["period"] = period.scope.rawValue as NSNumber
+        jsonObj["periodMultiplier"] = period.multiplier as NSNumber
         
-        jsonObj["payFrequency"] = payFrequency.rawValue as NSNumber
-        jsonObj["payFrequencyMultiplier"] = payFrequencyMultiplier as NSNumber
+        jsonObj["payFrequency"] = payFrequency.scope.rawValue as NSNumber
+        jsonObj["payFrequencyMultiplier"] = payFrequency.multiplier as NSNumber
 
         if let parentGoal = parentGoal {
             jsonObj["parentGoal"] = jsonIds[parentGoal.objectID]
@@ -175,15 +138,29 @@ public class Goal: NSManagedObject {
             return .Failure
         }
         
-        if let dateNumber = json["start"] as? NSNumber {
-            let date = Date(timeIntervalSince1970: dateNumber.doubleValue)
-            let calDay = CalendarDay(dateInGMTDay: date)
-            if calDay.gmtDate != date {
-                // The date isn't a beginning of day
-                Logger.debug("The start date isn't a beginning of day in Goal")
+        if let periodNumber = json["period"] as? NSNumber,
+            let periodMultiplierNumber = json["periodMultiplier"] as? NSNumber {
+            let p = PeriodScope(rawValue: periodNumber.intValue)
+            let m = periodMultiplierNumber.intValue
+            if p != nil && m >= 0 {
+                goal.period = Period(scope: p!, multiplier: m)
+            } else {
+                Logger.debug("period or its multiplier wasn't a valid number in Goal")
                 return .Failure
             }
-            goal.start = calDay
+        } else {
+            Logger.debug("couldn't unwrap period or its multiplier in Goal")
+            return .Failure
+        }
+        
+        if let dateNumber = json["start"] as? NSNumber {
+            let date = Date(timeIntervalSince1970: dateNumber.doubleValue)
+            if !Goal.scopeConformsToDate(date, scope: goal.period.scope) {
+                // The date isn't a beginning of a period
+                Logger.debug("The start date isn't at the beginning of the period")
+                return .Failure
+            }
+            goal.start = date
         } else {
             Logger.debug("couldn't unwrap start in Goal")
             return .Failure
@@ -191,14 +168,13 @@ public class Goal: NSManagedObject {
         
         if let dateNumber = json["end"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateNumber.doubleValue)
-            let calDay = CalendarDay(dateInGMTDay: date)
-            if calDay.gmtDate != date ||
-                calDay < goal.start! {
+            if !Goal.scopeConformsToDate(date, scope: goal.period.scope) ||
+                date < goal.start! {
                 // The date isn't a beginning of day
-                Logger.debug("The end date isn't a beginning of day or is earlier than start in Goal")
+                Logger.debug("The start date isn't at the beginning of the period or is earlier than start in Goal")
                 return .Failure
             }
-            goal.end = calDay
+            goal.end = date
         } else {
             goal.end = nil
         }
@@ -214,51 +190,18 @@ public class Goal: NSManagedObject {
             return .Failure
         }
         
-        if let periodNumber = json["period"] as? NSNumber {
-            if let period = Period(rawValue: periodNumber.intValue) {
-                goal.period = period
+        if let payFrequencyNumber = json["payFrequency"] as? NSNumber,
+           let payFrequencyMultiplierNumber = json["payFrequencyMultiplier"] as? NSNumber {
+            let p = PeriodScope(rawValue: payFrequencyNumber.intValue)
+            let m = payFrequencyMultiplierNumber.intValue
+            if p != nil && m >= 0 {
+                goal.payFrequency = Period(scope: p!, multiplier: m)
             } else {
-                Logger.debug("period wasn't a valid number in Goal")
+                Logger.debug("payFrequency or its multiplier wasn't a valid number in Goal")
                 return .Failure
             }
         } else {
-            Logger.debug("couldn't unwrap period in Goal")
-            return .Failure
-        }
-        
-        if let periodMultiplierNumber = json["periodMultiplier"] as? NSNumber {
-            let periodMultiplier = periodMultiplierNumber.intValue
-            if periodMultiplier < 0 {
-                Logger.debug("periodMultiplier was less than 0 Goal")
-                return .Failure
-            }
-            goal.periodMultiplier = periodMultiplier
-        } else {
-            Logger.debug("couldn't unwrap periodMultiplier in Goal")
-            return .Failure
-        }
-        
-        if let payFrequencyNumber = json["payFrequency"] as? NSNumber {
-            if let payFrequency = Period(rawValue: payFrequencyNumber.intValue) {
-                goal.payFrequency = payFrequency
-            } else {
-                Logger.debug("payFrequency wasn't a valid number in Goal")
-                return .Failure
-            }
-        } else {
-            Logger.debug("couldn't unwrap payFrequency in Goal")
-            return .Failure
-        }
-        
-        if let payFrequencyMultiplierNumber = json["payFrequencyMultiplier"] as? NSNumber {
-            let payFrequencyMultiplier = payFrequencyMultiplierNumber.intValue
-            if payFrequencyMultiplier < 0 {
-                Logger.debug("payFrequencyMultiplier was less than 0 Goal")
-                return .Failure
-            }
-            goal.payFrequencyMultiplier = payFrequencyMultiplier
-        } else {
-            Logger.debug("couldn't unwrap payFrequencyMultiplier in Goal")
+            Logger.debug("couldn't unwrap payFrequency or its multiplier in Goal")
             return .Failure
         }
         
@@ -286,6 +229,91 @@ public class Goal: NSManagedObject {
         let goalResults = try? context.fetch(fetchRequest)
         
         return goalResults
+    }
+    
+    private class func scopeConformsToDate(_ date: Date, scope: PeriodScope) -> Bool {
+        if scope == .None {
+            return PeriodScope.Day.scopeConformsToDate(date)
+        } else {
+            return scope.scopeConformsToDate(date)
+        }
+    }
+    
+    /**
+     * Accepts all members of Goal. If the passed variables, attached to
+     * corresponding variables on an Goal object, will form a valid
+     * object, this function will assign the passed variables to this object
+     * and return `(valid: true, problem: nil)`. Otherwise, this function will
+     * return `(valid: false, problem: ...)` with problem set to a user
+     * readable string describing why this adjustment wouldn't be valid.
+     */
+    func propose(
+        shortDescription: String?? = nil,
+        amount: Decimal?? = nil,
+        start: Date?? = nil,
+        end: Date?? = nil,
+        period: Period? = nil,
+        payFrequency: Period? = nil,
+        parentGoal: Goal?? = nil,
+        archived: Bool? = nil,
+        alwaysCarryOver: Bool? = nil,
+        adjustMonthAmountAutomatically: Bool? = nil,
+        dateCreated: Date?? = nil
+    ) -> (valid: Bool, problem: String?) {
+        let _amount = amount ?? self.amount
+        let _shortDescription = shortDescription ?? self.shortDescription
+        let _start = start ?? self.start
+        let _end = end ?? self.end
+        let _period = period ?? self.period
+        let _payFrequency = payFrequency ?? self.payFrequency
+        let _parentGoal = parentGoal ?? self.parentGoal
+        let _archived = archived ?? self.archived
+        let _alwaysCarryOver = alwaysCarryOver ?? self.alwaysCarryOver
+        let _adjustMonthAmountAutomatically = adjustMonthAmountAutomatically ?? self.adjustMonthAmountAutomatically
+        let _dateCreated = dateCreated ?? self.dateCreated
+
+        if _shortDescription == nil || _shortDescription!.count == 0 {
+            return (false, "This goal must have a description.")
+        }
+        
+        if _amount == nil || _amount! == 0 {
+            return (false, "This goal must have an amount specified.")
+        }
+        
+        if start == nil || !Goal.scopeConformsToDate(_start!, scope: _period.scope) {
+            return (false, "The goal must have a start date at the beginning of it's period.")
+        }
+        
+        
+        if end != nil && !Goal.scopeConformsToDate(_end!, scope: _period.scope) {
+            return (false, "If this goal has an end date, it must be at the start of a period.")
+        }
+        
+        if _period.scope != .None && _payFrequency > _period {
+            return (false, "The pay freqency must be a lesser or equal interval than the period.")
+        }
+        
+        if _parentGoal == self {
+            return (false, "A goal cannot be a parent of itself.")
+        }
+        
+        if _dateCreated == nil {
+            return (false, "The goal must have a date created.")
+        }
+        
+        self.amount = _amount
+        self.shortDescription = _shortDescription
+        self.start = _start
+        self.end = _end
+        self.period = _period
+        self.payFrequency = _payFrequency
+        self.parentGoal = _parentGoal
+        self.archived = _archived
+        self.alwaysCarryOver = _alwaysCarryOver
+        self.adjustMonthAmountAutomatically = _adjustMonthAmountAutomatically
+        self.dateCreated = _dateCreated
+        
+        return (true, nil)
     }
     
     public var archived: Bool {
@@ -317,44 +345,32 @@ public class Goal: NSManagedObject {
     
     public var period: Period {
         get {
-            return Period(rawValue: Int(period_))!
+            let p = PeriodScope(rawValue: Int(period_))!
+            let m = Int(periodMultiplier_)
+            return Period(scope: p, multiplier: m)
         }
         set {
-            period_ = Int64(newValue.rawValue)
+            period_ = Int64(newValue.scope.rawValue)
+            periodMultiplier_ = Int64(newValue.multiplier)
         }
     }
-    
-    public var periodMultiplier: Int {
-        get {
-            return Int(periodMultiplier_)
-        }
-        set {
-            periodMultiplier_ = Int64(newValue)
-        }
-    }
-    
+
     public var payFrequency: Period {
         get {
-            return Period(rawValue: Int(period_))!
+            let p = PeriodScope(rawValue: Int(payFrequency_))!
+            let m = Int(payFrequencyMultiplier_)
+            return Period(scope: p, multiplier: m)
         }
         set {
-            period_ = Int64(newValue.rawValue)
+            payFrequency_ = Int64(newValue.scope.rawValue)
+            periodMultiplier_ = Int64(newValue.multiplier)
         }
     }
     
-    public var payFrequencyMultiplier: Int {
-        get {
-            return Int(periodMultiplier_)
-        }
-        set {
-            periodMultiplier_ = Int64(newValue)
-        }
-    }
-    
-    public var start: CalendarDay? {
+    public var start: Date? {
         get {
             if let day = start_ as Date? {
-                return CalendarDay(dateInGMTDay: day)
+                return day
             } else {
                 return nil
             }
@@ -362,17 +378,17 @@ public class Goal: NSManagedObject {
         set {
             if newValue != nil {
                 // Get relevant days.
-                start_ = newValue!.gmtDate as NSDate
+                start_ = newValue! as NSDate
             } else {
                 start_ = nil
             }
         }
     }
     
-    public var end: CalendarDay? {
+    public var end: Date? {
         get {
             if let day = end_ as Date? {
-                return CalendarDay(dateInGMTDay: day)
+                return day
             } else {
                 return nil
             }
@@ -380,7 +396,7 @@ public class Goal: NSManagedObject {
         set {
             if newValue != nil {
                 // Get relevant days.
-                end_ = newValue!.gmtDate as NSDate
+                end_ = newValue! as NSDate
             } else {
                 end_ = nil
             }

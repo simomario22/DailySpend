@@ -42,6 +42,10 @@ public class CalendarMonth {
     convenience init() {
         self.init(dateInLocalMonth: Date())
     }
+    
+    private init(trustedDate: Date) {
+        self.date = trustedDate
+    }
 
     /*
      * Returns a date by adding days then months by incrementing those values
@@ -49,16 +53,8 @@ public class CalendarMonth {
      */
     func add(months: Int) -> CalendarMonth {
         let cal = CalendarMonth.gmtCal
-
-        // Get interval for months
-        let interval = self.date.timeIntervalSince(cal.date(byAdding: .month,
-                                                    value: months,
-                                                    to: self.date)!)
-
-        // Add interval to a copy of self
-        var datePlusInterval = self.date
-        datePlusInterval.addTimeInterval(-interval)
-        return CalendarMonth(dateInGMTMonth: datePlusInterval)
+        let newDate = cal.date(byAdding: .month, value: months, to: self.date)!
+        return CalendarMonth(trustedDate: newDate)
     }
 
     func subtract(months: Int) -> CalendarMonth {
@@ -117,7 +113,7 @@ public class CalendarMonth {
     }
 
     var weeksInMonth: Int {
-        // We are count a week as "in" a month if the Sunday of that week is
+        // We are counting a week as "in" a month if the Sunday of that week is
         // in this month.
         return sundaysInMonth()
     }
@@ -160,7 +156,10 @@ public class CalendarMonth {
     var gmtDate: Date {
         return date
     }
-
+    
+    var period: PeriodScope {
+        return .Month
+    }
 }
 
 extension CalendarMonth: Comparable {

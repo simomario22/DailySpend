@@ -211,6 +211,27 @@ class TableViewCellHelper {
         
         return cell
     }
+
+    /**
+     * Return a cell with a date picker.
+     */
+    public func periodPickerCell(date: Date,
+                                 scope: PeriodScope,
+                                 changedToDate: @escaping (Date, PeriodScope) -> ()) -> UITableViewCell {
+        var cell: CalendarPeriodPickerTableViewCell! = tableView.dequeueReusableCell(withIdentifier: "periodPicker") as? CalendarPeriodPickerTableViewCell
+        if cell == nil {
+            cell = CalendarPeriodPickerTableViewCell(style: .default, reuseIdentifier: "periodPicker")
+        }
+        
+        cell.periodPicker.value = date
+        cell.periodPicker.scope = scope
+        cell.setCallback { (date: Date, scope: PeriodScope) in
+            changedToDate(date, scope)
+        }
+        
+        return cell
+    }
+
     
     /**
      * Return a cell with a picker.

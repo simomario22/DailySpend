@@ -39,22 +39,18 @@ public class CalendarDay {
     convenience init() {
         self.init(dateInLocalDay: Date())
     }
+    
+    private init(trustedDate: Date) {
+        self.date = trustedDate
+    }
 
     /*
-     * Returns a date by adding days then months by incrementing those values
-     * in that order.
+     * Returns a CalendarDay after adding a certain number of days.
      */
     func add(days: Int) -> CalendarDay {
         let cal = CalendarDay.gmtCal
-
-        // Get interval for days
-        let interval = self.date.timeIntervalSince(cal.date(byAdding: .day,
-                                                       value: days,
-                                                       to: self.date)!)
-        // Add interval to a copy of self
-        var datePlusInterval = self.date
-        datePlusInterval.addTimeInterval(-interval)
-        return CalendarDay(dateInGMTDay: datePlusInterval)
+        let newDate = cal.date(byAdding: .day, value: days, to: self.date)!
+        return CalendarDay(trustedDate: newDate)
     }
 
     func subtract(days: Int) -> CalendarDay {
@@ -127,7 +123,9 @@ public class CalendarDay {
         return date
     }
 
-
+    var period: PeriodScope {
+        return .Day
+    }
 }
 
 extension CalendarDay: Comparable {

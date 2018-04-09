@@ -78,7 +78,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 0
+        return section == 0 ? currentGoals.count : archivedGoals.count
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -101,9 +101,13 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            var goals = indexPath.section == 1 ? archivedGoals : currentGoals
-            let goal = goals.remove(at: indexPath.row)
-            context.delete(goal)
+            if indexPath.section == 0 {
+                let goal = currentGoals.remove(at: indexPath.row)
+                context.delete(goal)
+            } else {
+                let goal = archivedGoals.remove(at: indexPath.row)
+                context.delete(goal)
+            }
             appDelegate.saveContext()
             tableView.deleteRows(at: [indexPath], with: .fade)
         }

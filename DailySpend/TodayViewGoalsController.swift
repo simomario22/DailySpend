@@ -64,6 +64,7 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
          self.goals = getAllGoals()
          self.currentGoal = getLastUsedGoal()
         
+        // **** REMOVE ME ******
         let g = Goal(context: context)
         g.shortDescription = "DailySpend"
         self.goals = [g]

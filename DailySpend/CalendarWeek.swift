@@ -42,6 +42,10 @@ public class CalendarWeek {
     convenience init() {
         self.init(dateInLocalWeek: Date())
     }
+    
+    private init(trustedDate: Date) {
+        self.date = trustedDate
+    }
 
     /*
      * Returns a date by adding weeks then weeks by incrementing those values
@@ -49,17 +53,10 @@ public class CalendarWeek {
      */
     func add(weeks: Int) -> CalendarWeek {
         let cal = CalendarWeek.gmtCal
-
-        // We currently define a week as always being 7 days, so add 7 days
-        // times the number of weeks to the interval.
-        let interval = self.date.timeIntervalSince(cal.date(byAdding: .day,
-                                                            value: weeks * self.typicalDaysInWeek,
-                                                            to: self.date)!)
-
-        // Add interval to a copy of self
-        var datePlusInterval = self.date
-        datePlusInterval.addTimeInterval(-interval)
-        return CalendarWeek(dateInGMTWeek: datePlusInterval)
+        let newDate = cal.date(byAdding: .day,
+                               value: weeks * self.typicalDaysInWeek,
+                               to: self.date)!
+        return CalendarWeek(trustedDate: newDate)
     }
 
     func subtract(weeks: Int) -> CalendarWeek {
@@ -119,6 +116,10 @@ public class CalendarWeek {
      */
     var gmtDate: Date {
         return date
+    }
+    
+    var period: PeriodScope {
+        return .Week
     }
 
 }

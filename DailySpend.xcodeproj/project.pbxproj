@@ -66,6 +66,9 @@
 		C5B367CF1EBBD65E006B5ADC /* cog.png in Resources */ = {isa = PBXBuildFile; fileRef = C5B367CC1EBBD65E006B5ADC /* cog.png */; };
 		C5B367D01EBBD65E006B5ADC /* cog@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5B367CD1EBBD65E006B5ADC /* cog@2x.png */; };
 		C5B367D11EBBD65E006B5ADC /* cog@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5B367CE1EBBD65E006B5ADC /* cog@3x.png */; };
+		C5B6CBC22079886B00B78069 /* CalendarPeriodPickerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5B6CBC12079886B00B78069 /* CalendarPeriodPickerTableViewCell.swift */; };
+		C5BB61E52071C30800EC97C2 /* CalendarPeriod.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5BB61E42071C30800EC97C2 /* CalendarPeriod.swift */; };
+		C5BB61E72071ECF400EC97C2 /* CalendarPeriodPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5BB61E62071ECF400EC97C2 /* CalendarPeriodPickerView.swift */; };
 		C5C65A221EBBFBC6002D1B12 /* ExportViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5C65A211EBBFBC6002D1B12 /* ExportViewController.swift */; };
 		C5CF5F641E7BB68600C35539 /* cal.png in Resources */ = {isa = PBXBuildFile; fileRef = C5CF5F5E1E7BB68600C35539 /* cal.png */; };
 		C5CF5F651E7BB68600C35539 /* cal@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5CF5F5F1E7BB68600C35539 /* cal@2x.png */; };
@@ -182,8 +185,11 @@
 		C5B367CC1EBBD65E006B5ADC /* cog.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cog.png; sourceTree = "<group>"; };
 		C5B367CD1EBBD65E006B5ADC /* cog@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cog@2x.png"; sourceTree = "<group>"; };
 		C5B367CE1EBBD65E006B5ADC /* cog@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cog@3x.png"; sourceTree = "<group>"; };
+		C5B6CBC12079886B00B78069 /* CalendarPeriodPickerTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalendarPeriodPickerTableViewCell.swift; sourceTree = "<group>"; };
 		C5BA55B21E8D92C800256E7A /* InitialAdjustmentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InitialAdjustmentViewController.swift; sourceTree = "<group>"; };
 		C5BA55B41E8DAB0E00256E7A /* ReviewTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReviewTableViewCell.swift; sourceTree = "<group>"; };
+		C5BB61E42071C30800EC97C2 /* CalendarPeriod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarPeriod.swift; sourceTree = "<group>"; };
+		C5BB61E62071ECF400EC97C2 /* CalendarPeriodPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarPeriodPickerView.swift; sourceTree = "<group>"; };
 		C5C65A211EBBFBC6002D1B12 /* ExportViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExportViewController.swift; sourceTree = "<group>"; };
 		C5CF5F5E1E7BB68600C35539 /* cal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cal.png; sourceTree = "<group>"; };
 		C5CF5F5F1E7BB68600C35539 /* cal@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cal@2x.png"; sourceTree = "<group>"; };
@@ -258,6 +264,7 @@
 		C5316C2A1E7B241200BC2918 /* Calendar Classes */ = {
 			isa = PBXGroup;
 			children = (
+				C5BB61E42071C30800EC97C2 /* CalendarPeriod.swift */,
 				C594F1CD1F47EDFE006CA097 /* CalendarDay.swift */,
 				C5E02500201C011500831269 /* CalendarWeek.swift */,
 				C594F1CF1F47F206006CA097 /* CalendarMonth.swift */,
@@ -268,6 +275,7 @@
 		C535275F204CF5B50038E747 /* Custom UI Elements */ = {
 			isa = PBXGroup;
 			children = (
+				C5BB61E62071ECF400EC97C2 /* CalendarPeriodPickerView.swift */,
 				C5352764204CF8E10038E747 /* CalculatorInputView.swift */,
 				C535275D204CF5A10038E747 /* CalculatorTextField.swift */,
 				C586813B1F2E85D5008D3AEE /* BorderedTextField.swift */,
@@ -432,6 +440,7 @@
 			children = (
 				C5117DB01FB94A410032F854 /* ExpenseTableViewCell.swift */,
 				C56F7ED81F64A22B00639F8D /* DatePickerTableViewCell.swift */,
+				C5B6CBC12079886B00B78069 /* CalendarPeriodPickerTableViewCell.swift */,
 				C59E2A29205C71A8006D18B5 /* PickerTableViewCell.swift */,
 				C54ABD9620562A9900334293 /* ExplanatoryTextTableViewCell.swift */,
 				C56CA0791F64BDEB00874FA8 /* TextFieldTableViewCell.swift */,
@@ -666,6 +675,7 @@
 				C535275E204CF5A10038E747 /* CalculatorTextField.swift in Sources */,
 				C5EDC2271EBBC12400DA5CB7 /* SettingsViewController.swift in Sources */,
 				C5A4AF901FA6B52900101809 /* TableViewCellHelper.swift in Sources */,
+				C5BB61E72071ECF400EC97C2 /* CalendarPeriodPickerView.swift in Sources */,
 				C5A0DD5C20429CC2004C6411 /* TodayViewGoalsController.swift in Sources */,
 				C5741D4E1FB93EDC00EEDDDD /* TodayViewController.swift in Sources */,
 				C55CCFD11F9D44E4001EF0B4 /* UIColor+255.swift in Sources */,
@@ -673,6 +683,8 @@
 				C535272B204B5E770038E747 /* NavigationBar+BorderLine.swift in Sources */,
 				C573BA0520324CDA0025A5A2 /* Pause+CoreDataClass.swift in Sources */,
 				C51D022820564C0F001946CA /* SwitchTableViewCell.swift in Sources */,
+				C5BB61E52071C30800EC97C2 /* CalendarPeriod.swift in Sources */,
+				C5B6CBC22079886B00B78069 /* CalendarPeriodPickerTableViewCell.swift in Sources */,
 				C573BA0020324CDA0025A5A2 /* Image+CoreDataClass.swift in Sources */,
 				C503F13A1EA1A8A200FA95A7 /* Export.swift in Sources */,
 				C5F75FF01F9D5A75005F3510 /* UILabel+Size.swift in Sources */,

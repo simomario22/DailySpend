@@ -217,7 +217,7 @@ public class Adjustment: NSManagedObject {
         }
         
         if _dateCreated == nil {
-            return (false, "The pause must have a date created.")
+            return (false, "The adjustment must have a date created.")
         }
         
         self.shortDescription = _shortDescription
