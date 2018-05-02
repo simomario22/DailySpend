@@ -65,10 +65,11 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
          self.currentGoal = getLastUsedGoal()
         
         // **** REMOVE ME ******
-        let g = Goal(context: context)
-        g.shortDescription = "DailySpend"
-        self.goals = [g]
-        self.currentGoal = g
+//        let g = Goal(context: context)
+//        g.shortDescription = "DailySpend"
+//        self.goals = [g]
+//        self.currentGoal = g
+        // **** REMOVE ME ******
         
         let title = self.currentGoal?.shortDescription ?? "DailySpend"
         let navHeight = self.navigationBar.frame.size.height

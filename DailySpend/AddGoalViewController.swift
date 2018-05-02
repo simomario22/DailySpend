@@ -92,6 +92,7 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
         tableView.dataSource = self
         view.addSubview(tableView)
         
+        
         view.backgroundColor = tableView.backgroundColor
         
         cellCreator = TableViewCellHelper(tableView: tableView, view: view)
@@ -112,6 +113,23 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
             unmodifiedStartDay = start
             unmodifiedEndDay = end
             parentGoal = goal.parentGoal
+            
+            // Set up cell state
+            recurring = goal.isRecurring
+            if !recurring {
+                period = Period(scope: .Day, multiplier: 1)
+                payFrequency = Period(scope: .Day, multiplier: 1)
+                alwaysCarryOver = false
+                adjustMonthAmountAutomatically = true
+                segmentedControl.selectedSegmentIndex = 1
+            }
+            
+            incrementalPayment = goal.hasIncrementalPayment
+            if !incrementalPayment {
+                payFrequency = Period(scope: .Day, multiplier: 1)
+            }
+            
+            neverEnd = end == nil
         } else {
             self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Add", style: .done, save)
             self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel) {
@@ -148,8 +166,8 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
             amount: amount,
             start: start,
             end: neverEnd ? nil : end,
-            period: recurring ? period : nil,
-            payFrequency: recurring && incrementalPayment ? payFrequency : nil,
+            period: recurring ? period : Period.none,
+            payFrequency: recurring && incrementalPayment ? payFrequency : Period.none,
             parentGoal: parentGoal,
             alwaysCarryOver: recurring ? alwaysCarryOver : nil,
             adjustMonthAmountAutomatically: recurring && period.scope == .Month ? adjustMonthAmountAutomatically : nil
@@ -359,6 +377,7 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
                     
                     if self.end != nil && self.start! > self.end! {
                         self.end = self.start
+                        self.reloadExpandedSectionLabel(.EndNeverAndDayPicker)
                     }
                     self.reloadExpandedSectionLabel(.StartDayPicker)
             })
@@ -375,8 +394,9 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
                 initialValue: neverEnd,
                 title: "Never",
                 valueChanged: { (newValue) in
-                    if self.end == nil {
+                    if !newValue && self.end == nil {
                         self.end = self.start
+                        self.unmodifiedEndDay = self.unmodifiedStartDay
                     }
                     self.neverEnd = newValue
                     newValue ? self.removeEndDayPickerCell() : self.insertEndDayPickerCell()
@@ -402,12 +422,16 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch cellTypeForIndexPath(indexPath: indexPath) {
         case .PeriodLengthCell:
+            self.view.endEditing(false)
             toggleExpandedSection(.PeriodLengthPicker)
         case .PayIntervalCell:
+            self.view.endEditing(false)
             toggleExpandedSection(.PayIntervalPicker)
         case .StartCell:
+            self.view.endEditing(false)
             toggleExpandedSection(.StartDayPicker)
         case .EndCell:
+            self.view.endEditing(false)
             toggleExpandedSection(.EndNeverAndDayPicker)
         default: break
         }
@@ -456,7 +480,7 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
         let startEndSection = recurring ? 3 : 1
         
         var path = IndexPath()
-        switch expandedSection {
+        switch section {
         case .PeriodLengthPicker:
             path = IndexPath(row: 0, section: 1)
         case .PayIntervalPicker:
@@ -464,7 +488,8 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
         case .StartDayPicker:
             path = IndexPath(row: 0, section: startEndSection)
         case .EndNeverAndDayPicker:
-            path = IndexPath(row: 1, section: startEndSection)
+            let endRow = expandedSection == .StartDayPicker ? 2 : 1
+            path = IndexPath(row: endRow, section: startEndSection)
         case .None: return
         }
         tableView.reloadRows(at: [path], with: .fade)

@@ -50,10 +50,17 @@ class TextFieldTableViewCell: ExplanatoryTextTableViewCell, UITextFieldDelegate,
         
         textField = makeTextField(calculator: false)
         self.addSubview(textField)
+        
+        let gr = UITapGestureRecognizer(target: self, action: #selector(textFieldFirstResponder))
+        self.addGestureRecognizer(gr)
     }
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
+    }
+    
+    @objc public func textFieldFirstResponder() {
+        self.textField.becomeFirstResponder()
     }
     
     private func makeTextField(calculator: Bool) -> UITextField {

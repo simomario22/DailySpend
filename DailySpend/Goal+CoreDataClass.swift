@@ -280,13 +280,19 @@ public class Goal: NSManagedObject {
             return (false, "This goal must have an amount specified.")
         }
         
-        if start == nil || !Goal.scopeConformsToDate(_start!, scope: _period.scope) {
+        if _start == nil || !Goal.scopeConformsToDate(_start!, scope: _period.scope) {
             return (false, "The goal must have a start date at the beginning of it's period.")
         }
         
         
-        if end != nil && !Goal.scopeConformsToDate(_end!, scope: _period.scope) {
-            return (false, "If this goal has an end date, it must be at the start of a period.")
+        if _end != nil {
+            if !Goal.scopeConformsToDate(_end!, scope: _period.scope) {
+                return (false, "If this goal has an end date, it must be at the start of a period.")
+            }
+            
+            if _end! < _start! {
+                return (false, "If this goal has an end date, it must be on or after the start date.")
+            }
         }
         
         if _period.scope != .None && _payFrequency > _period {
@@ -314,6 +320,14 @@ public class Goal: NSManagedObject {
         self.dateCreated = _dateCreated
         
         return (true, nil)
+    }
+    
+    public var hasIncrementalPayment: Bool {
+        return self.payFrequency.scope != .None
+    }
+    
+    public var isRecurring: Bool {
+        return self.period.scope != .None
     }
     
     public var archived: Bool {
@@ -363,7 +377,7 @@ public class Goal: NSManagedObject {
         }
         set {
             payFrequency_ = Int64(newValue.scope.rawValue)
-            periodMultiplier_ = Int64(newValue.multiplier)
+            payFrequencyMultiplier_ = Int64(newValue.multiplier)
         }
     }
     

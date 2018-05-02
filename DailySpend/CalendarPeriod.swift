@@ -134,6 +134,10 @@ public struct Period {
     func string() -> String {
         return multiplier == 1 ? scope.string() : "\(multiplier) " + scope.string() + "s"
     }
+    
+    static var none: Period {
+        return Period(scope: .None, multiplier: 0)
+    }
 }
 
 extension Period : Comparable {

@@ -88,7 +88,7 @@ extension String {
         return fontSize
     }
     
-    func calculatedHeightForWidth(_ width: CGFloat, font: UIFont?, exclusionPaths: [UIBezierPath]) -> CGFloat {
+    func calculatedHeightForWidth(_ width: CGFloat, font: UIFont?, exclusionPaths: [UIBezierPath] = []) -> CGFloat {
         let textStorage = NSTextStorage(string: self)
         let textContainer = NSTextContainer(size: CGSize(width: width, height: .greatestFiniteMagnitude))
         let layoutManager = NSLayoutManager()
@@ -105,6 +105,27 @@ extension String {
         layoutManager.glyphRange(for: textContainer)
         return layoutManager.usedRect(for: textContainer).size.height
     }
+    
+    func calculatedSize(font: UIFont?, exclusionPaths: [UIBezierPath] = []) -> CGSize {
+        let textStorage = NSTextStorage(string: self)
+        // Do NOT remove the CGFloat from the first .greatestFiniteMagnitude!
+        // Xcode does NOT like it, bugs out and it's a pain in the ass to fix...
+        let textContainer = NSTextContainer(size: CGSize(width: CGFloat.greatestFiniteMagnitude, height: .greatestFiniteMagnitude))
+        let layoutManager = NSLayoutManager()
+        
+        layoutManager.addTextContainer(textContainer)
+        textStorage.addLayoutManager(layoutManager)
+        
+        if let font = font {
+            textStorage.addAttribute(.font, value: font, range: NSMakeRange(0, count))
+        }
+        textContainer.exclusionPaths = exclusionPaths
+        textContainer.lineFragmentPadding = 0
+        
+        layoutManager.glyphRange(for: textContainer)
+        return layoutManager.usedRect(for: textContainer).size
+    }
+
     
     static func formatAsCurrency(amount: Decimal) -> String? {
         let currencyFormatter = NumberFormatter()
