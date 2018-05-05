@@ -127,7 +127,6 @@ class CalendarPeriodPickerView: UIPickerView, UIPickerViewDelegate, UIPickerView
         let components = DateComponents(weekday: 1, weekOfYear: weekNumber, yearForWeekOfYear: year)
         let date = gmtCal.date(from: components)!
         let formattedDate = dateFormatter.string(from: date)
-//        print("week number \(weekNumber), \(year), formatted: \(date)")
         return formattedDate
     }
     

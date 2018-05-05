@@ -35,10 +35,39 @@ class Logger {
         
         let sortDesc = NSSortDescriptor(key: "dateCreated_", ascending: true)
         let expenses = Expense.get(context: context,sortDescriptors: [sortDesc])!
-        
+        let goals = Goal.get(context: context, sortDescriptors: [sortDesc])!
+
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .full
-         dateFormatter.timeStyle = .full
+        dateFormatter.timeStyle = .full
+        func date(_ d: Date?) -> String {
+            if let u = d {
+                return dateFormatter.string(from: u)
+            } else {
+                return "nil"
+            }
+        }
+        
+        if (goals.count > 0) {
+            print("Goals:")
+        } else {
+            print("No Goals.")
+        }
+        for goal in goals {
+            print("\tgoal.dateCreated: \(date(goal.dateCreated))")
+            print("\tgoal.adjustMonthAmountAutomatically: \(goal.adjustMonthAmountAutomatically)")
+            print("\tgoal.alwaysCarryOver: \(goal.alwaysCarryOver)")
+            print("\tgoal.amount: \(String(describing: goal.amount))")
+            print("\tgoal.archived: \(goal.archived)")
+            print("\tgoal.end: \(date(goal.end))")
+            print("\tgoal.hasIncrementalPayment: \(goal.hasIncrementalPayment)")
+            print("\tgoal.isRecurring: \(goal.isRecurring)")
+            print("\tgoal.payFrequency: \(goal.payFrequency)")
+            print("\tgoal.period: \(goal.period)")
+            print("\tgoal.shortDescription: \(String(describing: goal.shortDescription))")
+            print("\tgoal.start: \(date(goal.start))")
+            print("")
+        }
         
         if (expenses.count > 0) {
             print("\t\tExpenses:")

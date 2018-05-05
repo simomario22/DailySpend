@@ -15,9 +15,11 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         return appDelegate.persistentContainer.viewContext
     }
 
+    var delegate: GoalViewControllerDelegate?
     var tableView: UITableView!
     var currentGoals: [Goal] = []
     var archivedGoals: [Goal] = []
+    var changes = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,6 +31,9 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         navigationItem.title = "Goals"
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, {
+            if self.changes {
+                self.delegate?.goalControllerWillDismissWithChangedGoals()
+            }
             self.dismiss(animated: true, completion: nil)
         })
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, {
@@ -37,11 +42,6 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             let navController = UINavigationController(rootViewController: vc)
             self.present(navController, animated: true, completion: nil)
         })
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        setGoals()
-        tableView.reloadData()
     }
     
     func setGoals() {
@@ -108,13 +108,19 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
                 let goal = archivedGoals.remove(at: indexPath.row)
                 context.delete(goal)
             }
+            changes = true
             appDelegate.saveContext()
             tableView.deleteRows(at: [indexPath], with: .fade)
         }
     }
     
     func addedOrChangedGoal(_ goal: Goal) {
-        
+        changes = true
+        setGoals()
+        tableView.reloadData()
     }
+}
 
+protocol GoalViewControllerDelegate {
+    func goalControllerWillDismissWithChangedGoals()
 }

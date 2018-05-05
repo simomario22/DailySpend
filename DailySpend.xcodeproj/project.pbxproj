@@ -13,6 +13,7 @@
 		C518791A1F00416F00881FB6 /* ZipArchive.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C5A81A7A1F0040540032D9F1 /* ZipArchive.framework */; };
 		C518791F1F00461000881FB6 /* PhotoBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = C518791E1F00461000881FB6 /* PhotoBox.swift */; };
 		C518B59A1E88C7F0009CA4BB /* Decimal+DoubleValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C518B5991E88C7F0009CA4BB /* Decimal+DoubleValue.swift */; };
+		C51AD76F209E5F40002CC4AC /* ChoiceTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C51AD76E209E5F40002CC4AC /* ChoiceTableViewCell.swift */; };
 		C51D022820564C0F001946CA /* SwitchTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C51D022720564C0F001946CA /* SwitchTableViewCell.swift */; };
 		C51D022A20565A4E001946CA /* UITextView+Margins.swift in Sources */ = {isa = PBXBuildFile; fileRef = C51D022920565A4E001946CA /* UITextView+Margins.swift */; };
 		C5352729204B45CE0038E747 /* AddGoalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5352728204B45CE0038E747 /* AddGoalViewController.swift */; };
@@ -116,6 +117,7 @@
 		C518B5991E88C7F0009CA4BB /* Decimal+DoubleValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Decimal+DoubleValue.swift"; sourceTree = "<group>"; };
 		C518B59B1E88D668009CA4BB /* DailySpend-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "DailySpend-Bridging-Header.h"; path = "DailySpend/DailySpend-Bridging-Header.h"; sourceTree = "<group>"; };
 		C51A224D1EBFB32D00B53C24 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		C51AD76E209E5F40002CC4AC /* ChoiceTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChoiceTableViewCell.swift; sourceTree = "<group>"; };
 		C51B8C501F04DE65008AC0C6 /* ExpenseView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpenseView.swift; sourceTree = "<group>"; };
 		C51B8C521F04EDE5008AC0C6 /* DailySpend 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "DailySpend 3.xcdatamodel"; sourceTree = "<group>"; };
 		C51D022720564C0F001946CA /* SwitchTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwitchTableViewCell.swift; sourceTree = "<group>"; };
@@ -447,6 +449,7 @@
 				C5D4DAB71F931D240013A6F3 /* SegmentedControlTableViewCell.swift */,
 				C51D022720564C0F001946CA /* SwitchTableViewCell.swift */,
 				C59E2A2D205C97F5006D18B5 /* ValueTableViewCell.swift */,
+				C51AD76E209E5F40002CC4AC /* ChoiceTableViewCell.swift */,
 			);
 			name = "Control-based Table View Cells";
 			sourceTree = "<group>";
@@ -672,6 +675,7 @@
 				C51D022A20565A4E001946CA /* UITextView+Margins.swift in Sources */,
 				C54ABD9720562A9900334293 /* ExplanatoryTextTableViewCell.swift in Sources */,
 				C5352729204B45CE0038E747 /* AddGoalViewController.swift in Sources */,
+				C51AD76F209E5F40002CC4AC /* ChoiceTableViewCell.swift in Sources */,
 				C535275E204CF5A10038E747 /* CalculatorTextField.swift in Sources */,
 				C5EDC2271EBBC12400DA5CB7 /* SettingsViewController.swift in Sources */,
 				C5A4AF901FA6B52900101809 /* TableViewCellHelper.swift in Sources */,

@@ -12,7 +12,7 @@ import CoreData
 class TodayViewController: UIViewController,
 UITableViewDataSource,
 UITableViewDelegate,
-TodayViewGoalsControllerDelegate {
+TodayViewControllerDelegate {
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
     var context: NSManagedObjectContext {
         return appDelegate.persistentContainer.viewContext
@@ -31,9 +31,10 @@ TodayViewGoalsControllerDelegate {
             navigationItem: navigationItem,
             navigationBar: navigationController!.navigationBar,
             delegate: self,
-            present: self.present)
+            present: self.present
+        )
         cellCreator = TableViewCellHelper(tableView: tableView, view: view)
-        
+        Logger.printAllCoreData()
     }
 
     override func didReceiveMemoryWarning() {
@@ -89,7 +90,11 @@ TodayViewGoalsControllerDelegate {
     }
     
     func goalChanged(newGoal: Goal?) {
-        print("Goal changed!")
+        print("Goal changed to \(String(describing: newGoal?.shortDescription))!")
     }
 
+}
+
+protocol TodayViewControllerDelegate {
+    func goalChanged(newGoal: Goal?)
 }

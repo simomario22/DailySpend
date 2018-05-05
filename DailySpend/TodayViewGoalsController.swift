@@ -10,12 +10,7 @@ import Foundation
 import CoreData
 import UIKit
 
-protocol TodayViewGoalsControllerDelegate {
-    func goalChanged(newGoal: Goal?)
-}
-
-class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDelegate {
-
+class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDelegate, GoalViewControllerDelegate {
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
     var context: NSManagedObjectContext {
         return appDelegate.persistentContainer.viewContext
@@ -27,29 +22,34 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
     var navigationItem: UINavigationItem
     var navigationBar: UINavigationBar
     var present: (UIViewController, Bool, (() -> Void)?) -> ()
-    var currentGoal: Goal?
+    var currentGoal: Goal? {
+        didSet {
+            delegate.goalChanged(newGoal: self.currentGoal)
+        }
+    }
     var goals: [Goal]
-    var delegate: TodayViewGoalsControllerDelegate
+    var delegate: TodayViewControllerDelegate
     var tableShown: Bool
+    var setExplainer: ((Bool) -> ())!
     
     var maxTableHeight: CGFloat {
         let navHeight = self.navigationBar.frame.size.height
         let statusBarSize = UIApplication.shared.statusBarFrame.size
         let statusBarHeight = min(statusBarSize.width, statusBarSize.height)
         
-        return view.window!.frame.height - navHeight - statusBarHeight
+        return view.frame.height - navHeight - statusBarHeight
     }
     var tableHeight: CGFloat {
         return min(cellHeight * CGFloat(goals.count + 1), maxTableHeight)
     }
     
     var goalTable: UITableView!
-    var dimmingView: UIView!
+    var dimmingView: UIButton!
 
     init(view: UIView,
          navigationItem: UINavigationItem,
          navigationBar: UINavigationBar,
-         delegate: TodayViewGoalsControllerDelegate,
+         delegate: TodayViewControllerDelegate,
          present: @escaping (UIViewController, Bool, (() -> Void)?) -> ()) {
         self.view = view
         self.delegate = delegate
@@ -61,21 +61,25 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
         self.currentGoal = nil
         super.init()
         
-         self.goals = getAllGoals()
-         self.currentGoal = getLastUsedGoal()
+        self.goals = getAllGoals()
+        self.currentGoal = getLastUsedGoal()
+        delegate.goalChanged(newGoal: self.currentGoal) // didSet won't fire in init
         
-        // **** REMOVE ME ******
-//        let g = Goal(context: context)
-//        g.shortDescription = "DailySpend"
-//        self.goals = [g]
-//        self.currentGoal = g
-        // **** REMOVE ME ******
+        let infoButton = UIButton(type: .infoLight)
+        infoButton.add(for: .touchUpInside, notImplemented)
+        let infoBBI = UIBarButtonItem(customView: infoButton)
+        self.navigationItem.rightBarButtonItem = infoBBI
         
         let title = self.currentGoal?.shortDescription ?? "DailySpend"
         let navHeight = self.navigationBar.frame.size.height
-        self.navigationItem.titleView = makeTitleView(height: navHeight, title: title, caretDown: true)
-        
-        delegate.goalChanged(newGoal: self.currentGoal)
+        self.navigationItem.titleView = makeTitleView(height: navHeight, title: title)
+    }
+    
+    func notImplemented() {
+        let alertVC = UIAlertController(title: "Not Implemented", message: "This functionality is not implemented.", preferredStyle: .alert)
+        let cancel = UIAlertAction(title: "Okay", style: .cancel, handler: nil)
+        alertVC.addAction(cancel)
+        present(alertVC, true, nil)
     }
     
     func getAllGoals() -> [Goal] {
@@ -89,7 +93,9 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
             let psc = appDelegate.persistentContainer.persistentStoreCoordinator
             if let id = psc.managedObjectID(forURIRepresentation: url),
                let goal = context.object(with: id) as? Goal {
-                return goal
+                if !goal.isFault {
+                    return goal
+                }
             }
         }
         
@@ -104,8 +110,8 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
         }
     }
     
-    func makeTitleView(height: CGFloat, title: String, caretDown: Bool) -> UIView {
-        let caret = caretDown ? "▼" : "▲"
+    func makeTitleView(height: CGFloat, title: String) -> UIView {
+        let caret = "▼"
         let explainer = "Change Goal"
         let fullExplainer =  caret + " " + explainer + " " + caret
         
@@ -153,17 +159,19 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
         
         let titleViewFrame = CGRect(x: 0, y: 0, width: width, height: height)
         
+        setExplainer = { caretDown in
+            if caretDown {
+                explainerLabel.attributedText = attributedExplainer
+            } else {
+                explainerLabel.attributedText = attributedExplainerDone
+            }
+        }
+        
         let button = UIButton(type: .custom)
         button.backgroundColor = UIColor.clear
         button.frame = titleViewFrame
         button.add(for: .touchUpInside, {
-            self.tappedTitleView(setExplainer: { caretDown in
-                if caretDown {
-                    explainerLabel.attributedText = attributedExplainer
-                } else {
-                    explainerLabel.attributedText = attributedExplainerDone
-                }
-            })
+            self.tappedTitleView()
         })
         
         let titleView = UIView(frame: titleViewFrame)
@@ -184,23 +192,35 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
             goalTable.dataSource = self
             goalTable.delegate = self
             goalTable.frame = CGRect(x: 0, y: -height, width: width, height: height)
+            if tableHeight <= maxTableHeight {
+                goalTable.isScrollEnabled = false
+            }
             view.insertSubview(goalTable, belowSubview: navigationBar)
         }
         
         if dimmingView == nil {
-            dimmingView = UIView()
+            let dimmingViewFrame = CGRect(x: 0, y: 64, width: view.frame.size.width, height: view.frame.size.height)
+            dimmingView = UIButton(frame: dimmingViewFrame)
             dimmingView.backgroundColor = UIColor.black
             dimmingView.alpha = 0
-            let dimmingViewFrame = CGRect(x: 0, y: 64, width: view.frame.size.width, height: view.frame.size.height)
-            dimmingView.frame = dimmingViewFrame
+            dimmingView.isHidden = true
+            dimmingView.add(for: .touchUpInside) {
+                self.hideTable()
+                self.setExplainer(true)
+                self.tableShown = false
+            }
             view.insertSubview(dimmingView, belowSubview: goalTable)
         }
         
-        UIView.animate(withDuration: 0.2, animations: {
-            let y = self.navigationBar.frame.bottomEdge
-            self.goalTable.frame = CGRect(x: 0, y: y, width: width, height: height)
-            self.dimmingView.alpha = 0.3
-        })
+        UIView.animate(
+            withDuration: 0.2,
+            animations: {
+                let y = self.navigationBar.frame.bottomEdge
+                self.goalTable.frame = CGRect(x: 0, y: y, width: width, height: height)
+                self.dimmingView.isHidden = false
+                self.dimmingView.alpha = 0.3
+            }
+        )
     }
     
     func hideTable() {
@@ -211,13 +231,22 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
         let height = tableHeight
         let width = view.bounds.size.width
 
-        UIView.animate(withDuration: 0.2, animations: {
-            self.goalTable.frame = CGRect(x: 0, y: -height, width: width, height: height)
-            self.dimmingView.alpha = 0
-        })
+        UIView.animate(
+            withDuration: 0.2,
+            animations: {
+                self.goalTable.frame = CGRect(x: 0, y: -height, width: width, height: height)
+                self.dimmingView.alpha = 0
+            }, completion: { _ in
+                // Need to check if the table is still shown in case the
+                // animation was cancelled.
+                if !self.tableShown {
+                    self.dimmingView.isHidden = true
+                }
+            }
+        )
     }
     
-    func tappedTitleView(setExplainer: @escaping (Bool) -> ()) {
+    func tappedTitleView() {
         if tableShown {
             hideTable()
             setExplainer(true)
@@ -233,18 +262,19 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        var cell: UITableViewCell! = tableView.dequeueReusableCell(withIdentifier: "goalChoice")
+        var cell: ChoiceTableViewCell! = tableView.dequeueReusableCell(withIdentifier: "goalChoice") as? ChoiceTableViewCell
         if cell == nil {
-            cell = UITableViewCell(style: .default, reuseIdentifier: "goalChoice")
+            cell = ChoiceTableViewCell(style: .default, reuseIdentifier: "goalChoice")
         }
         
         cell.textLabel?.textAlignment = .center
+        cell.backgroundColor = UIColor.groupTableViewBackground
         
         let row = indexPath.row
-
         if row < goals.count {
             cell.textLabel?.text = goals[row].shortDescription!
             cell.accessoryType = goals[row] == currentGoal ? .checkmark : .none
+            cell.setNeedsLayout()
         } else {
             cell.textLabel?.text = "Manage Goals"
             cell.accessoryType = .none
@@ -260,10 +290,29 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.row == goals.count {
             let vc = GoalViewController(nibName: nil, bundle: nil)
+            vc.delegate = self
             let nvc = UINavigationController(rootViewController: vc)
             present(nvc, true, nil)
+        } else {
+            let newGoal = goals[indexPath.row]
+            if self.currentGoal != newGoal {
+                let oldGoalIndex = goals.index(of: currentGoal!) ?? indexPath.row
+                let oldGoalIndexPath = IndexPath(row: oldGoalIndex, section: 0)
+                self.currentGoal = newGoal
+                self.goalTable.reloadRows(at: [indexPath, oldGoalIndexPath], with: .fade)
+            }
         }
         
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
+    func goalControllerWillDismissWithChangedGoals() {
+        self.goals = getAllGoals()
+        self.currentGoal = getLastUsedGoal()
+        
+        var frame = self.goalTable.frame
+        frame.size.height = tableHeight
+        self.goalTable.frame = frame
+        self.goalTable.reloadData()
     }
 }
