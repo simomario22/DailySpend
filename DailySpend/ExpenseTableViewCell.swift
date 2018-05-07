@@ -19,7 +19,8 @@ class ExpenseTableViewCell: UITableViewCell, UITextFieldDelegate {
     
     private var beganEditing: ((UITextField) -> ())?
     private var endedEditing: ((UITextField) -> ())?
-    private var addedExpense: ((UITextField, Expense) -> ())?
+    private var tappedSave: ((UITextField, Expense) -> ())?
+    private var tappedCancel: ((UITextField, Expense) -> ())?
     private var selectedDetailDisclosure: ((UITextField) -> ())?
     
     override func layoutSubviews() {

@@ -13,4 +13,8 @@ extension Decimal {
     var doubleValue: Double {
         return NSDecimalNumber(decimal: self).doubleValue
     }
+    
+    var cgFloatValue: CGFloat {
+        return CGFloat(NSDecimalNumber(decimal: self).doubleValue)
+    }
 }

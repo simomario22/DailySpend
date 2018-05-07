@@ -17,15 +17,19 @@ extension UIColor {
         self.init(red: red255 / 255.0, green: green / 255.0, blue: blue / 255.0, alpha: alpha)
     }
 
-    class var overspent: UIColor {
-        return UIColor(red255: 179, green: 0, blue: 0)
+    class var underspent: UIColor {
+        return UIColor(red255: 167, green: 234, blue: 140)
     }
 
-    class var underspent: UIColor {
-        return UIColor(red255: 0, green: 179, blue: 0)
+    class var overspent: UIColor {
+        return UIColor(red255: 232, green: 89, blue: 91)
     }
 
     class var paused: UIColor {
-        return UIColor(red255: 0, green: 0, blue: 179)
+        return UIColor(red255: 100, green: 100, blue: 200)
+    }
+    
+    class var tint: UIColor {
+        return UIColor(red255: 0, green: 129, blue: 234)
     }
 }

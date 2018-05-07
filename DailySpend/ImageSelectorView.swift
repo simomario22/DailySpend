@@ -80,7 +80,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIScrollViewDel
         // Add the plus button.
         let addButton = makeButton(index: 0)
         let buttonBgColor = UIColor(red255: 150, green: 150, blue: 150)
-        if let image = imageWithColor(buttonBgColor) {
+        if let image = UIImage.withColor(buttonBgColor) {
             addButton.setBackgroundImage(image, for: .highlighted)
         }
         let font = UIFont.systemFont(ofSize: 40, weight: UIFont.Weight.light)
@@ -336,18 +336,6 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIScrollViewDel
         button.layer.borderColor = self.tintColor.cgColor
         
         return button
-    }
-    
-    private func imageWithColor(_ color: UIColor) -> UIImage? {
-        // Return a 1x1 px UIImage of a particular color
-        let rect = CGRect(x: 0, y: 0, width: 1, height: 1)
-        UIGraphicsBeginImageContext(rect.size)
-        let context = UIGraphicsGetCurrentContext()
-        context?.setFillColor(color.cgColor)
-        context?.fill(rect)
-        let image = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        return image
     }
 }
 

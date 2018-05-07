@@ -38,6 +38,7 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     var tableView: UITableView!
     var segmentedControl: UISegmentedControl!
+    var toolbar: BorderedToolbar!
     
     var goal: Goal?
     
@@ -63,10 +64,18 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
     var parentGoal: Goal?
 
     override func viewDidLoad() {
+        self.view.tintColor = .tint
         super.viewDidLoad()
         navigationController?.navigationBar.hideBorderLine()
         
-        let toolbarFrame = CGRect(x: 0, y: 64, width: view.frame.size.width, height: 44)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(updateBarTintColor),
+            name: NSNotification.Name.init("ChangedSpendIndicationColor"),
+            object: nil
+        )
+        
+        let toolbarFrame = CGRect(x: 0, y: 0, width: view.frame.size.width, height: 44)
         
         segmentedControl = UISegmentedControl(items: ["Recurring", "One Time"])
         segmentedControl.selectedSegmentIndex = 0
@@ -75,7 +84,9 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
             self.tableView.reloadData()
         }
         
-        let toolbar = BorderedToolbar(frame: toolbarFrame)
+        toolbar = BorderedToolbar(frame: toolbarFrame)
+        toolbar.barTintColor = appDelegate.spendIndicationColor
+        toolbar.isTranslucent = false
         toolbar.addBottomBorder(color: UIColor.lightGray, width: 0.5)
         let barButtonControl = UIBarButtonItem(customView: segmentedControl)
         toolbar.setItems([barButtonControl], animated: false)
@@ -792,6 +803,13 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
             default:
                 return 0
             }
+        }
+    }
+    
+    @objc func updateBarTintColor() {
+        UIView.animate(withDuration: 0.2) {
+            self.toolbar.barTintColor = self.appDelegate.spendIndicationColor
+            self.toolbar.layoutIfNeeded()
         }
     }
 }

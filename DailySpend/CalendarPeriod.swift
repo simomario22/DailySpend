@@ -31,20 +31,20 @@ public class CalendarPeriod {
     
     private var previousStart: Date // Memoize this for quick subtraction.
 
-    init?(startOfPeriodInGMTTime start: Date, period: Period) {
+    init?(dateInGMTPeriod date: Date, period: Period) {
         switch period.scope {
         case .Day:
-            let day = CalendarDay(dateInGMTDay: start)
+            let day = CalendarDay(dateInGMTDay: date)
             self.start = day.gmtDate
             self.end = day.add(days: period.multiplier).gmtDate
             self.previousStart = day.subtract(days: period.multiplier).gmtDate
         case .Week:
-            let week = CalendarWeek(dateInGMTWeek: start)
+            let week = CalendarWeek(dateInGMTWeek: date)
             self.start = week.gmtDate
             self.end = week.add(weeks: period.multiplier).gmtDate
             self.previousStart = week.subtract(weeks: period.multiplier).gmtDate
         case .Month:
-            let month = CalendarMonth(dateInGMTMonth: start)
+            let month = CalendarMonth(dateInGMTMonth: date)
             self.start = month.gmtDate
             self.end = month.add(months: period.multiplier).gmtDate
             self.previousStart = month.subtract(months: period.multiplier).gmtDate
@@ -56,11 +56,11 @@ public class CalendarPeriod {
     }
     
     func nextCalendarPeriod() -> CalendarPeriod {
-        return CalendarPeriod(startOfPeriodInGMTTime: end, period: period)!
+        return CalendarPeriod(dateInGMTPeriod: end, period: period)!
     }
     
     func previousCalendarPeriod() -> CalendarPeriod {
-        return CalendarPeriod(startOfPeriodInGMTTime: previousStart, period: period)!
+        return CalendarPeriod(dateInGMTPeriod: previousStart, period: period)!
     }
 }
 

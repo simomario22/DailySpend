@@ -9,30 +9,74 @@
 import UIKit
 import CoreData
 
-class TodayViewController: UIViewController,
-UITableViewDataSource,
-UITableViewDelegate,
-TodayViewControllerDelegate {
+class TodayViewController: UIViewController, TodayViewControllerDelegate {
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
     var context: NSManagedObjectContext {
         return appDelegate.persistentContainer.viewContext
     }
 
-    @IBOutlet weak var tableView: UITableView!
+    var summaryView: TodaySummaryView!
+    var tableView: UITableView!
+    var expensesController: TodayViewExpensesController!
     var cellCreator: TableViewCellHelper!
-    var goalsController: TodayViewGoalsController!
     
     var expenses = [(desc: String, amount: String)]()
         
     override func viewDidLoad() {
         super.viewDidLoad()
-        goalsController = TodayViewGoalsController(
+        view.tintColor = .tint
+        
+        navigationController?.navigationBar.hideBorderLine()
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(updateBarTintColor),
+            name: NSNotification.Name.init("ChangedSpendIndicationColor"),
+            object: nil
+        )
+        
+        Timer.scheduledTimer(withTimeInterval: 2, repeats: true, block: { (_) in
+            if self.appDelegate.spendIndicationColor == .underspent {
+                self.appDelegate.spendIndicationColor = .overspent
+            } else {
+                self.appDelegate.spendIndicationColor = .underspent
+            }
+            
+        })
+        
+        let width = view.frame.size.width
+        let summaryFrame = CGRect(x: 0, y: 0, width: view.frame.size.width, height: 120)
+        summaryView = TodaySummaryView(frame: summaryFrame)
+        summaryView.setAmount(value: 105)
+        
+        
+        
+        let tableHeight = view.frame.size.height - summaryFrame.bottomEdge
+        let tableFrame = CGRect(x: 0, y: summaryFrame.bottomEdge, width: width, height: tableHeight)
+        tableView = UITableView(frame: tableFrame, style: .grouped)
+        
+        self.view.addSubviews([summaryView, tableView])
+        
+        let todayPeriod = CalendarPeriod(
+            dateInGMTPeriod: CalendarDay().gmtDate,
+            period: Period(scope: .Day, multiplier: 1)
+        )!
+        expensesController = TodayViewExpensesController(
+            tableView: tableView,
+            period: todayPeriod
+        )
+        tableView.delegate = expensesController
+        tableView.dataSource = expensesController
+        
+        let goalsController = TodayViewGoalsController(
             view: navigationController!.view,
             navigationItem: navigationItem,
             navigationBar: navigationController!.navigationBar,
             delegate: self,
             present: self.present
         )
+        goalsController.setup()
+        
         cellCreator = TableViewCellHelper(tableView: tableView, view: view)
         Logger.printAllCoreData()
     }
@@ -90,9 +134,17 @@ TodayViewControllerDelegate {
     }
     
     func goalChanged(newGoal: Goal?) {
-        print("Goal changed to \(String(describing: newGoal?.shortDescription))!")
+        expensesController.loadExpensesForGoal(newGoal)
     }
-
+    
+    @objc func updateBarTintColor() {
+        let newColor = self.appDelegate.spendIndicationColor
+        if self.summaryView.backgroundColor != newColor {
+            UIView.animate(withDuration: 0.2) {
+                self.summaryView.backgroundColor = newColor
+            }
+        }
+    }
 }
 
 protocol TodayViewControllerDelegate {

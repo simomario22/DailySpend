@@ -61,10 +61,6 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
         self.currentGoal = nil
         super.init()
         
-        self.goals = getAllGoals()
-        self.currentGoal = getLastUsedGoal()
-        delegate.goalChanged(newGoal: self.currentGoal) // didSet won't fire in init
-        
         let infoButton = UIButton(type: .infoLight)
         infoButton.add(for: .touchUpInside, notImplemented)
         let infoBBI = UIBarButtonItem(customView: infoButton)
@@ -73,6 +69,12 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
         let title = self.currentGoal?.shortDescription ?? "DailySpend"
         let navHeight = self.navigationBar.frame.size.height
         self.navigationItem.titleView = makeTitleView(height: navHeight, title: title)
+    }
+    
+    public func setup() {
+        self.goals = getAllGoals()
+        self.currentGoal = getLastUsedGoal()
+        delegate.goalChanged(newGoal: self.currentGoal) // didSet won't fire in init
     }
     
     func notImplemented() {
@@ -121,6 +123,7 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
         
         let attributedExplainer = NSMutableAttributedString(string: fullExplainer)
         let attributedExplainerDone = NSMutableAttributedString(string: "▲ Collapse ▲")
+
         let caretAttr: [NSAttributedStringKey: Any] = [
             .font: caretFont,
             .foregroundColor: view.tintColor

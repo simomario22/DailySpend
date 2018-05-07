@@ -322,6 +322,18 @@ public class Goal: NSManagedObject {
         return (true, nil)
     }
     
+    public func expensesIn(period: CalendarPeriod) -> [Expense] {
+        let fetchRequest: NSFetchRequest<Expense> = Expense.fetchRequest()
+        
+        let fs = "ANY goals_ = %@ AND transactionDate_ >= %@ AND transactionDate_ < %@"
+        fetchRequest.predicate = NSPredicate(format: fs, self, period.start as CVarArg, period.end as CVarArg)
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "dateCreated_", ascending: true)]
+        
+        let expenseResults = try! context.fetch(fetchRequest)
+        
+        return expenseResults
+    }
+    
     public var hasIncrementalPayment: Bool {
         return self.payFrequency.scope != .None
     }
