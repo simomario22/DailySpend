@@ -34,6 +34,7 @@
 		C54BF5B61FF8370F007F628D /* NYTPhotoViewer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C5A81A781F0040540032D9F1 /* NYTPhotoViewer.framework */; };
 		C54E4F491EFD3984006A1CA3 /* ImageSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54E4F481EFD3984006A1CA3 /* ImageSelectorView.swift */; };
 		C556D2541F247C6B008CA20E /* UIControl+Closures.swift in Sources */ = {isa = PBXBuildFile; fileRef = C556D2531F247C6B008CA20E /* UIControl+Closures.swift */; };
+		C55B336220A9318B00304680 /* ExpenseTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5117DB01FB94A410032F854 /* ExpenseTableViewCell.swift */; };
 		C55CCFD11F9D44E4001EF0B4 /* UIColor+255.swift in Sources */ = {isa = PBXBuildFile; fileRef = C55CCFD01F9D44E4001EF0B4 /* UIColor+255.swift */; };
 		C56CA07A1F64BDEB00874FA8 /* TextFieldTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56CA0791F64BDEB00874FA8 /* TextFieldTableViewCell.swift */; };
 		C56F7ED91F64A22B00639F8D /* DatePickerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56F7ED81F64A22B00639F8D /* DatePickerTableViewCell.swift */; };
@@ -54,6 +55,7 @@
 		C5781DA81E6E2060006BBC03 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C5781DA61E6E2060006BBC03 /* LaunchScreen.storyboard */; };
 		C5781DB31E6E2060006BBC03 /* DailySpendTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5781DB21E6E2060006BBC03 /* DailySpendTests.swift */; };
 		C5781DBE1E6E2060006BBC03 /* DailySpendUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5781DBD1E6E2060006BBC03 /* DailySpendUITests.swift */; };
+		C580B499210588A200E16E87 /* AddExpenseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C580B498210588A200E16E87 /* AddExpenseViewController.swift */; };
 		C586813C1F2E85D5008D3AEE /* BorderedTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = C586813B1F2E85D5008D3AEE /* BorderedTextField.swift */; };
 		C586813E1F2E8BF2008D3AEE /* CGRect+Edges.swift in Sources */ = {isa = PBXBuildFile; fileRef = C586813D1F2E8BF2008D3AEE /* CGRect+Edges.swift */; };
 		C58681401F2E91E6008D3AEE /* UIView+MultipleSubviews.swift in Sources */ = {isa = PBXBuildFile; fileRef = C586813F1F2E91E6008D3AEE /* UIView+MultipleSubviews.swift */; };
@@ -174,6 +176,7 @@
 		C5781DBD1E6E2060006BBC03 /* DailySpendUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailySpendUITests.swift; sourceTree = "<group>"; };
 		C5781DBF1E6E2060006BBC03 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C5781DCB1E6E23B2006BBC03 /* OldTodayViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OldTodayViewController.swift; sourceTree = "<group>"; };
+		C580B498210588A200E16E87 /* AddExpenseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddExpenseViewController.swift; sourceTree = "<group>"; };
 		C586813B1F2E85D5008D3AEE /* BorderedTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BorderedTextField.swift; sourceTree = "<group>"; };
 		C586813D1F2E8BF2008D3AEE /* CGRect+Edges.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGRect+Edges.swift"; sourceTree = "<group>"; };
 		C586813F1F2E91E6008D3AEE /* UIView+MultipleSubviews.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+MultipleSubviews.swift"; sourceTree = "<group>"; };
@@ -455,6 +458,7 @@
 				C51AD770209E8FA9002CC4AC /* TodayViewExpenseController.swift */,
 				C5A0DD5B20429CC2004C6411 /* TodayViewGoalsController.swift */,
 				C5E51E4F209EC438005C674B /* TodaySummaryView.swift */,
+				C580B498210588A200E16E87 /* AddExpenseViewController.swift */,
 			);
 			name = "Today View";
 			sourceTree = "<group>";
@@ -717,6 +721,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C55B336220A9318B00304680 /* ExpenseTableViewCell.swift in Sources */,
 				C517B1FF1EBC134200CDAA17 /* UICountingLabel.m in Sources */,
 				C573B9F520324C410025A5A2 /* Goal+CoreDataProperties.swift in Sources */,
 				C5E339011F930F5700785085 /* AdjustmentViewController.swift in Sources */,
@@ -724,6 +729,7 @@
 				C5C65A221EBBFBC6002D1B12 /* ExportViewController.swift in Sources */,
 				C5EE62A31E85769700CAEEE7 /* String+CharacterSet.swift in Sources */,
 				C5352765204CF8E10038E747 /* CalculatorInputView.swift in Sources */,
+				C580B499210588A200E16E87 /* AddExpenseViewController.swift in Sources */,
 				C594F1D01F47F206006CA097 /* CalendarMonth.swift in Sources */,
 				C5F75FF21F9D6A29005F3510 /* UITextField+Size.swift in Sources */,
 				C573BA0420324CDA0025A5A2 /* Expense+CoreDataClass.swift in Sources */,

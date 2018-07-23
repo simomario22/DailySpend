@@ -41,4 +41,20 @@ extension CGRect {
     var bottomLeftCorner: CGPoint {
         return CGPoint(x: leftEdge, y: bottomEdge)
     }
+    
+    func shiftedLeftEdge(by shift: CGFloat) -> CGRect {
+        return CGRect(x: origin.x + shift, y: origin.y, width: size.width - shift, height: size.height)
+    }
+    
+    func shiftedRightEdge(by shift: CGFloat) -> CGRect {
+        return CGRect(x: origin.x, y: origin.y, width: size.width + shift, height: size.height)
+    }
+    
+    func shiftedTopEdge(by shift: CGFloat) -> CGRect {
+        return CGRect(x: origin.x, y: origin.y + shift, width: size.width, height: size.height - shift)
+    }
+    
+    func shiftedBottomEdge(by shift: CGFloat) -> CGRect {
+        return CGRect(x: origin.x, y: origin.y, width: size.width, height: size.height + shift)
+    }
 }

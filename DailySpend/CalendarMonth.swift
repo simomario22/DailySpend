@@ -60,6 +60,19 @@ public class CalendarMonth {
     func subtract(months: Int) -> CalendarMonth {
         return self.add(months: -months)
     }
+    
+    /**
+     * Returns the number of months that this months is after `startMonth`.
+     * If this month is before start month, this function will return a
+     * negative number.
+     */
+    func monthsAfter(startMonth: CalendarMonth) -> Int {
+        return CalendarMonth.gmtCal.dateComponents(
+            [.month],
+            from: startMonth.gmtDate,
+            to: self.gmtDate
+        ).month!
+    }
 
     func string(formatter: DateFormatter) -> String {
         let origTZ = formatter.timeZone

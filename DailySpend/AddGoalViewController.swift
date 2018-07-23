@@ -68,14 +68,7 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
         super.viewDidLoad()
         navigationController?.navigationBar.hideBorderLine()
         
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(updateBarTintColor),
-            name: NSNotification.Name.init("ChangedSpendIndicationColor"),
-            object: nil
-        )
-        
-        let toolbarFrame = CGRect(x: 0, y: 0, width: view.frame.size.width, height: 44)
+        let toolbarFrame = CGRect(x: 0, y: 64, width: view.frame.size.width, height: 44)
         
         segmentedControl = UISegmentedControl(items: ["Recurring", "One Time"])
         segmentedControl.selectedSegmentIndex = 0
@@ -85,8 +78,6 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
         
         toolbar = BorderedToolbar(frame: toolbarFrame)
-        toolbar.barTintColor = appDelegate.spendIndicationColor
-        toolbar.isTranslucent = false
         toolbar.addBottomBorder(color: UIColor.lightGray, width: 0.5)
         let barButtonControl = UIBarButtonItem(customView: segmentedControl)
         toolbar.setItems([barButtonControl], animated: false)
@@ -106,7 +97,7 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
         
         view.backgroundColor = tableView.backgroundColor
         
-        cellCreator = TableViewCellHelper(tableView: tableView, view: view)
+        cellCreator = TableViewCellHelper(tableView: tableView)
         
         if let goal = self.goal {
             self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save, save)
@@ -276,7 +267,7 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
                 labelText: "Period Length",
                 valueText: period.string(),
                 explanatoryText: periodLengthExplanatoryText,
-                tintDetailText: expandedSection == .PeriodLengthPicker
+                tintColor: expandedSection == .PeriodLengthPicker ? view.tintColor : nil
             )
         case .PeriodLengthPickerCell:
             let multiplierIndex = period.multiplier - 1
@@ -305,6 +296,9 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
                     
                     self.updateStartAndEndToPeriod(from: oldPeriod)
                     self.reloadExpandedSectionLabel(.PeriodLengthPicker)
+                    if self.incrementalPayment {
+                        self.reloadExpandedSectionLabel(.PayIntervalPicker)
+                    }
                     self.tableView.endUpdates()
             })
         case .AutoAdjustMonthAmountCell:
@@ -345,7 +339,7 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
             return cellCreator.valueDisplayCell(
                 labelText: "Pay Interval",
                 valueText: "Every " + payFrequency.string(),
-                tintDetailText: expandedSection == .PayIntervalPicker,
+                tintColor: expandedSection == .PayIntervalPicker ? view.tintColor : nil,
                 strikeText: self.payFrequency > self.period
             )
         case .PayIntervalPickerCell:
@@ -372,7 +366,7 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
             return cellCreator.dateDisplayCell(
                 label: "Start",
                 day: CalendarDay(dateInGMTDay: start),
-                tintDetailText: expandedSection == .StartDayPicker
+                tintColor: expandedSection == .StartDayPicker ? view.tintColor : nil
             )
         case .StartPickerCell:
             return cellCreator.periodPickerCell(
@@ -396,7 +390,7 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
             return cellCreator.dateDisplayCell(
                 label: "End",
                 day: self.neverEnd ? nil : CalendarDay(dateInGMTDay: end!),
-                tintDetailText: expandedSection == .EndNeverAndDayPicker,
+                tintColor: expandedSection == .EndNeverAndDayPicker ? view.tintColor : nil,
                 strikeText: !self.neverEnd && self.end != nil && self.start! > self.end!,
                 alternateText: "Never"
             )
@@ -803,13 +797,6 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
             default:
                 return 0
             }
-        }
-    }
-    
-    @objc func updateBarTintColor() {
-        UIView.animate(withDuration: 0.2) {
-            self.toolbar.barTintColor = self.appDelegate.spendIndicationColor
-            self.toolbar.layoutIfNeeded()
         }
     }
 }

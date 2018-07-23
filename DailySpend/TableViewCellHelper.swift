@@ -11,12 +11,10 @@ import Foundation
 class TableViewCellHelper {
     
     var tableView: UITableView
-    var view: UIView
     var dateFormatter: DateFormatter
     
-    init(tableView: UITableView, view: UIView, dateFormatter: DateFormatter? = nil) {
+    init(tableView: UITableView, dateFormatter: DateFormatter? = nil) {
         self.tableView = tableView
-        self.view = view
         
         if let dateFormatter = dateFormatter {
             self.dateFormatter = dateFormatter
@@ -31,7 +29,7 @@ class TableViewCellHelper {
      */
     public func dateDisplayCell(label: String,
                          day: CalendarDay?,
-                         tintDetailText: Bool = false,
+                         tintColor: UIColor? = nil,
                          strikeText: Bool = false,
                          alternateText: String? = nil) -> UITableViewCell {
         var cell: UITableViewCell! = tableView.dequeueReusableCell(withIdentifier: "dateDisplay")
@@ -43,7 +41,7 @@ class TableViewCellHelper {
         
         return valueDisplayCell(labelText: label,
                                 valueText: dateText,
-                                tintDetailText: tintDetailText,
+                                tintColor: tintColor,
                                 strikeText: strikeText)
     }
     
@@ -53,7 +51,7 @@ class TableViewCellHelper {
     public func valueDisplayCell(labelText: String,
                                  valueText: String,
                                  explanatoryText: String? = nil,
-                                tintDetailText: Bool = false,
+                                tintColor: UIColor? = nil,
                                 strikeText: Bool = false) -> UITableViewCell {
         var cell: ValueTableViewCell! = tableView.dequeueReusableCell(withIdentifier: "valueDisplay") as? ValueTableViewCell
         if cell == nil {
@@ -65,8 +63,8 @@ class TableViewCellHelper {
         
         let attributedText = NSMutableAttributedString(string: valueText)
         let attr: [NSAttributedStringKey: Any] = [
-            .foregroundColor: tintDetailText ? view.tintColor : UIColor.black,
-            .strikethroughColor: tintDetailText ? view.tintColor : UIColor.black,
+            .foregroundColor: tintColor ?? UIColor.black,
+            .strikethroughColor: tintColor ?? UIColor.black,
             // NSUnderlineStyle.styleNone and .styleSingle weren't working, so
             // I am using literal number values. Should be changed if there is
             // a better way.
@@ -269,17 +267,89 @@ class TableViewCellHelper {
     /**
      * Return a cell with a date picker.
      */
-    public func expenseCell(expense: Expense?,
-                           day: CalendarDay,
-                           addedExpense: @escaping (_ shortDescription: String, _ amount: Decimal) -> (),
-                           selectedDetailDisclosure: @escaping () -> (),
-                           beganEditing: @escaping (_ newHeight: Int) -> (),
-                           endedEditing: @escaping (_ newHeight: Int) -> ()) -> UITableViewCell {
-        var cell: UITableViewCell! = tableView.dequeueReusableCell(withIdentifier: "addExpense")
+    public func expenseCell(
+        description: String?,
+        undescribed: Bool,
+        amount: Decimal?,
+        showPlus: Bool,
+        showDetailDisclosure: Bool,
+        tappedSave: @escaping (String?, Decimal?, ()->()) -> (),
+        tappedCancel: @escaping ( ExpenseTableViewCell, ()->() ) -> (),
+        selectedDetailDisclosure: @escaping () -> (),
+        didBeginEditing: @escaping ((ExpenseTableViewCell) -> ()),
+        didEndEditing: @escaping ((ExpenseTableViewCell) -> ()),
+        changedToDescription: @escaping (String?) -> (),
+        changedToAmount: @escaping (Decimal?) -> ()
+    ) -> UITableViewCell {
+        var cell: ExpenseTableViewCell! = tableView.dequeueReusableCell(withIdentifier: "addExpense") as? ExpenseTableViewCell
         if cell == nil {
-            cell = UITableViewCell(style: .default, reuseIdentifier: "addExpense")
+            cell = ExpenseTableViewCell(style: .default, reuseIdentifier: "addExpense")
+            cell.clipsToBounds = true
         }
         
+        cell.amountField.placeholder = "$0.00"
+        cell.amountField.font = UIFont.systemFont(ofSize: 18)
+        cell.amountField.text = amount != nil ? String.formatAsCurrency(amount: amount!) : nil
+        cell.amountField.maxValue = 1e7
+        
+        cell.descriptionField.text = description
+        cell.descriptionField.placeholder = "Description"
+        if undescribed {
+            cell.descriptionField.placeholder = "No Description"
+            cell.descriptionField.font = UIFont.italicSystemFont(ofSize: 18)
+        } else {
+            cell.descriptionField.font = UIFont.systemFont(ofSize: 18)
+        }
+        
+        var otherViewIsBecomingFirstResponder = false
+        cell.shouldBegin = { (_, _) in
+            otherViewIsBecomingFirstResponder = true
+        }
+        
+        cell.willReturn = { (_, _, newField) in
+            newField.becomeFirstResponder()
+        }
+        
+        cell.beganEditing = { (cell: ExpenseTableViewCell, field: UITextField) in
+            otherViewIsBecomingFirstResponder = false
+            didBeginEditing(cell)
+        }
+        cell.endedEditing = { (cell: ExpenseTableViewCell, field: UITextField) in
+            if !otherViewIsBecomingFirstResponder {
+                didEndEditing(cell)
+            }
+        }
+        cell.selectedDetailDisclosure = selectedDetailDisclosure
+        cell.changedDescription = { textField in
+            if undescribed && textField.text != nil && !textField.text!.isEmpty{
+                cell.descriptionField.font = UIFont.systemFont(ofSize: 18)
+            } else if undescribed {
+                cell.descriptionField.font = UIFont.italicSystemFont(ofSize: 18)
+            }
+            changedToDescription(textField.text)
+        }
+        cell.tappedSave = { descriptionField, amountField in
+            tappedSave(
+                descriptionField.text,
+                amountField.evaluatedValue(),
+                {
+                    descriptionField.resignFirstResponder()
+                    amountField.resignFirstResponder()
+                }
+            )
+        }
+        cell.tappedCancel = { descriptionField, amountField in
+            tappedCancel(cell, {
+                descriptionField.resignFirstResponder()
+                amountField.resignFirstResponder()
+            })
+        }
+        cell.changedEvaluatedAmount = { _, amount in
+            changedToAmount(amount)
+        }
+        cell.setPlusButton(show: showPlus, animated: false)
+        cell.setDetailDisclosure(show: showDetailDisclosure, animated: false)
+        cell.setNeedsLayout()
         return cell
     }
 

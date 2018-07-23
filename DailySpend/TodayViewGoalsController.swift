@@ -69,14 +69,13 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
         let title = self.currentGoal?.shortDescription ?? "DailySpend"
         let navHeight = self.navigationBar.frame.size.height
         self.navigationItem.titleView = makeTitleView(height: navHeight, title: title)
-    }
-    
-    public func setup() {
+        
         self.goals = getAllGoals()
         self.currentGoal = getLastUsedGoal()
         delegate.goalChanged(newGoal: self.currentGoal) // didSet won't fire in init
+
     }
-    
+
     func notImplemented() {
         let alertVC = UIAlertController(title: "Not Implemented", message: "This functionality is not implemented.", preferredStyle: .alert)
         let cancel = UIAlertAction(title: "Okay", style: .cancel, handler: nil)

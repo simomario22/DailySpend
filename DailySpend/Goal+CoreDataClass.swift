@@ -296,7 +296,7 @@ public class Goal: NSManagedObject {
         }
         
         if _period.scope != .None && _payFrequency > _period {
-            return (false, "The pay freqency must be a lesser or equal interval than the period.")
+            return (false, "The pay freqency must have a lesser or equal interval than that of the period.")
         }
         
         if _parentGoal == self {
@@ -322,12 +322,21 @@ public class Goal: NSManagedObject {
         return (true, nil)
     }
     
-    public func expensesIn(period: CalendarPeriod) -> [Expense] {
+    /**
+     * Returns the expenses in a particular period, or all the expenses if this
+     * is not a recurring goal, from most recently created to least recently.
+     */
+    public func getExpenses(period: CalendarPeriod) -> [Expense] {
         let fetchRequest: NSFetchRequest<Expense> = Expense.fetchRequest()
         
-        let fs = "ANY goals_ = %@ AND transactionDate_ >= %@ AND transactionDate_ < %@"
-        fetchRequest.predicate = NSPredicate(format: fs, self, period.start as CVarArg, period.end as CVarArg)
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "dateCreated_", ascending: true)]
+        if isRecurring {
+            let fs = "ANY goals_ = %@ AND transactionDate_ >= %@ AND transactionDate_ < %@"
+            fetchRequest.predicate = NSPredicate(format: fs, self, period.start as CVarArg, period.end as CVarArg)
+        } else {
+            let fs = "ANY goals_ = %@"
+            fetchRequest.predicate = NSPredicate(format: fs, self)
+        }
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "dateCreated_", ascending: false)]
         
         let expenseResults = try! context.fetch(fetchRequest)
         
@@ -464,9 +473,12 @@ public class Goal: NSManagedObject {
         }
     }
     
+    /**
+     * `expenses` sorted in a deterministic way.
+     */
     public var sortedExpenses: [Expense]? {
         if let e = expenses {
-            return e.sorted(by: { $0.transactionDate! < $1.transactionDate! })
+            return e.sorted(by: { $0.transactionDay! < $1.transactionDay! })
         } else {
             return nil
         }

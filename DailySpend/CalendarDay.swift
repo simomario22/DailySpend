@@ -56,6 +56,19 @@ public class CalendarDay {
     func subtract(days: Int) -> CalendarDay {
         return self.add(days: -days)
     }
+    
+    /**
+     * Returns the number of days that this day is after `startDay`.
+     * If this day is before start day, this function will return a negative
+     * number.
+     */
+    func daysAfter(startDay: CalendarDay) -> Int {
+        return CalendarDay.gmtCal.dateComponents(
+            [.day],
+            from: startDay.gmtDate,
+            to: self.gmtDate
+        ).day!
+    }
 
     static func daysInRange(start: CalendarDay, end: CalendarDay) -> Int {
         return abs(CalendarDay.gmtCal.dateComponents([.day],

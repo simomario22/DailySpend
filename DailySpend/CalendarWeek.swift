@@ -62,6 +62,21 @@ public class CalendarWeek {
     func subtract(weeks: Int) -> CalendarWeek {
         return self.add(weeks: -weeks)
     }
+    
+    /**
+     * Returns the number of weeks that this week is after `startWeek`.
+     * If this week is before start week, this function will return a negative
+     * number.
+     */
+    func weeksAfter(startWeek: CalendarWeek) -> Int {
+        // `weekOfMonth` in this case gives the number we are looking for:
+        // the number of weeks between the two we are comparing.
+        return CalendarWeek.gmtCal.dateComponents(
+            [.weekOfMonth],
+            from: startWeek.gmtDate,
+            to: self.gmtDate
+        ).weekOfMonth!
+    }
 
 
     func string(formatter: DateFormatter) -> String {
@@ -112,7 +127,7 @@ public class CalendarWeek {
 
     /*
      * This represents a point in time that is 12:00:00am on the first day of
-     * the month that this CalendarWeek represents.
+     * the week that this CalendarWeek represents.
      */
     var gmtDate: Date {
         return date

@@ -75,7 +75,7 @@ class AddAdjustmentViewController: UIViewController, UITableViewDelegate, UITabl
             self.navigationItem.title = "New Adjustment"
         }
         
-        cellCreator = TableViewCellHelper(tableView: tableView, view: view)
+        cellCreator = TableViewCellHelper(tableView: tableView)
     }
 
     override func didReceiveMemoryWarning() {
@@ -285,9 +285,11 @@ class AddAdjustmentViewController: UIViewController, UITableViewDelegate, UITabl
                     
             })
         case .FirstDayEffectiveDisplayCell:
-            return cellCreator.dateDisplayCell(label: "Start",
-                                   day: firstDayEffective,
-                                   tintDetailText: editingFirstDate)
+            return cellCreator.dateDisplayCell(
+                label: "Start",
+                day: firstDayEffective,
+                tintColor: editingFirstDate ? view.tintColor : nil
+            )
             
         case .FirstDayEffectiveDatePickerCell:
             return cellCreator.datePickerCell(day: firstDayEffective) { (day: CalendarDay) in
@@ -306,10 +308,12 @@ class AddAdjustmentViewController: UIViewController, UITableViewDelegate, UITabl
             }
             
         case .LastDayEffectiveDisplayCell:
-            return cellCreator.dateDisplayCell(label: "End",
-                       day: lastDayEffective,
-                       tintDetailText: editingLastDate,
-                       strikeText: firstDayEffective! > lastDayEffective!)
+            return cellCreator.dateDisplayCell(
+                label: "End",
+                day: lastDayEffective,
+                tintColor: editingLastDate ? view.tintColor : nil,
+                strikeText: firstDayEffective! > lastDayEffective!
+            )
             
         case .LastDayEffectiveDatePickerCell:
             return cellCreator.datePickerCell(day: lastDayEffective) { (day: CalendarDay) in

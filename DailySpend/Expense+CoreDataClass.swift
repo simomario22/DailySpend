@@ -33,8 +33,8 @@ public class Expense: NSManagedObject {
             jsonObj["notes"] = notes
         }
 
-        if let transactionDate = transactionDate {
-            let num = transactionDate.gmtDate.timeIntervalSince1970 as NSNumber
+        if let transactionDay = transactionDay {
+            let num = transactionDay.gmtDate.timeIntervalSince1970 as NSNumber
             jsonObj["transactionDate"] = num
         } else {
             Logger.debug("couldn't unwrap transactionDate in Expense")
@@ -140,7 +140,7 @@ public class Expense: NSManagedObject {
                 Logger.debug("transactionDate after today in Expense")
                 return nil
             }
-            expense.transactionDate = calDay
+            expense.transactionDay = calDay
         } else {
             Logger.debug("coulnd't unwrap transactionDate in Expense")
             return nil
@@ -176,6 +176,48 @@ public class Expense: NSManagedObject {
         return expense
     }
     
+    /**
+     * Accepts all members of Expense. If the passed variables, attached to
+     * corresponding variables on an Expense object, will form a valid
+     * object, this function will assign the passed variables to this object
+     * and return `(valid: true, problem: nil)`. Otherwise, this function will
+     * return `(valid: false, problem: ...)` with problem set to a user
+     * readable string describing why this adjustment wouldn't be valid.
+     */
+    func propose(
+        amount: Decimal?? = nil,
+        shortDescription: String?? = nil,
+        transactionDay: CalendarDay?? = nil,
+        notes: String?? = nil,
+        dateCreated: Date?? = nil
+    ) -> (valid: Bool, problem: String?) {
+        let _amount = amount ?? self.amount
+        let _shortDescription = shortDescription ?? self.shortDescription
+        let _transactionDay = transactionDay ?? self.transactionDay
+        let _notes = notes ?? self.notes
+        let _dateCreated = dateCreated ?? self.dateCreated
+        
+        if _amount == nil || _amount! == 0 {
+            return (false, "This expense must have an amount specified.")
+        }
+        
+        if transactionDay == nil {
+            return (false, "This expense must have a transaction date.")
+        }
+        
+        if _dateCreated == nil {
+            return (false, "The expense must have a date created.")
+        }
+        
+        self.amount = _amount
+        self.shortDescription = _shortDescription
+        self.transactionDay = _transactionDay
+        self.notes = _notes
+        self.dateCreated = _dateCreated
+        
+        return (true, nil)
+    }
+    
     class func get(context: NSManagedObjectContext,
                    predicate: NSPredicate? = nil,
                    sortDescriptors: [NSSortDescriptor]? = nil,
@@ -205,7 +247,7 @@ public class Expense: NSManagedObject {
         }
     }
     
-    public var transactionDate: CalendarDay? {
+    public var transactionDay: CalendarDay? {
         get {
             if let date = transactionDate_ {
                 return CalendarDay(dateInGMTDay: date as Date)
@@ -253,6 +295,9 @@ public class Expense: NSManagedObject {
         }
     }
     
+    /**
+     * `goals` sorted in a deterministic way.
+     */
     public var sortedGoals: [Goal]? {
         if let g = goals {
             return g.sorted(by: { $0.dateCreated! < $1.dateCreated! })
@@ -282,6 +327,10 @@ public class Expense: NSManagedObject {
         removeFromGoals_(goal)
     }
     
+    
+    /**
+     * `images` sorted in a deterministic way.
+     */
     public var sortedImages: [Image]? {
         if let img = images {
             return img.sorted(by: { $0.dateCreated! < $1.dateCreated! })

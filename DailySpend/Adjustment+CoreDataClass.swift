@@ -299,6 +299,9 @@ public class Adjustment: NSManagedObject {
         }
     }
     
+    /**
+     * `goals` sorted in a deterministic way.
+     */
     public var sortedGoals: [Goal]? {
         if let g = goals {
             return g.sorted(by: { $0.dateCreated! < $1.dateCreated! })

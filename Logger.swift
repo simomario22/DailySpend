@@ -79,7 +79,7 @@ class Logger {
             print("\t\texpense.amount: \(expense.amount!)")
             print("\t\texpense.dateCreated: \(created)")
             print("\t\texpense.notes: \(expense.notes ?? "")")
-            print("\t\texpense.shortDescription: \(expense.shortDescription!)")
+            print("\t\texpense.shortDescription: \(String(describing: expense.shortDescription))")
             print("")
             
             if (expense.images!.count > 0) {

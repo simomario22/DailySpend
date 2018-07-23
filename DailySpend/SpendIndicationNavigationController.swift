@@ -26,6 +26,10 @@ class SpendIndicationNavigationController: UINavigationController {
         )
     }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
     @objc func updateBarTintColor() {
         let newColor = self.appDelegate.spendIndicationColor
         if navigationBar.barTintColor != newColor {
