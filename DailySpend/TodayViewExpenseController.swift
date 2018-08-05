@@ -9,22 +9,50 @@
 import Foundation
 import CoreData
 
-struct ExpenseCellDatum {
-    var shortDescription: String?
-    var amount: Decimal?
-    var clean: Bool
-    init(_ shortDescription: String?, _ amount: Decimal?, _ clean: Bool) {
-        self.shortDescription = shortDescription
-        self.amount = amount
-        self.clean = clean
+class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableViewDelegate, AddExpenseDelegate {
+    private class ExpenseCellDatum {
+        var shortDescription: String?
+        var amount: Decimal?
+        var clean: Bool
+        init(_ shortDescription: String?, _ amount: Decimal?, _ clean: Bool) {
+            self.shortDescription = shortDescription
+            self.amount = amount
+            self.clean = clean
+        }
+        
+        convenience init() {
+            self.init(nil, nil, true)
+        }
     }
     
-    init() {
-        self.init(nil, nil, true)
+    /**
+     * Create a class to wrap the row with so we can update it in for use in
+     * the cell for row at index path closures.
+     */
+    private class UpdatingRow {
+        var row: Int
+        init(row: Int) {
+            self.row = row
+        }
     }
-}
+    
+    private var updatingRows = [UpdatingRow]()
+    private func insertNewUpdatingRow() {
+        for updatingRow in updatingRows {
+            updatingRow.row += 1
+        }
+        updatingRows.insert(UpdatingRow(row: 0), at: 0)
+    }
+    private func appendNewUpdatingRow() {
+        updatingRows.append(UpdatingRow(row: updatingRows.count))
+    }
+    private func removeUpdatingRow(at index: Int) {
+        updatingRows.remove(at: index)
+        for i in index..<updatingRows.count {
+            updatingRows[i].row -= 1
+        }
+    }
 
-class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableViewDelegate {
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
     var context: NSManagedObjectContext {
         return appDelegate.persistentContainer.viewContext
@@ -98,8 +126,9 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
         let isAddCell = indexPath.row == 0
         let expenseData = expenseCellData[indexPath.row]
         let undescribed = !isAddCell && expenseData.shortDescription == nil
-
-        let row = indexPath.row
+        let expense = !isAddCell ? self.expenses[indexPath.row - 1] : nil
+        let datum = self.expenseCellData[indexPath.row]
+        let updatingRow = self.updatingRows[indexPath.row]
         
         return cellCreator.expenseCell(
             description: expenseData.shortDescription,
@@ -108,20 +137,20 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
             showPlus: isAddCell && expenseData.clean,
             showDetailDisclosure: !(isAddCell && expenseData.clean),
             tappedSave: { (shortDescription: String?, amount: Decimal?, resignFirstResponder) in
-                if !self.expenseCellData[row].clean {
-                    if !self.saveExpense(at: row - 1) {
+                if !datum.clean {
+                    if !self.saveExpense(at: updatingRow.row - 1, with: datum) {
                         return
                     }
                 }
                 
                 self.tableView.beginUpdates()
                 resignFirstResponder()
-                self.expenseCellData[row].clean = true
-                self.tableView.reloadRows(at: [IndexPath(row: row, section: 0)], with: .fade)
+                datum.clean = true
+                self.tableView.reloadRows(at: [IndexPath(row: updatingRow.row, section: 0)], with: .fade)
                 
                 if isAddCell {
                     // Make a new add cell.
-                    self.expenseCellData.insert(ExpenseCellDatum(), at: 0)
+                    self.createNewAddCellDatum()
                     self.tableView.insertRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
                 }
 
@@ -132,36 +161,54 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
                 if isAddCell {
                     expenseCell.setPlusButton(show: true, animated: true)
                     expenseCell.setDetailDisclosure(show: false, animated: true)
-                    self.expenseCellData[row] = ExpenseCellDatum()
+                    datum.amount = nil
+                    datum.shortDescription = nil
+                    datum.clean = true
                     expenseCell.amountField.text = nil
                     expenseCell.descriptionField.text = nil
-                } else if !self.expenseCellData[row].clean {
-                    let e = self.expenses[row - 1]
-                    self.expenseCellData[row] = ExpenseCellDatum(e.shortDescription, e.amount, true)
-                    self.tableView.reloadRows(at: [indexPath], with: .automatic)
+                } else if !datum.clean {
+                    datum.amount = expense!.amount
+                    datum.shortDescription = expense!.shortDescription
+                    datum.clean = true
+                    self.tableView.reloadRows(at: [IndexPath(row: updatingRow.row, section: 0)], with: .automatic)
                 }
                 UIView.animate(withDuration: 0.2, animations: {
                     tableView.beginUpdates()
                     tableView.endUpdates()
                 })
             }, selectedDetailDisclosure: {
-                print("selected detail disclosure")
+                let addExpenseVC = AddExpenseViewController()
+                addExpenseVC.delegate = self
+                let navCtrl = UINavigationController(rootViewController: addExpenseVC)
+                if isAddCell {
+                    addExpenseVC.setupPartiallyCreatedExpense(
+                        goals: Set<Goal>([self.goal]),
+                        transactionDay: CalendarDay(),
+                        amount: datum.amount,
+                        shortDescription: datum.shortDescription
+                    )
+                } else {
+                    addExpenseVC.setupPartiallyEditedExpense(
+                        expense: expense!,
+                        amount: datum.amount,
+                        shortDescription: datum.shortDescription
+                    )
+                }
+                self.present(navCtrl, true, nil)
+                
             }, didBeginEditing: { (expenseCell: ExpenseTableViewCell) in
-                self.mostRecentlyEditedCellIndex = indexPath
+                self.mostRecentlyEditedCellIndex = IndexPath(row: updatingRow.row, section: 0)
                 expenseCell.setPlusButton(show: false, animated: true)
                 expenseCell.setDetailDisclosure(show: true, animated: true)
-                self.expenseCellData[row].clean = false
+                datum.clean = false
                 tableView.beginUpdates()
                 tableView.endUpdates()
             }, didEndEditing: { (expenseCell: ExpenseTableViewCell) in
-                print("ended editing")
             }, changedToDescription: { (newDescription: String?) in
                 let desc = newDescription == "" ? nil : newDescription
-                print("changed to description \(String(describing: desc))")
-                self.expenseCellData[row].shortDescription = desc
+                datum.shortDescription = desc
             }, changedToAmount: { (newAmount: Decimal?) in
-                print("changed to amount \(String(describing: newAmount))")
-                self.expenseCellData[row].amount = newAmount
+                datum.amount = newAmount
             }
         )
     }
@@ -178,7 +225,9 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
         let expense = expenses[index]
         context.delete(expense)
         appDelegate.saveContext()
+        expenses.remove(at: index)
         expenseCellData.remove(at: indexPath.row)
+        removeUpdatingRow(at: indexPath.row)
         tableView.deleteRows(at: [indexPath], with: .automatic)
     }
     
@@ -198,8 +247,12 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
         }
     }
     
-    func saveExpense(at index: Int) -> Bool {
-        let datum = expenseCellData[index + 1]
+    private func createNewAddCellDatum() {
+        expenseCellData.insert(ExpenseCellDatum(), at: 0)
+        insertNewUpdatingRow()
+    }
+    
+    private func saveExpense(at index: Int, with datum: ExpenseCellDatum) -> Bool {
         var justCreated = false
         var expense: Expense! = index >= 0 ? expenses[index] : nil
         if expense == nil {
@@ -207,7 +260,7 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
             expense = Expense(context: context)
             expense.dateCreated = Date()
             expense.transactionDay = CalendarDay()
-            expense.goals?.insert(goal)
+            expense.goals = Set<Goal>([goal])
         }
         
         let validation = expense.propose(
@@ -257,13 +310,53 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
             for e in expenses {
                 let d = ExpenseCellDatum(e.shortDescription, e.amount, true)
                 expenseCellData.append(d)
+                appendNewUpdatingRow()
             }
-            expenseCellData.insert(ExpenseCellDatum(), at: 0) // Add Cell
+            createNewAddCellDatum()
         } else {
             expenses = []
             expenseCellData = []
         }
         tableView.reloadData()
+    }
+
+    // TODO: Check here and in editedExpenseFrom modal if it still belongs to
+    // this goal/expense.
+    func createdExpenseFromModal(_ expense: Expense) {
+        expenses.insert(expense, at: 0)
+        let newDatum = ExpenseCellDatum(expense.shortDescription, expense.amount, true)
+        expenseCellData[0] = newDatum
+        
+        tableView.endEditing(false)
+        createNewAddCellDatum()
+        
+        let addCellIndexPath = IndexPath(row: 0, section: 0)
+        let newCellIndexPath = IndexPath(row: 1, section: 0)
+        self.tableView.beginUpdates()
+        self.tableView.reloadRows(at: [addCellIndexPath], with: .fade)
+        self.tableView.insertRows(at: [addCellIndexPath], with: .automatic)
+        self.tableView.endUpdates()
+        self.tableView.selectRow(at: newCellIndexPath, animated: true, scrollPosition: .none)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            self.tableView.deselectRow(at: newCellIndexPath, animated: true)
+        }
+    }
+    
+    func editedExpenseFromModal(_ expense: Expense) {
+        guard let index = expenses.index(of: expense) else {
+            Logger.debug("Edited an expense, but could not find it in TodayViewController expenses.")
+            return
+        }
+
+        let newDatum = ExpenseCellDatum(expense.shortDescription, expense.amount, true)
+        expenses[index] = expense
+        expenseCellData[index + 1] = newDatum
+        let indexPath = IndexPath(row: index + 1, section: 0)
+        self.tableView.reloadRows(at: [indexPath], with: .fade)
+        self.tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            self.tableView.deselectRow(at: indexPath, animated: true)
+        }
     }
 }
 

@@ -189,13 +189,15 @@ public class Expense: NSManagedObject {
         shortDescription: String?? = nil,
         transactionDay: CalendarDay?? = nil,
         notes: String?? = nil,
-        dateCreated: Date?? = nil
+        dateCreated: Date?? = nil,
+        goals: Set<Goal>? = nil
     ) -> (valid: Bool, problem: String?) {
         let _amount = amount ?? self.amount
         let _shortDescription = shortDescription ?? self.shortDescription
         let _transactionDay = transactionDay ?? self.transactionDay
         let _notes = notes ?? self.notes
         let _dateCreated = dateCreated ?? self.dateCreated
+        let _goals = goals ?? self.goals
         
         if _amount == nil || _amount! == 0 {
             return (false, "This expense must have an amount specified.")
@@ -209,11 +211,16 @@ public class Expense: NSManagedObject {
             return (false, "The expense must have a date created.")
         }
         
+        if _goals == nil || _goals!.isEmpty {
+            return (false, "This expense must be associated with a goal.")
+        }
+        
         self.amount = _amount
         self.shortDescription = _shortDescription
         self.transactionDay = _transactionDay
         self.notes = _notes
         self.dateCreated = _dateCreated
+        self.goals = _goals
         
         return (true, nil)
     }
@@ -300,7 +307,7 @@ public class Expense: NSManagedObject {
      */
     public var sortedGoals: [Goal]? {
         if let g = goals {
-            return g.sorted(by: { $0.dateCreated! < $1.dateCreated! })
+            return g.sorted { $0.shortDescription! < $1.shortDescription! }
         } else {
             return nil
         }

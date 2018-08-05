@@ -552,6 +552,14 @@ public class Goal: NSManagedObject {
         }
     }
     
+    public var sortedChildGoals: [Goal]? {
+        if let g = childGoals {
+            return g.sorted(by: { $0.shortDescription! < $1.shortDescription! })
+        } else {
+            return nil
+        }
+    }
+    
     public var childGoals: Set<Goal>? {
         get {
             return childGoals_ as! Set?

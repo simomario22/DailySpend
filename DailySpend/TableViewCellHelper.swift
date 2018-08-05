@@ -45,6 +45,25 @@ class TableViewCellHelper {
                                 strikeText: strikeText)
     }
     
+    public func indentedLabelCell(
+        labelText: String,
+        indentationLevel: Int,
+        indentationWidth: CGFloat = 10,
+        selected: Bool = false
+    ) -> UITableViewCell {
+        var cell: UITableViewCell! = tableView.dequeueReusableCell(withIdentifier: "indentedLabel")
+        if cell == nil {
+            cell = UITableViewCell(style: .default, reuseIdentifier: "indentedLabel")
+        }
+        
+        cell.textLabel!.text = labelText
+        cell.accessoryType = selected ? .checkmark : .none
+        cell.indentationWidth = indentationWidth
+        cell.indentationLevel = indentationLevel
+        
+        return cell
+    }
+    
     /**
      * Cell to display a label and a value, which can be tinted or crossed out.
      */
@@ -52,13 +71,15 @@ class TableViewCellHelper {
                                  valueText: String,
                                  explanatoryText: String? = nil,
                                 tintColor: UIColor? = nil,
-                                strikeText: Bool = false) -> UITableViewCell {
+                                strikeText: Bool = false,
+                                detailIndicator: Bool = false) -> UITableViewCell {
         var cell: ValueTableViewCell! = tableView.dequeueReusableCell(withIdentifier: "valueDisplay") as? ValueTableViewCell
         if cell == nil {
             cell = ValueTableViewCell(style: .value1, reuseIdentifier: "valueDisplay")
         }
         
         cell.textLabel!.text = labelText
+        cell.accessoryType = detailIndicator ? .disclosureIndicator : .none
         cell.setExplanatoryText(explanatoryText)
         
         let attributedText = NSMutableAttributedString(string: valueText)
@@ -350,6 +371,29 @@ class TableViewCellHelper {
         cell.setPlusButton(show: showPlus, animated: false)
         cell.setDetailDisclosure(show: showDetailDisclosure, animated: false)
         cell.setNeedsLayout()
+        return cell
+    }
+    
+    public func imageSelectorCell(selector: ImageSelectorView) -> UITableViewCell {
+        var cell: ImageSelectorTableViewCell! = tableView.dequeueReusableCell(withIdentifier: "addExpense") as? ImageSelectorTableViewCell
+        if cell == nil {
+            cell = ImageSelectorTableViewCell(style: .default, reuseIdentifier: "addExpense")
+        }
+        
+        cell.textLabel?.text = "Images"
+        cell.setImageSelector(selector)
+        return cell
+    }
+
+    public func longFormTextCell(
+        text: String?,
+        didBeginEditing: @escaping ((ExpenseTableViewCell) -> ()),
+        changedToText: @escaping (String?) -> ()
+    ) -> UITableViewCell {
+        var cell: UITableViewCell! = tableView.dequeueReusableCell(withIdentifier: "longFormText")
+        if cell == nil {
+            cell = UITableViewCell(style: .default, reuseIdentifier: "longFormText")
+        }
         return cell
     }
 

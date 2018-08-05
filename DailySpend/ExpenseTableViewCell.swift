@@ -185,6 +185,9 @@ class ExpenseTableViewCell: UITableViewCell, UITextFieldDelegate, CalculatorText
         amountField.addTarget(self, action: #selector(textFieldChanged(field:)), for: .editingChanged)
         
         detailDisclosureButton = UIButton(type: .detailDisclosure)
+        detailDisclosureButton.add(for: .touchUpInside, {
+            self.selectedDetailDisclosure?()
+        })
         
         plusButton = UIButton(type: .custom)
         plusButton.setTitle("+", for: .normal)

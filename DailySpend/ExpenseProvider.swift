@@ -201,20 +201,22 @@ class ExpenseProvider: NSObject, ExpenseViewDataSource {
         }
     }
     
-    func setDayToToday() {
-        self.transactionDate = CalendarDay()
-    }
-
     func makeImagesDirectory() {
         let fm = FileManager.default
         let urls = fm.urls(for: .documentDirectory, in: .userDomainMask)
         let imagesDirUrl = urls[0].appendingPathComponent("images",
                                                           isDirectory: true)
         if !fm.fileExists(atPath: imagesDirUrl.path) {
-                try! fm.createDirectory(at: imagesDirUrl,
-                               withIntermediateDirectories: false,
-                               attributes: nil)
+            try! fm.createDirectory(at: imagesDirUrl,
+                                    withIntermediateDirectories: false,
+                                    attributes: nil)
         }
     }
+
+    
+    func setDayToToday() {
+        self.transactionDate = CalendarDay()
+    }
+
 
 }

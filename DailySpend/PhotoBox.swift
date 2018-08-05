@@ -7,11 +7,9 @@
 //
 
 import UIKit
-import NYTPhotoViewer
+import INSPhotoGalleryFramework
 
-/// A box allowing NYTPhotoViewer to consume Swift value types from our codebase.
-final class PhotoBox: NSObject, NYTPhoto {
-
+class PhotoBox: NSObject, INSPhotoViewable {
     var photoId: Int
     var imageName: String?
     var imageType: String?
@@ -55,13 +53,21 @@ final class PhotoBox: NSObject, NYTPhoto {
     }
 
     var image: UIImage?
-
-    // We don't use these but they are required by NYTPhotoViewer.
-    var imageData: Data?
-    var placeholderImage: UIImage?
-    var attributedCaptionTitle: NSAttributedString?
-    var attributedCaptionSummary: NSAttributedString?
-    var attributedCaptionCredit: NSAttributedString?
+    var thumbnailImage: UIImage? {
+        return image
+    }
+    
+    func loadImageWithCompletionHandler(_ completion: @escaping (UIImage?, Error?) -> ()) {
+        completion(image, nil)
+    }
+    
+    func loadThumbnailImageWithCompletionHandler(_ completion: @escaping (UIImage?, Error?) -> ()) {
+        completion(image, nil)
+    }
+    
+    var attributedTitle: NSAttributedString? {
+        return NSAttributedString(string: imageName ?? "")
+    }
 }
 
 extension PhotoBox {

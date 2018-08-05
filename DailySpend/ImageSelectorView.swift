@@ -9,12 +9,13 @@
 import UIKit
 import QuartzCore
 import AVFoundation
-import NYTPhotoViewer
 import Photos
+import INSPhotoGalleryFramework
 
 class ImageSelectorView: UIScrollView,
 UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIScrollViewDelegate {
     var selectorDelegate: ImageSelectorDelegate?
+    var selectorController: ImageSelectorController?
 
     let buttonMargin: CGFloat = 10
     
@@ -70,8 +71,16 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIScrollViewDel
                             buttonMargin
         return max(contentWidth, self.frame.size.width)
     }
+    
+    func scrollToRightEdge() {
+        contentOffset = CGPoint(
+            x: contentSize.width - frame.size.width,
+            y: 0
+        )
+    }
 
     func recreateButtons() {
+        print(frame)
         // Remove all subviews.
         for subview in subviews {
             subview.removeFromSuperview()
@@ -141,7 +150,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIScrollViewDel
     }
     
     @objc private func selectSourceForNewPhoto(sender: UIButton) {
-        selectorDelegate?.tappedButton()
+        selectorController?.interactedWithImageSelectorViewByTapping()
         // The user tapped the plus button to add a new photo.
         let actionSheet = UIAlertController(title: nil,
                                             message: nil,
@@ -163,7 +172,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIScrollViewDel
         actionSheet.addAction(photoLibraryButton)
         actionSheet.addAction(cancelButton)
         
-        selectorDelegate?.present(actionSheet, animated: true,
+        selectorController?.present(actionSheet, animated: true,
                                   completion: nil, sender: self)
     }
     
@@ -182,7 +191,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIScrollViewDel
                                           message: message, preferredStyle: .alert)
             let okay = UIAlertAction(title: "Okay", style: .default, handler: nil)
             alert.addAction(okay)
-            selectorDelegate?.present(alert, animated: true, completion: nil, sender: self)
+            selectorController?.present(alert, animated: true, completion: nil, sender: self)
         case .notDetermined:
             // The user has not yet been presented with the option to grant
             // access to the camera hardware. Ask for it.
@@ -219,7 +228,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIScrollViewDel
                                               message: message, preferredStyle: .alert)
                 let okay = UIAlertAction(title: "Okay", style: .default, handler: nil)
                 alert.addAction(okay)
-                self.selectorDelegate?.present(alert, animated: true, completion: nil, sender: self)
+                self.selectorController?.present(alert, animated: true, completion: nil, sender: self)
             default:
                 break
             }
@@ -235,7 +244,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIScrollViewDel
             imagePicker.sourceType = sourceType
             imagePicker.delegate = self
             imagePicker.modalPresentationStyle = (sourceType == .camera) ? .fullScreen : .popover
-            selectorDelegate?.present(imagePicker, animated: true, completion: nil, sender: self)
+            selectorController?.present(imagePicker, animated: true, completion: nil, sender: self)
         } else {
             let humanSource = sourceType == .camera ? "camera" : "Photo Library"
             let message = "The \(humanSource) isn't available. Please try a " +
@@ -244,7 +253,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIScrollViewDel
             let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
             let okay = UIAlertAction(title: "Okay", style: .default, handler: nil)
             alert.addAction(okay)
-            self.selectorDelegate?.present(alert, animated: true, completion: nil, sender: self)
+            selectorController?.present(alert, animated: true, completion: nil, sender: self)
         }
     }
     
@@ -276,17 +285,31 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIScrollViewDel
     }
     
     @objc private func viewPhoto(_ sender: UIButton!) {
-        selectorDelegate?.tappedButton()
+        selectorController?.interactedWithImageSelectorViewByTapping()
         // Present the NYTimes photos view controller.
         let photoId = sender.tag
+        let box = boxes[photoId]
+        
+        func referenceViewForPhoto(_ photo: INSPhotoViewable) -> UIView? {
+            guard let box = photo as? PhotoBox else { return nil }
+            
+            let tag = box.photoId
+            for view in subviews {
+                if view.tag == tag {
+                    return view
+                }
+            }
+            return nil
+        }
 
-        let vc = NYTPhotosViewController(dataSource: NYTPhotoViewerArrayDataSource(photos: boxes), initialPhoto: boxes[photoId], delegate: self)
-        selectorDelegate?.present(vc, animated: true, completion: nil, sender: self)
+        let vc = INSPhotosViewController(photos: boxes, initialPhoto: box, referenceView: referenceViewForPhoto(box))
+        vc.referenceViewForPhotoWhenDismissingHandler = referenceViewForPhoto(_:)
+        selectorController?.present(vc, animated: true, completion: nil, sender: self)
     }
     
     @objc private func deletePhoto(_ sender: UIButton!) {
         // The user tapped the plus button to remove a photo.
-        selectorDelegate?.tappedButton()
+        selectorController?.interactedWithImageSelectorViewByTapping()
         
         // To calculate the index, subtract the number of boxes from the
         // delete tag.
@@ -315,7 +338,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIScrollViewDel
         actionSheet.addAction(deleteButton)
         actionSheet.addAction(cancelButton)
         
-        selectorDelegate?.present(actionSheet, animated: true,
+        selectorController?.present(actionSheet, animated: true,
                                   completion: nil, sender: self)
     }
 
@@ -339,38 +362,42 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIScrollViewDel
     }
 }
 
-extension ImageSelectorView: NYTPhotosViewControllerDelegate {
+//extension ImageSelectorView: NYTPhotosViewControllerDelegate {
+//
+//    func photosViewController(_ photosViewController: NYTPhotosViewController,
+//                              handleActionButtonTappedFor photo: NYTPhoto) -> Bool {
+//        guard let photoImage = photo.image else { return false }
+//
+//        let activityVC = UIActivityViewController(activityItems: [photoImage],
+//                                                  applicationActivities: nil)
+//
+//        photosViewController.present(activityVC, animated: true, completion: nil)
+//
+//        return true
+//    }
+//
+//}
 
-    func photosViewController(_ photosViewController: NYTPhotosViewController,
-                              handleActionButtonTappedFor photo: NYTPhoto) -> Bool {
-        guard let photoImage = photo.image else { return false }
-
-        let activityVC = UIActivityViewController(activityItems: [photoImage],
-                                                  applicationActivities: nil)
-        
-        photosViewController.present(activityVC, animated: true, completion: nil)
-
-        return true
-    }
-
-    func photosViewController(_ photosViewController: NYTPhotosViewController,
-                              referenceViewFor photo: NYTPhoto) -> UIView? {
-        guard let box = photo as? PhotoBox else { return nil }
-
-        let tag = box.photoId
-        for view in subviews {
-            if view.tag == tag {
-                return view
-            }
-        }
-        return nil
-    }
+protocol ImageSelectorController: class {
+    /**
+     * Called to present a view controller.
+     */
+    func present(_ vc: UIViewController, animated: Bool,
+                 completion: (() -> Void)?, sender: Any?)
+    /**
+     * Called when the user interacts with the ImageSelectorView by tapping.
+     */
+    func interactedWithImageSelectorViewByTapping()
 }
 
 protocol ImageSelectorDelegate: class {
-    func present(_ vc: UIViewController, animated: Bool,
-                 completion: (() -> Void)?, sender: Any?)
+    /**
+     * Called when an image has been successfully added to the image view.
+     */
     func addedImage(_ image: UIImage, imageName: String, imageType: String?)
+
+    /**
+     * Called when an image has been removed from the image view.
+     */
     func removedImage(index: Int)
-    func tappedButton()
 }

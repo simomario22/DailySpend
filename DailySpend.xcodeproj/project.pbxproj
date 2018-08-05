@@ -28,11 +28,12 @@
 		C53BCAA71E9203BC000B5EE1 /* cal_recur.png in Resources */ = {isa = PBXBuildFile; fileRef = C53BCAA41E9203BC000B5EE1 /* cal_recur.png */; };
 		C53BCAA81E9203BC000B5EE1 /* cal_recur@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C53BCAA51E9203BC000B5EE1 /* cal_recur@2x.png */; };
 		C53BCAA91E9203BC000B5EE1 /* cal_recur@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C53BCAA61E9203BC000B5EE1 /* cal_recur@3x.png */; };
+		C53DFD12210C1989001F070A /* ImageSelectorController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C53DFD11210C1989001F070A /* ImageSelectorController.swift */; };
 		C546170D204A4AFF00689DED /* GoalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C546170C204A4AFF00689DED /* GoalViewController.swift */; };
 		C54ABD9520561DB100334293 /* LICENCE_VENMO.txt in Resources */ = {isa = PBXBuildFile; fileRef = C54ABD9420561DB100334293 /* LICENCE_VENMO.txt */; };
 		C54ABD9720562A9900334293 /* ExplanatoryTextTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54ABD9620562A9900334293 /* ExplanatoryTextTableViewCell.swift */; };
-		C54BF5B61FF8370F007F628D /* NYTPhotoViewer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C5A81A781F0040540032D9F1 /* NYTPhotoViewer.framework */; };
 		C54E4F491EFD3984006A1CA3 /* ImageSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54E4F481EFD3984006A1CA3 /* ImageSelectorView.swift */; };
+		C55412892116E76B0049EB81 /* INSPhotoGalleryFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C55412882116E76B0049EB81 /* INSPhotoGalleryFramework.framework */; };
 		C556D2541F247C6B008CA20E /* UIControl+Closures.swift in Sources */ = {isa = PBXBuildFile; fileRef = C556D2531F247C6B008CA20E /* UIControl+Closures.swift */; };
 		C55B336220A9318B00304680 /* ExpenseTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5117DB01FB94A410032F854 /* ExpenseTableViewCell.swift */; };
 		C55CCFD11F9D44E4001EF0B4 /* UIColor+255.swift in Sources */ = {isa = PBXBuildFile; fileRef = C55CCFD01F9D44E4001EF0B4 /* UIColor+255.swift */; };
@@ -59,6 +60,7 @@
 		C586813C1F2E85D5008D3AEE /* BorderedTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = C586813B1F2E85D5008D3AEE /* BorderedTextField.swift */; };
 		C586813E1F2E8BF2008D3AEE /* CGRect+Edges.swift in Sources */ = {isa = PBXBuildFile; fileRef = C586813D1F2E8BF2008D3AEE /* CGRect+Edges.swift */; };
 		C58681401F2E91E6008D3AEE /* UIView+MultipleSubviews.swift in Sources */ = {isa = PBXBuildFile; fileRef = C586813F1F2E91E6008D3AEE /* UIView+MultipleSubviews.swift */; };
+		C58FB040210ED88500246156 /* ImageSelectorTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C58FB03F210ED88500246156 /* ImageSelectorTableViewCell.swift */; };
 		C594F1CE1F47EDFE006CA097 /* CalendarDay.swift in Sources */ = {isa = PBXBuildFile; fileRef = C594F1CD1F47EDFE006CA097 /* CalendarDay.swift */; };
 		C594F1D01F47F206006CA097 /* CalendarMonth.swift in Sources */ = {isa = PBXBuildFile; fileRef = C594F1CF1F47F206006CA097 /* CalendarMonth.swift */; };
 		C594F1D61F494CD6006CA097 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = C594F1D51F494CD6006CA097 /* Logger.swift */; };
@@ -74,6 +76,8 @@
 		C5BB61E52071C30800EC97C2 /* CalendarPeriod.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5BB61E42071C30800EC97C2 /* CalendarPeriod.swift */; };
 		C5BB61E72071ECF400EC97C2 /* CalendarPeriodPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5BB61E62071ECF400EC97C2 /* CalendarPeriodPickerView.swift */; };
 		C5C65A221EBBFBC6002D1B12 /* ExportViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5C65A211EBBFBC6002D1B12 /* ExportViewController.swift */; };
+		C5CB4D892116678200BB1EB9 /* GoalSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5CB4D882116678200BB1EB9 /* GoalSelectorViewController.swift */; };
+		C5CB4D8B211674FE00BB1EB9 /* IndentedLabelTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5CB4D8A211674FE00BB1EB9 /* IndentedLabelTableViewCell.swift */; };
 		C5CF5F641E7BB68600C35539 /* cal.png in Resources */ = {isa = PBXBuildFile; fileRef = C5CF5F5E1E7BB68600C35539 /* cal.png */; };
 		C5CF5F651E7BB68600C35539 /* cal@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5CF5F5F1E7BB68600C35539 /* cal@2x.png */; };
 		C5CF5F661E7BB68600C35539 /* cal@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5CF5F601E7BB68600C35539 /* cal@3x.png */; };
@@ -129,7 +133,6 @@
 		C51B8C521F04EDE5008AC0C6 /* DailySpend 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "DailySpend 3.xcdatamodel"; sourceTree = "<group>"; };
 		C51D022720564C0F001946CA /* SwitchTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwitchTableViewCell.swift; sourceTree = "<group>"; };
 		C51D022920565A4E001946CA /* UITextView+Margins.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextView+Margins.swift"; sourceTree = "<group>"; };
-		C521651B1F9DCC610056A6D5 /* NYTPhotoViewer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NYTPhotoViewer.framework; path = Carthage/Build/iOS/NYTPhotoViewer.framework; sourceTree = "<group>"; };
 		C5316BF51E78D80F00BC2918 /* OldExpenseTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OldExpenseTableViewCell.swift; sourceTree = "<group>"; };
 		C5352728204B45CE0038E747 /* AddGoalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddGoalViewController.swift; sourceTree = "<group>"; };
 		C535272A204B5E770038E747 /* NavigationBar+BorderLine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NavigationBar+BorderLine.swift"; sourceTree = "<group>"; };
@@ -142,11 +145,13 @@
 		C53BCAA41E9203BC000B5EE1 /* cal_recur.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cal_recur.png; sourceTree = "<group>"; };
 		C53BCAA51E9203BC000B5EE1 /* cal_recur@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cal_recur@2x.png"; sourceTree = "<group>"; };
 		C53BCAA61E9203BC000B5EE1 /* cal_recur@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cal_recur@3x.png"; sourceTree = "<group>"; };
+		C53DFD11210C1989001F070A /* ImageSelectorController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSelectorController.swift; sourceTree = "<group>"; };
 		C546170C204A4AFF00689DED /* GoalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalViewController.swift; sourceTree = "<group>"; };
 		C54ABD9420561DB100334293 /* LICENCE_VENMO.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENCE_VENMO.txt; sourceTree = "<group>"; };
 		C54ABD9620562A9900334293 /* ExplanatoryTextTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExplanatoryTextTableViewCell.swift; sourceTree = "<group>"; };
 		C54BF5B41FF1911A007F628D /* ExpenseCellsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseCellsController.swift; sourceTree = "<group>"; };
 		C54E4F481EFD3984006A1CA3 /* ImageSelectorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageSelectorView.swift; sourceTree = "<group>"; };
+		C55412882116E76B0049EB81 /* INSPhotoGalleryFramework.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = INSPhotoGalleryFramework.framework; path = Carthage/Build/iOS/INSPhotoGalleryFramework.framework; sourceTree = "<group>"; };
 		C556D2511F2466EB008CA20E /* ExpenseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpenseViewController.swift; sourceTree = "<group>"; };
 		C556D2531F247C6B008CA20E /* UIControl+Closures.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIControl+Closures.swift"; sourceTree = "<group>"; };
 		C55CCFD01F9D44E4001EF0B4 /* UIColor+255.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+255.swift"; sourceTree = "<group>"; };
@@ -180,6 +185,7 @@
 		C586813B1F2E85D5008D3AEE /* BorderedTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BorderedTextField.swift; sourceTree = "<group>"; };
 		C586813D1F2E8BF2008D3AEE /* CGRect+Edges.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGRect+Edges.swift"; sourceTree = "<group>"; };
 		C586813F1F2E91E6008D3AEE /* UIView+MultipleSubviews.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+MultipleSubviews.swift"; sourceTree = "<group>"; };
+		C58FB03F210ED88500246156 /* ImageSelectorTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageSelectorTableViewCell.swift; sourceTree = "<group>"; };
 		C594F1CD1F47EDFE006CA097 /* CalendarDay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalendarDay.swift; sourceTree = "<group>"; };
 		C594F1CF1F47F206006CA097 /* CalendarMonth.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CalendarMonth.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		C594F1D51F494CD6006CA097 /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
@@ -189,8 +195,6 @@
 		C5A261A31F66645B007CBB21 /* PauseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PauseViewController.swift; sourceTree = "<group>"; };
 		C5A287C41EC1741200D3479A /* DailySpend 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "DailySpend 2.xcdatamodel"; sourceTree = "<group>"; };
 		C5A4AF8F1FA6B52900101809 /* TableViewCellHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewCellHelper.swift; sourceTree = "<group>"; };
-		C5A81A771F0040540032D9F1 /* FLAnimatedImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FLAnimatedImage.framework; path = Carthage/Build/iOS/FLAnimatedImage.framework; sourceTree = "<group>"; };
-		C5A81A781F0040540032D9F1 /* NYTPhotoViewer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NYTPhotoViewer.framework; path = Carthage/Build/iOS/NYTPhotoViewer.framework; sourceTree = "<group>"; };
 		C5A81A7A1F0040540032D9F1 /* ZipArchive.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ZipArchive.framework; path = Carthage/Build/iOS/ZipArchive.framework; sourceTree = "<group>"; };
 		C5B367CC1EBBD65E006B5ADC /* cog.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cog.png; sourceTree = "<group>"; };
 		C5B367CD1EBBD65E006B5ADC /* cog@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cog@2x.png"; sourceTree = "<group>"; };
@@ -201,6 +205,8 @@
 		C5BB61E42071C30800EC97C2 /* CalendarPeriod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarPeriod.swift; sourceTree = "<group>"; };
 		C5BB61E62071ECF400EC97C2 /* CalendarPeriodPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarPeriodPickerView.swift; sourceTree = "<group>"; };
 		C5C65A211EBBFBC6002D1B12 /* ExportViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExportViewController.swift; sourceTree = "<group>"; };
+		C5CB4D882116678200BB1EB9 /* GoalSelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalSelectorViewController.swift; sourceTree = "<group>"; };
+		C5CB4D8A211674FE00BB1EB9 /* IndentedLabelTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndentedLabelTableViewCell.swift; sourceTree = "<group>"; };
 		C5CF5F5E1E7BB68600C35539 /* cal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cal.png; sourceTree = "<group>"; };
 		C5CF5F5F1E7BB68600C35539 /* cal@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cal@2x.png"; sourceTree = "<group>"; };
 		C5CF5F601E7BB68600C35539 /* cal@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cal@3x.png"; sourceTree = "<group>"; };
@@ -231,8 +237,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C55412892116E76B0049EB81 /* INSPhotoGalleryFramework.framework in Frameworks */,
 				C518791A1F00416F00881FB6 /* ZipArchive.framework in Frameworks */,
-				C54BF5B61FF8370F007F628D /* NYTPhotoViewer.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -256,9 +262,7 @@
 		C517B1BC1EBC125600CDAA17 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				C521651B1F9DCC610056A6D5 /* NYTPhotoViewer.framework */,
-				C5A81A771F0040540032D9F1 /* FLAnimatedImage.framework */,
-				C5A81A781F0040540032D9F1 /* NYTPhotoViewer.framework */,
+				C55412882116E76B0049EB81 /* INSPhotoGalleryFramework.framework */,
 				C5A81A7A1F0040540032D9F1 /* ZipArchive.framework */,
 			);
 			name = Frameworks;
@@ -296,6 +300,15 @@
 				C5D4DAB91F931D3E0013A6F3 /* Control-based Table View Cells */,
 			);
 			name = "Custom UI Elements";
+			sourceTree = "<group>";
+		};
+		C53DFD13210C1991001F070A /* Expense View */ = {
+			isa = PBXGroup;
+			children = (
+				C580B498210588A200E16E87 /* AddExpenseViewController.swift */,
+				C53DFD11210C1989001F070A /* ImageSelectorController.swift */,
+			);
+			name = "Expense View";
 			sourceTree = "<group>";
 		};
 		C56500201E837F3A009D64F0 /* Managed Object Classes */ = {
@@ -349,6 +362,7 @@
 				C5781D9A1E6E2060006BBC03 /* AppDelegate.swift */,
 				C5E51E59209FA8A8005C674B /* SpendIndicationNavigationController.swift */,
 				C5E51E51209EC44B005C674B /* Today View */,
+				C53DFD13210C1991001F070A /* Expense View */,
 				C5E51E52209EC45A005C674B /* Goal View */,
 				C5E51E53209EC47B005C674B /* Pause View */,
 				C5E51E54209EC481005C674B /* Adjustment View */,
@@ -446,7 +460,9 @@
 				C5D4DAB71F931D240013A6F3 /* SegmentedControlTableViewCell.swift */,
 				C51D022720564C0F001946CA /* SwitchTableViewCell.swift */,
 				C59E2A2D205C97F5006D18B5 /* ValueTableViewCell.swift */,
+				C5CB4D8A211674FE00BB1EB9 /* IndentedLabelTableViewCell.swift */,
 				C51AD76E209E5F40002CC4AC /* ChoiceTableViewCell.swift */,
+				C58FB03F210ED88500246156 /* ImageSelectorTableViewCell.swift */,
 			);
 			name = "Control-based Table View Cells";
 			sourceTree = "<group>";
@@ -458,7 +474,6 @@
 				C51AD770209E8FA9002CC4AC /* TodayViewExpenseController.swift */,
 				C5A0DD5B20429CC2004C6411 /* TodayViewGoalsController.swift */,
 				C5E51E4F209EC438005C674B /* TodaySummaryView.swift */,
-				C580B498210588A200E16E87 /* AddExpenseViewController.swift */,
 			);
 			name = "Today View";
 			sourceTree = "<group>";
@@ -468,6 +483,7 @@
 			children = (
 				C546170C204A4AFF00689DED /* GoalViewController.swift */,
 				C5352728204B45CE0038E747 /* AddGoalViewController.swift */,
+				C5CB4D882116678200BB1EB9 /* GoalSelectorViewController.swift */,
 			);
 			name = "Goal View";
 			sourceTree = "<group>";
@@ -701,13 +717,11 @@
 			files = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/iOS/FLAnimatedImage.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/NYTPhotoViewer.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/ZipArchive.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/INSPhotoGalleryFramework.framework",
 			);
 			outputPaths = (
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/FLAnimatedImage.framework",
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/NYTPhotoViewer.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/INSPhotoGalleryFramework.framework",
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/ZipArchive.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -729,6 +743,7 @@
 				C5C65A221EBBFBC6002D1B12 /* ExportViewController.swift in Sources */,
 				C5EE62A31E85769700CAEEE7 /* String+CharacterSet.swift in Sources */,
 				C5352765204CF8E10038E747 /* CalculatorInputView.swift in Sources */,
+				C5CB4D8B211674FE00BB1EB9 /* IndentedLabelTableViewCell.swift in Sources */,
 				C580B499210588A200E16E87 /* AddExpenseViewController.swift in Sources */,
 				C594F1D01F47F206006CA097 /* CalendarMonth.swift in Sources */,
 				C5F75FF21F9D6A29005F3510 /* UITextField+Size.swift in Sources */,
@@ -754,6 +769,7 @@
 				C573B9FF20324CDA0025A5A2 /* Pause+CoreDataProperties.swift in Sources */,
 				C573BA0320324CDA0025A5A2 /* Expense+CoreDataProperties.swift in Sources */,
 				C5781D9B1E6E2060006BBC03 /* AppDelegate.swift in Sources */,
+				C53DFD12210C1989001F070A /* ImageSelectorController.swift in Sources */,
 				C51AD771209E8FA9002CC4AC /* TodayViewExpenseController.swift in Sources */,
 				C586813E1F2E8BF2008D3AEE /* CGRect+Edges.swift in Sources */,
 				C5E51E5A209FA8A8005C674B /* SpendIndicationNavigationController.swift in Sources */,
@@ -773,12 +789,14 @@
 				C535272B204B5E770038E747 /* NavigationBar+BorderLine.swift in Sources */,
 				C573BA0520324CDA0025A5A2 /* Pause+CoreDataClass.swift in Sources */,
 				C51D022820564C0F001946CA /* SwitchTableViewCell.swift in Sources */,
+				C58FB040210ED88500246156 /* ImageSelectorTableViewCell.swift in Sources */,
 				C5BB61E52071C30800EC97C2 /* CalendarPeriod.swift in Sources */,
 				C5B6CBC22079886B00B78069 /* CalendarPeriodPickerTableViewCell.swift in Sources */,
 				C573BA0020324CDA0025A5A2 /* Image+CoreDataClass.swift in Sources */,
 				C503F13A1EA1A8A200FA95A7 /* Export.swift in Sources */,
 				C5F75FF01F9D5A75005F3510 /* UILabel+Size.swift in Sources */,
 				C556D2541F247C6B008CA20E /* UIControl+Closures.swift in Sources */,
+				C5CB4D892116678200BB1EB9 /* GoalSelectorViewController.swift in Sources */,
 				C59E2A2E205C97F5006D18B5 /* ValueTableViewCell.swift in Sources */,
 				C546170D204A4AFF00689DED /* GoalViewController.swift in Sources */,
 				C573B9FE20324CDA0025A5A2 /* Image+CoreDataProperties.swift in Sources */,
