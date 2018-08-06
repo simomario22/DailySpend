@@ -310,7 +310,8 @@ class TableViewCellHelper {
         
         cell.amountField.placeholder = "$0.00"
         cell.amountField.font = UIFont.systemFont(ofSize: 18)
-        cell.amountField.text = amount != nil ? String.formatAsCurrency(amount: amount!) : nil
+        let amountText = amount != nil ? "\(amount!)" : nil
+        cell.amountField.text = amountText
         cell.amountField.maxValue = 1e7
         
         cell.descriptionField.text = description
@@ -349,7 +350,7 @@ class TableViewCellHelper {
             }
             changedToDescription(textField.text)
         }
-        cell.tappedSave = { descriptionField, amountField in
+        cell.tappedSave = { (descriptionField: UITextField, amountField: CalculatorTextField) in
             tappedSave(
                 descriptionField.text,
                 amountField.evaluatedValue(),

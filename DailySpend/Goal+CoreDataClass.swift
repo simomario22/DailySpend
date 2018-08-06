@@ -325,13 +325,17 @@ public class Goal: NSManagedObject {
     /**
      * Returns the expenses in a particular period, or all the expenses if this
      * is not a recurring goal, from most recently created to least recently.
+     *
+     * - Parameters:
+     *    - period: The `CalendarPeriod` for which to fetch expenses.
+     *              If period is nil, will return all expenses for the goal.
      */
-    public func getExpenses(period: CalendarPeriod) -> [Expense] {
+    public func getExpenses(period: CalendarPeriod?) -> [Expense] {
         let fetchRequest: NSFetchRequest<Expense> = Expense.fetchRequest()
         
-        if isRecurring {
+        if isRecurring && period != nil {
             let fs = "ANY goals_ = %@ AND transactionDate_ >= %@ AND transactionDate_ < %@"
-            fetchRequest.predicate = NSPredicate(format: fs, self, period.start as CVarArg, period.end as CVarArg)
+            fetchRequest.predicate = NSPredicate(format: fs, self, period!.start as CVarArg, period!.end as CVarArg)
         } else {
             let fs = "ANY goals_ = %@"
             fetchRequest.predicate = NSPredicate(format: fs, self)

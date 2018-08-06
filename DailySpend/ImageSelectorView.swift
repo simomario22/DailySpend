@@ -362,22 +362,6 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIScrollViewDel
     }
 }
 
-//extension ImageSelectorView: NYTPhotosViewControllerDelegate {
-//
-//    func photosViewController(_ photosViewController: NYTPhotosViewController,
-//                              handleActionButtonTappedFor photo: NYTPhoto) -> Bool {
-//        guard let photoImage = photo.image else { return false }
-//
-//        let activityVC = UIActivityViewController(activityItems: [photoImage],
-//                                                  applicationActivities: nil)
-//
-//        photosViewController.present(activityVC, animated: true, completion: nil)
-//
-//        return true
-//    }
-//
-//}
-
 protocol ImageSelectorController: class {
     /**
      * Called to present a view controller.

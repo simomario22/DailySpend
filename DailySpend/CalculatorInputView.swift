@@ -1,5 +1,5 @@
 //
-// The follwing files are derived Venmo's VENCalculatorInputView, which is
+// The follwing files are derived from Venmo's VENCalculatorInputView, which is
 // licensed under the MIT License and Copyright (c) 2014 Ayaka Nonaka:
 // CalculatorInputView.swift
 // CalculatorTextField.swift

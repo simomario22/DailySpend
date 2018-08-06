@@ -61,6 +61,8 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         if cell == nil {
             cell = UITableViewCell(style: .default, reuseIdentifier: "goal")
         }
+
+        cell.accessoryType = .disclosureIndicator
         
         let goals = indexPath.section == 1 ? archivedGoals : currentGoals
         cell.textLabel?.text = goals[indexPath.row].shortDescription

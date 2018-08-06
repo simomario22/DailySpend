@@ -37,6 +37,8 @@ class GoalSelectorViewController: UIViewController, UITableViewDelegate, UITable
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.navigationItem.title = "Select Goals"
+        
         tableView = UITableView(frame: view.bounds, style: .grouped)
         tableView.delegate = self
         tableView.dataSource = self

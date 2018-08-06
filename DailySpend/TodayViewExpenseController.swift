@@ -155,7 +155,6 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
                 }
 
                 self.tableView.endUpdates()
-
             }, tappedCancel: { expenseCell, resignFirstResponder in
                 resignFirstResponder()
                 if isAddCell {
@@ -304,7 +303,7 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
                 dateInGMTPeriod: Date(),
                 period: goal.period,
                 beginningDateOfPeriod: goal.start!
-            )!
+            )
             expenses = goal.getExpenses(period: todayPeriod)
             expenseCellData = []
             for e in expenses {

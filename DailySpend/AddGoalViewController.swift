@@ -200,6 +200,10 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        navigationController?.navigationBar.showBorderLine()
+        super.viewDidDisappear(animated)
+    }
     
     enum GoalViewCellType {
         case DescriptionCell
