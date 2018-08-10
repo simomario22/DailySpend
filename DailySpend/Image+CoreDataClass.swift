@@ -10,9 +10,9 @@ import Foundation
 import CoreData
 
 @objc(Image)
-public class Image: NSManagedObject {
+class Image: NSManagedObject {
     
-    public func json() -> [String: Any]? {
+    func json() -> [String: Any]? {
         var jsonObj = [String: Any]()
         
         if let imageName = imageName {
@@ -33,7 +33,7 @@ public class Image: NSManagedObject {
         return jsonObj
     }
     
-    public func serialize() -> Data? {
+    func serialize() -> Data? {
         if let jsonObj = self.json() {
             let serialization = try? JSONSerialization.data(withJSONObject: jsonObj)
             return serialization
@@ -73,7 +73,7 @@ public class Image: NSManagedObject {
     }
     
     
-    public var dateCreated: Date? {
+    var dateCreated: Date? {
         get {
             return dateCreated_ as Date?
         }
@@ -86,7 +86,7 @@ public class Image: NSManagedObject {
         }
     }
     
-    public var imageName: String? {
+    var imageName: String? {
         get {
             return imageName_
         }
@@ -95,7 +95,7 @@ public class Image: NSManagedObject {
         }
     }
     
-    public var imageURL: URL? {
+    var imageURL: URL? {
         if let imageName = self.imageName {
             let fm = FileManager.default
             let urls = fm.urls(for: .documentDirectory, in: .userDomainMask)
@@ -109,11 +109,11 @@ public class Image: NSManagedObject {
         }
     }
     
-    public var image: UIImage? {
+    var image: UIImage? {
         return imageURL != nil ? UIImage(contentsOfFile: imageURL!.path) : nil
     }
     
-    public var expense: Expense? {
+    var expense: Expense? {
         get {
             return expense_
         }
@@ -122,7 +122,7 @@ public class Image: NSManagedObject {
         }
     }
     
-    public override func prepareForDeletion() {
+    override func prepareForDeletion() {
         if let imageURL = self.imageURL {
             // Attempt to delete our image.
             do {

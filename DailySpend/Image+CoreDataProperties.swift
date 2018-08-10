@@ -13,12 +13,12 @@ import CoreData
 
 extension Image {
 
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<Image> {
+    @nonobjc class func fetchRequest() -> NSFetchRequest<Image> {
         return NSFetchRequest<Image>(entityName: "Image")
     }
 
-    @NSManaged public var dateCreated_: NSDate?
-    @NSManaged public var imageName_: String?
-    @NSManaged public var expense_: Expense?
+    @NSManaged var dateCreated_: NSDate?
+    @NSManaged var imageName_: String?
+    @NSManaged var expense_: Expense?
 
 }

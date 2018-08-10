@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class CalendarDay {
+class CalendarDay {
     private var date: Date
 
     /*
@@ -142,23 +142,23 @@ public class CalendarDay {
 }
 
 extension CalendarDay: Comparable {
-    static public func == (lhs: CalendarDay, rhs: CalendarDay) -> Bool {
+    static func == (lhs: CalendarDay, rhs: CalendarDay) -> Bool {
         return lhs.gmtDate == rhs.gmtDate
     }
 
-    static public func < (lhs: CalendarDay, rhs: CalendarDay) -> Bool {
+    static func < (lhs: CalendarDay, rhs: CalendarDay) -> Bool {
         return lhs.gmtDate < rhs.gmtDate
     }
 
-    static public func > (lhs: CalendarDay, rhs: CalendarDay) -> Bool {
+    static func > (lhs: CalendarDay, rhs: CalendarDay) -> Bool {
         return lhs.gmtDate > rhs.gmtDate
     }
 
-    static public func <= (lhs: CalendarDay, rhs: CalendarDay) -> Bool {
+    static func <= (lhs: CalendarDay, rhs: CalendarDay) -> Bool {
         return lhs.gmtDate <= rhs.gmtDate
     }
 
-    static public func >= (lhs: CalendarDay, rhs: CalendarDay) -> Bool {
+    static func >= (lhs: CalendarDay, rhs: CalendarDay) -> Bool {
         return lhs.gmtDate >= rhs.gmtDate
     }
 }

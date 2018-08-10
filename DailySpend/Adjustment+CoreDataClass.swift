@@ -11,8 +11,8 @@ import Foundation
 import CoreData
 
 @objc(Adjustment)
-public class Adjustment: NSManagedObject {
-    public func json(jsonIds: [NSManagedObjectID: Int]) -> [String: Any]? {
+class Adjustment: NSManagedObject {
+    func json(jsonIds: [NSManagedObjectID: Int]) -> [String: Any]? {
         var jsonObj = [String: Any]()
         
         if let amountPerDay = amountPerDay {
@@ -73,7 +73,7 @@ public class Adjustment: NSManagedObject {
         return jsonObj
     }
     
-    public func serialize(jsonIds: [NSManagedObjectID: Int]) -> Data? {
+    func serialize(jsonIds: [NSManagedObjectID: Int]) -> Data? {
         if let jsonObj = self.json(jsonIds: jsonIds) {
             let serialization = try? JSONSerialization.data(withJSONObject: jsonObj)
             return serialization
@@ -230,7 +230,7 @@ public class Adjustment: NSManagedObject {
     
     // Accessor functions (for Swift 3 classes)
     
-    public var dateCreated: Date? {
+    var dateCreated: Date? {
         get {
             return dateCreated_ as Date?
         }
@@ -243,7 +243,7 @@ public class Adjustment: NSManagedObject {
         }
     }
     
-    public var shortDescription: String? {
+    var shortDescription: String? {
         get {
             return shortDescription_
         }
@@ -252,7 +252,7 @@ public class Adjustment: NSManagedObject {
         }
     }
     
-    public var amountPerDay: Decimal? {
+    var amountPerDay: Decimal? {
         get {
             return amountPerDay_ as Decimal?
         }
@@ -265,7 +265,7 @@ public class Adjustment: NSManagedObject {
         }
     }
     
-    public var firstDayEffective: CalendarDay? {
+    var firstDayEffective: CalendarDay? {
         get {
             if let day = firstDateEffective_ as Date? {
                 return CalendarDay(dateInGMTDay: day)
@@ -282,7 +282,7 @@ public class Adjustment: NSManagedObject {
         }
     }
     
-    public var lastDayEffective: CalendarDay? {
+    var lastDayEffective: CalendarDay? {
         get {
             if let day = lastDateEffective_ as Date? {
                 return CalendarDay(dateInGMTDay: day)
@@ -302,7 +302,7 @@ public class Adjustment: NSManagedObject {
     /**
      * `goals` sorted in a deterministic way.
      */
-    public var sortedGoals: [Goal]? {
+    var sortedGoals: [Goal]? {
         if let g = goals {
             return g.sorted(by: { $0.dateCreated! < $1.dateCreated! })
         } else {
@@ -310,7 +310,7 @@ public class Adjustment: NSManagedObject {
         }
     }
     
-    public var goals: Set<Goal>? {
+    var goals: Set<Goal>? {
         get {
             return goals_ as! Set?
         }
@@ -323,11 +323,11 @@ public class Adjustment: NSManagedObject {
         }
     }
     
-    public func addGoal(_ goal: Goal) {
+    func addGoal(_ goal: Goal) {
         addToGoals_(goal)
     }
     
-    public func removeGoal(_ goal: Goal) {
+    func removeGoal(_ goal: Goal) {
         removeFromGoals_(goal)
     }
 }

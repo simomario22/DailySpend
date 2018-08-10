@@ -10,8 +10,8 @@ import Foundation
 import CoreData
 
 @objc(Expense)
-public class Expense: NSManagedObject {
-    public func json(jsonIds: [NSManagedObjectID: Int]) -> [String: Any]? {
+class Expense: NSManagedObject {
+    func json(jsonIds: [NSManagedObjectID: Int]) -> [String: Any]? {
         var jsonObj = [String: Any]()
         
         if let amount = amount {
@@ -81,7 +81,7 @@ public class Expense: NSManagedObject {
         return jsonObj
     }
     
-    public func serialize(jsonIds: [NSManagedObjectID: Int]) -> Data? {
+    func serialize(jsonIds: [NSManagedObjectID: Int]) -> Data? {
         if let jsonObj = self.json(jsonIds: jsonIds) {
             let serialization = try? JSONSerialization.data(withJSONObject: jsonObj)
             return serialization
@@ -241,7 +241,7 @@ public class Expense: NSManagedObject {
     
     // Accessor functions (for Swift 3 classes)
     
-    public var amount: Decimal? {
+    var amount: Decimal? {
         get {
             return amount_ as Decimal?
         }
@@ -254,7 +254,7 @@ public class Expense: NSManagedObject {
         }
     }
     
-    public var transactionDay: CalendarDay? {
+    var transactionDay: CalendarDay? {
         get {
             if let date = transactionDate_ {
                 return CalendarDay(dateInGMTDay: date as Date)
@@ -271,7 +271,7 @@ public class Expense: NSManagedObject {
         }
     }
     
-    public var dateCreated: Date? {
+    var dateCreated: Date? {
         get {
             return dateCreated_ as Date?
         }
@@ -284,7 +284,7 @@ public class Expense: NSManagedObject {
         }
     }
     
-    public var shortDescription: String? {
+    var shortDescription: String? {
         get {
             return shortDescription_
         }
@@ -293,7 +293,7 @@ public class Expense: NSManagedObject {
         }
     }
     
-    public var notes: String? {
+    var notes: String? {
         get {
             return notes_
         }
@@ -305,7 +305,7 @@ public class Expense: NSManagedObject {
     /**
      * `goals` sorted in a deterministic way.
      */
-    public var sortedGoals: [Goal]? {
+    var sortedGoals: [Goal]? {
         if let g = goals {
             return g.sorted { $0.shortDescription! < $1.shortDescription! }
         } else {
@@ -313,7 +313,7 @@ public class Expense: NSManagedObject {
         }
     }
     
-    public var goals: Set<Goal>? {
+    var goals: Set<Goal>? {
         get {
             return goals_ as! Set?
         }
@@ -326,11 +326,11 @@ public class Expense: NSManagedObject {
         }
     }
     
-    public func addGoal(_ goal: Goal) {
+    func addGoal(_ goal: Goal) {
         addToGoals_(goal)
     }
     
-    public func removeGoal(_ goal: Goal) {
+    func removeGoal(_ goal: Goal) {
         removeFromGoals_(goal)
     }
     
@@ -338,7 +338,7 @@ public class Expense: NSManagedObject {
     /**
      * `images` sorted in a deterministic way.
      */
-    public var sortedImages: [Image]? {
+    var sortedImages: [Image]? {
         if let img = images {
             return img.sorted(by: { $0.dateCreated! < $1.dateCreated! })
         } else {
@@ -346,7 +346,7 @@ public class Expense: NSManagedObject {
         }
     }
     
-    public var images: Set<Image>? {
+    var images: Set<Image>? {
         get {
             return images_ as! Set?
         }

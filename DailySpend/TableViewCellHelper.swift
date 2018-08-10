@@ -27,7 +27,7 @@ class TableViewCellHelper {
     /**
      * Return a cell to format and display a CalendarDay.
      */
-    public func dateDisplayCell(label: String,
+    func dateDisplayCell(label: String,
                          day: CalendarDay?,
                          tintColor: UIColor? = nil,
                          strikeText: Bool = false,
@@ -45,7 +45,7 @@ class TableViewCellHelper {
                                 strikeText: strikeText)
     }
     
-    public func indentedLabelCell(
+    func indentedLabelCell(
         labelText: String,
         indentationLevel: Int,
         indentationWidth: CGFloat = 10,
@@ -67,7 +67,7 @@ class TableViewCellHelper {
     /**
      * Cell to display a label and a value, which can be tinted or crossed out.
      */
-    public func valueDisplayCell(labelText: String,
+    func valueDisplayCell(labelText: String,
                                  valueText: String,
                                  explanatoryText: String? = nil,
                                 tintColor: UIColor? = nil,
@@ -103,7 +103,7 @@ class TableViewCellHelper {
     /**
      * Return a cell with an editable text field.
      */
-    public func textFieldDisplayCell(title: String? = nil,
+    func textFieldDisplayCell(title: String? = nil,
                               placeholder: String,
                               text: String?,
                               explanatoryText: String? = nil,
@@ -135,7 +135,7 @@ class TableViewCellHelper {
     /**
      * Return a cell with an editable text field.
      */
-    public func currencyDisplayCell(title: String? = nil,
+    func currencyDisplayCell(title: String? = nil,
                                      amount: Decimal? = nil,
                                      changedToAmount: @escaping (Decimal?) -> (),
                                      didBeginEditing: ((UITextField) -> ())? = nil,
@@ -163,7 +163,7 @@ class TableViewCellHelper {
     /**
      * Return a cell with a segmented control.
      */
-    public func segmentedControlCell(segmentTitles: [String],
+    func segmentedControlCell(segmentTitles: [String],
                               selectedSegmentIndex: Int,
                               title: String? = nil,
                               explanatoryText: String? = nil,
@@ -189,7 +189,7 @@ class TableViewCellHelper {
     /**
      * Return a cell with a segmented control.
      */
-    public func switchCell(initialValue: Bool,
+    func switchCell(initialValue: Bool,
                            title: String? = nil,
                            explanatoryText: String? = nil,
                            valueChanged: @escaping (Bool) -> ()) -> UITableViewCell {
@@ -213,7 +213,7 @@ class TableViewCellHelper {
     /**
      * Return a cell with a date picker.
      */
-    public func datePickerCell(day: CalendarDay,
+    func datePickerCell(day: CalendarDay,
                         changedToDay: @escaping (CalendarDay) -> ()) -> UITableViewCell {
         var cell: DatePickerTableViewCell! = tableView.dequeueReusableCell(withIdentifier: "datePicker") as? DatePickerTableViewCell
         if cell == nil {
@@ -234,7 +234,7 @@ class TableViewCellHelper {
     /**
      * Return a cell with a date picker.
      */
-    public func periodPickerCell(
+    func periodPickerCell(
         date: Date,
         scope: PeriodScope,
         changedToDate: @escaping (Date, PeriodScope) -> ()
@@ -257,7 +257,7 @@ class TableViewCellHelper {
     /**
      * Return a cell with a picker.
      */
-    public func pickerCell(rows: [[String]],
+    func pickerCell(rows: [[String]],
                            initialSelection: [Int]?,
                            changedValues: @escaping ([String]) -> ()) -> UITableViewCell {
         var cell: PickerTableViewCell! = tableView.dequeueReusableCell(withIdentifier: "picker") as? PickerTableViewCell
@@ -288,7 +288,7 @@ class TableViewCellHelper {
     /**
      * Return a cell with a date picker.
      */
-    public func expenseCell(
+    func expenseCell(
         description: String?,
         undescribed: Bool,
         amount: Decimal?,
@@ -375,7 +375,7 @@ class TableViewCellHelper {
         return cell
     }
     
-    public func imageSelectorCell(selector: ImageSelectorView) -> UITableViewCell {
+    func imageSelectorCell(selector: ImageSelectorView) -> UITableViewCell {
         var cell: ImageSelectorTableViewCell! = tableView.dequeueReusableCell(withIdentifier: "addExpense") as? ImageSelectorTableViewCell
         if cell == nil {
             cell = ImageSelectorTableViewCell(style: .default, reuseIdentifier: "addExpense")
@@ -386,7 +386,7 @@ class TableViewCellHelper {
         return cell
     }
 
-    public func longFormTextCell(
+    func longFormTextInputCell(
         text: String?,
         didBeginEditing: @escaping ((ExpenseTableViewCell) -> ()),
         changedToText: @escaping (String?) -> ()

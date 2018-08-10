@@ -19,11 +19,11 @@ class ExpenseCellsController {
         
     }
     
-    public func numberOfCells() -> Int {
+    func numberOfCells() -> Int {
         return 0
     }
     
-    public func configureCellForIndex(_ index: Int, cell: ExpenseTableViewCell) -> ExpenseTableViewCell {
+    func configureCellForIndex(_ index: Int, cell: ExpenseTableViewCell) -> ExpenseTableViewCell {
         return cell
     }
 }

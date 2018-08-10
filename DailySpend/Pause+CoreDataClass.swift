@@ -10,8 +10,8 @@ import Foundation
 import CoreData
 
 @objc(Pause)
-public class Pause: NSManagedObject {
-    public func json(jsonIds: [NSManagedObjectID: Int]) -> [String: Any]? {
+class Pause: NSManagedObject {
+    func json(jsonIds: [NSManagedObjectID: Int]) -> [String: Any]? {
         var jsonObj = [String: Any]()
         
         if let shortDescription = shortDescription {
@@ -65,7 +65,7 @@ public class Pause: NSManagedObject {
         return jsonObj
     }
     
-    public func serialize(jsonIds: [NSManagedObjectID: Int]) -> Data? {
+    func serialize(jsonIds: [NSManagedObjectID: Int]) -> Data? {
         if let jsonObj = self.json(jsonIds: jsonIds) {
             let serialization = try? JSONSerialization.data(withJSONObject: jsonObj)
             return serialization
@@ -261,7 +261,7 @@ public class Pause: NSManagedObject {
     
     // Accessor functions (for Swift 3 classes)
     
-    public var dateCreated: Date? {
+    var dateCreated: Date? {
         get {
             return dateCreated_ as Date?
         }
@@ -274,7 +274,7 @@ public class Pause: NSManagedObject {
         }
     }
     
-    public var shortDescription: String? {
+    var shortDescription: String? {
         get {
             return shortDescription_
         }
@@ -283,7 +283,7 @@ public class Pause: NSManagedObject {
         }
     }
     
-    public var firstDayEffective: CalendarDay? {
+    var firstDayEffective: CalendarDay? {
         get {
             if let day = firstDateEffective_ as Date? {
                 return CalendarDay(dateInGMTDay: day)
@@ -300,7 +300,7 @@ public class Pause: NSManagedObject {
         }
     }
     
-    public var lastDayEffective: CalendarDay? {
+    var lastDayEffective: CalendarDay? {
         get {
             if let day = lastDateEffective_ as Date? {
                 return CalendarDay(dateInGMTDay: day)
@@ -320,7 +320,7 @@ public class Pause: NSManagedObject {
     /**
      * `goals` sorted in a deterministic way.
      */
-    public var sortedGoals: [Goal]? {
+    var sortedGoals: [Goal]? {
         if let g = goals {
             return g.sorted(by: { $0.dateCreated! < $1.dateCreated! })
         } else {
@@ -328,7 +328,7 @@ public class Pause: NSManagedObject {
         }
     }
     
-    public var goals: Set<Goal>? {
+    var goals: Set<Goal>? {
         get {
             return goals_ as! Set?
         }
@@ -341,11 +341,11 @@ public class Pause: NSManagedObject {
         }
     }
     
-    public func addGoal(_ goal: Goal) {
+    func addGoal(_ goal: Goal) {
         addToGoals_(goal)
     }
     
-    public func removeGoal(_ goal: Goal) {
+    func removeGoal(_ goal: Goal) {
         removeFromGoals_(goal)
     }
 }

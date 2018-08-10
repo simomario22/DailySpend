@@ -10,16 +10,16 @@
 import Foundation
 import CoreData
 
-public enum CreateGoalFromJsonStatus {
+enum CreateGoalFromJsonStatus {
     case Success(Goal)
     case Failure
     case NeedsOtherGoalsToBeCreatedFirst
 }
 
 @objc(Goal)
-public class Goal: NSManagedObject {
+class Goal: NSManagedObject {
     
-    public func json(jsonIds: [NSManagedObjectID: Int]) -> [String: Any]? {
+    func json(jsonIds: [NSManagedObjectID: Int]) -> [String: Any]? {
         var jsonObj = [String: Any]()
         
         if let amount = amount {
@@ -79,7 +79,7 @@ public class Goal: NSManagedObject {
         return jsonObj
     }
     
-    public func serialize(jsonIds: [NSManagedObjectID: Int]) -> Data? {
+    func serialize(jsonIds: [NSManagedObjectID: Int]) -> Data? {
         if let jsonObj = self.json(jsonIds: jsonIds) {
             let serialization = try? JSONSerialization.data(withJSONObject: jsonObj)
             return serialization
@@ -323,14 +323,27 @@ public class Goal: NSManagedObject {
     }
     
     /**
+     * Compute the balance amount in this goal on a particular day.
+     *
+     * - Parameters:
+     *    - day: The day to compute the balance for.
+     *
+     * - Returns: The balance on `day`, taking into account periods,
+     *            interval pay, and expenses.
+     */
+     func getBalance(day: CalendarDay) -> Decimal {
+        return 0
+     }
+    
+    /**
      * Returns the expenses in a particular period, or all the expenses if this
      * is not a recurring goal, from most recently created to least recently.
      *
      * - Parameters:
-     *    - period: The `CalendarPeriod` for which to fetch expenses.
+     *    - period: The `CalendarInterval` for which to fetch expenses.
      *              If period is nil, will return all expenses for the goal.
      */
-    public func getExpenses(period: CalendarPeriod?) -> [Expense] {
+    func getExpenses(period: CalendarInterval?) -> [Expense] {
         let fetchRequest: NSFetchRequest<Expense> = Expense.fetchRequest()
         
         if isRecurring && period != nil {
@@ -347,15 +360,15 @@ public class Goal: NSManagedObject {
         return expenseResults
     }
     
-    public var hasIncrementalPayment: Bool {
+    var hasIncrementalPayment: Bool {
         return self.payFrequency.scope != .None
     }
     
-    public var isRecurring: Bool {
+    var isRecurring: Bool {
         return self.period.scope != .None
     }
     
-    public var archived: Bool {
+    var archived: Bool {
         get {
             return archived_
         }
@@ -364,7 +377,7 @@ public class Goal: NSManagedObject {
         }
     }
     
-    public var alwaysCarryOver: Bool {
+    var alwaysCarryOver: Bool {
         get {
             return alwaysCarryOver_
         }
@@ -373,7 +386,7 @@ public class Goal: NSManagedObject {
         }
     }
     
-    public var adjustMonthAmountAutomatically: Bool {
+    var adjustMonthAmountAutomatically: Bool {
         get {
             return adjustMonthAmountAutomatically_
         }
@@ -382,7 +395,7 @@ public class Goal: NSManagedObject {
         }
     }
     
-    public var period: Period {
+    var period: Period {
         get {
             let p = PeriodScope(rawValue: Int(period_))!
             let m = Int(periodMultiplier_)
@@ -394,7 +407,7 @@ public class Goal: NSManagedObject {
         }
     }
 
-    public var payFrequency: Period {
+    var payFrequency: Period {
         get {
             let p = PeriodScope(rawValue: Int(payFrequency_))!
             let m = Int(payFrequencyMultiplier_)
@@ -406,7 +419,7 @@ public class Goal: NSManagedObject {
         }
     }
     
-    public var start: Date? {
+    var start: Date? {
         get {
             if let day = start_ as Date? {
                 return day
@@ -424,7 +437,7 @@ public class Goal: NSManagedObject {
         }
     }
     
-    public var end: Date? {
+    var end: Date? {
         get {
             if let day = end_ as Date? {
                 return day
@@ -442,7 +455,7 @@ public class Goal: NSManagedObject {
         }
     }
     
-    public var amount: Decimal? {
+    var amount: Decimal? {
         get {
             return amount_ as Decimal?
         }
@@ -455,7 +468,7 @@ public class Goal: NSManagedObject {
         }
     }
     
-    public var shortDescription: String? {
+    var shortDescription: String? {
         get {
             return shortDescription_
         }
@@ -464,7 +477,7 @@ public class Goal: NSManagedObject {
         }
     }
     
-    public var dateCreated: Date? {
+    var dateCreated: Date? {
         get {
             return dateCreated_ as Date?
         }
@@ -480,7 +493,7 @@ public class Goal: NSManagedObject {
     /**
      * `expenses` sorted in a deterministic way.
      */
-    public var sortedExpenses: [Expense]? {
+    var sortedExpenses: [Expense]? {
         if let e = expenses {
             return e.sorted(by: { $0.transactionDay! < $1.transactionDay! })
         } else {
@@ -488,7 +501,7 @@ public class Goal: NSManagedObject {
         }
     }
     
-    public var expenses: Set<Expense>? {
+    var expenses: Set<Expense>? {
         get {
             return expenses_ as! Set?
         }
@@ -501,7 +514,7 @@ public class Goal: NSManagedObject {
         }
     }
     
-    public var sortedAdjustments: [Adjustment]? {
+    var sortedAdjustments: [Adjustment]? {
         if let a = adjustments {
             return a.sorted(by: { $0.dateCreated! < $1.dateCreated! })
         } else {
@@ -509,7 +522,7 @@ public class Goal: NSManagedObject {
         }
     }
     
-    public var adjustments: Set<Adjustment>? {
+    var adjustments: Set<Adjustment>? {
         get {
             return adjustments_ as! Set?
         }
@@ -522,7 +535,7 @@ public class Goal: NSManagedObject {
         }
     }
     
-    public var sortedPauses: [Pause]? {
+    var sortedPauses: [Pause]? {
         if let p = pauses {
             return p.sorted(by: { $0.dateCreated! < $1.dateCreated! })
         } else {
@@ -530,7 +543,7 @@ public class Goal: NSManagedObject {
         }
     }
     
-    public var pauses: Set<Pause>? {
+    var pauses: Set<Pause>? {
         get {
             return pauses_ as! Set?
         }
@@ -543,7 +556,7 @@ public class Goal: NSManagedObject {
         }
     }
     
-    public var parentGoal: Goal? {
+    var parentGoal: Goal? {
         get {
             return parentGoal_
         }
@@ -556,7 +569,7 @@ public class Goal: NSManagedObject {
         }
     }
     
-    public var sortedChildGoals: [Goal]? {
+    var sortedChildGoals: [Goal]? {
         if let g = childGoals {
             return g.sorted(by: { $0.shortDescription! < $1.shortDescription! })
         } else {
@@ -564,7 +577,7 @@ public class Goal: NSManagedObject {
         }
     }
     
-    public var childGoals: Set<Goal>? {
+    var childGoals: Set<Goal>? {
         get {
             return childGoals_ as! Set?
         }

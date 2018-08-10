@@ -9,43 +9,42 @@
 import Foundation
 
 /**
- * An interval in time, of length `period`.
+ * An interval in time.
  */
-public class CalendarPeriod {
-    
+protocol CalendarInterval {
+    var start: Date { get }
+    var end: Date { get }
+}
+
+/**
+ * An interval in time based on a `CalendarDay`, `CalendarWeek`, or
+ * `CalendarMonth`, of length `period`.
+ */
+class CalendarPeriod : CalendarInterval {
     /**
      * The first Date included in the period, in GMT.
      */
-    private(set) public var start: Date
+    private(set) var start: Date
     
     /**
      * The first Date after `first` *not* included in the period, in GMT.
      */
-    private(set) public var end: Date
+    private(set) var end: Date
     
     /**
      * The `Period` interval of this period.
      */
-    private(set) public var period: Period
+    private(set) var period: Period
     
     private var previousStart: Date // Memoize this for quick subtraction.
-    
-    
-    /**
-     * We need to adjust the start of this period based on the beginning of
-     * another period, otherwise we could start on the "off period".
-     * For example, starting in the middle of a period in a 2 week period.
-     */
-    private func adjustForBeginningOfPeriod(_ intervalStart: Date, periodStart: Date) {
-        
-    }
 
     /**
-     * Initialize a concrete interval in time.
+     * Initializes a concrete interval in time.
      *
-     * @param date A date in the period interval you'd like created, in GMT.
-     * @param period The interval you'd like to represent.
-     * @param intervalStart The start of any period of this interval.
+     * - Parameters:
+     *    - date: A date in the period interval you'd like created, in GMT.
+     *    - period: The interval you'd like to represent.
+     *    - intervalStart: The start of any period of this interval.
      */
     init?(dateInGMTPeriod date: Date, period: Period, beginningDateOfPeriod intervalStart: Date) {
         switch period.scope {
@@ -104,7 +103,7 @@ public class CalendarPeriod {
 /**
  * An abstract unit of time.
  */
-public enum PeriodScope: Int {
+enum PeriodScope: Int {
     case None = -1
     case Day = 0
     case Week = 1
@@ -151,11 +150,11 @@ public enum PeriodScope: Int {
 }
 
 extension PeriodScope : Comparable {
-    static public func == (lhs: PeriodScope, rhs: PeriodScope) -> Bool {
+    static func == (lhs: PeriodScope, rhs: PeriodScope) -> Bool {
         return lhs.rawValue == rhs.rawValue
     }
     
-    static public func < (lhs: PeriodScope, rhs: PeriodScope) -> Bool {
+    static func < (lhs: PeriodScope, rhs: PeriodScope) -> Bool {
         return lhs.rawValue < rhs.rawValue
     }
 }
@@ -163,7 +162,7 @@ extension PeriodScope : Comparable {
 /**
  * Abstract interval of time, represented by a multiplier for a `PeriodScope` unit.
  */
-public struct Period {
+struct Period {
     var scope: PeriodScope
     var multiplier: Int
     
@@ -177,11 +176,11 @@ public struct Period {
 }
 
 extension Period : Comparable {
-    static public func == (lhs: Period, rhs: Period) -> Bool {
+    static func == (lhs: Period, rhs: Period) -> Bool {
         return lhs.scope == rhs.scope && lhs.multiplier == rhs.multiplier
     }
     
-    static public func < (lhs: Period, rhs: Period) -> Bool {
+    static func < (lhs: Period, rhs: Period) -> Bool {
         if lhs.scope < rhs.scope {
             return true
         } else if lhs.scope > rhs.scope {

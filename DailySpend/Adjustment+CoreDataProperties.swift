@@ -13,16 +13,16 @@ import CoreData
 
 extension Adjustment {
 
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<Adjustment> {
+    @nonobjc class func fetchRequest() -> NSFetchRequest<Adjustment> {
         return NSFetchRequest<Adjustment>(entityName: "Adjustment")
     }
 
-    @NSManaged public var amountPerDay_: NSDecimalNumber?
-    @NSManaged public var dateCreated_: NSDate?
-    @NSManaged public var firstDateEffective_: NSDate?
-    @NSManaged public var lastDateEffective_: NSDate?
-    @NSManaged public var shortDescription_: String?
-    @NSManaged public var goals_: NSSet?
+    @NSManaged var amountPerDay_: NSDecimalNumber?
+    @NSManaged var dateCreated_: NSDate?
+    @NSManaged var firstDateEffective_: NSDate?
+    @NSManaged var lastDateEffective_: NSDate?
+    @NSManaged var shortDescription_: String?
+    @NSManaged var goals_: NSSet?
 
 }
 
@@ -30,15 +30,15 @@ extension Adjustment {
 extension Adjustment {
 
     @objc(addGoals_Object:)
-    @NSManaged public func addToGoals_(_ value: Goal)
+    @NSManaged func addToGoals_(_ value: Goal)
 
     @objc(removeGoals_Object:)
-    @NSManaged public func removeFromGoals_(_ value: Goal)
+    @NSManaged func removeFromGoals_(_ value: Goal)
 
     @objc(addGoals_:)
-    @NSManaged public func addToGoals_(_ values: NSSet)
+    @NSManaged func addToGoals_(_ values: NSSet)
 
     @objc(removeGoals_:)
-    @NSManaged public func removeFromGoals_(_ values: NSSet)
+    @NSManaged func removeFromGoals_(_ values: NSSet)
 
 }

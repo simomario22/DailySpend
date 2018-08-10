@@ -13,15 +13,15 @@ import CoreData
 
 extension Pause {
 
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<Pause> {
+    @nonobjc class func fetchRequest() -> NSFetchRequest<Pause> {
         return NSFetchRequest<Pause>(entityName: "Pause")
     }
 
-    @NSManaged public var dateCreated_: NSDate?
-    @NSManaged public var firstDateEffective_: NSDate?
-    @NSManaged public var lastDateEffective_: NSDate?
-    @NSManaged public var shortDescription_: String?
-    @NSManaged public var goals_: NSSet?
+    @NSManaged var dateCreated_: NSDate?
+    @NSManaged var firstDateEffective_: NSDate?
+    @NSManaged var lastDateEffective_: NSDate?
+    @NSManaged var shortDescription_: String?
+    @NSManaged var goals_: NSSet?
 
 }
 
@@ -29,15 +29,15 @@ extension Pause {
 extension Pause {
 
     @objc(addGoals_Object:)
-    @NSManaged public func addToGoals_(_ value: Goal)
+    @NSManaged func addToGoals_(_ value: Goal)
 
     @objc(removeGoals_Object:)
-    @NSManaged public func removeFromGoals_(_ value: Goal)
+    @NSManaged func removeFromGoals_(_ value: Goal)
 
     @objc(addGoals_:)
-    @NSManaged public func addToGoals_(_ values: NSSet)
+    @NSManaged func addToGoals_(_ values: NSSet)
 
     @objc(removeGoals_:)
-    @NSManaged public func removeFromGoals_(_ values: NSSet)
+    @NSManaged func removeFromGoals_(_ values: NSSet)
 
 }

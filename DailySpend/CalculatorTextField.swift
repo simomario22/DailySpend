@@ -26,7 +26,7 @@ class CalculatorTextField: UITextField, CalculatorInputViewDelegate {
      * A receiver implementing `CalculatorTextFieldDelegate` to be notified
      * for events pertaining to `CalculatorTextField`.
      */
-    public var calcDelegate: CalculatorTextFieldDelegate?
+    var calcDelegate: CalculatorTextFieldDelegate?
     
     /**
      * A mapping of valid operation characters to functions that perform the
@@ -98,25 +98,25 @@ class CalculatorTextField: UITextField, CalculatorInputViewDelegate {
     /**
      * The maximum evaluated value that should be allowed in the text field.
      */
-    public var maxValue: Decimal?
+    var maxValue: Decimal?
     
     // Set these up for currency by default.
     /**
      * A function to format an operand. Defaults to `{ "$" + $0 }`.
      */
-    public var formatOperand: ((String) -> String)? = { "$" + $0 }
+    var formatOperand: ((String) -> String)? = { "$" + $0 }
     
     /**
      * A string that would be considered "empty" after transforming with
      * the `formatOperand` function. Defaults to `$`.
      */
-    public var emptyTransformation: String? = "$"
+    var emptyTransformation: String? = "$"
     
     /**
      * A function to format a valid evaluated decimal to a display to the user.
      * Defaults to `{ String.formatAsCurrency(amount: $0)! }`.
      */
-    public var formatFinishedValue: ((Decimal) -> String)? = { String.formatAsCurrency(amount: $0)! }
+    var formatFinishedValue: ((Decimal) -> String)? = { String.formatAsCurrency(amount: $0)! }
 
     override init(frame: CGRect) {
         validChars = CharacterSet(charactersIn: "0123456789.").union(operationCharacters)

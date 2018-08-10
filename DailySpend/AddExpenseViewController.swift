@@ -282,7 +282,7 @@ class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableVi
         case .ImageSelectorCell:
             return cellCreator.imageSelectorCell(selector: imageSelector)
         case .NotesCell:
-            return cellCreator.longFormTextCell(
+            return cellCreator.longFormTextInputCell(
                 text: self.notes,
                 didBeginEditing: { _ in
                     self.datePickerCellResignFirstResponder()

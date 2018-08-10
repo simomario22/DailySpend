@@ -59,7 +59,7 @@ class TextFieldTableViewCell: ExplanatoryTextTableViewCell, UITextFieldDelegate,
         super.init(coder: aDecoder)
     }
     
-    @objc public func textFieldFirstResponder() {
+    @objc func textFieldFirstResponder() {
         self.textField.becomeFirstResponder()
     }
     

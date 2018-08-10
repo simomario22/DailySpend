@@ -13,17 +13,17 @@ import CoreData
 
 extension Expense {
 
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<Expense> {
+    @nonobjc class func fetchRequest() -> NSFetchRequest<Expense> {
         return NSFetchRequest<Expense>(entityName: "Expense")
     }
 
-    @NSManaged public var amount_: NSDecimalNumber?
-    @NSManaged public var dateCreated_: NSDate?
-    @NSManaged public var notes_: String?
-    @NSManaged public var shortDescription_: String?
-    @NSManaged public var transactionDate_: NSDate?
-    @NSManaged public var images_: NSSet?
-    @NSManaged public var goals_: NSSet?
+    @NSManaged var amount_: NSDecimalNumber?
+    @NSManaged var dateCreated_: NSDate?
+    @NSManaged var notes_: String?
+    @NSManaged var shortDescription_: String?
+    @NSManaged var transactionDate_: NSDate?
+    @NSManaged var images_: NSSet?
+    @NSManaged var goals_: NSSet?
 
 }
 
@@ -31,16 +31,16 @@ extension Expense {
 extension Expense {
 
     @objc(addImages_Object:)
-    @NSManaged public func addToImages_(_ value: Image)
+    @NSManaged func addToImages_(_ value: Image)
 
     @objc(removeImages_Object:)
-    @NSManaged public func removeFromImages_(_ value: Image)
+    @NSManaged  func removeFromImages_(_ value: Image)
 
     @objc(addImages_:)
-    @NSManaged public func addToImages_(_ values: NSSet)
+    @NSManaged func addToImages_(_ values: NSSet)
 
     @objc(removeImages_:)
-    @NSManaged public func removeFromImages_(_ values: NSSet)
+    @NSManaged func removeFromImages_(_ values: NSSet)
 
 }
 
@@ -48,15 +48,15 @@ extension Expense {
 extension Expense {
 
     @objc(addGoals_Object:)
-    @NSManaged public func addToGoals_(_ value: Goal)
+    @NSManaged func addToGoals_(_ value: Goal)
 
     @objc(removeGoals_Object:)
-    @NSManaged public func removeFromGoals_(_ value: Goal)
+    @NSManaged func removeFromGoals_(_ value: Goal)
 
     @objc(addGoals_:)
-    @NSManaged public func addToGoals_(_ values: NSSet)
+    @NSManaged func addToGoals_(_ values: NSSet)
 
     @objc(removeGoals_:)
-    @NSManaged public func removeFromGoals_(_ values: NSSet)
+    @NSManaged func removeFromGoals_(_ values: NSSet)
 
 }
