@@ -25,6 +25,9 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
     var currentGoal: Goal? {
         didSet {
             delegate.goalChanged(newGoal: self.currentGoal)
+            let title = self.currentGoal?.shortDescription ?? "DailySpend"
+            let navHeight = self.navigationBar.frame.size.height
+            self.navigationItem.titleView = makeTitleView(height: navHeight, title: title)
         }
     }
     var goals: [Goal]
@@ -66,13 +69,15 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
         let infoBBI = UIBarButtonItem(customView: infoButton)
         self.navigationItem.rightBarButtonItem = infoBBI
         
-        let title = self.currentGoal?.shortDescription ?? "DailySpend"
-        let navHeight = self.navigationBar.frame.size.height
-        self.navigationItem.titleView = makeTitleView(height: navHeight, title: title)
         
         self.goals = getAllGoals()
         self.currentGoal = getLastUsedGoal()
         delegate.goalChanged(newGoal: self.currentGoal) // didSet won't fire in init
+        
+        let title = self.currentGoal?.shortDescription ?? "DailySpend"
+        let navHeight = self.navigationBar.frame.size.height
+        self.navigationItem.titleView = makeTitleView(height: navHeight, title: title)
+
 
     }
 
@@ -302,6 +307,11 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
                 let oldGoalIndexPath = IndexPath(row: oldGoalIndex, section: 0)
                 self.currentGoal = newGoal
                 self.goalTable.reloadRows(at: [indexPath, oldGoalIndexPath], with: .fade)
+                
+                // Hide goal selector table
+                self.hideTable()
+                setExplainer(true)
+                tableShown = false
             }
         }
         
@@ -310,6 +320,8 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
     
     func goalControllerWillDismissWithChangedGoals() {
         self.goals = getAllGoals()
+        
+         // Will notify delegate in didSet
         self.currentGoal = getLastUsedGoal()
         
         var frame = self.goalTable.frame

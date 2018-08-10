@@ -297,14 +297,11 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
     }
     
     func loadExpensesForGoal(_ goal: Goal?) {
-        if let goal = goal {
+        if let goal = goal,
+           let currentPeriod = goal.currentPeriodInterval() {
             self.goal = goal
-            let todayPeriod = CalendarPeriod(
-                dateInGMTPeriod: Date(),
-                period: goal.period,
-                beginningDateOfPeriod: goal.start!
-            )
-            expenses = goal.getExpenses(period: todayPeriod)
+            expenses = goal.getExpenses(period: currentPeriod)
+            
             expenseCellData = []
             for e in expenses {
                 let d = ExpenseCellDatum(e.shortDescription, e.amount, true)
@@ -320,7 +317,7 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
     }
 
     // TODO: Check here and in editedExpenseFrom modal if it still belongs to
-    // this goal/expense.
+    // this goal/period.
     func createdExpenseFromModal(_ expense: Expense) {
         expenses.insert(expense, at: 0)
         let newDatum = ExpenseCellDatum(expense.shortDescription, expense.amount, true)

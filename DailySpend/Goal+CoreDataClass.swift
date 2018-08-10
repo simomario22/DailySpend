@@ -343,15 +343,15 @@ class Goal: NSManagedObject {
      *    - period: The `CalendarInterval` for which to fetch expenses.
      *              If period is nil, will return all expenses for the goal.
      */
-    func getExpenses(period: CalendarInterval?) -> [Expense] {
+    func getExpenses(period: CalendarIntervalProvider) -> [Expense] {
         let fetchRequest: NSFetchRequest<Expense> = Expense.fetchRequest()
         
-        if isRecurring && period != nil {
-            let fs = "ANY goals_ = %@ AND transactionDate_ >= %@ AND transactionDate_ < %@"
-            fetchRequest.predicate = NSPredicate(format: fs, self, period!.start as CVarArg, period!.end as CVarArg)
+        var fs = "ANY goals_ = %@ AND transactionDate_ >= %@"
+        if let end = period.end {
+            fs += " AND transactionDate_ < %@"
+            fetchRequest.predicate = NSPredicate(format: fs, self, period.start as CVarArg, end as CVarArg)
         } else {
-            let fs = "ANY goals_ = %@"
-            fetchRequest.predicate = NSPredicate(format: fs, self)
+            fetchRequest.predicate = NSPredicate(format: fs, self, period.start as CVarArg)
         }
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "dateCreated_", ascending: false)]
         
@@ -360,6 +360,38 @@ class Goal: NSManagedObject {
         return expenseResults
     }
     
+    func currentIncrementalPeriodInterval() -> CalendarIntervalProvider? {
+        if !hasIncrementalPayment {
+            return nil
+        }
+        
+        guard let currentPeriod = currentPeriodInterval() else {
+            return nil
+        }
+        
+        return CalendarPeriod(
+            dateInGMTPeriod: Date(),
+            period: payFrequency,
+            beginningDateOfPeriod: currentPeriod.start
+        )
+    }
+    
+    func currentPeriodInterval() -> CalendarIntervalProvider? {
+        guard let start = self.start else {
+            return nil
+        }
+        
+        if !isRecurring {
+            return CalendarInterval(gmtStart: start, gmtEnd: self.end)
+        }
+        
+        return CalendarPeriod(
+            dateInGMTPeriod: Date(),
+            period: period,
+            beginningDateOfPeriod: self.start!
+        )
+    }
+
     var hasIncrementalPayment: Bool {
         return self.payFrequency.scope != .None
     }

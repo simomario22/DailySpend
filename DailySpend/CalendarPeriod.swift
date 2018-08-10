@@ -9,27 +9,46 @@
 import Foundation
 
 /**
- * An interval in time.
+ * A protocol representing an interval in time.
  */
-protocol CalendarInterval {
+protocol CalendarIntervalProvider {
+    /**
+     * The first Date included in the period, in GMT.
+     */
     var start: Date { get }
-    var end: Date { get }
+    
+    /**
+     * The first Date after `first` *not* included in the period, in GMT.
+     */
+    var end: Date? { get }
+}
+
+/**
+ * An interval in time with start and end explicitly specified, but no period
+ * attached.
+ */
+class CalendarInterval : CalendarIntervalProvider {
+    private(set) var start: Date
+    private(set) var end: Date?
+    
+    init(gmtStart: Date, gmtEnd: Date?) {
+        self.start = CalendarDay(dateInGMTDay: gmtStart).gmtDate
+        self.end = gmtEnd != nil ? CalendarDay(dateInGMTDay: gmtEnd!).gmtDate : nil
+    }
+    
+    init(localStart: Date, localEnd: Date?) {
+        self.start = CalendarDay(dateInLocalDay: localStart).gmtDate
+        self.end = localEnd != nil ? CalendarDay(dateInLocalDay: localEnd!).gmtDate : nil
+    }
 }
 
 /**
  * An interval in time based on a `CalendarDay`, `CalendarWeek`, or
  * `CalendarMonth`, of length `period`.
  */
-class CalendarPeriod : CalendarInterval {
-    /**
-     * The first Date included in the period, in GMT.
-     */
+class CalendarPeriod : CalendarIntervalProvider {
     private(set) var start: Date
-    
-    /**
-     * The first Date after `first` *not* included in the period, in GMT.
-     */
-    private(set) var end: Date
+    private(set) var end: Date?
     
     /**
      * The `Period` interval of this period.
@@ -92,7 +111,7 @@ class CalendarPeriod : CalendarInterval {
     }
     
     func nextCalendarPeriod() -> CalendarPeriod {
-        return CalendarPeriod(dateInGMTPeriod: end, period: period, beginningDateOfPeriod: start)!
+        return CalendarPeriod(dateInGMTPeriod: end!, period: period, beginningDateOfPeriod: start)!
     }
     
     func previousCalendarPeriod() -> CalendarPeriod {
