@@ -18,8 +18,10 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
     let periodLengthExplanatoryText = "The length of the period you have to " +
             "spend the above amount."
     
+    // TODO: this doesn't really make sense for >1 month periods
     let autoAdjustExplanatoryText = "Adjust the amount per month based on the " +
-            "number of days in a month (the amount will be for a 30 day month)."
+            "number of days in a month (the amount above will be used for a 30 " +
+            "day month)."
     
     let carryOverExplanatoryText = "Automatically create a carry-over " +
             "adjustment with the balance at the end of each period. If this " +
@@ -134,10 +136,6 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
             neverEnd = end == nil
         } else {
             self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Add", style: .done, save)
-            self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel) {
-                self.view.endEditing(false)
-                self.dismiss(animated: true, completion: nil)
-            }
             self.navigationItem.title = "New Goal"
             
             archived = false
@@ -147,6 +145,10 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
             payFrequency = Period(scope: .Day, multiplier: 1)
             start = CalendarDay().gmtDate
             unmodifiedStartDay = start
+        }
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel) {
+            self.view.endEditing(false)
+            self.dismiss(animated: true, completion: nil)
         }
     }
     

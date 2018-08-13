@@ -17,8 +17,8 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
 
     var delegate: GoalViewControllerDelegate?
     var tableView: UITableView!
-    var currentGoals: [Goal] = []
-    var archivedGoals: [Goal] = []
+    var currentGoals: [Goal.IndentedGoal] = []
+    var archivedGoals: [Goal.IndentedGoal] = []
     var changes = false
     
     override func viewDidLoad() {
@@ -45,10 +45,10 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func setGoals() {
-        let sortDescriptors = [NSSortDescriptor(key: "dateCreated_", ascending: true)]
-        let goals = Goal.get(context: context, sortDescriptors: sortDescriptors) ?? []
-        currentGoals = goals.filter({ !$0.archived })
-        archivedGoals = goals.filter({ $0.archived })
+        currentGoals = Goal.getAllIndentedGoals(excludeGoal: { $0.archived })
+        
+        // TODO: Auto archive goals past their end date.
+        archivedGoals = Goal.getAllIndentedGoals(excludeGoal: { !$0.archived })
     }
 
     override func didReceiveMemoryWarning() {
@@ -62,10 +62,12 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             cell = UITableViewCell(style: .default, reuseIdentifier: "goal")
         }
 
-        cell.accessoryType = .disclosureIndicator
+        cell.accessoryType = .detailButton
         
         let goals = indexPath.section == 1 ? archivedGoals : currentGoals
-        cell.textLabel?.text = goals[indexPath.row].shortDescription
+        
+        cell.indentationLevel = goals[indexPath.row].indentation
+        cell.textLabel?.text = goals[indexPath.row].goal.shortDescription
 
         return cell
     }
@@ -90,11 +92,16 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let vc = AddGoalViewController(nibName: nil, bundle: nil)
         let goals = indexPath.section == 1 ? archivedGoals : currentGoals
-        vc.goal = goals[indexPath.row]
+        vc.goal = goals[indexPath.row].goal
         vc.delegate = self
         
+        let navController = UINavigationController(rootViewController: vc)
         tableView.deselectRow(at: indexPath, animated: true)
-        self.navigationController!.pushViewController(vc, animated: true)
+        self.present(navController, animated: true, completion: nil)
+    }
+    
+    func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
+        self.tableView(tableView, didSelectRowAt: indexPath)
     }
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
@@ -104,11 +111,11 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             if indexPath.section == 0 {
-                let goal = currentGoals.remove(at: indexPath.row)
-                context.delete(goal)
+                let indentedGoal = currentGoals.remove(at: indexPath.row)
+                context.delete(indentedGoal.goal)
             } else {
-                let goal = archivedGoals.remove(at: indexPath.row)
-                context.delete(goal)
+                let indentedGoal = archivedGoals.remove(at: indexPath.row)
+                context.delete(indentedGoal.goal)
             }
             changes = true
             appDelegate.saveContext()

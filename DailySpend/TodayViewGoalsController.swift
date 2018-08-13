@@ -28,6 +28,7 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
             let title = self.currentGoal?.shortDescription ?? "DailySpend"
             let navHeight = self.navigationBar.frame.size.height
             self.navigationItem.titleView = makeTitleView(height: navHeight, title: title)
+            setExplainer(!tableShown)
         }
     }
     var goals: [Goal]
@@ -77,8 +78,6 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
         let title = self.currentGoal?.shortDescription ?? "DailySpend"
         let navHeight = self.navigationBar.frame.size.height
         self.navigationItem.titleView = makeTitleView(height: navHeight, title: title)
-
-
     }
 
     func notImplemented() {
@@ -281,10 +280,17 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
         if row < goals.count {
             cell.textLabel?.text = goals[row].shortDescription!
             cell.accessoryType = goals[row] == currentGoal ? .checkmark : .none
+            cell.textLabel?.font = UIFont.systemFont(ofSize: cell.textLabel!.font.pointSize)
             cell.setNeedsLayout()
+            if row == goals.count - 1 {
+                cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+            }
         } else {
             cell.textLabel?.text = "Manage Goals"
+            cell.textLabel?.font = UIFont.systemFont(ofSize: cell.textLabel!.font.pointSize, weight: .medium)
             cell.accessoryType = .none
+//            cell.backgroundColor = UIColor(red255: 239, green: 239, blue: 244)
+            cell.backgroundColor = UIColor(red255: 231, green: 231, blue: 236)
         }
         
         return cell
@@ -320,7 +326,6 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
     
     func goalControllerWillDismissWithChangedGoals() {
         self.goals = getAllGoals()
-        
          // Will notify delegate in didSet
         self.currentGoal = getLastUsedGoal()
         

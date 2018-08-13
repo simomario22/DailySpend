@@ -239,6 +239,71 @@ class Goal: NSManagedObject {
         }
     }
     
+    
+    struct IndentedGoal {
+        var goal: Goal
+        var indentation: Int
+        init(_ goal: Goal, _ indentation: Int) {
+            self.goal = goal
+            self.indentation = indentation
+        }
+    }
+    
+    /**
+     * Returns all goals in a hierarchical fashion, wrapped in `IndentedGoal`
+     * structs. Goals are sorted within the hierarchy by `shortDescription`.
+     * - Parameters:
+     *    - excludeGoal: a function that returns true if the goal and its
+     *                   children are to be excluded from the indented goals.
+     */
+    class func getAllIndentedGoals(excludeGoal: (Goal) -> Bool) -> [IndentedGoal] {
+        guard let topLevelGoals = Goal.get(
+            context: context,
+            predicate: NSPredicate(format: "parentGoal_ == nil"),
+            sortDescriptors: [NSSortDescriptor(key: "shortDescription_", ascending: true)]
+            ) else {
+                return []
+        }
+        
+        return makeIndentedGoals(children: topLevelGoals, indentation: 0, excluded: excludeGoal)
+    }
+    
+    /**
+     * Returns all goals in a hierarchical fashion, wrapped in `IndentedGoal`
+     * structs. Goals are sorted within the hierarchy by `shortDescription`.
+     * - Parameters:
+     *    - excludedGoals: goals to exclude from the hierarchy, along with
+     *                     their children.
+     */
+    class func getAllIndentedGoals(excludedGoals: Set<Goal>?) -> [IndentedGoal] {
+        return getAllIndentedGoals(excludeGoal: { (goal) -> Bool in
+            return excludedGoals?.contains(goal) ?? false
+        })
+    }
+    
+    /**
+     * Recurses into goals to create a set of goals with proper
+     * indentation levels, based on their place in the hierarchy.
+     * - Parameters:
+     *    - children: Child goals to be made into indented goals
+     *    - indentation: The level of indentation fo assign to each passed child
+     * - Returns: An array of sorted goals and their children, excluding goals
+     that are in the excludedGoals set
+     */
+    private class func makeIndentedGoals(children: [Goal]?, indentation: Int, excluded: (Goal) -> Bool) -> [IndentedGoal] {
+        return children?.flatMap({ childGoal -> [IndentedGoal] in
+            if excluded(childGoal) {
+                return []
+            }
+            let children = makeIndentedGoals(
+                children: childGoal.sortedChildGoals,
+                indentation: indentation + 1,
+                excluded: excluded
+            )
+            return [IndentedGoal(childGoal, indentation)] + children
+        }) ?? []
+    }
+    
     /**
      * Accepts all members of Goal. If the passed variables, attached to
      * corresponding variables on an Goal object, will form a valid

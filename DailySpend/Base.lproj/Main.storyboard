@@ -268,7 +268,7 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Settings" id="L54-rA-1SU">
-                        <barButtonItem key="rightBarButtonItem" style="done" systemItem="done" id="Fyc-r8-PA1">
+                        <barButtonItem key="leftBarButtonItem" style="done" systemItem="done" id="Fyc-r8-PA1">
                             <connections>
                                 <action selector="done:" destination="xV2-YL-nJz" id="mOD-LY-ERo"/>
                             </connections>

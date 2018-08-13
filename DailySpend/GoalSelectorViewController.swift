@@ -15,18 +15,9 @@ class GoalSelectorViewController: UIViewController, UITableViewDelegate, UITable
         return appDelegate.persistentContainer.viewContext
     }
     
-    private struct IndentedGoal {
-        var goal: Goal
-        var indentation: Int
-        init(_ goal: Goal, _ indentation: Int) {
-            self.goal = goal
-            self.indentation = indentation
-        }
-    }
-    
     private var tableView: UITableView!
     private var cellCreator: TableViewCellHelper!
-    private var goals: [IndentedGoal]!
+    private var goals: [Goal.IndentedGoal]!
     private var selectedGoalIndices = Set<IndexPath>()
     
     var allowMultipleSelection = true
@@ -45,15 +36,7 @@ class GoalSelectorViewController: UIViewController, UITableViewDelegate, UITable
         view.addSubview(tableView)
         cellCreator = TableViewCellHelper(tableView: tableView)
         
-        guard let topLevelGoals = Goal.get(
-            context: context,
-            predicate: NSPredicate(format: "parentGoal_ == nil"),
-            sortDescriptors: [NSSortDescriptor(key: "shortDescription_", ascending: true)]
-        ) else {
-            return
-        }
-        
-        goals = makeIndentedGoals(children: topLevelGoals, indentation: 0)
+        goals = Goal.getAllIndentedGoals(excludedGoals: excludedGoals)
         
         for (i, indentedGoal) in goals.enumerated() {
             if initiallySelectedGoals.contains(indentedGoal.goal) {
@@ -69,25 +52,6 @@ class GoalSelectorViewController: UIViewController, UITableViewDelegate, UITable
             selectedGoals.insert(goals[indexPath.row].goal)
         }
         delegate?.dismissedGoalSelectorWithSelectedGoals(selectedGoals)
-    }
-    
-    /**
-     * Recurses into goals to create a set of goals with proper
-     * indentation levels, based on their place in the hierarchy.
-     * - Parameters:
-     *    - children: Child goals to be made into indented goals
-     *    - indentation: The level of indentation fo assign to each passed child
-     * - Returns: An array of sorted goals and their children, excluding goals
-                  that are in the excludedGoals set
-     */
-    private func makeIndentedGoals(children: [Goal]?, indentation: Int) -> [IndentedGoal] {
-        return children?.flatMap({ childGoal -> [IndentedGoal] in
-            if excludedGoals.contains(childGoal) {
-                return []
-            }
-            let children = makeIndentedGoals(children: childGoal.sortedChildGoals, indentation: indentation + 1)
-            return [IndentedGoal(childGoal, indentation)] + children
-        }) ?? []
     }
 
     override func didReceiveMemoryWarning() {
