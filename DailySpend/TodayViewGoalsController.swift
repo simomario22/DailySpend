@@ -31,7 +31,7 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
             setExplainer(!tableShown)
         }
     }
-    var goals: [Goal]
+    var goals: [Goal.IndentedGoal]
     var delegate: TodayViewControllerDelegate
     var tableShown: Bool
     var setExplainer: ((Bool) -> ())!
@@ -42,6 +42,9 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
         let statusBarHeight = min(statusBarSize.width, statusBarSize.height)
         
         return view.frame.height - navHeight - statusBarHeight
+    }
+    var trueTableHeight: CGFloat {
+        return cellHeight * CGFloat(goals.count + 1)
     }
     var tableHeight: CGFloat {
         return min(cellHeight * CGFloat(goals.count + 1), maxTableHeight)
@@ -87,9 +90,8 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
         present(alertVC, true, nil)
     }
     
-    func getAllGoals() -> [Goal] {
-        let sortDescriptors = [NSSortDescriptor(key: "dateCreated_", ascending: true)]
-        return Goal.get(context: context, sortDescriptors: sortDescriptors) ?? []
+    func getAllGoals() -> [Goal.IndentedGoal] {
+        return Goal.getIndentedGoals(excludeGoal: { $0.archived })
     }
     
     func getLastUsedGoal() -> Goal? {
@@ -198,10 +200,14 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
             goalTable.dataSource = self
             goalTable.delegate = self
             goalTable.frame = CGRect(x: 0, y: -height, width: width, height: height)
-            if tableHeight <= maxTableHeight {
-                goalTable.isScrollEnabled = false
-            }
+            goalTable.backgroundColor = .groupTableViewBackground
             view.insertSubview(goalTable, belowSubview: navigationBar)
+        }
+        
+        if trueTableHeight <= maxTableHeight {
+            goalTable.isScrollEnabled = false
+        } else {
+            goalTable.isScrollEnabled = true
         }
         
         if dimmingView == nil {
@@ -273,14 +279,17 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
             cell = ChoiceTableViewCell(style: .default, reuseIdentifier: "goalChoice")
         }
         
-        cell.textLabel?.textAlignment = .center
+        cell.indentationLevel = 0
         cell.backgroundColor = UIColor.groupTableViewBackground
-        
+        cell.separatorInset = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)
+
         let row = indexPath.row
         if row < goals.count {
-            cell.textLabel?.text = goals[row].shortDescription!
-            cell.accessoryType = goals[row] == currentGoal ? .checkmark : .none
+            cell.textLabel?.text = goals[row].goal.shortDescription!
+            cell.accessoryType = goals[row].goal == currentGoal ? .checkmark : .none
             cell.textLabel?.font = UIFont.systemFont(ofSize: cell.textLabel!.font.pointSize)
+            cell.textLabel?.textAlignment = .left
+            cell.indentationLevel = goals[row].indentation
             cell.setNeedsLayout()
             if row == goals.count - 1 {
                 cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
@@ -289,8 +298,8 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
             cell.textLabel?.text = "Manage Goals"
             cell.textLabel?.font = UIFont.systemFont(ofSize: cell.textLabel!.font.pointSize, weight: .medium)
             cell.accessoryType = .none
-//            cell.backgroundColor = UIColor(red255: 239, green: 239, blue: 244)
-            cell.backgroundColor = UIColor(red255: 231, green: 231, blue: 236)
+            cell.textLabel?.textAlignment = .center
+            cell.backgroundColor = UIColor(red255: 233, green: 233, blue: 238)
         }
         
         return cell
@@ -307,9 +316,10 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
             let nvc = UINavigationController(rootViewController: vc)
             present(nvc, true, nil)
         } else {
-            let newGoal = goals[indexPath.row]
+            let newGoal = goals[indexPath.row].goal
             if self.currentGoal != newGoal {
-                let oldGoalIndex = goals.index(of: currentGoal!) ?? indexPath.row
+                
+                let oldGoalIndex = goals.index(where: { $0.goal == currentGoal! }) ?? indexPath.row
                 let oldGoalIndexPath = IndexPath(row: oldGoalIndex, section: 0)
                 self.currentGoal = newGoal
                 self.goalTable.reloadRows(at: [indexPath, oldGoalIndexPath], with: .fade)
@@ -333,5 +343,11 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
         frame.size.height = tableHeight
         self.goalTable.frame = frame
         self.goalTable.reloadData()
+        if self.trueTableHeight <= self.maxTableHeight {
+            self.goalTable.isScrollEnabled = false
+            self.goalTable.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: false)
+        } else {
+            self.goalTable.isScrollEnabled = true
+        }
     }
 }

@@ -10,7 +10,6 @@ import UIKit
 import CoreData
 
 class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, ImageSelectorController, GoalSelectorDelegate {
-
     private let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
     private var context: NSManagedObjectContext {
         return appDelegate.persistentContainer.viewContext
@@ -32,8 +31,8 @@ class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableVi
     private var transactionDay: CalendarDay!
     private var transactionDaySetupFinished = false
     private var notes: String!
-    private var goals: Set<Goal>!
-    private var goalsSetupFinished = false
+    private var goal: Goal?
+    private var goalSetupFinished = false
     private var expense: Expense!
 
     var imageSelectorDataSource: ImageSelectorDataSource!
@@ -75,9 +74,9 @@ class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableVi
                 transactionDay = expense.transactionDay
                 transactionDaySetupFinished = true
             }
-            if !goalsSetupFinished {
-                goals = expense.goals
-                goalsSetupFinished = true
+            if !goalSetupFinished {
+                goal = expense.goal
+                goalSetupFinished = true
             }
             
             notes = expense.notes
@@ -98,9 +97,9 @@ class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableVi
                 transactionDay = CalendarDay()
                 transactionDaySetupFinished = true
             }
-            if !goalsSetupFinished {
-                goals = Set<Goal>()
-                goalsSetupFinished = true
+            if !goalSetupFinished {
+                goal = nil
+                goalSetupFinished = true
             }
             
             notes = ""
@@ -128,15 +127,15 @@ class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableVi
      * Setup this view controller with data from an expense that has already
      * been partially created (but not yet saved) in another part of the UI.
      */
-    func setupPartiallyCreatedExpense(goals: Set<Goal>, transactionDay: CalendarDay, amount: Decimal?, shortDescription: String?) {
+    func setupPartiallyCreatedExpense(goal: Goal, transactionDay: CalendarDay, amount: Decimal?, shortDescription: String?) {
         self.transactionDay = transactionDay
         self.amount = amount
         self.shortDescription = shortDescription
         self.transactionDaySetupFinished = true
         self.amountSetupFinished = true
         self.shortDescriptionSetupFinished = true
-        self.goals = goals
-        self.goalsSetupFinished = true
+        self.goal = goal
+        self.goalSetupFinished = true
     }
 
     override func didReceiveMemoryWarning() {
@@ -157,7 +156,7 @@ class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableVi
             shortDescription: shortDescription,
             transactionDay: transactionDay,
             notes: notes,
-            goals: goals
+            goal: goal
         )
         
         if validation.valid && !imageSelectorDataSource.saveImages(expense: expense) {
@@ -294,43 +293,10 @@ class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableVi
         case .GoalsCell:
             return cellCreator.valueDisplayCell(
                 labelText: "Goals",
-                valueText: getGoalValueText(),
+                valueText: goal?.shortDescription ?? "None",
                 detailIndicator: true
             )
         }
-    }
-    
-    private func getGoalValueText() -> String {
-        if goals.count == 1 {
-            return goals.first!.shortDescription!
-        } else if goals.count > 1 {
-            // Check if there's only one parent tree, if so, return the name
-            // of the leaf from that tree.
-            let leafGoals = goals.filter({ $0.childGoals?.count ?? 0 == 0 })
-            if leafGoals.count > 1 {
-                // There are multiple leaf nodes, so more than one parent tree.
-                return "Multiple"
-            }
-            
-            // Follow the node up the tree.
-            var count = 1
-            var goal = leafGoals.first!
-            while goal.parentGoal != nil {
-                goal = goal.parentGoal!
-                count += 1
-            }
-            
-            if count == goals.count {
-                // This tree accounted for all of the goals associated with
-                // the expense.
-                return leafGoals.first!.shortDescription!
-            } else {
-                // This tree did not account for all of the goals associated
-                // with the expense.
-                return "Multiple"
-            }
-        }
-        return "None"
     }
     
     private func datePickerCellResignFirstResponder() {
@@ -390,7 +356,11 @@ class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableVi
             self.view.endEditing(false)
         case .GoalsCell:
             let goalSelectorVC = GoalSelectorViewController()
-            goalSelectorVC.initiallySelectedGoals = goals
+            goalSelectorVC.setSelectedGoal(goal: goal)
+            let text = "Expenses attached to a child goal are also part of " +
+                       "its parents' expenses."
+            goalSelectorVC.parentSelectionHelperText = text
+            goalSelectorVC.showParentSelection = true
             goalSelectorVC.delegate = self
             navigationController?.pushViewController(goalSelectorVC, animated: true)
             
@@ -413,8 +383,8 @@ class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableVi
         self.present(vc, animated: animated, completion: completion)
     }
     
-    func dismissedGoalSelectorWithSelectedGoals(_ goals: Set<Goal>) {
-        self.goals = goals
+    func dismissedGoalSelectorWithSelectedGoal(_ goal: Goal?) {
+        self.goal = goal
         tableView.reloadRows(at: [IndexPath(row: 0, section: 3)], with: .fade)
     }
     

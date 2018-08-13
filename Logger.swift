@@ -54,58 +54,54 @@ class Logger {
             print("No Goals.")
         }
         for goal in goals {
-            print("\tgoal.dateCreated: \(date(goal.dateCreated))")
-            print("\tgoal.adjustMonthAmountAutomatically: \(goal.adjustMonthAmountAutomatically)")
-            print("\tgoal.alwaysCarryOver: \(goal.alwaysCarryOver)")
-            print("\tgoal.amount: \(String(describing: goal.amount))")
-            print("\tgoal.archived: \(goal.archived)")
-            print("\tgoal.end: \(date(goal.end))")
-            print("\tgoal.hasIncrementalPayment: \(goal.hasIncrementalPayment)")
-            print("\tgoal.isRecurring: \(goal.isRecurring)")
-            print("\tgoal.payFrequency: \(goal.payFrequency)")
-            print("\tgoal.period: \(goal.period)")
-            print("\tgoal.shortDescription: \(String(describing: goal.shortDescription))")
-            print("\tgoal.start: \(date(goal.start))")
+            print("goal.dateCreated: \(date(goal.dateCreated))")
+            print("goal.adjustMonthAmountAutomatically: \(goal.adjustMonthAmountAutomatically)")
+            print("goal.alwaysCarryOver: \(goal.alwaysCarryOver)")
+            print("goal.amount: \(String(describing: goal.amount))")
+            print("goal.archived: \(goal.archived)")
+            print("goal.end: \(date(goal.end))")
+            print("goal.hasIncrementalPayment: \(goal.hasIncrementalPayment)")
+            print("goal.isRecurring: \(goal.isRecurring)")
+            print("goal.payFrequency: \(goal.payFrequency)")
+            print("goal.period: \(goal.period)")
+            print("goal.shortDescription: \(String(describing: goal.shortDescription))")
+            print("goal.start: \(date(goal.start))")
+            print("goal.parentGoal: \(goal.parentGoal?.shortDescription ?? "None")")
             print("")
         }
         
         if (expenses.count > 0) {
-            print("\t\tExpenses:")
+            print("Expenses:")
         } else {
-            print("\t\tNo Expenses.")
+            print("No Expenses.")
         }
         for expense in expenses {
             let created = dateFormatter.string(from: expense.dateCreated!)
-            print("\t\texpense.amount: \(expense.amount!)")
-            print("\t\texpense.dateCreated: \(created)")
-            print("\t\texpense.notes: \(expense.notes ?? "")")
-            print("\t\texpense.shortDescription: \(String(describing: expense.shortDescription))")
-            print("")
+            print("expense.amount: \(expense.amount!)")
+            print("expense.dateCreated: \(created)")
+            print("expense.transactionDay: \(date(expense.transactionDay?.gmtDate))")
+            print("expense.notes: \(expense.notes ?? "None")")
+            print("expense.shortDescription: \(String(describing: expense.shortDescription))")
             
             if (expense.images!.count > 0) {
-                print("\t\t\tImages:")
+                print("\tImages:")
             } else {
-                print("\t\t\tNo Images.")
+                print("\tNo Images.")
             }
             for image in expense.sortedImages! {
                 let created = dateFormatter.string(from: expense.dateCreated!)
-                print("\t\t\timage.imageName: \(image.imageName!)")
-                print("\t\t\timage.dateCreated: \(created)")
+                print("\timage.imageName: \(image.imageName!)")
+                print("\timage.dateCreated: \(created)")
                 print("")
             }
             
-            if (expense.goals!.count > 0) {
-                print("\t\t\tImages:")
+            if (expense.goals_ != nil && expense.goals_!.count > 0) {
+                let goals = expense.goals_ as! Set<Goal>
+                print("\tGoal: \(goals.map { $0.shortDescription ?? "None" })")
             } else {
-                print("\t\t\tNo Images.")
+                print("\tNo Goals.")
             }
-            for image in expense.sortedImages! {
-                let created = dateFormatter.string(from: expense.dateCreated!)
-                print("\t\t\timage.imageName: \(image.imageName!)")
-                print("\t\t\timage.dateCreated: \(created)")
-                print("")
-            }
-
+            print("")
         }
         print("")
         

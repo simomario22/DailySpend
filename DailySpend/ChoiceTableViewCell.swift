@@ -17,7 +17,7 @@ class ChoiceTableViewCell : UITableViewCell {
         super.layoutSubviews()
         if let textLabel = textLabel {
             let accessoryViewWidth = checkmarkWidth + margin
-            var leftInset = self.standardInset
+            var leftInset = self.standardInset + (CGFloat(self.indentationLevel) * self.indentationWidth)
             let rightInset = self.standardInset + accessoryViewWidth
             if textLabel.textAlignment == .center {
                 leftInset = rightInset

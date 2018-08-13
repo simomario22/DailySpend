@@ -181,7 +181,7 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
                 let navCtrl = UINavigationController(rootViewController: addExpenseVC)
                 if isAddCell {
                     addExpenseVC.setupPartiallyCreatedExpense(
-                        goals: Set<Goal>([self.goal]),
+                        goal: self.goal,
                         transactionDay: CalendarDay(),
                         amount: datum.amount,
                         shortDescription: datum.shortDescription
@@ -222,6 +222,7 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
         }
         let index = indexPath.row - 1
         let expense = expenses[index]
+        
         context.delete(expense)
         appDelegate.saveContext()
         expenses.remove(at: index)
@@ -259,7 +260,6 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
             expense = Expense(context: context)
             expense.dateCreated = Date()
             expense.transactionDay = CalendarDay()
-            expense.goals = Set<Goal>([goal])
         }
         
         let validation = expense.propose(
@@ -267,7 +267,8 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
             shortDescription: datum.shortDescription,
             transactionDay: expense!.transactionDay,
             notes: expense!.notes,
-            dateCreated: expense!.dateCreated
+            dateCreated: expense!.dateCreated,
+            goal: goal
         )
         
         if validation.valid {

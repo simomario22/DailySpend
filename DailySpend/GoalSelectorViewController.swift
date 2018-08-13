@@ -18,17 +18,23 @@ class GoalSelectorViewController: UIViewController, UITableViewDelegate, UITable
     private var tableView: UITableView!
     private var cellCreator: TableViewCellHelper!
     private var goals: [Goal.IndentedGoal]!
-    private var selectedGoalIndices = Set<IndexPath>()
+    private var showHelperText = false
+    private var selectedGoal: Goal?
+    private var selectedIndex: IndexPath?
+    func setSelectedGoal(goal: Goal?) {
+        selectedGoal = goal
+    }
     
-    var allowMultipleSelection = true
-    var initiallySelectedGoals = Set<Goal>()
+    var parentSelectionHelperText: String?
+    var showParentSelection = true
+    var initiallySelectedGoal: Goal?
     var excludedGoals = Set<Goal>()
     var delegate: GoalSelectorDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.navigationItem.title = "Select Goals"
+        self.navigationItem.title = "Select Goal"
         
         tableView = UITableView(frame: view.bounds, style: .grouped)
         tableView.delegate = self
@@ -36,22 +42,52 @@ class GoalSelectorViewController: UIViewController, UITableViewDelegate, UITable
         view.addSubview(tableView)
         cellCreator = TableViewCellHelper(tableView: tableView)
         
-        goals = Goal.getAllIndentedGoals(excludedGoals: excludedGoals)
-        
+        goals = Goal.getIndentedGoals(excludedGoals: excludedGoals)
         for (i, indentedGoal) in goals.enumerated() {
-            if initiallySelectedGoals.contains(indentedGoal.goal) {
-                selectedGoalIndices.insert(IndexPath(row: i, section: 0))
+            if parentSelectionHelperText != nil && indentedGoal.indentation > 0 {
+                showHelperText = true
             }
+            if indentedGoal.goal == selectedGoal {
+                selectedIndex = IndexPath(row: i, section: 0)
+            }
+        }
+        
+        if selectedGoal != nil && selectedIndex == nil {
+            // We couldn't find the selected goal, so just disable the
+            // selected index.
+            Logger.warning("Could not find the selected goal in the available goals.")
+            selectedIndex = nil
+        }
+        
+        if goals.isEmpty {
+            let text = "No goals available."
+            let font = UIFont.systemFont(ofSize: 17)
+            let sideMargin: CGFloat = 10
+            let statusBarSize = UIApplication.shared.statusBarFrame.size
+            let statusBarHeight = min(statusBarSize.width, statusBarSize.height)
+            let navBarHeight = navigationController?.navigationBar.frame.size.height ?? 0
+            let topMargin: CGFloat = statusBarHeight + navBarHeight + 30
+            let width = view.bounds.size.width - sideMargin * 2
+            let height = text.calculatedHeightForWidth(width, font: font)
+            let labelFrame = CGRect(
+                x: sideMargin,
+                y: topMargin,
+                width: width,
+                height: height
+            )
+            let label = UILabel(frame: labelFrame)
+            label.text = text
+            label.font = font
+            label.textColor = UIColor(red255: 128, green: 128, blue: 128)
+            label.numberOfLines = 0
+            label.textAlignment = .center
+            self.view.addSubview(label)
         }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(true)
-        var selectedGoals = Set<Goal>()
-        for indexPath in selectedGoalIndices {
-            selectedGoals.insert(goals[indexPath.row].goal)
-        }
-        delegate?.dismissedGoalSelectorWithSelectedGoals(selectedGoals)
+        delegate?.dismissedGoalSelectorWithSelectedGoal(selectedGoal)
     }
 
     override func didReceiveMemoryWarning() {
@@ -61,55 +97,54 @@ class GoalSelectorViewController: UIViewController, UITableViewDelegate, UITable
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let indentedGoal = goals[indexPath.row]
+        let goal = indentedGoal.goal
+        
+        let selected =
+            selectedGoal == goal ||
+            (
+                showParentSelection &&
+                selectedGoal != nil &&
+                goal.isParentOf(goal: selectedGoal!)
+            )
         return cellCreator.indentedLabelCell(
-            labelText: indentedGoal.goal.shortDescription!,
+            labelText: goal.shortDescription!,
             indentationLevel: indentedGoal.indentation,
-            selected: selectedGoalIndices.contains(indexPath)
+            selected: selected
         )
     }
     
+    func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        return showHelperText ? parentSelectionHelperText : nil
+    }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        var rowsToReload = [IndexPath]()
+        let indentedGoal = goals[indexPath.row]
+        let goal = indentedGoal.goal
         
-        func insertWithParents(row: Int) {
-            var candidateRow = row
-            while goals[candidateRow].indentation > 0 {
-                let indexPath = IndexPath(row: candidateRow, section: 0)
-                selectedGoalIndices.insert(indexPath)
-                rowsToReload.append(indexPath)
-                candidateRow -= 1
+        func rowsUpToParent(indexPath: IndexPath) -> [IndexPath] {
+            var rows = [indexPath]
+            var indexRow = indexPath.row
+            var indentation = goals[indexRow].indentation - 1
+            while indentation >= 0 {
+                if goals[indexRow].indentation == indentation {
+                    rows.append(IndexPath(row: indexRow, section: indexPath.section))
+                    indentation -= 1
+                }
+                indexRow -= 1
             }
-            // Need to do one more, since 0 is still in the tree.
-            let indexPath = IndexPath(row: candidateRow, section: 0)
-            selectedGoalIndices.insert(indexPath)
-            rowsToReload.append(indexPath)
+            return rows
         }
+        var rowsToReload = rowsUpToParent(indexPath: indexPath)
         
-        func removeWithChildren(row: Int) {
-            // Remove first one, regardless of whether it's 0.
-            let indexPath = IndexPath(row: row, section: 0)
-            selectedGoalIndices.remove(indexPath)
-            rowsToReload.append(indexPath)
-
-            var candidateRow = row + 1
-            while candidateRow < goals.count && goals[candidateRow].indentation > 0 {
-                let indexPath = IndexPath(row: candidateRow, section: 0)
-                selectedGoalIndices.remove(indexPath)
-                rowsToReload.append(indexPath)
-                candidateRow += 1
-            }
-        }
-        
-        if !allowMultipleSelection {
-            rowsToReload.append(contentsOf: selectedGoalIndices)
-            selectedGoalIndices.removeAll()
-            insertWithParents(row: indexPath.row)
+        if goal == selectedGoal {
+            selectedGoal = nil
+            selectedIndex = nil
         } else {
-            if selectedGoalIndices.contains(indexPath) {
-                removeWithChildren(row: indexPath.row)
-            } else {
-                insertWithParents(row: indexPath.row)
+            if let selectedIndex = selectedIndex {
+                rowsToReload += rowsUpToParent(indexPath: selectedIndex)
             }
+            selectedGoal = goal
+            selectedIndex = indexPath
         }
 
         tableView.reloadRows(at: rowsToReload, with: .fade)
@@ -126,5 +161,10 @@ class GoalSelectorViewController: UIViewController, UITableViewDelegate, UITable
 }
 
 protocol GoalSelectorDelegate {
-    func dismissedGoalSelectorWithSelectedGoals(_ goals: Set<Goal>)
+    /**
+     * Called when a GoalSelector dismisses.
+     * - Parameters:
+     *    - goals: The goal selected by the user.
+     */
+    func dismissedGoalSelectorWithSelectedGoal(_ goal: Goal?)
 }

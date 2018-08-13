@@ -45,10 +45,10 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func setGoals() {
-        currentGoals = Goal.getAllIndentedGoals(excludeGoal: { $0.archived })
+        currentGoals = Goal.getIndentedGoals(excludeGoal: { $0.archived })
         
         // TODO: Auto archive goals past their end date.
-        archivedGoals = Goal.getAllIndentedGoals(excludeGoal: { !$0.archived })
+        archivedGoals = Goal.getIndentedGoals(excludeGoal: { !$0.archived })
     }
 
     override func didReceiveMemoryWarning() {

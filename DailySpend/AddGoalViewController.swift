@@ -9,7 +9,7 @@
 import UIKit
 import CoreData
 
-class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableViewDelegate, UITableViewDataSource {
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
     var context: NSManagedObjectContext {
         return appDelegate.persistentContainer.viewContext
@@ -222,6 +222,7 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
         case EndCell
         case EndNeverPickerCell
         case EndPickerCell
+        case ParentGoalCell
     }
     
     enum GoalViewExpandableSectionType {
@@ -427,6 +428,12 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
                     
                     self.reloadExpandedSectionLabel(.EndNeverAndDayPicker)
             })
+        case .ParentGoalCell:
+            return cellCreator.valueDisplayCell(
+                labelText: "Parent Goal",
+                valueText: parentGoal?.shortDescription ?? "None",
+                detailIndicator: true
+            )
         }
     }
     
@@ -444,6 +451,18 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
         case .EndCell:
             self.view.endEditing(false)
             toggleExpandedSection(.EndNeverAndDayPicker)
+        case .ParentGoalCell:
+            setExpandedSection(.None)
+            let goalSelectorVC = GoalSelectorViewController()
+            if let parentGoal = parentGoal {
+                goalSelectorVC.setSelectedGoal(goal: parentGoal)
+            }
+            if let goal = goal {
+                goalSelectorVC.excludedGoals = Set<Goal>([goal])
+            }
+            goalSelectorVC.showParentSelection = false
+            goalSelectorVC.delegate = self
+            navigationController?.pushViewController(goalSelectorVC, animated: true)
         default: break
         }
         
@@ -484,7 +503,7 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return recurring ? 4 : 2
+        return recurring ? 5 : 3
     }
     
     func reloadExpandedSectionLabel(_ section: GoalViewExpandableSectionType, scroll: Bool = false) {
@@ -657,6 +676,15 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
         tableView.deleteRows(at: [IndexPath(row: row, section: 1)], with: .fade)
     }
     
+    func reloadParentGoalCell() {
+        let section = recurring ? 4 : 2
+        tableView.reloadRows(at: [IndexPath(row: 0, section: section)], with: .fade)
+    }
+    
+    func dismissedGoalSelectorWithSelectedGoal(_ goal: Goal?) {
+        parentGoal = goal
+        reloadParentGoalCell()
+    }
     
     func cellTypeForIndexPath(indexPath: IndexPath) -> GoalViewCellType {
         let section = indexPath.section
@@ -738,6 +766,8 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
                 return cellTypeForPayIncrementalPaymentSection(row: row) ?? defaultCellType
             case 3:
                 return cellTypeForStartEndSection(row: row) ?? defaultCellType
+            case 4:
+                return .ParentGoalCell
             default: break
             }
         } else {
@@ -746,6 +776,8 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
                 return cellTypeForDescriptionAmountSection(row: row) ?? defaultCellType
             case 1:
                 return cellTypeForStartEndSection(row: row) ?? defaultCellType
+            case 2:
+                return .ParentGoalCell
             default: break
             }
         }
@@ -781,6 +813,10 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
             }
         }
         
+        func rowsInParentGoalSection() -> Int {
+            return 1
+        }
+        
         if recurring {
             switch section {
             case 0:
@@ -791,6 +827,8 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
                 return rowsInPayIncrementalPaymentSection()
             case 3:
                 return rowsInStartEndSection()
+            case 4:
+                return rowsInParentGoalSection()
             default:
                 return 0
             }
@@ -800,6 +838,8 @@ class AddGoalViewController: UIViewController, UITableViewDelegate, UITableViewD
                 return rowsInDescriptionAmountSection()
             case 1:
                 return rowsInStartEndSection()
+            case 2:
+                return rowsInParentGoalSection()
             default:
                 return 0
             }

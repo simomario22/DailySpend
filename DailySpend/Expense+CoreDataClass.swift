@@ -190,14 +190,14 @@ class Expense: NSManagedObject {
         transactionDay: CalendarDay?? = nil,
         notes: String?? = nil,
         dateCreated: Date?? = nil,
-        goals: Set<Goal>? = nil
+        goal: Goal? = nil
     ) -> (valid: Bool, problem: String?) {
         let _amount = amount ?? self.amount
         let _shortDescription = shortDescription ?? self.shortDescription
         let _transactionDay = transactionDay ?? self.transactionDay
         let _notes = notes ?? self.notes
         let _dateCreated = dateCreated ?? self.dateCreated
-        let _goals = goals ?? self.goals
+        let _goals = goal != nil ? Set<Goal>([goal!]) : self.goals
         
         if _amount == nil || _amount! == 0 {
             return (false, "This expense must have an amount specified.")
@@ -213,6 +213,10 @@ class Expense: NSManagedObject {
         
         if _goals == nil || _goals!.isEmpty {
             return (false, "This expense must be associated with a goal.")
+        }
+        
+        if _goals!.count > 1 {
+            return (false, "This expense must be associated with only one goal.")
         }
         
         self.amount = _amount
@@ -303,9 +307,22 @@ class Expense: NSManagedObject {
     }
     
     /**
-     * `goals` sorted in a deterministic way.
+     * Expenses can currently only be associated with one goal. This is that
+     * goal, if it exists.
      */
-    var sortedGoals: [Goal]? {
+    var goal: Goal? {
+        return goals?.first
+    }
+    
+    /**
+     * `goals` sorted in a deterministic way.
+     *
+     * **Important Note:** Although expenses are included in the calculations
+     * for all parent goals, there is currently only allowed to be one goal
+     * associated with an expense. It may be better to use `goal` instead.
+     *
+     */
+    private var sortedGoals: [Goal]? {
         if let g = goals {
             return g.sorted { $0.shortDescription! < $1.shortDescription! }
         } else {
@@ -313,7 +330,14 @@ class Expense: NSManagedObject {
         }
     }
     
-    var goals: Set<Goal>? {
+    /**
+     * The goals an expense is associated with.
+     *
+     * **Important Note:** Although expenses are included in the calculations
+     * for all parent goals, there is currently only allowed to be one goal
+     * associated with an expense. It may be better to use `goal` instead.
+     */
+    private var goals: Set<Goal>? {
         get {
             return goals_ as! Set?
         }
@@ -326,11 +350,11 @@ class Expense: NSManagedObject {
         }
     }
     
-    func addGoal(_ goal: Goal) {
+    private func addGoal(_ goal: Goal) {
         addToGoals_(goal)
     }
     
-    func removeGoal(_ goal: Goal) {
+    private func removeGoal(_ goal: Goal) {
         removeFromGoals_(goal)
     }
     

@@ -256,7 +256,7 @@ class Goal: NSManagedObject {
      *    - excludeGoal: a function that returns true if the goal and its
      *                   children are to be excluded from the indented goals.
      */
-    class func getAllIndentedGoals(excludeGoal: (Goal) -> Bool) -> [IndentedGoal] {
+    class func getIndentedGoals(excludeGoal: (Goal) -> Bool) -> [IndentedGoal] {
         guard let topLevelGoals = Goal.get(
             context: context,
             predicate: NSPredicate(format: "parentGoal_ == nil"),
@@ -275,8 +275,8 @@ class Goal: NSManagedObject {
      *    - excludedGoals: goals to exclude from the hierarchy, along with
      *                     their children.
      */
-    class func getAllIndentedGoals(excludedGoals: Set<Goal>?) -> [IndentedGoal] {
-        return getAllIndentedGoals(excludeGoal: { (goal) -> Bool in
+    class func getIndentedGoals(excludedGoals: Set<Goal>?) -> [IndentedGoal] {
+        return getIndentedGoals(excludeGoal: { (goal) -> Bool in
             return excludedGoals?.contains(goal) ?? false
         })
     }
@@ -302,6 +302,17 @@ class Goal: NSManagedObject {
             )
             return [IndentedGoal(childGoal, indentation)] + children
         }) ?? []
+    }
+    
+    func isParentOf(goal: Goal) -> Bool {
+        var parent = goal.parentGoal
+        while parent != nil {
+            if parent == self {
+                return true
+            }
+            parent = parent!.parentGoal
+        }
+        return false
     }
     
     /**
@@ -411,6 +422,7 @@ class Goal: NSManagedObject {
     func getExpenses(period: CalendarIntervalProvider) -> [Expense] {
         let fetchRequest: NSFetchRequest<Expense> = Expense.fetchRequest()
         
+        // TODO: Get expenses from children in this query.
         var fs = "ANY goals_ = %@ AND transactionDate_ >= %@"
         if let end = period.end {
             fs += " AND transactionDate_ < %@"
@@ -451,7 +463,7 @@ class Goal: NSManagedObject {
         }
         
         return CalendarPeriod(
-            dateInGMTPeriod: Date(),
+            dateInGMTPeriod: CalendarDay().gmtDate,
             period: period,
             beginningDateOfPeriod: self.start!
         )
