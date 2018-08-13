@@ -14,7 +14,7 @@
         <attribute name="notes_" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="shortDescription_" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="transactionDate_" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
-        <relationship name="goals_" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Goal" inverseName="expenses_" inverseEntity="Goal" syncable="YES"/>
+        <relationship name="goal_" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Goal" inverseName="expenses_" inverseEntity="Goal" syncable="YES"/>
         <relationship name="images_" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Image" inverseName="expense_" inverseEntity="Image" syncable="YES"/>
     </entity>
     <entity name="Goal" representedClassName="Goal" syncable="YES">
@@ -32,7 +32,7 @@
         <attribute name="start_" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <relationship name="adjustments_" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Adjustment" inverseName="goals_" inverseEntity="Adjustment" syncable="YES"/>
         <relationship name="childGoals_" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Goal" inverseName="parentGoal_" inverseEntity="Goal" syncable="YES"/>
-        <relationship name="expenses_" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Expense" inverseName="goals_" inverseEntity="Expense" syncable="YES"/>
+        <relationship name="expenses_" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Expense" inverseName="goal_" inverseEntity="Expense" syncable="YES"/>
         <relationship name="parentGoal_" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Goal" inverseName="childGoals_" inverseEntity="Goal" syncable="YES"/>
         <relationship name="pauses_" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Pause" inverseName="goals_" inverseEntity="Pause" syncable="YES"/>
     </entity>

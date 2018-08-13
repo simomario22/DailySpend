@@ -62,19 +62,17 @@ class Expense: NSManagedObject {
             jsonObj["images"] = jsonImgs
         }
         
-        if let goals = goals {
+        if let goal = goal {
             var goalJsonIds = [Int]()
-            for goal in goals {
-                if let jsonId = jsonIds[goal.objectID] {
-                    goalJsonIds.append(jsonId)
-                } else {
-                    Logger.debug("a goal didn't have an associated jsonId in Expense")
-                    return nil
-                }
+            if let jsonId = jsonIds[goal.objectID] {
+                goalJsonIds.append(jsonId)
+            } else {
+                Logger.debug("a goal didn't have an associated jsonId in Expense")
+                return nil
             }
-            jsonObj["goals"] = goalJsonIds
+            jsonObj["goal"] = goalJsonIds
         } else {
-            Logger.debug("couldn't unwrap goals in Expense")
+            Logger.debug("couldn't unwrap goal in Expense")
             return nil
         }
         
@@ -154,15 +152,19 @@ class Expense: NSManagedObject {
             }
             expense.dateCreated = date
         } else {
-            Logger.debug("coulnd't unwrap dateCreated in Expense")
+            Logger.debug("couldn't unwrap dateCreated in Expense")
             return nil
         }
         
         if let goalJsonIds = json["goals"] as? Array<Int> {
+            if goalJsonIds.count > 1 {
+                Logger.debug("there were multiple goals associated with an Expense")
+                return nil
+            }
             for goalJsonId in goalJsonIds {
                 if let objectID = jsonIds[goalJsonId],
                     let goal = context.object(with: objectID) as? Goal {
-                    expense.addGoal(goal)
+                    expense.goal = goal
                 } else {
                     Logger.debug("a goal didn't have an associated objectID in Expense")
                     return nil
@@ -197,7 +199,7 @@ class Expense: NSManagedObject {
         let _transactionDay = transactionDay ?? self.transactionDay
         let _notes = notes ?? self.notes
         let _dateCreated = dateCreated ?? self.dateCreated
-        let _goals = goal != nil ? Set<Goal>([goal!]) : self.goals
+        let _goal = goal ?? self.goal
         
         if _amount == nil || _amount! == 0 {
             return (false, "This expense must have an amount specified.")
@@ -211,20 +213,16 @@ class Expense: NSManagedObject {
             return (false, "The expense must have a date created.")
         }
         
-        if _goals == nil || _goals!.isEmpty {
+        if _goal == nil {
             return (false, "This expense must be associated with a goal.")
         }
-        
-        if _goals!.count > 1 {
-            return (false, "This expense must be associated with only one goal.")
-        }
-        
+
         self.amount = _amount
         self.shortDescription = _shortDescription
         self.transactionDay = _transactionDay
         self.notes = _notes
         self.dateCreated = _dateCreated
-        self.goals = _goals
+        self.goal = _goal
         
         return (true, nil)
     }
@@ -311,53 +309,13 @@ class Expense: NSManagedObject {
      * goal, if it exists.
      */
     var goal: Goal? {
-        return goals?.first
-    }
-    
-    /**
-     * `goals` sorted in a deterministic way.
-     *
-     * **Important Note:** Although expenses are included in the calculations
-     * for all parent goals, there is currently only allowed to be one goal
-     * associated with an expense. It may be better to use `goal` instead.
-     *
-     */
-    private var sortedGoals: [Goal]? {
-        if let g = goals {
-            return g.sorted { $0.shortDescription! < $1.shortDescription! }
-        } else {
-            return nil
-        }
-    }
-    
-    /**
-     * The goals an expense is associated with.
-     *
-     * **Important Note:** Although expenses are included in the calculations
-     * for all parent goals, there is currently only allowed to be one goal
-     * associated with an expense. It may be better to use `goal` instead.
-     */
-    private var goals: Set<Goal>? {
         get {
-            return goals_ as! Set?
+            return goal_
         }
         set {
-            if newValue != nil {
-                goals_ = NSSet(set: newValue!)
-            } else {
-                goals_ = nil
-            }
+            goal_ = newValue
         }
     }
-    
-    private func addGoal(_ goal: Goal) {
-        addToGoals_(goal)
-    }
-    
-    private func removeGoal(_ goal: Goal) {
-        removeFromGoals_(goal)
-    }
-    
     
     /**
      * `images` sorted in a deterministic way.

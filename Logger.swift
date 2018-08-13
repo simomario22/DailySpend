@@ -95,9 +95,8 @@ class Logger {
                 print("")
             }
             
-            if (expense.goals_ != nil && expense.goals_!.count > 0) {
-                let goals = expense.goals_ as! Set<Goal>
-                print("\tGoal: \(goals.map { $0.shortDescription ?? "None" })")
+            if (expense.goal != nil) {
+                print("\tGoal: \(expense.goal!.shortDescription!)")
             } else {
                 print("\tNo Goals.")
             }

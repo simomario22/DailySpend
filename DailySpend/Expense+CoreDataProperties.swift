@@ -23,8 +23,7 @@ extension Expense {
     @NSManaged var shortDescription_: String?
     @NSManaged var transactionDate_: NSDate?
     @NSManaged var images_: NSSet?
-    @NSManaged var goals_: NSSet?
-
+    @NSManaged var goal_: Goal?
 }
 
 // MARK: Generated accessors for images_
@@ -41,22 +40,5 @@ extension Expense {
 
     @objc(removeImages_:)
     @NSManaged func removeFromImages_(_ values: NSSet)
-
-}
-
-// MARK: Generated accessors for goals_
-extension Expense {
-
-    @objc(addGoals_Object:)
-    @NSManaged func addToGoals_(_ value: Goal)
-
-    @objc(removeGoals_Object:)
-    @NSManaged func removeFromGoals_(_ value: Goal)
-
-    @objc(addGoals_:)
-    @NSManaged func addToGoals_(_ values: NSSet)
-
-    @objc(removeGoals_:)
-    @NSManaged func removeFromGoals_(_ values: NSSet)
 
 }

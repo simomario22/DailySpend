@@ -423,12 +423,12 @@ class Goal: NSManagedObject {
         let fetchRequest: NSFetchRequest<Expense> = Expense.fetchRequest()
         
         // TODO: Get expenses from children in this query.
-        var fs = "ANY goals_ = %@ AND transactionDate_ >= %@"
+        var fs = "(goal_ = %@ OR goal_ IN %@) AND transactionDate_ >= %@"
         if let end = period.end {
             fs += " AND transactionDate_ < %@"
-            fetchRequest.predicate = NSPredicate(format: fs, self, period.start as CVarArg, end as CVarArg)
+            fetchRequest.predicate = NSPredicate(format: fs, self, self.childGoals ?? [], period.start as CVarArg, end as CVarArg)
         } else {
-            fetchRequest.predicate = NSPredicate(format: fs, self, period.start as CVarArg)
+            fetchRequest.predicate = NSPredicate(format: fs, self, self.childGoals ?? [], period.start as CVarArg)
         }
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "dateCreated_", ascending: false)]
         
