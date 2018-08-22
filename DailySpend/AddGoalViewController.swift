@@ -68,7 +68,6 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
     override func viewDidLoad() {
         self.view.tintColor = .tint
         super.viewDidLoad()
-        navigationController?.navigationBar.hideBorderLine()
         
         let toolbarFrame = CGRect(x: 0, y: 64, width: view.frame.size.width, height: 44)
         
@@ -201,10 +200,15 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
             self.present(alert, animated: true, completion: nil)
         }
     }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        navigationController?.navigationBar.showBorderLine()
+
+    override func viewWillAppear(_ animated: Bool) {
         super.viewDidDisappear(animated)
+        navigationController?.navigationBar.hideBorderLine()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        navigationController?.navigationBar.showBorderLine()
+        super.viewWillDisappear(animated)
     }
     
     enum GoalViewCellType {
