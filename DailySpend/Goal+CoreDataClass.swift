@@ -436,23 +436,33 @@ class Goal: NSManagedObject {
         
         return expenseResults
     }
-    
-    func currentIncrementalPeriodInterval() -> CalendarIntervalProvider? {
-        if !hasIncrementalPayment {
-            return nil
-        }
-        
+
+    /**
+     * Returns the period starting when the most recent incremental payment was
+     * made, and ending when the next incremental payment will be made.
+     *
+     * If there is no incremental payment set for this goal, the current period
+     * interval is returned instead.
+     */
+    func currentIncrementalPaymentPeriodInterval() -> CalendarIntervalProvider? {
         guard let currentPeriod = currentPeriodInterval() else {
             return nil
         }
+
+        if !hasIncrementalPayment {
+            return currentPeriod
+        }
         
         return CalendarPeriod(
-            dateInGMTPeriod: Date(),
+            dateInGMTPeriod: CalendarDay().gmtDate,
             period: payFrequency,
             beginningDateOfPeriod: currentPeriod.start
         )
     }
-    
+
+    /**
+     * Returns the current period of this goal, or nil if start is not set.
+     */
     func currentPeriodInterval() -> CalendarIntervalProvider? {
         guard let start = self.start else {
             return nil
