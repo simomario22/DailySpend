@@ -308,21 +308,6 @@ class TableViewCellHelper {
             cell.clipsToBounds = true
         }
         
-        cell.amountField.placeholder = "$0.00"
-        cell.amountField.font = UIFont.systemFont(ofSize: 18)
-        let amountText = amount != nil ? "\(amount!)" : nil
-        cell.amountField.text = amountText
-        cell.amountField.maxValue = 1e7
-        
-        cell.descriptionField.text = description
-        cell.descriptionField.placeholder = "Description"
-        if undescribed {
-            cell.descriptionField.placeholder = "No Description"
-            cell.descriptionField.font = UIFont.italicSystemFont(ofSize: 18)
-        } else {
-            cell.descriptionField.font = UIFont.systemFont(ofSize: 18)
-        }
-        
         var otherViewIsBecomingFirstResponder = false
         cell.shouldBegin = { (_, _) in
             otherViewIsBecomingFirstResponder = true
@@ -369,8 +354,29 @@ class TableViewCellHelper {
         cell.changedEvaluatedAmount = { _, amount in
             changedToAmount(amount)
         }
+
+        cell.amountField.placeholder = "$0.00"
+        cell.amountField.font = UIFont.systemFont(ofSize: 18)
+
+        // Note: Side effect of setting text property is that
+        // changedEvaluatedAmount gets called. Ensure that
+        // changedEvaluatedAmount is set up before calling this function.
+        let amountText = amount != nil ? "\(amount!)" : nil
+        cell.amountField.text = amountText
+        cell.amountField.maxValue = 1e7
+        
+        cell.descriptionField.text = description
+        cell.descriptionField.placeholder = "Description"
+        if undescribed {
+            cell.descriptionField.placeholder = "No Description"
+            cell.descriptionField.font = UIFont.italicSystemFont(ofSize: 18)
+        } else {
+            cell.descriptionField.font = UIFont.systemFont(ofSize: 18)
+        }
+        
         cell.setPlusButton(show: showPlus, animated: false)
         cell.setDetailDisclosure(show: showDetailDisclosure, animated: false)
+        
         cell.setNeedsLayout()
         return cell
     }
