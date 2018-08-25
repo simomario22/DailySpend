@@ -45,7 +45,7 @@ class Goal: NSManagedObject {
         }
         
         if let date = start {
-            let num = date.timeIntervalSince1970 as NSNumber
+            let num = date.gmtDate.timeIntervalSince1970 as NSNumber
             jsonObj["start"] = num
         } else {
             Logger.debug("couldn't unwrap start in Goal")
@@ -53,7 +53,7 @@ class Goal: NSManagedObject {
         }
         
         if let date = end {
-            let num = date.timeIntervalSince1970 as NSNumber
+            let num = date.gmtDate.timeIntervalSince1970 as NSNumber
             jsonObj["end"] = num
         }
         
@@ -160,7 +160,7 @@ class Goal: NSManagedObject {
                 Logger.debug("The start date isn't at the beginning of the period")
                 return .Failure
             }
-            goal.start = date
+            goal.start = GMTDate(date)
         } else {
             Logger.debug("couldn't unwrap start in Goal")
             return .Failure
@@ -169,12 +169,12 @@ class Goal: NSManagedObject {
         if let dateNumber = json["end"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateNumber.doubleValue)
             if !Goal.scopeConformsToDate(date, scope: goal.period.scope) ||
-                date < goal.start! {
+                date < goal.start!.gmtDate {
                 // The date isn't a beginning of day
                 Logger.debug("The start date isn't at the beginning of the period or is earlier than start in Goal")
                 return .Failure
             }
-            goal.end = date
+            goal.end = GMTDate(date)
         } else {
             goal.end = nil
         }
@@ -231,6 +231,10 @@ class Goal: NSManagedObject {
         return goalResults
     }
     
+    /**
+     * Returns `true` if `date` is at the start of a gmt `scope` (e.g. day,
+     * week, month); `false` otherwise.
+     */
     private class func scopeConformsToDate(_ date: Date, scope: PeriodScope) -> Bool {
         if scope == .None {
             return PeriodScope.Day.scopeConformsToDate(date)
@@ -326,8 +330,8 @@ class Goal: NSManagedObject {
     func propose(
         shortDescription: String?? = nil,
         amount: Decimal?? = nil,
-        start: Date?? = nil,
-        end: Date?? = nil,
+        start: CalendarDateProvider?? = nil,
+        end: CalendarDateProvider?? = nil,
         period: Period? = nil,
         payFrequency: Period? = nil,
         parentGoal: Goal?? = nil,
@@ -356,17 +360,17 @@ class Goal: NSManagedObject {
             return (false, "This goal must have an amount specified.")
         }
         
-        if _start == nil || !Goal.scopeConformsToDate(_start!, scope: _period.scope) {
+        if _start == nil || !Goal.scopeConformsToDate(_start!.gmtDate, scope: _period.scope) {
             return (false, "The goal must have a start date at the beginning of it's period.")
         }
         
         
         if _end != nil {
-            if !Goal.scopeConformsToDate(_end!, scope: _period.scope) {
+            if !Goal.scopeConformsToDate(_end!.gmtDate, scope: _period.scope) {
                 return (false, "If this goal has an end date, it must be at the start of a period.")
             }
             
-            if _end! < _start! {
+            if _end!.gmtDate < _start!.gmtDate {
                 return (false, "If this goal has an end date, it must be on or after the start date.")
             }
         }
@@ -426,9 +430,9 @@ class Goal: NSManagedObject {
         var fs = "(goal_ = %@ OR goal_ IN %@) AND transactionDate_ >= %@"
         if let end = period.end {
             fs += " AND transactionDate_ < %@"
-            fetchRequest.predicate = NSPredicate(format: fs, self, self.childGoals ?? [], period.start as CVarArg, end as CVarArg)
+            fetchRequest.predicate = NSPredicate(format: fs, self, self.childGoals ?? [], period.start.gmtDate as CVarArg, end.gmtDate as CVarArg)
         } else {
-            fetchRequest.predicate = NSPredicate(format: fs, self, self.childGoals ?? [], period.start as CVarArg)
+            fetchRequest.predicate = NSPredicate(format: fs, self, self.childGoals ?? [], period.start.gmtDate as CVarArg)
         }
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "dateCreated_", ascending: false)]
         
@@ -454,7 +458,7 @@ class Goal: NSManagedObject {
         }
         
         return CalendarPeriod(
-            dateInGMTPeriod: CalendarDay().gmtDate,
+            calendarDate: CalendarDay().start,
             period: payFrequency,
             beginningDateOfPeriod: currentPeriod.start
         )
@@ -469,11 +473,11 @@ class Goal: NSManagedObject {
         }
         
         if !isRecurring {
-            return CalendarInterval(gmtStart: start, gmtEnd: self.end)
+            return CalendarInterval(start: start, end: self.end)
         }
         
         return CalendarPeriod(
-            dateInGMTPeriod: CalendarDay().gmtDate,
+            calendarDate: CalendarDay().start,
             period: period,
             beginningDateOfPeriod: self.start!
         )
@@ -538,28 +542,27 @@ class Goal: NSManagedObject {
         }
     }
     
-    var start: Date? {
+    var start: CalendarDateProvider? {
         get {
             if let day = start_ as Date? {
-                return day
+                return GMTDate(day)
             } else {
                 return nil
             }
         }
         set {
             if newValue != nil {
-                // Get relevant days.
-                start_ = newValue! as NSDate
+                start_ = newValue!.gmtDate as NSDate
             } else {
                 start_ = nil
             }
         }
     }
     
-    var end: Date? {
+    var end: CalendarDateProvider? {
         get {
             if let day = end_ as Date? {
-                return day
+                return GMTDate(day)
             } else {
                 return nil
             }
@@ -567,7 +570,7 @@ class Goal: NSManagedObject {
         set {
             if newValue != nil {
                 // Get relevant days.
-                end_ = newValue! as NSDate
+                end_ = newValue!.gmtDate as NSDate
             } else {
                 end_ = nil
             }

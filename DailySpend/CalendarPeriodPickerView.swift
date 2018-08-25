@@ -9,7 +9,7 @@
 import UIKit
 
 protocol CalendarPeriodPickerViewDelegate {
-    func changedToDate(date: Date, scope: PeriodScope)
+    func changedToDate(date: CalendarDateProvider, scope: PeriodScope)
 }
 
 class CalendarPeriodPickerView: UIPickerView, UIPickerViewDelegate, UIPickerViewDataSource {
@@ -48,7 +48,7 @@ class CalendarPeriodPickerView: UIPickerView, UIPickerViewDelegate, UIPickerView
     func weekOffsetForYear(_ year: Int) -> Int {
         let components = DateComponents(weekday: 1, weekOfYear: 1, yearForWeekOfYear: year)
         let date = gmtCal.date(from: components)!
-        return CalendarDay(dateInGMTDay: date).year < year ? 1 : 0
+        return CalendarDay(dateInDay: GMTDate(date)).year < year ? 1 : 0
     }
     
     var scope: PeriodScope {
@@ -57,7 +57,7 @@ class CalendarPeriodPickerView: UIPickerView, UIPickerViewDelegate, UIPickerView
             updatePickerComponents()
         }
     }
-    var value: Date {
+    var value: CalendarDateProvider {
         didSet {
             reloadAllComponents()
             updatePickerComponents()
@@ -67,19 +67,19 @@ class CalendarPeriodPickerView: UIPickerView, UIPickerViewDelegate, UIPickerView
     var calendarPickerDelegate: CalendarPeriodPickerViewDelegate?
     
     var day: CalendarDay {
-        return CalendarDay(dateInGMTDay: value)
+        return CalendarDay(dateInDay: value)
     }
     
     var week: CalendarWeek {
-        return CalendarWeek(dateInGMTWeek: value)
+        return CalendarWeek(dateInWeek: value)
     }
     
     var month: CalendarMonth {
-        return CalendarMonth(dateInGMTMonth: value)
+        return CalendarMonth(dateInMonth: value)
     }
 
     init() {
-        self.value = Date()
+        self.value = CalendarDay().start
         self.scope = .Day
         super.init(frame: CGRect.zero)
         self.delegate = self
@@ -91,13 +91,13 @@ class CalendarPeriodPickerView: UIPickerView, UIPickerViewDelegate, UIPickerView
         switch scope {
         case .Day:
             let componentSet: Set<Calendar.Component> = [.day, .month, .year]
-            let dateComponents = gmtCal.dateComponents(componentSet, from: self.value)
+            let dateComponents = gmtCal.dateComponents(componentSet, from: self.value.gmtDate)
             selectRow(centerZeroMonth + dateComponents.month! - 1, inComponent: 0, animated: false)
             selectRow(centerZeroDay + dateComponents.day! - 1, inComponent: 1, animated: false)
             selectRow(dateComponents.year! - startYear, inComponent: 2, animated: false)
         case .Week:
             let componentSet: Set<Calendar.Component> = [.weekOfYear, .yearForWeekOfYear]
-            let dateComponents = gmtCal.dateComponents(componentSet, from: self.value)
+            let dateComponents = gmtCal.dateComponents(componentSet, from: self.value.gmtDate)
             let year = dateComponents.yearForWeekOfYear!
             let weekOffset = weekOffsetForYear(year)
             if dateComponents.weekOfYear == 1 && weekOffset == 1 {
@@ -112,7 +112,7 @@ class CalendarPeriodPickerView: UIPickerView, UIPickerViewDelegate, UIPickerView
             
         case .Month:
             let componentSet: Set<Calendar.Component> = [.month, .year]
-            let dateComponents = gmtCal.dateComponents(componentSet, from: self.value)
+            let dateComponents = gmtCal.dateComponents(componentSet, from: self.value.gmtDate)
             selectRow(centerZeroMonth + dateComponents.month! - 1, inComponent: 0, animated: false)
             selectRow(dateComponents.year! - startYear, inComponent: 1, animated: false)
         case .None: break
@@ -250,13 +250,13 @@ class CalendarPeriodPickerView: UIPickerView, UIPickerViewDelegate, UIPickerView
             selectRow(centerZeroMonth + month - 1, inComponent: 1, animated: false)
             
             let dayComponents = DateComponents(year: year, month: month, day: day)
-            self.value = gmtCal.date(from: dayComponents)!
+            self.value = GMTDate(gmtCal.date(from: dayComponents)!)
         case .Week:
             let year = selectedRow(inComponent: 1) + startYear
             let weekNum = selectedRow(inComponent: 0) + 1 + weekOffsetForYear(year)
             let components = DateComponents(weekday: 1, weekOfYear: weekNum, yearForWeekOfYear: year)
             let date = gmtCal.date(from: components)!
-            self.value = date
+            self.value = GMTDate(date)
             if component == 1 {
                 reloadComponent(0)
             }
@@ -267,7 +267,7 @@ class CalendarPeriodPickerView: UIPickerView, UIPickerViewDelegate, UIPickerView
 
             selectRow(centerZeroMonth + monthNum - 1, inComponent: 1, animated: false)
 
-            self.value = gmtCal.date(from: components)!
+            self.value = GMTDate(gmtCal.date(from: components)!)
         case .None: break
         }
         calendarPickerDelegate?.changedToDate(date: self.value, scope: self.scope)

@@ -8,39 +8,39 @@
 
 import Foundation
 
-class CalendarWeek {
+class CalendarWeek : CalendarIntervalProvider {
     private var date: Date
 
     /*
      * @param dateInGMTWeek A date representing a point in time that is in
      * the desired week when using the GMT time zone.
      */
-    init(dateInGMTWeek date: Date) {
+    init(dateInWeek date: CalendarDateProvider) {
         let gmtCal = CalendarWeek.gmtCal
 
         let componentSet: Set<Calendar.Component> = [.year, .month, .weekOfMonth, .weekday]
 
-        var dateComponents = gmtCal.dateComponents(componentSet, from: date)
+        var dateComponents = gmtCal.dateComponents(componentSet, from: date.gmtDate)
         dateComponents.setValue(1, for: .weekday)
 
         self.date = gmtCal.startOfDay(for: gmtCal.date(from: dateComponents)!)
     }
 
-    convenience init(day: CalendarDay) {
-        self.init(dateInGMTWeek: day.gmtDate)
+    convenience init(dayInWeek: CalendarDay) {
+        self.init(dateInWeek: dayInWeek.start)
     }
 
     /*
      * @param dateInLocalWeek A date representing a point in time that is in
      * the desired week when using the system's current time zone.
      */
-    convenience init(dateInLocalWeek date: Date) {
-        self.init(day: CalendarDay(dateInLocalDay: date))
+    convenience init(localDateInWeek date: Date) {
+        self.init(dayInWeek: CalendarDay(localDateInDay: date))
     }
 
 
     convenience init() {
-        self.init(dateInLocalWeek: Date())
+        self.init(localDateInWeek: Date())
     }
     
     private init(trustedDate: Date) {
@@ -73,8 +73,8 @@ class CalendarWeek {
         // the number of weeks between the two we are comparing.
         return CalendarWeek.gmtCal.dateComponents(
             [.weekOfMonth],
-            from: startWeek.gmtDate,
-            to: self.gmtDate
+            from: startWeek.start.gmtDate,
+            to: self.date
         ).weekOfMonth!
     }
 
@@ -129,8 +129,12 @@ class CalendarWeek {
      * This represents a point in time that is 12:00:00am on the first day of
      * the week that this CalendarWeek represents.
      */
-    var gmtDate: Date {
-        return date
+    var start: CalendarDateProvider {
+        return GMTDate(date)
+    }
+    
+    var end: CalendarDateProvider? {
+        return self.add(weeks: 1).start
     }
     
     var period: PeriodScope {
@@ -141,22 +145,22 @@ class CalendarWeek {
 
 extension CalendarWeek: Comparable {
     static func == (lhs: CalendarWeek, rhs: CalendarWeek) -> Bool {
-        return lhs.gmtDate == rhs.gmtDate
+        return lhs.start.gmtDate == rhs.start.gmtDate
     }
 
     static func < (lhs: CalendarWeek, rhs: CalendarWeek) -> Bool {
-        return lhs.gmtDate < rhs.gmtDate
+        return lhs.start.gmtDate < rhs.start.gmtDate
     }
 
     static func > (lhs: CalendarWeek, rhs: CalendarWeek) -> Bool {
-        return lhs.gmtDate > rhs.gmtDate
+        return lhs.start.gmtDate > rhs.start.gmtDate
     }
 
     static func <= (lhs: CalendarWeek, rhs: CalendarWeek) -> Bool {
-        return lhs.gmtDate <= rhs.gmtDate
+        return lhs.start.gmtDate <= rhs.start.gmtDate
     }
 
     static func >= (lhs: CalendarWeek, rhs: CalendarWeek) -> Bool {
-        return lhs.gmtDate >= rhs.gmtDate
+        return lhs.start.gmtDate >= rhs.start.gmtDate
     }
 }

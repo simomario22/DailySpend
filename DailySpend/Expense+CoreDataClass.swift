@@ -34,7 +34,7 @@ class Expense: NSManagedObject {
         }
 
         if let transactionDay = transactionDay {
-            let num = transactionDay.gmtDate.timeIntervalSince1970 as NSNumber
+            let num = transactionDay.start.gmtDate.timeIntervalSince1970 as NSNumber
             jsonObj["transactionDate"] = num
         } else {
             Logger.debug("couldn't unwrap transactionDate in Expense")
@@ -133,8 +133,8 @@ class Expense: NSManagedObject {
         
         if let transactionDate = json["transactionDate"] as? NSNumber {
             let date = Date(timeIntervalSince1970: transactionDate.doubleValue)
-            let calDay = CalendarDay(dateInGMTDay: date);
-            if date != calDay.gmtDate {
+            let calDay = CalendarDay(dateInDay: GMTDate(date));
+            if date != calDay.start.gmtDate {
                 Logger.debug("transactionDate after today in Expense")
                 return nil
             }
@@ -259,14 +259,14 @@ class Expense: NSManagedObject {
     var transactionDay: CalendarDay? {
         get {
             if let date = transactionDate_ {
-                return CalendarDay(dateInGMTDay: date as Date)
+                return CalendarDay(dateInDay: GMTDate(date as Date))
             } else {
                 return nil
             }
         }
         set {
             if newValue != nil {
-                transactionDate_ = newValue!.gmtDate as NSDate
+                transactionDate_ = newValue!.start.gmtDate as NSDate
             } else {
                 transactionDate_ = nil
             }

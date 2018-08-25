@@ -64,7 +64,7 @@ class PauseViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     func getRelevantPauses() -> [Pause]? {
         let sortDescriptors = [NSSortDescriptor(key: "lastDateEffective_", ascending: false)]
-        let predicate = NSPredicate(format: "lastDateEffective_ >= %@", CalendarDay().gmtDate as CVarArg)
+        let predicate = NSPredicate(format: "lastDateEffective_ >= %@", CalendarDay().start.gmtDate as CVarArg)
         return Pause.get(context: context, predicate: predicate, sortDescriptors: sortDescriptors)
     }
     

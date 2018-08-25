@@ -30,16 +30,16 @@ class Adjustment: NSManagedObject {
             return nil
         }
         
-        if let date = firstDayEffective?.gmtDate {
-            let num = date.timeIntervalSince1970 as NSNumber
+        if let date = firstDayEffective?.start {
+            let num = date.gmtDate.timeIntervalSince1970 as NSNumber
             jsonObj["firstDateEffective"] = num
         } else {
             Logger.debug("couldn't unwrap firstDateEffective in Adjustment")
             return nil
         }
         
-        if let date = lastDayEffective?.gmtDate {
-            let num = date.timeIntervalSince1970 as NSNumber
+        if let date = lastDayEffective?.start {
+            let num = date.gmtDate.timeIntervalSince1970 as NSNumber
             jsonObj["lastDateEffective"] = num
         } else {
             Logger.debug("couldn't unwrap lastDateEffective in Adjustment")
@@ -101,8 +101,8 @@ class Adjustment: NSManagedObject {
         
         if let dateNumber = json["firstDateEffective"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateNumber.doubleValue)
-            let calDay = CalendarDay(dateInGMTDay: date)
-            if calDay.gmtDate != date {
+            let calDay = CalendarDay(dateInDay: GMTDate(date))
+            if calDay.start.gmtDate != date {
                 // The date isn't a beginning of day
                 Logger.debug("The firstDateEffective isn't a beginning of day in Adjustment")
                 return nil
@@ -115,8 +115,8 @@ class Adjustment: NSManagedObject {
         
         if let dateNumber = json["lastDateEffective"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateNumber.doubleValue)
-            let calDay = CalendarDay(dateInGMTDay: date)
-            if calDay.gmtDate != date ||
+            let calDay = CalendarDay(dateInDay: GMTDate(date))
+            if calDay.start.gmtDate != date ||
                 calDay < adjustment.firstDayEffective! {
                 // The date isn't a beginning of day
                 Logger.debug("The lastDateEffective isn't a beginning of day or is earlier than firstDateEffective in Adjustment")
@@ -268,14 +268,14 @@ class Adjustment: NSManagedObject {
     var firstDayEffective: CalendarDay? {
         get {
             if let day = firstDateEffective_ as Date? {
-                return CalendarDay(dateInGMTDay: day)
+                return CalendarDay(dateInDay: GMTDate(day))
             } else {
                 return nil
             }
         }
         set {
             if newValue != nil {
-                firstDateEffective_ = newValue!.gmtDate as NSDate
+                firstDateEffective_ = newValue!.start.gmtDate as NSDate
             } else {
                 firstDateEffective_ = nil
             }
@@ -285,14 +285,14 @@ class Adjustment: NSManagedObject {
     var lastDayEffective: CalendarDay? {
         get {
             if let day = lastDateEffective_ as Date? {
-                return CalendarDay(dateInGMTDay: day)
+                return CalendarDay(dateInDay: GMTDate(day))
             } else {
                 return nil
             }
         }
         set {
             if newValue != nil {
-                lastDateEffective_ = newValue!.gmtDate as NSDate
+                lastDateEffective_ = newValue!.start.gmtDate as NSDate
             } else {
                 lastDateEffective_ = nil
             }

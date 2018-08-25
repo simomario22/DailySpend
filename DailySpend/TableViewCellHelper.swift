@@ -213,8 +213,10 @@ class TableViewCellHelper {
     /**
      * Return a cell with a date picker.
      */
-    func datePickerCell(day: CalendarDay,
-                        changedToDay: @escaping (CalendarDay) -> ()) -> UITableViewCell {
+    func datePickerCell(
+            day: CalendarDay,
+            changedToDay: @escaping (CalendarDay) -> ()
+        ) -> UITableViewCell {
         var cell: DatePickerTableViewCell! = tableView.dequeueReusableCell(withIdentifier: "datePicker") as? DatePickerTableViewCell
         if cell == nil {
             cell = DatePickerTableViewCell(style: .default, reuseIdentifier: "datePicker")
@@ -222,9 +224,9 @@ class TableViewCellHelper {
         
         cell.datePicker.datePickerMode = .date
         cell.datePicker.timeZone = CalendarDay.gmtTimeZone
-        cell.datePicker.setDate(day.gmtDate, animated: false)
+        cell.datePicker.setDate(day.start.gmtDate, animated: false)
         cell.setCallback { (datePicker: UIDatePicker) in
-            let day = CalendarDay(dateInGMTDay: datePicker.date)
+            let day = CalendarDay(dateInDay: GMTDate(datePicker.date))
             changedToDay(day)
         }
         
@@ -235,9 +237,9 @@ class TableViewCellHelper {
      * Return a cell with a date picker.
      */
     func periodPickerCell(
-        date: Date,
+        date: CalendarDateProvider,
         scope: PeriodScope,
-        changedToDate: @escaping (Date, PeriodScope) -> ()
+        changedToDate: @escaping (CalendarDateProvider, PeriodScope) -> ()
     ) -> UITableViewCell {
         var cell: CalendarPeriodPickerTableViewCell! = tableView.dequeueReusableCell(withIdentifier: "periodPicker") as? CalendarPeriodPickerTableViewCell
         if cell == nil {
@@ -246,7 +248,7 @@ class TableViewCellHelper {
         
         cell.periodPicker.scope = scope
         cell.periodPicker.value = date
-        cell.setCallback { (date: Date, scope: PeriodScope) in
+        cell.setCallback { (date: CalendarDateProvider, scope: PeriodScope) in
             changedToDate(date, scope)
         }
         

@@ -8,22 +8,22 @@
 
 import Foundation
 
-class CalendarDay {
+class CalendarDay : CalendarIntervalProvider {
     private var date: Date
 
     /*
-     * @param dateInGMTDay A date representing a point in time that is in the
+     * @param date A date representing a point in time that is in the
      * desired day when using the GMT time zone.
      */
-    init(dateInGMTDay date: Date) {
+    init(dateInDay date: CalendarDateProvider) {
         // Set date to the beginning of the GMT day.
-        self.date = CalendarDay.gmtCal.startOfDay(for: date)
+        self.date = CalendarDay.gmtCal.startOfDay(for: date.gmtDate)
     }
     /*
-     * @param dateInLocalDay A date representing a point in time that is in the
+     * @param localDateInDay A date representing a point in time that is in the
      * desired day when using the system's current time zone.
      */
-    convenience init(dateInLocalDay date: Date) {
+    convenience init(localDateInDay date: Date) {
         // Convert to the beginning of this date's day in GMT
         let systemCal = Calendar(identifier: .gregorian)
 
@@ -33,11 +33,11 @@ class CalendarDay {
 
         let dateInSameDayInGMT = CalendarDay.gmtCal.date(from: dateComponents)!
 
-        self.init(dateInGMTDay: dateInSameDayInGMT)
+        self.init(dateInDay: GMTDate(dateInSameDayInGMT))
     }
 
     convenience init() {
-        self.init(dateInLocalDay: Date())
+        self.init(localDateInDay: Date())
     }
     
     private init(trustedDate: Date) {
@@ -65,15 +65,19 @@ class CalendarDay {
     func daysAfter(startDay: CalendarDay) -> Int {
         return CalendarDay.gmtCal.dateComponents(
             [.day],
-            from: startDay.gmtDate,
-            to: self.gmtDate
+            from: startDay.start.gmtDate,
+            to: self.date
         ).day!
     }
 
     static func daysInRange(start: CalendarDay, end: CalendarDay) -> Int {
-        return abs(CalendarDay.gmtCal.dateComponents([.day],
-                                                 from: start.gmtDate,
-                                                 to: end.gmtDate).day!)
+        return abs(
+            CalendarDay.gmtCal.dateComponents(
+                [.day],
+                from: start.start.gmtDate,
+                to: end.start.gmtDate
+            ).day!
+        )
     }
 
     func string(formatter: DateFormatter, friendly: Bool = false) -> String {
@@ -132,8 +136,12 @@ class CalendarDay {
      * This represents a point in time that is 12:00:00am on the day that this
      * CalendarDay represents.
      */
-    var gmtDate: Date {
-        return date
+    var start: CalendarDateProvider {
+        return GMTDate(date)
+    }
+    
+    var end: CalendarDateProvider? {
+        return self.add(days: 1).start
     }
 
     var period: PeriodScope {
@@ -143,22 +151,22 @@ class CalendarDay {
 
 extension CalendarDay: Comparable {
     static func == (lhs: CalendarDay, rhs: CalendarDay) -> Bool {
-        return lhs.gmtDate == rhs.gmtDate
+        return lhs.start.gmtDate == rhs.start.gmtDate
     }
 
     static func < (lhs: CalendarDay, rhs: CalendarDay) -> Bool {
-        return lhs.gmtDate < rhs.gmtDate
+        return lhs.start.gmtDate < rhs.start.gmtDate
     }
 
     static func > (lhs: CalendarDay, rhs: CalendarDay) -> Bool {
-        return lhs.gmtDate > rhs.gmtDate
+        return lhs.start.gmtDate > rhs.start.gmtDate
     }
 
     static func <= (lhs: CalendarDay, rhs: CalendarDay) -> Bool {
-        return lhs.gmtDate <= rhs.gmtDate
+        return lhs.start.gmtDate <= rhs.start.gmtDate
     }
 
     static func >= (lhs: CalendarDay, rhs: CalendarDay) -> Bool {
-        return lhs.gmtDate >= rhs.gmtDate
+        return lhs.start.gmtDate >= rhs.start.gmtDate
     }
 }

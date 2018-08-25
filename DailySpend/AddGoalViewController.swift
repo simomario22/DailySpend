@@ -50,8 +50,8 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
     var incrementalPayment = false
     var neverEnd = true
     var cellSizeCache = [GoalViewCellType: CGFloat]()
-    var unmodifiedStartDay: Date!
-    var unmodifiedEndDay: Date?
+    var unmodifiedStartDay: CalendarDateProvider!
+    var unmodifiedEndDay: CalendarDateProvider?
     
     // Goal Data
     var amount: Decimal?
@@ -61,8 +61,8 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
     var adjustMonthAmountAutomatically: Bool!
     var period: Period!
     var payFrequency: Period!
-    var start: Date!
-    var end: Date?
+    var start: CalendarDateProvider!
+    var end: CalendarDateProvider?
     var parentGoal: Goal?
 
     override func viewDidLoad() {
@@ -142,7 +142,7 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
             adjustMonthAmountAutomatically = true
             period = Period(scope: .Day, multiplier: 1)
             payFrequency = Period(scope: .Day, multiplier: 1)
-            start = CalendarDay().gmtDate
+            start = CalendarDay().start
             unmodifiedStartDay = start
         }
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel) {
@@ -376,14 +376,14 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
         case .StartCell:
             return cellCreator.dateDisplayCell(
                 label: "Start",
-                day: CalendarDay(dateInGMTDay: start),
+                day: CalendarDay(dateInDay: start),
                 tintColor: expandedSection == .StartDayPicker ? view.tintColor : nil
             )
         case .StartPickerCell:
             return cellCreator.periodPickerCell(
                 date: start,
                 scope: period.scope,
-                changedToDate: { (date: Date, scope: PeriodScope) in
+                changedToDate: { (date: CalendarDateProvider, scope: PeriodScope) in
                     self.start = date
                     
                     // Update the unmodified days since we are making a direct
@@ -391,7 +391,7 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
                     self.unmodifiedStartDay = self.start
                     self.unmodifiedEndDay = self.end
                     
-                    if self.end != nil && self.start! > self.end! {
+                    if self.end != nil && self.start!.gmtDate > self.end!.gmtDate {
                         self.end = self.start
                         self.reloadExpandedSectionLabel(.EndNeverAndDayPicker)
                     }
@@ -400,9 +400,9 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
         case .EndCell:
             return cellCreator.dateDisplayCell(
                 label: "End",
-                day: self.neverEnd ? nil : CalendarDay(dateInGMTDay: end!),
+                day: self.neverEnd ? nil : CalendarDay(dateInDay: end!),
                 tintColor: expandedSection == .EndNeverAndDayPicker ? view.tintColor : nil,
-                strikeText: !self.neverEnd && self.end != nil && self.start! > self.end!,
+                strikeText: !self.neverEnd && self.end != nil && self.start!.gmtDate > self.end!.gmtDate,
                 alternateText: "Never"
             )
         case .EndNeverPickerCell:
@@ -422,7 +422,7 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
             return cellCreator.periodPickerCell(
                 date: end!,
                 scope: period.scope,
-                changedToDate: { (date: Date, scope: PeriodScope) in
+                changedToDate: { (date: CalendarDateProvider, scope: PeriodScope) in
                     self.end = date
                     
                     // Update the unmodified days since we are making a direct
@@ -611,18 +611,18 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
     }
     
     func updateStartAndEndToPeriod(from oldPeriod: PeriodScope) {
-        let start: Date! = period.scope < oldPeriod ? unmodifiedStartDay : self.start
-        let end: Date? = period.scope < oldPeriod ? unmodifiedEndDay : self.end
+        let start: CalendarDateProvider! = period.scope < oldPeriod ? unmodifiedStartDay : self.start
+        let end: CalendarDateProvider? = period.scope < oldPeriod ? unmodifiedEndDay : self.end
         switch period.scope {
         case .Day:
-            self.start = CalendarDay(dateInGMTDay: start).gmtDate
-            self.end = end == nil ? nil : CalendarDay(dateInGMTDay: end!).gmtDate
+            self.start = CalendarDay(dateInDay: start).start
+            self.end = end == nil ? nil : CalendarDay(dateInDay: end!).start
         case .Week:
-            self.start = CalendarWeek(dateInGMTWeek: start).gmtDate
-            self.end = end == nil ? nil : CalendarWeek(dateInGMTWeek: end!).gmtDate
+            self.start = CalendarWeek(dateInWeek: start).start
+            self.end = end == nil ? nil : CalendarWeek(dateInWeek: end!).start
         case .Month:
-            self.start = CalendarMonth(dateInGMTMonth: start).gmtDate
-            self.end = end == nil ? nil : CalendarMonth(dateInGMTMonth: end!).gmtDate
+            self.start = CalendarMonth(dateInMonth: start).start
+            self.end = end == nil ? nil : CalendarMonth(dateInMonth: end!).start
         case .None: break
         }
         let section = recurring ? 3 : 1

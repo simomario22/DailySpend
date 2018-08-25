@@ -8,19 +8,19 @@
 
 import Foundation
 
-class CalendarMonth {
+class CalendarMonth : CalendarIntervalProvider {
     private var date: Date
 
     /*
      * @param dateInGMTMonth A date representing a point in time that is in
      * the desired month when using the GMT time zone.
      */
-    init(dateInGMTMonth date: Date) {
+    init(dateInMonth date: CalendarDateProvider) {
         let gmtCal = CalendarMonth.gmtCal
 
         let componentSet: Set<Calendar.Component> = [.year, .month, .day]
 
-        var dateComponents = gmtCal.dateComponents(componentSet, from: date)
+        var dateComponents = gmtCal.dateComponents(componentSet, from: date.gmtDate)
         dateComponents.setValue(1, for: .day)
 
         self.date = gmtCal.startOfDay(for: gmtCal.date(from: dateComponents)!)
@@ -30,17 +30,17 @@ class CalendarMonth {
      * @param dateInLocalMonth A date representing a point in time that is in
      * the desired month when using the system's current time zone.
      */
-    convenience init(dateInLocalMonth date: Date) {
-        self.init(day: CalendarDay(dateInLocalDay: date))
+    convenience init(localDateInMonth date: Date) {
+        self.init(interval: CalendarDay(localDateInDay: date))
     }
 
 
-    convenience init(day: CalendarDay) {
-        self.init(dateInGMTMonth: day.gmtDate)
+    convenience init(interval: CalendarIntervalProvider) {
+        self.init(dateInMonth: interval.start)
     }
 
     convenience init() {
-        self.init(dateInLocalMonth: Date())
+        self.init(localDateInMonth: Date())
     }
     
     private init(trustedDate: Date) {
@@ -69,8 +69,8 @@ class CalendarMonth {
     func monthsAfter(startMonth: CalendarMonth) -> Int {
         return CalendarMonth.gmtCal.dateComponents(
             [.month],
-            from: startMonth.gmtDate,
-            to: self.gmtDate
+            from: startMonth.start.gmtDate,
+            to: self.date
         ).month!
     }
 
@@ -132,7 +132,7 @@ class CalendarMonth {
     }
 
     var month: Int {
-        return CalendarMonth.gmtCal.component(.month, from: self.gmtDate)
+        return CalendarMonth.gmtCal.component(.month, from: self.date)
     }
 
     var year: Int {
@@ -166,8 +166,12 @@ class CalendarMonth {
      * This represents a point in time that is 12:00:00am on the first day of
      * the month that this CalendarMonth represents.
      */
-    var gmtDate: Date {
-        return date
+    var start: CalendarDateProvider {
+        return GMTDate(date)
+    }
+    
+    var end: CalendarDateProvider? {
+        return self.add(months: 1).start
     }
     
     var period: PeriodScope {
@@ -177,22 +181,22 @@ class CalendarMonth {
 
 extension CalendarMonth: Comparable {
     static func == (lhs: CalendarMonth, rhs: CalendarMonth) -> Bool {
-        return lhs.gmtDate == rhs.gmtDate
+        return lhs.start.gmtDate == rhs.start.gmtDate
     }
 
     static func < (lhs: CalendarMonth, rhs: CalendarMonth) -> Bool {
-        return lhs.gmtDate < rhs.gmtDate
+        return lhs.start.gmtDate < rhs.start.gmtDate
     }
 
     static func > (lhs: CalendarMonth, rhs: CalendarMonth) -> Bool {
-        return lhs.gmtDate > rhs.gmtDate
+        return lhs.start.gmtDate > rhs.start.gmtDate
     }
 
     static func <= (lhs: CalendarMonth, rhs: CalendarMonth) -> Bool {
-        return lhs.gmtDate <= rhs.gmtDate
+        return lhs.start.gmtDate <= rhs.start.gmtDate
     }
 
     static func >= (lhs: CalendarMonth, rhs: CalendarMonth) -> Bool {
-        return lhs.gmtDate >= rhs.gmtDate
+        return lhs.start.gmtDate >= rhs.start.gmtDate
     }
 }

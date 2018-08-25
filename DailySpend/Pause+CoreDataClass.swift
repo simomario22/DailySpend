@@ -21,7 +21,7 @@ class Pause: NSManagedObject {
             return nil
         }
         
-        if let date = firstDayEffective?.gmtDate {
+        if let date = firstDayEffective?.start.gmtDate {
             let num = date.timeIntervalSince1970 as NSNumber
             jsonObj["firstDateEffective"] = num
         } else {
@@ -29,7 +29,7 @@ class Pause: NSManagedObject {
             return nil
         }
         
-        if let date = lastDayEffective?.gmtDate {
+        if let date = lastDayEffective?.start.gmtDate {
             let num = date.timeIntervalSince1970 as NSNumber
             jsonObj["lastDateEffective"] = num
         } else {
@@ -81,8 +81,8 @@ class Pause: NSManagedObject {
         
         if let dateNumber = json["firstDateEffective"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateNumber.doubleValue)
-            let calDay = CalendarDay(dateInGMTDay: date)
-            if calDay.gmtDate != date {
+            let calDay = CalendarDay(dateInDay: GMTDate(date))
+            if calDay.start.gmtDate != date {
                 // The date isn't a beginning of day
                 Logger.debug("The firstDateEffective isn't a beginning of day in Pause")
                 return nil
@@ -95,8 +95,8 @@ class Pause: NSManagedObject {
         
         if let dateNumber = json["lastDateEffective"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateNumber.doubleValue)
-            let calDay = CalendarDay(dateInGMTDay: date)
-            if calDay.gmtDate != date ||
+            let calDay = CalendarDay(dateInDay: GMTDate(date))
+            if calDay.start.gmtDate != date ||
                 calDay < pause.firstDayEffective! {
                 // The date isn't a beginning of day
                 Logger.debug("The lastDateEffective isn't a beginning of day or is earlier than firstDateEffective in Pause")
@@ -196,8 +196,8 @@ class Pause: NSManagedObject {
         // Check for overlapping pauses.
         let fetchRequest: NSFetchRequest<Pause> = Pause.fetchRequest()
         let pred = NSPredicate(format: "%@ <= lastDateEffective_ AND %@ >= firstDateEffective_",
-                               _firstDayEffective!.gmtDate as CVarArg,
-                               _lastDayEffective!.gmtDate as CVarArg)
+                               _firstDayEffective!.start.gmtDate as CVarArg,
+                               _lastDayEffective!.start.gmtDate as CVarArg)
         fetchRequest.predicate = pred
         let pauseResults = try! context.fetch(fetchRequest)
         
@@ -286,14 +286,14 @@ class Pause: NSManagedObject {
     var firstDayEffective: CalendarDay? {
         get {
             if let day = firstDateEffective_ as Date? {
-                return CalendarDay(dateInGMTDay: day)
+                return CalendarDay(dateInDay: GMTDate(day))
             } else {
                 return nil
             }
         }
         set {
             if newValue != nil {
-                firstDateEffective_ = newValue!.gmtDate as NSDate
+                firstDateEffective_ = newValue!.start.gmtDate as NSDate
             } else {
                 firstDateEffective_ = nil
             }
@@ -303,14 +303,14 @@ class Pause: NSManagedObject {
     var lastDayEffective: CalendarDay? {
         get {
             if let day = lastDateEffective_ as Date? {
-                return CalendarDay(dateInGMTDay: day)
+                return CalendarDay(dateInDay: GMTDate(day))
             } else {
                 return nil
             }
         }
         set {
             if newValue != nil {
-                lastDateEffective_ = newValue!.gmtDate as NSDate
+                lastDateEffective_ = newValue!.start.gmtDate as NSDate
             } else {
                 lastDateEffective_ = nil
             }

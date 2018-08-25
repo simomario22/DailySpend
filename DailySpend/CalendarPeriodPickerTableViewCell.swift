@@ -11,7 +11,7 @@ import UIKit
 class CalendarPeriodPickerTableViewCell: UITableViewCell, CalendarPeriodPickerViewDelegate {
     var periodPicker: CalendarPeriodPickerView!
     
-    private var changedCallback: ((Date, PeriodScope) -> ())?
+    private var changedCallback: ((CalendarDateProvider, PeriodScope) -> ())?
     
     override func layoutSubviews() {
         super.layoutSubviews()
@@ -34,11 +34,11 @@ class CalendarPeriodPickerTableViewCell: UITableViewCell, CalendarPeriodPickerVi
         super.init(coder: aDecoder)
     }
 
-    func changedToDate(date: Date, scope: PeriodScope) {
+    func changedToDate(date: CalendarDateProvider, scope: PeriodScope) {
         changedCallback?(date, scope)
     }
     
-    func setCallback(_ cb: @escaping ((Date, PeriodScope) -> ())) {
+    func setCallback(_ cb: @escaping ((CalendarDateProvider, PeriodScope) -> ())) {
         changedCallback = cb
     }
 }

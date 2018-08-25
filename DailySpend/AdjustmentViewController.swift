@@ -64,7 +64,7 @@ class AdjustmentViewController: UIViewController, UITableViewDelegate, UITableVi
     
     func getRelevantAdjustments() -> [Adjustment]? {
         let sortDescriptors = [NSSortDescriptor(key: "lastDateEffective_", ascending: false)]
-        let predicate = NSPredicate(format: "lastDateEffective_ >= %@", CalendarDay().gmtDate as CVarArg)
+        let predicate = NSPredicate(format: "lastDateEffective_ >= %@", CalendarDay().start.gmtDate as CVarArg)
         return Adjustment.get(context: context, predicate: predicate, sortDescriptors: sortDescriptors)
     }
     
