@@ -73,6 +73,23 @@ class CalendarMonth : CalendarIntervalProvider {
             to: self.date
         ).month!
     }
+    
+    /**
+     * Returns the number of months that this months is after `startMonth`.
+     * If this month is before start month, this function will return a
+     * negative number.
+     *
+     * Also returns the remainder of days that didn't fit into an even number
+     * of months.
+     */
+    func monthsAfter(start: CalendarDay) -> (Int, Int) {
+        let components = CalendarMonth.gmtCal.dateComponents(
+            [.month, .day],
+            from: start.start.gmtDate,
+            to: self.date
+        )
+        return (components.month!, components.day!)
+    }
 
     func string(formatter: DateFormatter) -> String {
         let origTZ = formatter.timeZone

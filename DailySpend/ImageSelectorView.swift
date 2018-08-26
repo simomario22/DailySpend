@@ -80,7 +80,6 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIScrollViewDel
     }
 
     func recreateButtons() {
-        print(frame)
         // Remove all subviews.
         for subview in subviews {
             subview.removeFromSuperview()

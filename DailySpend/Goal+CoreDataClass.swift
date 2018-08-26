@@ -411,9 +411,62 @@ class Goal: NSManagedObject {
      * - Returns: The balance on `day`, taking into account periods,
      *            interval pay, and expenses.
      */
-     func getBalance(day: CalendarDay) -> Decimal {
-        return 0
-     }
+     func balance(for day: CalendarDay) -> Decimal {
+        guard let expensePeriod = periodInterval(for: day.start) as? CalendarPeriod,
+              let amount = adjustedAmountForDateInPeriod(day.start) else {
+            return 0
+        }
+        let totalExpenseAmount = getExpenses(period: expensePeriod)
+            .reduce(0, {(amount, expense) -> Decimal in
+            return amount + (expense.amount ?? 0)
+        })
+
+        var totalPaidAmount: Decimal = 0
+        if hasIncrementalPayment {
+            let paymentsPerPeriod = expensePeriod.numberOfSubPeriodsOfLength(period: self.payFrequency)
+            if paymentsPerPeriod == 0 {
+                return 0
+            }
+            let incrementalAmount = amount / Decimal(paymentsPerPeriod)
+            guard let incrementInterval = incrementalPaymentInterval(for: day.start) as? CalendarPeriod,
+                  let index = incrementInterval.periodIndexWithin(superPeriod: expensePeriod) else {
+                return 0
+            }
+            
+            totalPaidAmount = incrementalAmount * Decimal(index + 1)
+        } else {
+            totalPaidAmount = amount
+        }
+        
+        return totalPaidAmount - totalExpenseAmount
+    }
+    
+    /**
+     * The amount per period, adjusted for the days in the current month or
+     * months for this period, if necessary.
+     */
+    func adjustedAmountForDateInPeriod(_ date: CalendarDateProvider) -> Decimal? {
+        guard let amount = amount else {
+            return nil
+        }
+        if adjustMonthAmountAutomatically && period.scope == .Month {
+            var totalDays = 0
+            guard let interval = periodInterval(for: date) else {
+                return nil
+            }
+            // Start with the first month in the interval.
+            var month = CalendarMonth(interval: interval)
+            for _ in 0..<period.multiplier {
+                totalDays += month.daysInMonth
+                month = month.add(months: 1)
+            }
+            
+            let perDayAmount = amount / 30
+            return Decimal(totalDays) * perDayAmount
+        } else {
+            return amount
+        }
+    }
     
     /**
      * Returns the expenses in a particular period, or all the expenses if this

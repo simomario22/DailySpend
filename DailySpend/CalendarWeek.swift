@@ -78,6 +78,24 @@ class CalendarWeek : CalendarIntervalProvider {
         ).weekOfMonth!
     }
 
+    /**
+     * Returns the number of weeks that this week is after `startWeek`.
+     * If this week is before start week, this function will return a negative
+     * number.
+     *
+     * Also returns the remainder of days that didn't fit into an even number
+     * of weeks.
+     */
+    func weeksAfter(start: CalendarDay) -> (Int, Int) {
+        // `weekOfMonth` in this case gives the number we are looking for:
+        // the number of weeks between the two we are comparing.
+        let components = CalendarWeek.gmtCal.dateComponents(
+            [.weekOfMonth, .day],
+            from: start.start.gmtDate,
+            to: self.date
+        )
+        return (components.weekOfMonth!, components.day!)
+    }
 
     func string(formatter: DateFormatter) -> String {
         let origTZ = formatter.timeZone

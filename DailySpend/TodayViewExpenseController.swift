@@ -294,7 +294,6 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
             present(alert, true, nil)
             return false
         }
-        
     }
     
     func loadExpensesForGoal(_ goal: Goal?) {
@@ -356,4 +355,3 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
         }
     }
 }
-

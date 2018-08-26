@@ -127,6 +127,74 @@ class CalendarPeriod : CalendarIntervalProvider {
         self.period = period
     }
     
+    /**
+     * Returns the number of intervals of length `period` that are contained
+     * within this interval.
+     */
+    func numberOfSubPeriodsOfLength(period: Period) -> Int {
+        if self.period < period || period.scope == .None {
+            return 0
+        }
+
+        let lastDayInThisCalendarPeriod = CalendarDay(dateInDay: self.end!).subtract(days: 1)
+        if self.start.gmtDate == lastDayInThisCalendarPeriod.start.gmtDate {
+            return 0
+        }
+        
+        let lastSubPeriod = CalendarPeriod(
+            calendarDate: lastDayInThisCalendarPeriod.start,
+            period: period,
+            beginningDateOfPeriod: self.start
+        )!
+        
+        let index = lastSubPeriod.periodIndexWithin(superPeriod: self)
+        return index != nil ? index! + 1 : 0
+    }
+    
+    /**
+     * Returns the index of this interval within a larger interval.
+     *
+     * For example, if the period for this CalendarPeriod is 2 days, and its
+     * interval begins on the fourth day of the month, and the passed
+     * `superPeriod` is the month that this interval is in, this function will
+     * return `1`, the second index.
+     *
+     * If this period is not an even multiple away from, or is not contained by
+     * the larger period, or if the passed `superPeriod` is smaller, then this
+     * function will return nil.
+     */
+    func periodIndexWithin(superPeriod: CalendarPeriod) -> Int? {
+        if superPeriod.period < period ||
+            start.gmtDate >= superPeriod.end!.gmtDate ||
+            start.gmtDate < superPeriod.start.gmtDate {
+            return nil
+        }
+
+        let beginningPeriod = CalendarDay(dateInDay: superPeriod.start)
+        var difference: Int
+        var remainder: Int
+        switch period.scope {
+        case .Day:
+            let day = CalendarDay(dateInDay: self.start)
+            difference = day.daysAfter(startDay: beginningPeriod)
+            remainder = 0
+        case .Week:
+            let week = CalendarWeek(dateInWeek: self.start)
+            (difference, remainder) = week.weeksAfter(start: beginningPeriod)
+        case .Month:
+            let month = CalendarMonth(dateInMonth: self.start)
+            (difference, remainder) = month.monthsAfter(start: beginningPeriod)
+        default:
+            return nil
+        }
+        
+        if remainder == 0 && difference % self.period.multiplier == 0 {
+            return difference / self.period.multiplier
+        } else {
+            return nil
+        }
+    }
+    
     func nextCalendarPeriod() -> CalendarPeriod {
         return CalendarPeriod(
             calendarDate: end!,
