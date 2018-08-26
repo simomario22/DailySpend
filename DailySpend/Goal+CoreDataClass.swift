@@ -426,11 +426,11 @@ class Goal: NSManagedObject {
     func getExpenses(period: CalendarIntervalProvider) -> [Expense] {
         let fetchRequest: NSFetchRequest<Expense> = Expense.fetchRequest()
         
-        // TODO: Get expenses from children in this query.
+        let descendants = allChildDescendants()
         var fs = "(goal_ = %@ OR goal_ IN %@) AND transactionDate_ >= %@"
         if let end = period.end {
             fs += " AND transactionDate_ < %@"
-            fetchRequest.predicate = NSPredicate(format: fs, self, self.childGoals ?? [], period.start.gmtDate as CVarArg, end.gmtDate as CVarArg)
+            fetchRequest.predicate = NSPredicate(format: fs, self, descendants ?? [], period.start.gmtDate as CVarArg, end.gmtDate as CVarArg)
         } else {
             fetchRequest.predicate = NSPredicate(format: fs, self, self.childGoals ?? [], period.start.gmtDate as CVarArg)
         }
@@ -439,6 +439,25 @@ class Goal: NSManagedObject {
         let expenseResults = try! context.fetch(fetchRequest)
         
         return expenseResults
+    }
+    
+    /**
+     * Returns a set containg all of this goal's decendents:
+     * This goal's children, their children, etc.
+     */
+    func allChildDescendants() -> Set<Goal>? {
+        guard let childGoals = childGoals else {
+            return nil
+        }
+        
+        var descendants = Set<Goal>(childGoals)
+        for goal in childGoals {
+            if let childGoalDescendants = goal.allChildDescendants() {
+                descendants = descendants.union(childGoalDescendants)
+            }
+        }
+        
+        return descendants
     }
 
     /**
