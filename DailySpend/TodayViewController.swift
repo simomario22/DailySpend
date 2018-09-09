@@ -24,6 +24,9 @@ class TodayViewController: UIViewController, TodayViewGoalsDelegate, TodayViewEx
     var period: CalendarPeriod!
     var goal: Goal!
     
+    let summaryViewHeightWithHint: CGFloat = 120
+    let summaryViewHeightWithoutHint: CGFloat = 97
+    
     var expenses = [(desc: String, amount: String)]()
         
     override func viewDidLoad() {
@@ -45,7 +48,12 @@ class TodayViewController: UIViewController, TodayViewGoalsDelegate, TodayViewEx
         )
 
         let width = view.frame.size.width
-        let summaryFrame = CGRect(x: 0, y: -120, width: width, height: 120)
+        let summaryFrame = CGRect(
+            x: 0,
+            y: -summaryViewHeightWithHint,
+            width: width,
+            height: summaryViewHeightWithHint
+        )
         summaryView = TodaySummaryView(frame: summaryFrame)
         
         // The border line hangs below the summary frame, so we'll use that one
@@ -112,28 +120,13 @@ class TodayViewController: UIViewController, TodayViewGoalsDelegate, TodayViewEx
     
     func updateSummaryViewForGoal(_ goal: Goal?) {
         guard let goal = goal else {
-            clearSummaryView()
+            animateSummaryViewFrameIfNecessary(show: false)
+            summaryViewHidden = true
             return
         }
         
-        if summaryViewHidden {
-            // Need to call layoutIfNeeded outside the animation block and
-            // before changing the summary view frame, otherwise we could end
-            // up animating subviews we don't mean to that haven't been
-            // placed yet.
-            self.view.layoutIfNeeded()
-            UIView.animate(
-                withDuration: 0.3,
-                animations: {
-                    self.summaryView.frame = self.summaryView.frame.offsetBy(
-                        dx: 0,
-                        dy: self.summaryView.frame.height
-                    )
-                    self.summaryViewHidden = false
-                    self.view.layoutIfNeeded()
-                }
-            )
-        }
+        animateSummaryViewFrameIfNecessary(show: true)
+        summaryViewHidden = false
         
         // Update summary view with information from this goal for the
         // appropriate period.
@@ -146,43 +139,73 @@ class TodayViewController: UIViewController, TodayViewGoalsDelegate, TodayViewEx
         }
         setMostRecentlyUsedAmountForGoal(goal: goal, amount: newAmount)
         
-        var day: CalendarDay?
+        var endDay: CalendarDay?
         if goal.isRecurring {
             guard let currentGoalPeriod = goal.periodInterval(for: CalendarDay().start) else {
                 return
             }
-            day = CalendarDay(dateInDay: currentGoalPeriod.end!).subtract(days: 1)
+            endDay = CalendarDay(dateInDay: currentGoalPeriod.end!).subtract(days: 1)
         } else if goal.end != nil {
-            day = CalendarDay(dateInDay: goal.end!).subtract(days: 1)
+            endDay = CalendarDay(dateInDay: goal.end!).subtract(days: 1)
         }
     
-        // TODO: Make summary view smaller if there's no hint.
-        if let day = day {
+        if let endDay = endDay {
             let dateFormatter = DateFormatter()
-            if day.year == CalendarDay().year {
+            if endDay.year == CalendarDay().year {
                 dateFormatter.dateFormat = "M/d"
             } else {
                 dateFormatter.dateFormat = "M/d/yy"
             }
-            let formattedDate = day.string(formatter: dateFormatter)
+            let formattedDate = endDay.string(formatter: dateFormatter)
             summaryView.setHint("Period End: \(formattedDate)")
+            animateSummaryViewHeightIfNecessary(height: summaryViewHeightWithHint)
         } else {
             summaryView.setHint("")
+            animateSummaryViewHeightIfNecessary(height: summaryViewHeightWithoutHint)
         }
-
     }
     
-    func clearSummaryView() {
-        if !summaryViewHidden {
+    /**
+     * Animates sliding the summary view in or out based on the value of `show`.
+     *
+     * If the summary view is already believed to be in the correct state based
+     * on the value of `summaryViewHidden`, it will not be animated.
+     */
+    func animateSummaryViewFrameIfNecessary(show: Bool) {
+        let offsetYMultiplier: CGFloat = show ? 1 : -1
+        let hiddenValueIndicatingSummaryViewPositionIsCorrect = show ? false : true
+        if summaryViewHidden != hiddenValueIndicatingSummaryViewPositionIsCorrect {
+            // Need to call layoutIfNeeded outside the animation block and
+            // before changing the summary view frame, otherwise we could end
+            // up animating subviews we don't mean to that haven't been
+            // placed yet.
             self.view.layoutIfNeeded()
             UIView.animate(
                 withDuration: 0.3,
                 animations: {
                     self.summaryView.frame = self.summaryView.frame.offsetBy(
                         dx: 0,
-                        dy: -self.summaryView.frame.height
+                        dy: self.summaryView.frame.height * offsetYMultiplier
                     )
-                    self.summaryViewHidden = true
+                    self.view.layoutIfNeeded()
+                }
+            )
+        }
+    }
+    
+    /**
+     * Animates changing the summary view to a certain height, if it isn't
+     * already set to that height.
+     */
+    func animateSummaryViewHeightIfNecessary(height: CGFloat) {
+        if summaryView.frame.size.height != height {
+            self.view.layoutIfNeeded()
+            UIView.animate(
+                withDuration: 0.3,
+                animations: {
+                    var frame = self.summaryView.frame
+                    frame.size.height = height
+                    self.summaryView.frame = frame
                     self.view.layoutIfNeeded()
                 }
             )
