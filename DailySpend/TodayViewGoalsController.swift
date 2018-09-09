@@ -17,6 +17,7 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
     }
     
     let cellHeight: CGFloat = 66
+    let lastViewedGoalKey = "lastUsedGoal"
     
     var view: UIView
     var navigationItem: UINavigationItem
@@ -25,6 +26,8 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
     var currentGoal: Goal? {
         didSet {
             delegate.goalChanged(newGoal: self.currentGoal)
+            setLastUsedGoal(goal: self.currentGoal)
+            
             let title = self.currentGoal?.shortDescription ?? "DailySpend"
             let navHeight = self.navigationBar.frame.size.height
             self.navigationItem.titleView = makeTitleView(height: navHeight, title: title)
@@ -96,7 +99,7 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
     
     func getLastUsedGoal() -> Goal? {
         // Try to get the last viewed goal.
-        if let url = UserDefaults.standard.url(forKey: "lastViewedGoal") {
+        if let url = UserDefaults.standard.url(forKey: lastViewedGoalKey) {
             let psc = appDelegate.persistentContainer.persistentStoreCoordinator
             if let id = psc.managedObjectID(forURIRepresentation: url),
                let goal = context.object(with: id) as? Goal {
@@ -110,10 +113,19 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
         let sortDescriptors = [NSSortDescriptor(key: "dateCreated_", ascending: true)]
         if let firstGoal = Goal.get(context: context, sortDescriptors: sortDescriptors, fetchLimit: 1)?.first {
             let id = firstGoal.objectID.uriRepresentation()
-            UserDefaults.standard.set(id, forKey: "lastViewedGoal")
+            UserDefaults.standard.set(id, forKey: lastViewedGoalKey)
             return firstGoal
         } else {
             return nil
+        }
+    }
+    
+    func setLastUsedGoal(goal: Goal?) {
+        if let goal = goal {
+            let id = goal.objectID.uriRepresentation()
+            UserDefaults.standard.set(id, forKey: lastViewedGoalKey)
+        } else {
+            UserDefaults.standard.removeObject(forKey: lastViewedGoalKey)
         }
     }
     
