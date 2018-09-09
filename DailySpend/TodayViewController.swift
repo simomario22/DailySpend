@@ -96,7 +96,7 @@ class TodayViewController: UIViewController, TodayViewGoalsDelegate, TodayViewEx
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        updateSummaryViewForGoal(goal)
+        updateSummaryViewForGoal(self.goal)
     }
 
     override func didReceiveMemoryWarning() {
@@ -104,20 +104,38 @@ class TodayViewController: UIViewController, TodayViewGoalsDelegate, TodayViewEx
         // Dispose of any resources that can be recreated.
     }
 
+    /**
+     * Implements TodayViewGoalsDelegate.
+     *
+     * Updates expenses and summary view to reflect the new goal, or if the new
+     * goal is `nil`, puts those views into an appropriate state.
+     */
     func goalChanged(newGoal: Goal?) {
         self.goal = newGoal
         expensesController.loadExpensesForGoal(newGoal)
         updateSummaryViewForGoal(newGoal)
     }
     
+    /**
+     * Implements TodayViewExpensesDelegate.
+     *
+     * Updates the summary view to reflect any changes in data for this goal.
+     */
     func expensesChanged(goal: Goal) {
         updateSummaryViewForGoal(goal)
     }
     
+    /**
+     * need to account fo the case where a goal has ended
+     */
     @objc func dayChanged() {
         
     }
     
+    /**
+     * Updates the summary view frame and displayed data to that of the passed
+     * goal, or hides the summary view if the passed goal is `nil`.
+     */
     func updateSummaryViewForGoal(_ goal: Goal?) {
         guard let goal = goal else {
             animateSummaryViewFrameIfNecessary(show: false)
@@ -139,6 +157,7 @@ class TodayViewController: UIViewController, TodayViewGoalsDelegate, TodayViewEx
         }
         setMostRecentlyUsedAmountForGoal(goal: goal, amount: newAmount)
         
+        // Determine what should be in the summary view hint and set it.
         var endDay: CalendarDay?
         if goal.isRecurring {
             guard let currentGoalPeriod = goal.periodInterval(for: CalendarDay().start) else {
@@ -148,7 +167,6 @@ class TodayViewController: UIViewController, TodayViewGoalsDelegate, TodayViewEx
         } else if goal.end != nil {
             endDay = CalendarDay(dateInDay: goal.end!).subtract(days: 1)
         }
-    
         if let endDay = endDay {
             let dateFormatter = DateFormatter()
             if endDay.year == CalendarDay().year {
@@ -212,19 +230,34 @@ class TodayViewController: UIViewController, TodayViewGoalsDelegate, TodayViewEx
         }
     }
     
+    /**
+     * Returns a unique string associated with a particular goal.
+     */
     func keyForGoal(goal: Goal) -> String {
         let id = goal.objectID.uriRepresentation()
         return "mostRecentComputedAmount_\(id)"
     }
     
+    /**
+     * Retrieves the amount most recently displayed to the user in the summary
+     * view, persisting across app termination.
+     */
     func mostRecentlyUsedAmountForGoal(goal: Goal) -> Double {
         return UserDefaults.standard.double(forKey: keyForGoal(goal: goal))
     }
     
+    /**
+     * Set the amount most recently displayed to the user in the summary
+     * view, persisting across app termination.
+     */
     func setMostRecentlyUsedAmountForGoal(goal: Goal, amount: Double) {
         UserDefaults.standard.set(amount, forKey: keyForGoal(goal: goal))
     }
     
+    /**
+     * Updates the tint color of the navigation bar to the color specified
+     * by the app delegate.
+     */
     @objc func updateBarTintColor() {
         let newColor = self.appDelegate.spendIndicationColor
         if self.summaryView.backgroundColor != newColor {
