@@ -18,7 +18,6 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
     let periodLengthExplanatoryText = "The length of the period you have to " +
             "spend the above amount."
     
-    // TODO: this doesn't really make sense for >1 month periods
     let autoAdjustExplanatoryText = "Adjust the amount per month based on the " +
             "number of days in a month (the amount above will be used for a 30 " +
             "day month)."
