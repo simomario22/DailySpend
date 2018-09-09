@@ -59,24 +59,23 @@ class TodaySummaryView: UIView {
         
         hintLabel.textAlignment = .center
         hintLabel.font = UIFont.systemFont(ofSize: 14.0)
-        hintLabel.text = "Period End: 5/31"
         
         self.addSubviews([amountLabel, toSpendLabel, hintLabel])
     }
     
-    func countFrom(_ from: Decimal, to: Decimal) {
-        amountLabel.count(from: from.cgFloatValue, to: to.cgFloatValue)
+    func countFrom(_ from: CGFloat, to: CGFloat) {
+        amountLabel.count(from: from, to: to)
     }
     
-    func setAmount(value: Decimal) {
+    func setAmount(value: CGFloat) {
         amountLabel.text = self.currencyFormatter.string(from: value as NSNumber)
-        self.updateColor(value: value.cgFloatValue)
+        self.updateColor(value: value)
     }
     
     func setHint(_ hint: String) {
         hintLabel.text = hint
     }
-    
+
     private func updateColor(value: CGFloat) {
         if ( (value < 0) != colorNegative ) {
             appDelegate.spendIndicationColor = value < 0 ? .overspent : .underspent

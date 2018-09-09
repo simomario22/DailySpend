@@ -9,13 +9,15 @@
 import UIKit
 import CoreData
 
-class TodayViewController: UIViewController, TodayViewControllerDelegate {
+class TodayViewController: UIViewController, TodayViewGoalsDelegate, TodayViewExpensesDelegate {
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
     var context: NSManagedObjectContext {
         return appDelegate.persistentContainer.viewContext
     }
 
+    var summaryViewHidden: Bool = false
     var summaryView: TodaySummaryView!
+    var neutralBarColor: UIColor!
     var tableView: UITableView!
     var expensesController: TodayViewExpensesController!
     var cellCreator: TableViewCellHelper!
@@ -27,8 +29,6 @@ class TodayViewController: UIViewController, TodayViewControllerDelegate {
         super.viewDidLoad()
         view.tintColor = .tint
         
-        navigationController?.navigationBar.hideBorderLine()
-        
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(updateBarTintColor),
@@ -36,10 +36,10 @@ class TodayViewController: UIViewController, TodayViewControllerDelegate {
             object: nil
         )
         
+        
         let width = view.frame.size.width
         let summaryFrame = CGRect(x: 0, y: 0, width: view.frame.size.width, height: 120)
         summaryView = TodaySummaryView(frame: summaryFrame)
-        summaryView.setAmount(value: 105)
         
         let navHeight = navigationController?.navigationBar.frame.size.height ?? 0
         let statusBarSize = UIApplication.shared.statusBarFrame.size
@@ -49,21 +49,29 @@ class TodayViewController: UIViewController, TodayViewControllerDelegate {
         tableView = UITableView(frame: tableFrame, style: .grouped)
         
         self.view.addSubviews([summaryView, tableView])
+        navigationController?.navigationBar.hideBorderLine()
         
         expensesController = TodayViewExpensesController(
             tableView: tableView,
             present: self.present
         )
+        expensesController.delegate = self
+        
         tableView.delegate = expensesController
         tableView.dataSource = expensesController
         
-        let _ = TodayViewGoalsController(
+        let goalController = TodayViewGoalsController(
             view: navigationController!.view,
             navigationItem: navigationItem,
             navigationBar: navigationController!.navigationBar,
             delegate: self,
             present: self.present
         )
+        
+        if goalController.getLastUsedGoal() == nil {
+            summaryView.frame = summaryView.frame.offsetBy(dx: 0, dy: -summaryView.frame.height)
+            summaryViewHidden = true
+        }
         
         Logger.printAllCoreData()
     }
@@ -75,6 +83,82 @@ class TodayViewController: UIViewController, TodayViewControllerDelegate {
 
     func goalChanged(newGoal: Goal?) {
         expensesController.loadExpensesForGoal(newGoal)
+        updateSummaryViewForGoal(goal: newGoal)
+    }
+    
+    func expensesChanged(goal: Goal) {
+        updateSummaryViewForGoal(goal: goal)
+    }
+    
+    func updateSummaryViewForGoal(goal: Goal?) {
+        guard let goal = goal else {
+            clearSummaryView()
+            return
+        }
+        
+        if summaryViewHidden {
+            UIView.beginAnimations("TodayViewController.showSummaryView", context: nil)
+            summaryView.frame = summaryView.frame.offsetBy(dx: 0, dy: summaryView.frame.height)
+            summaryViewHidden = false
+            UIView.commitAnimations()
+        }
+        
+        let newAmount = goal.balance(for: CalendarDay()).doubleValue
+        let oldAmount = mostRecentlyUsedAmountForGoal(goal: goal)
+        if oldAmount != newAmount {
+            summaryView.countFrom(CGFloat(oldAmount), to: CGFloat(newAmount))
+        } else {
+            summaryView.setAmount(value: CGFloat(newAmount))
+        }
+        setMostRecentlyUsedAmountForGoal(goal: goal, amount: newAmount)
+        
+        var day: CalendarDay?
+        if goal.isRecurring {
+            guard let currentGoalPeriod = goal.periodInterval(for: CalendarDay().start) else {
+                return
+            }
+            day = CalendarDay(dateInDay: currentGoalPeriod.end!).subtract(days: 1)
+        } else if goal.end != nil {
+            day = CalendarDay(dateInDay: goal.end!).subtract(days: 1)
+        }
+    
+        // TODO: Make summary view smaller if there's no hint.
+        if let day = day {
+            let dateFormatter = DateFormatter()
+            if day.year == CalendarDay().year {
+                dateFormatter.dateFormat = "M/d"
+            } else {
+                dateFormatter.dateFormat = "M/d/yy"
+            }
+            let formattedDate = day.string(formatter: dateFormatter)
+            summaryView.setHint("Period End: \(formattedDate)")
+        } else {
+            summaryView.setHint("")
+        }
+
+    }
+    
+    func clearSummaryView() {
+        if !summaryViewHidden {
+            UIView.beginAnimations("TodayViewController.showSummaryView", context: nil)
+            summaryView.frame = summaryView.frame.offsetBy(dx: 0, dy: -summaryView.frame.height)
+            summaryView.backgroundColor = neutralBarColor
+            summaryViewHidden = true
+            UIView.commitAnimations()
+        }
+    }
+    
+    func keyForGoal(goal: Goal) -> String {
+        let id = goal.objectID.uriRepresentation()
+        return "mostRecentComputedAmount_\(id)"
+    }
+    
+    func mostRecentlyUsedAmountForGoal(goal: Goal) -> Double {
+        return UserDefaults.standard.double(forKey: keyForGoal(goal: goal))
+    }
+    
+    func setMostRecentlyUsedAmountForGoal(goal: Goal, amount: Double) {
+        UserDefaults.standard.set(amount, forKey: keyForGoal(goal: goal))
     }
     
     @objc func updateBarTintColor() {
@@ -85,8 +169,4 @@ class TodayViewController: UIViewController, TodayViewControllerDelegate {
             }
         }
     }
-}
-
-protocol TodayViewControllerDelegate {
-    func goalChanged(newGoal: Goal?)
 }

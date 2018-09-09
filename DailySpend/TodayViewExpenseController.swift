@@ -58,6 +58,8 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
         return appDelegate.persistentContainer.viewContext
     }
     
+    var delegate: TodayViewExpensesDelegate?
+    
     let collapsedCellSize: CGFloat = 44
     let expandedCellSize: CGFloat = 88
 
@@ -229,6 +231,7 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
         expenseCellData.remove(at: indexPath.row)
         removeUpdatingRow(at: indexPath.row)
         tableView.deleteRows(at: [indexPath], with: .automatic)
+        delegate?.expensesChanged(goal: goal)
     }
     
     func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
@@ -278,6 +281,7 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
             } else {
                 expenses[index] = expense
             }
+            delegate?.expensesChanged(goal: goal)
             return true
         } else {
             if justCreated {
@@ -319,6 +323,7 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
     // TODO: Check here and in editedExpenseFrom modal if it still belongs to
     // this goal/period.
     func createdExpenseFromModal(_ expense: Expense) {
+        delegate?.expensesChanged(goal: goal)
         expenses.insert(expense, at: 0)
         let newDatum = ExpenseCellDatum(expense.shortDescription, expense.amount, true)
         expenseCellData[0] = newDatum
@@ -339,6 +344,7 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
     }
     
     func editedExpenseFromModal(_ expense: Expense) {
+        delegate?.expensesChanged(goal: goal)
         guard let index = expenses.index(of: expense) else {
             Logger.debug("Edited an expense, but could not find it in TodayViewController expenses.")
             return
@@ -354,4 +360,12 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
             self.tableView.deselectRow(at: indexPath, animated: true)
         }
     }
+}
+
+protocol TodayViewExpensesDelegate {
+    /**
+     * Called when there is a potential change to the set of expenses currently
+     * loaded for this goal.
+     */
+    func expensesChanged(goal: Goal)
 }

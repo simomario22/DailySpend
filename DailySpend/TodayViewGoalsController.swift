@@ -32,7 +32,7 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
         }
     }
     var goals: [Goal.IndentedGoal]
-    var delegate: TodayViewControllerDelegate
+    var delegate: TodayViewGoalsDelegate
     var tableShown: Bool
     var setExplainer: ((Bool) -> ())!
     
@@ -56,7 +56,7 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
     init(view: UIView,
          navigationItem: UINavigationItem,
          navigationBar: UINavigationBar,
-         delegate: TodayViewControllerDelegate,
+         delegate: TodayViewGoalsDelegate,
          present: @escaping (UIViewController, Bool, (() -> Void)?) -> ()) {
         self.view = view
         self.delegate = delegate
@@ -350,4 +350,8 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
             self.goalTable.isScrollEnabled = true
         }
     }
+}
+
+protocol TodayViewGoalsDelegate {
+    func goalChanged(newGoal: Goal?)
 }

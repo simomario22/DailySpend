@@ -546,7 +546,7 @@ class Goal: NSManagedObject {
         }
         
         if !isRecurring {
-            return CalendarInterval(start: start, end: self.end)
+            return CalendarInterval(start: start, end: self.exclusiveEnd)
         }
         
         return CalendarPeriod(
@@ -632,6 +632,11 @@ class Goal: NSManagedObject {
         }
     }
     
+    /**
+     * The first day of the last period included in the goal, or none if nil.
+     * Note that this should only be used in user facing situations. For
+     * calculations and ranges, use `exclusiveEnd`.
+     */
     var end: CalendarDateProvider? {
         get {
             if let day = end_ as Date? {
@@ -648,6 +653,21 @@ class Goal: NSManagedObject {
                 end_ = nil
             }
         }
+    }
+    
+    /**
+     * Returns the first date after this period has ended.
+     */
+    var exclusiveEnd: CalendarDateProvider? {
+        guard let end = end else {
+            return nil
+        }
+        let period = CalendarPeriod(
+            calendarDate: end,
+            period: self.period,
+            beginningDateOfPeriod: end
+        )
+        return period?.end
     }
     
     var amount: Decimal? {
