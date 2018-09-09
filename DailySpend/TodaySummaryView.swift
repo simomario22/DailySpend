@@ -8,7 +8,7 @@
 
 import UIKit
 
-class TodaySummaryView: UIView {
+class TodaySummaryView: BorderedView {
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
     private let margin: CGFloat = 8
     private let amountLabel = UICountingLabel()
@@ -59,6 +59,8 @@ class TodaySummaryView: UIView {
         
         hintLabel.textAlignment = .center
         hintLabel.font = UIFont.systemFont(ofSize: 14.0)
+        
+        self.addOutsideBottomBorder(color: UIColor.black.withAlphaComponent(0.3), width: 0.5)
         
         self.addSubviews([amountLabel, toSpendLabel, hintLabel])
     }

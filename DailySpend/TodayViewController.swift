@@ -15,13 +15,14 @@ class TodayViewController: UIViewController, TodayViewGoalsDelegate, TodayViewEx
         return appDelegate.persistentContainer.viewContext
     }
 
-    var summaryViewHidden: Bool = false
+    var summaryViewHidden: Bool = true
     var summaryView: TodaySummaryView!
     var neutralBarColor: UIColor!
     var tableView: UITableView!
     var expensesController: TodayViewExpensesController!
     var cellCreator: TableViewCellHelper!
     var period: CalendarPeriod!
+    var goal: Goal!
     
     var expenses = [(desc: String, amount: String)]()
         
@@ -36,20 +37,35 @@ class TodayViewController: UIViewController, TodayViewGoalsDelegate, TodayViewEx
             object: nil
         )
         
-        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(dayChanged),
+            name: NSNotification.Name.NSCalendarDayChanged,
+            object: nil
+        )
+
         let width = view.frame.size.width
-        let summaryFrame = CGRect(x: 0, y: 0, width: view.frame.size.width, height: 120)
+        let summaryFrame = CGRect(x: 0, y: -120, width: width, height: 120)
         summaryView = TodaySummaryView(frame: summaryFrame)
         
+        // The border line hangs below the summary frame, so we'll use that one
+        // so it slides out nicely.
+        self.navigationController?.navigationBar.hideBorderLine()
+
         let navHeight = navigationController?.navigationBar.frame.size.height ?? 0
         let statusBarSize = UIApplication.shared.statusBarFrame.size
         let statusBarHeight = min(statusBarSize.width, statusBarSize.height)
-        let tableHeight = view.frame.size.height - summaryFrame.bottomEdge - navHeight - statusBarHeight
-        let tableFrame = CGRect(x: 0, y: summaryFrame.bottomEdge, width: width, height: tableHeight)
+        let tableHeight = view.frame.size.height - navHeight - statusBarHeight
+        let tableFrame = CGRect(x: 0, y: 0, width: width, height: tableHeight)
+
         tableView = UITableView(frame: tableFrame, style: .grouped)
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubviews([tableView, summaryView])
         
-        self.view.addSubviews([summaryView, tableView])
-        navigationController?.navigationBar.hideBorderLine()
+        tableView.topAnchor.constraint(equalTo: summaryView.bottomAnchor).isActive = true
+        tableView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true
+        tableView.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
         
         expensesController = TodayViewExpensesController(
             tableView: tableView,
@@ -60,7 +76,7 @@ class TodayViewController: UIViewController, TodayViewGoalsDelegate, TodayViewEx
         tableView.delegate = expensesController
         tableView.dataSource = expensesController
         
-        let goalController = TodayViewGoalsController(
+        _ = TodayViewGoalsController(
             view: navigationController!.view,
             navigationItem: navigationItem,
             navigationBar: navigationController!.navigationBar,
@@ -68,12 +84,11 @@ class TodayViewController: UIViewController, TodayViewGoalsDelegate, TodayViewEx
             present: self.present
         )
         
-        if goalController.getLastUsedGoal() == nil {
-            summaryView.frame = summaryView.frame.offsetBy(dx: 0, dy: -summaryView.frame.height)
-            summaryViewHidden = true
-        }
-        
         Logger.printAllCoreData()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        updateSummaryViewForGoal(goal)
     }
 
     override func didReceiveMemoryWarning() {
@@ -82,27 +97,46 @@ class TodayViewController: UIViewController, TodayViewGoalsDelegate, TodayViewEx
     }
 
     func goalChanged(newGoal: Goal?) {
+        self.goal = newGoal
         expensesController.loadExpensesForGoal(newGoal)
-        updateSummaryViewForGoal(goal: newGoal)
+        updateSummaryViewForGoal(newGoal)
     }
     
     func expensesChanged(goal: Goal) {
-        updateSummaryViewForGoal(goal: goal)
+        updateSummaryViewForGoal(goal)
     }
     
-    func updateSummaryViewForGoal(goal: Goal?) {
+    @objc func dayChanged() {
+        
+    }
+    
+    func updateSummaryViewForGoal(_ goal: Goal?) {
         guard let goal = goal else {
             clearSummaryView()
             return
         }
         
         if summaryViewHidden {
-            UIView.beginAnimations("TodayViewController.showSummaryView", context: nil)
-            summaryView.frame = summaryView.frame.offsetBy(dx: 0, dy: summaryView.frame.height)
-            summaryViewHidden = false
-            UIView.commitAnimations()
+            // Need to call layoutIfNeeded outside the animation block and
+            // before changing the summary view frame, otherwise we could end
+            // up animating subviews we don't mean to that haven't been
+            // placed yet.
+            self.view.layoutIfNeeded()
+            UIView.animate(
+                withDuration: 0.3,
+                animations: {
+                    self.summaryView.frame = self.summaryView.frame.offsetBy(
+                        dx: 0,
+                        dy: self.summaryView.frame.height
+                    )
+                    self.summaryViewHidden = false
+                    self.view.layoutIfNeeded()
+                }
+            )
         }
         
+        // Update summary view with information from this goal for the
+        // appropriate period.
         let newAmount = goal.balance(for: CalendarDay()).doubleValue
         let oldAmount = mostRecentlyUsedAmountForGoal(goal: goal)
         if oldAmount != newAmount {
@@ -140,11 +174,18 @@ class TodayViewController: UIViewController, TodayViewGoalsDelegate, TodayViewEx
     
     func clearSummaryView() {
         if !summaryViewHidden {
-            UIView.beginAnimations("TodayViewController.showSummaryView", context: nil)
-            summaryView.frame = summaryView.frame.offsetBy(dx: 0, dy: -summaryView.frame.height)
-            summaryView.backgroundColor = neutralBarColor
-            summaryViewHidden = true
-            UIView.commitAnimations()
+            self.view.layoutIfNeeded()
+            UIView.animate(
+                withDuration: 0.3,
+                animations: {
+                    self.summaryView.frame = self.summaryView.frame.offsetBy(
+                        dx: 0,
+                        dy: -self.summaryView.frame.height
+                    )
+                    self.summaryViewHidden = true
+                    self.view.layoutIfNeeded()
+                }
+            )
         }
     }
     
