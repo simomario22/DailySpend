@@ -59,7 +59,7 @@ class CalculatorInputView: UIView, UIInputViewAudioFeedback {
         fatalError("init(coder:) has not been implemented")
     }
     
-    struct ButtonDefinition {
+    private struct ButtonDefinition {
         var title: String
         var row: Int
         var col: Int
@@ -72,7 +72,7 @@ class CalculatorInputView: UIView, UIInputViewAudioFeedback {
         }
     }
     
-    func makeButton(_ definition: ButtonDefinition) -> UIButton {
+    private func makeButton(_ definition: ButtonDefinition) -> UIButton {
         let buttonFrame = frameForButton(row: definition.row, col: definition.col)
         let button = CalculatorButton(frame: buttonFrame)
         button.setTitle(definition.title, for: .normal)
@@ -87,7 +87,7 @@ class CalculatorInputView: UIView, UIInputViewAudioFeedback {
         return button
     }
     
-    func addAllButtons() {
+    private func addAllButtons() {
         let buttonDefs: [ButtonDefinition] = [
             ButtonDefinition("1", 0, 0, false),
             ButtonDefinition("2", 0, 1, false),
@@ -148,10 +148,11 @@ class CalculatorInputView: UIView, UIInputViewAudioFeedback {
         addSubview(backspaceButton)
     }
     
-    func frameForButton(row: Int, col: Int) -> CGRect {
+    private func frameForButton(row: Int, col: Int) -> CGRect {
         let sideMargin = margin * 2
         let insetFrame = frame.insetBy(dx: sideMargin, dy: sideMargin)
-        let height = insetFrame.size.height / 4
+        let bottomInset = UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0
+        let height = (insetFrame.size.height - bottomInset) / 4
         let colFourWidth = insetFrame.size.width * CGFloat(colFourProportion)
         let firstThreeColsWidth = (insetFrame.size.width - colFourWidth) / 3
         let width = col < 3 ? firstThreeColsWidth : colFourWidth

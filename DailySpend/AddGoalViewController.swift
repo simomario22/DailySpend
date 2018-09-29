@@ -68,7 +68,10 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
         self.view.tintColor = .tint
         super.viewDidLoad()
         
-        let toolbarFrame = CGRect(x: 0, y: 64, width: view.frame.size.width, height: 44)
+        let navHeight = navigationController?.navigationBar.frame.size.height ?? 0
+        let statusBarSize = UIApplication.shared.statusBarFrame.size
+        let statusBarHeight = min(statusBarSize.width, statusBarSize.height)
+        let toolbarFrame = CGRect(x: 0, y: navHeight + statusBarHeight, width: view.frame.size.width, height: 44)
         
         segmentedControl = UISegmentedControl(items: ["Recurring", "One Time"])
         segmentedControl.selectedSegmentIndex = 0
@@ -93,8 +96,7 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
         tableView.delegate = self
         tableView.dataSource = self
         view.addSubview(tableView)
-        
-        
+
         view.backgroundColor = tableView.backgroundColor
         
         cellCreator = TableViewCellHelper(tableView: tableView)

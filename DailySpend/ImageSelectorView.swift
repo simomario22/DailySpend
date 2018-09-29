@@ -262,11 +262,16 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIScrollViewDel
         // add a PhotoBox with the image so we don't have to create one
         // when the user wants to view the image later.
         let image = info[UIImagePickerControllerOriginalImage] as! UIImage
-        
+
+        // We have the raw photo data as a UIImage, so the format doesn't
+        // really matter, we'd just like to make a simple effort to match the
+        // compression to the original if it's a PNG - otherwise we'll use JPEG
+        // compression.
         var imageType = "jpeg"
-        if let url = info[UIImagePickerControllerReferenceURL] as? NSURL {
-            if let lastComponent = url.lastPathComponent {
-                if lastComponent.contains("PNG") {
+        if let asset = info[UIImagePickerControllerPHAsset] as? PHAsset {
+            let assetResources = PHAssetResource.assetResources(for: asset)
+            if let filename = assetResources.first?.originalFilename {
+                if filename.lowercased().hasSuffix("png") {
                     imageType = "png"
                 }
             }

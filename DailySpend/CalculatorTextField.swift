@@ -123,7 +123,7 @@ class CalculatorTextField: UITextField, CalculatorInputViewDelegate {
         super.init(frame: frame)
         let screenHeight = UIScreen.main.bounds.size.height
         let screenWidth = UIScreen.main.bounds.size.width
-        let inputHeight: CGFloat = 216
+        let inputHeight: CGFloat = 216 + (UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0)
         let inputFrame = CGRect(x: 0, y: screenHeight - inputHeight, width: screenWidth, height: inputHeight)
         add(for: .editingDidEnd, didEndEditing)
         add(for: .editingChanged, editingChanged)
