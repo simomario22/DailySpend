@@ -86,4 +86,17 @@ class BorderedToolbar: UIToolbar {
         self.layer.addSublayer(bottomBorder!)
         self.layer.masksToBounds = true
     }
+    
+    func addOutsideBottomBorder(color: UIColor, width: CGFloat) {
+        bottomBorder?.removeFromSuperlayer()
+        bottomBorder = CALayer()
+        bottomBorder!.backgroundColor = color.cgColor
+        bottomBorder!.frame = CGRect(
+            x: 0,
+            y: bounds.size.height,
+            width: bounds.size.width,
+            height: width
+        )
+        self.layer.addSublayer(bottomBorder!)
+    }
 }

@@ -81,7 +81,8 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
         }
         
         toolbar = BorderedToolbar(frame: toolbarFrame)
-        toolbar.addBottomBorder(color: UIColor.lightGray, width: 0.5)
+        toolbar.addOutsideBottomBorder(color: UIColor.black.withAlphaComponent(0.3), width: 0.5)
+
         let barButtonControl = UIBarButtonItem(customView: segmentedControl)
         toolbar.setItems([barButtonControl], animated: false)
         view.addSubview(toolbar)
