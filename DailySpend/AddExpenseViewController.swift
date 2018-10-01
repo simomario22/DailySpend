@@ -248,7 +248,7 @@ class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableVi
                 placeholder: "e.g. \"Groceries\"",
                 text: shortDescription,
                 changedToText: { (text: String, _) in
-                    self.shortDescription = text
+                    self.shortDescription = text == "" ? nil : text
                 },
                 didBeginEditing: { _ in
                     self.datePickerCellResignFirstResponder()
