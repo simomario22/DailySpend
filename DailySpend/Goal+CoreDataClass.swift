@@ -400,17 +400,20 @@ class Goal: NSManagedObject {
      *            interval pay, and expenses.
      */
      func balance(for day: CalendarDay) -> Decimal {
-        guard let expensePeriod = periodInterval(for: day.start) as? CalendarPeriod,
+        guard let expenseInterval = periodInterval(for: day.start),
               let amount = adjustedAmountForDateInPeriod(day.start) else {
             return 0
         }
-        let totalExpenseAmount = getExpenses(period: expensePeriod)
+        let totalExpenseAmount = getExpenses(interval: expenseInterval)
             .reduce(0, {(amount, expense) -> Decimal in
             return amount + (expense.amount ?? 0)
         })
 
         var totalPaidAmount: Decimal = 0
         if hasIncrementalPayment {
+            guard let expensePeriod = expenseInterval as? CalendarPeriod else {
+                return 0
+            }
             let paymentsPerPeriod = expensePeriod.numberOfSubPeriodsOfLength(period: self.payFrequency)
             if paymentsPerPeriod == 0 {
                 return 0
@@ -464,16 +467,16 @@ class Goal: NSManagedObject {
      *    - period: The `CalendarInterval` for which to fetch expenses.
      *              If period is nil, will return all expenses for the goal.
      */
-    func getExpenses(period: CalendarIntervalProvider) -> [Expense] {
+    func getExpenses(interval: CalendarIntervalProvider) -> [Expense] {
         let fetchRequest: NSFetchRequest<Expense> = Expense.fetchRequest()
         
         let descendants = allChildDescendants()
         var fs = "(goal_ = %@ OR goal_ IN %@) AND transactionDate_ >= %@"
-        if let end = period.end {
+        if let end = interval.end {
             fs += " AND transactionDate_ < %@"
-            fetchRequest.predicate = NSPredicate(format: fs, self, descendants ?? [], period.start.gmtDate as CVarArg, end.gmtDate as CVarArg)
+            fetchRequest.predicate = NSPredicate(format: fs, self, descendants ?? [], interval.start.gmtDate as CVarArg, end.gmtDate as CVarArg)
         } else {
-            fetchRequest.predicate = NSPredicate(format: fs, self, self.childGoals ?? [], period.start.gmtDate as CVarArg)
+            fetchRequest.predicate = NSPredicate(format: fs, self, self.childGoals ?? [], interval.start.gmtDate as CVarArg)
         }
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "dateCreated_", ascending: false)]
         

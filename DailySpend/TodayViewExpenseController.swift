@@ -302,9 +302,9 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
     
     func loadExpensesForGoal(_ goal: Goal?) {
         if let goal = goal,
-            let currentPeriod = goal.incrementalPaymentInterval(for: CalendarDay().start) {
+            let currentInterval = goal.incrementalPaymentInterval(for: CalendarDay().start) {
             self.goal = goal
-            expenses = goal.getExpenses(period: currentPeriod)
+            expenses = goal.getExpenses(interval: currentInterval)
             
             expenseCellData = []
             for e in expenses {
