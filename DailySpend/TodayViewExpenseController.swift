@@ -320,9 +320,14 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
         tableView.reloadData()
     }
 
-    // TODO: Check here and in editedExpenseFrom modal if it still belongs to
-    // this goal/period.
     func createdExpenseFromModal(_ expense: Expense) {
+        // Needs to check this condition before caling `expenseChanged` because
+        // this class will have a different `self.goal` after that function
+        // returns.
+        if expense.goal != self.goal {
+            delegate?.expensesChanged(goal: expense.goal!)
+            return
+        }
         delegate?.expensesChanged(goal: goal)
         expenses.insert(expense, at: 0)
         let newDatum = ExpenseCellDatum(expense.shortDescription, expense.amount, true)
@@ -344,6 +349,13 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
     }
     
     func editedExpenseFromModal(_ expense: Expense) {
+        // Needs to check this condition before caling `expenseChanged` because
+        // this class will have a different `self.goal` after that function
+        // returns.
+        if expense.goal != self.goal {
+            delegate?.expensesChanged(goal: expense.goal!)
+            return
+        }
         delegate?.expensesChanged(goal: goal)
         guard let index = expenses.index(of: expense) else {
             Logger.debug("Edited an expense, but could not find it in TodayViewController expenses.")
@@ -366,6 +378,9 @@ protocol TodayViewExpensesDelegate {
     /**
      * Called when there is a potential change to the set of expenses currently
      * loaded for this goal.
+     *
+     * - Parameters:
+     *    - goal: The goal associated with the expense.
      */
     func expensesChanged(goal: Goal)
 }

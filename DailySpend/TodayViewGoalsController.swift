@@ -85,6 +85,11 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
         let navHeight = self.navigationBar.frame.size.height
         self.navigationItem.titleView = makeTitleView(height: navHeight, title: title)
     }
+    
+    func setGoal(newGoal: Goal) {
+        self.currentGoal = newGoal
+        self.goalTable?.reloadData()
+    }
 
     func notImplemented() {
         let alertVC = UIAlertController(title: "Not Implemented", message: "This functionality is not implemented.", preferredStyle: .alert)
@@ -330,7 +335,6 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
         } else {
             let newGoal = goals[indexPath.row].goal
             if self.currentGoal != newGoal {
-                
                 let oldGoalIndex = goals.index(where: { $0.goal == currentGoal! }) ?? indexPath.row
                 let oldGoalIndexPath = IndexPath(row: oldGoalIndex, section: 0)
                 self.currentGoal = newGoal

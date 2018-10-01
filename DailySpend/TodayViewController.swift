@@ -20,6 +20,7 @@ class TodayViewController: UIViewController, TodayViewGoalsDelegate, TodayViewEx
     var neutralBarColor: UIColor!
     var tableView: UITableView!
     var expensesController: TodayViewExpensesController!
+    var goalsController: TodayViewGoalsController!
     var cellCreator: TableViewCellHelper!
     var period: CalendarPeriod!
     var goal: Goal!
@@ -84,7 +85,7 @@ class TodayViewController: UIViewController, TodayViewGoalsDelegate, TodayViewEx
         tableView.delegate = expensesController
         tableView.dataSource = expensesController
         
-        _ = TodayViewGoalsController(
+        goalsController = TodayViewGoalsController(
             view: navigationController!.view,
             navigationItem: navigationItem,
             navigationBar: navigationController!.navigationBar,
@@ -122,7 +123,13 @@ class TodayViewController: UIViewController, TodayViewGoalsDelegate, TodayViewEx
      * Updates the summary view to reflect any changes in data for this goal.
      */
     func expensesChanged(goal: Goal) {
-        updateSummaryViewForGoal(goal)
+        if goal != self.goal {
+            self.goal = goal
+            goalsController.setGoal(newGoal: goal)
+            goalChanged(newGoal: goal)
+        } else {
+            updateSummaryViewForGoal(goal)
+        }
     }
     
     /**
