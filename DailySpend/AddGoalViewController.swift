@@ -49,7 +49,16 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
     var incrementalPayment = false
     var neverEnd = true
     var cellSizeCache = [GoalViewCellType: CGFloat]()
+    
+    /*
+     * The start day, only updated when the start field is explicitly set, but
+     * not on changes to the period scope that affect the start day.
+     */
     var unmodifiedStartDay: CalendarDateProvider!
+    /*
+     * The end day, only updated when the end field is explicitly set, but
+     * not on changes to the period scope that affect the end day.
+     */
     var unmodifiedEndDay: CalendarDateProvider?
     
     // Goal Data
@@ -76,6 +85,18 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
         segmentedControl.selectedSegmentIndex = 0
         segmentedControl.add(for: .valueChanged) {
             self.recurring = self.segmentedControl.selectedSegmentIndex == 0
+            
+            if self.expandedSection == .PeriodLengthPicker ||
+                self.expandedSection == .PayIntervalPicker {
+                // Disable section on switch if not in recurring and
+                // non-recurring views.
+                self.expandedSection = .None
+            }
+            if self.recurring {
+                // We are effectively switching from a .Day period, although
+                // not set explicitly.
+                self.updateStartAndEndToPeriod(from: .Day, reload: false)
+            }
             self.tableView.reloadData()
         }
         
@@ -87,10 +108,12 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
         view.addSubview(toolbar)
 
         // Set up table view.
-        let tableViewFrame = CGRect(x: 0,
-                                    y: toolbarFrame.bottomEdge,
-                                    width: view.frame.size.width,
-                                    height: view.frame.size.height - toolbarFrame.bottomEdge)
+        let tableViewFrame = CGRect(
+            x: 0,
+            y: toolbarFrame.bottomEdge,
+            width: view.frame.size.width,
+            height: view.frame.size.height - toolbarFrame.bottomEdge
+        )
         tableView = UITableView(frame: tableViewFrame, style: .grouped)
         tableView.keyboardDismissMode = .onDrag
         tableView.delegate = self
@@ -304,7 +327,7 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
                     
                     self.period.scope = newPeriod
                     
-                    self.updateStartAndEndToPeriod(from: oldPeriod)
+                    self.updateStartAndEndToPeriod(from: oldPeriod, reload: true)
                     self.reloadExpandedSectionLabel(.PeriodLengthPicker)
                     if self.incrementalPayment {
                         self.reloadExpandedSectionLabel(.PayIntervalPicker)
@@ -381,19 +404,21 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
         case .StartPickerCell:
             return cellCreator.periodPickerCell(
                 date: start,
-                scope: period.scope,
+                scope: recurring ? period.scope : .Day,
                 changedToDate: { (date: CalendarDateProvider, scope: PeriodScope) in
                     self.start = date
+
+                    if self.end != nil && self.start!.gmtDate > self.end!.gmtDate {
+                        // End day earlier than start day - set it to start.
+                        self.end = self.start
+                        self.reloadExpandedSectionLabel(.EndNeverAndDayPicker)
+                    }
                     
                     // Update the unmodified days since we are making a direct
                     // change.
                     self.unmodifiedStartDay = self.start
                     self.unmodifiedEndDay = self.end
-                    
-                    if self.end != nil && self.start!.gmtDate > self.end!.gmtDate {
-                        self.end = self.start
-                        self.reloadExpandedSectionLabel(.EndNeverAndDayPicker)
-                    }
+
                     self.reloadExpandedSectionLabel(.StartDayPicker)
             })
         case .EndCell:
@@ -609,7 +634,16 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
         }
     }
     
-    func updateStartAndEndToPeriod(from oldPeriod: PeriodScope) {
+    /**
+     * Update start and end to be valid for the current period.
+     *
+     * - Parameters:
+     *     - oldPeriod: The previous period scope that was used for date
+     *                  selection.
+     *     - reload: `true` if this function should reload the appropriate rows
+     *               in the table view.
+     */
+    func updateStartAndEndToPeriod(from oldPeriod: PeriodScope, reload: Bool) {
         let start: CalendarDateProvider! = period.scope < oldPeriod ? unmodifiedStartDay : self.start
         let end: CalendarDateProvider? = period.scope < oldPeriod ? unmodifiedEndDay : self.end
         switch period.scope {
@@ -623,6 +657,9 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
             self.start = CalendarMonth(dateInMonth: start).start
             self.end = end == nil ? nil : CalendarMonth(dateInMonth: end!).start
         case .None: break
+        }
+        if !reload {
+            return
         }
         let section = recurring ? 3 : 1
         let startRow = 0
