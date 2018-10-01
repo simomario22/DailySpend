@@ -354,14 +354,8 @@ class Goal: NSManagedObject {
         }
         
         
-        if _end != nil {
-            if !Goal.scopeConformsToDate(_end!.gmtDate, scope: _period.scope) {
-                return (false, "If this goal has an end date, it must be at the start of a period.")
-            }
-            
-            if _end!.gmtDate < _start!.gmtDate {
-                return (false, "If this goal has an end date, it must be on or after the start date.")
-            }
+        if _end != nil && _end!.gmtDate < _start!.gmtDate {
+            return (false, "If this goal has an end date, it must be on or after the start date.")
         }
         
         if _period.scope != .None && _payFrequency > _period {
@@ -556,7 +550,7 @@ class Goal: NSManagedObject {
     }
     
     var archived: Bool {
-        return end != nil && CalendarDay(dateInDay: end!) > CalendarDay()
+        return end != nil && CalendarDay(dateInDay: end!) < CalendarDay()
     }
     
     var alwaysCarryOver: Bool {

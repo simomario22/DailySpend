@@ -445,7 +445,7 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
         case .EndPickerCell:
             return cellCreator.periodPickerCell(
                 date: end!,
-                scope: period.scope,
+                scope: .Day,
                 changedToDate: { (date: CalendarDateProvider, scope: PeriodScope) in
                     self.end = date
                     

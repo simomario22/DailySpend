@@ -172,7 +172,7 @@ class TodayViewController: UIViewController, TodayViewGoalsDelegate, TodayViewEx
             }
             endDay = CalendarDay(dateInDay: currentGoalPeriod.end!).subtract(days: 1)
         } else if goal.end != nil {
-            endDay = CalendarDay(dateInDay: goal.end!).subtract(days: 1)
+            endDay = CalendarDay(dateInDay: goal.end!)
         }
         if let endDay = endDay {
             let dateFormatter = DateFormatter()
