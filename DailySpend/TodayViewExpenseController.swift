@@ -204,7 +204,6 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
                 datum.clean = false
                 tableView.beginUpdates()
                 tableView.endUpdates()
-            }, didEndEditing: { (expenseCell: ExpenseTableViewCell) in
             }, changedToDescription: { (newDescription: String?) in
                 let desc = newDescription == "" ? nil : newDescription
                 datum.shortDescription = desc

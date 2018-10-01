@@ -300,7 +300,6 @@ class TableViewCellHelper {
         tappedCancel: @escaping ( ExpenseTableViewCell, ()->() ) -> (),
         selectedDetailDisclosure: @escaping () -> (),
         didBeginEditing: @escaping ((ExpenseTableViewCell) -> ()),
-        didEndEditing: @escaping ((ExpenseTableViewCell) -> ()),
         changedToDescription: @escaping (String?) -> (),
         changedToAmount: @escaping (Decimal?) -> ()
     ) -> UITableViewCell {
@@ -310,32 +309,33 @@ class TableViewCellHelper {
             cell.clipsToBounds = true
         }
         
-        var otherViewIsBecomingFirstResponder = false
-        cell.shouldBegin = { (_, _) in
-            otherViewIsBecomingFirstResponder = true
-        }
-        
         cell.willReturn = { (_, _, newField) in
             newField.becomeFirstResponder()
         }
         
         cell.beganEditing = { (cell: ExpenseTableViewCell, field: UITextField) in
-            otherViewIsBecomingFirstResponder = false
             didBeginEditing(cell)
         }
-        cell.endedEditing = { (cell: ExpenseTableViewCell, field: UITextField) in
-            if !otherViewIsBecomingFirstResponder {
-                didEndEditing(cell)
-            }
-        }
         cell.selectedDetailDisclosure = selectedDetailDisclosure
-        cell.changedDescription = { textField in
+        
+        func changedDescriptionField(_ textField: UITextField) {
             if undescribed && textField.text != nil && !textField.text!.isEmpty{
                 cell.descriptionField.font = UIFont.systemFont(ofSize: 18)
             } else if undescribed {
                 cell.descriptionField.font = UIFont.italicSystemFont(ofSize: 18)
             }
             changedToDescription(textField.text)
+        }
+
+        cell.changedDescription = changedDescriptionField
+        cell.endedEditing = { (cell: ExpenseTableViewCell, field: UITextField) in
+            // Send changed events since autocorrect can change the text on
+            // when editing ends.
+            if field == cell.amountField {
+                changedToAmount(cell.amountField.evaluatedValue())
+            } else {
+                changedDescriptionField(field)
+            }
         }
         cell.tappedSave = { (descriptionField: UITextField, amountField: CalculatorTextField) in
             tappedSave(
