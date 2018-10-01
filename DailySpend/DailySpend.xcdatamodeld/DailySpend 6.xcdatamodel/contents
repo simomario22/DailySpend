@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14135" systemVersion="17G65" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14315.18" systemVersion="17G65" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Adjustment" representedClassName="Adjustment" syncable="YES">
         <attribute name="amountPerDay_" optional="YES" attributeType="Decimal" defaultValueString="0.0" syncable="YES"/>
         <attribute name="dateCreated_" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
@@ -21,7 +21,6 @@
         <attribute name="adjustMonthAmountAutomatically_" optional="YES" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="alwaysCarryOver_" optional="YES" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="amount_" optional="YES" attributeType="Decimal" defaultValueString="0.0" syncable="YES"/>
-        <attribute name="archived_" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="dateCreated_" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="end_" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="payFrequency_" optional="YES" attributeType="Integer 64" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
@@ -51,7 +50,7 @@
     <elements>
         <element name="Adjustment" positionX="162" positionY="-72" width="128" height="135"/>
         <element name="Expense" positionX="-263" positionY="36" width="128" height="150"/>
-        <element name="Goal" positionX="-54" positionY="27" width="128" height="300"/>
+        <element name="Goal" positionX="-54" positionY="27" width="128" height="285"/>
         <element name="Image" positionX="-207" positionY="-99" width="128" height="90"/>
         <element name="Pause" positionX="124" positionY="81" width="128" height="120"/>
     </elements>

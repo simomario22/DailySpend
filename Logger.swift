@@ -58,7 +58,6 @@ class Logger {
             print("goal.adjustMonthAmountAutomatically: \(goal.adjustMonthAmountAutomatically)")
             print("goal.alwaysCarryOver: \(goal.alwaysCarryOver)")
             print("goal.amount: \(String(describing: goal.amount))")
-            print("goal.archived: \(goal.archived)")
             print("goal.end: \(date(goal.end?.gmtDate))")
             print("goal.hasIncrementalPayment: \(goal.hasIncrementalPayment)")
             print("goal.isRecurring: \(goal.isRecurring)")

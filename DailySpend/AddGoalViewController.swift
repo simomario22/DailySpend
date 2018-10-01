@@ -55,7 +55,6 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
     // Goal Data
     var amount: Decimal?
     var shortDescription: String?
-    var archived: Bool!
     var alwaysCarryOver: Bool!
     var adjustMonthAmountAutomatically: Bool!
     var period: Period!
@@ -108,7 +107,6 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
 
             amount = goal.amount
             shortDescription = goal.shortDescription
-            archived = goal.archived
             alwaysCarryOver = goal.alwaysCarryOver
             adjustMonthAmountAutomatically = goal.adjustMonthAmountAutomatically
             period = goal.period
@@ -139,7 +137,6 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
             self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Add", style: .done, save)
             self.navigationItem.title = "New Goal"
             
-            archived = false
             alwaysCarryOver = false
             adjustMonthAmountAutomatically = true
             period = Period(scope: .Day, multiplier: 1)

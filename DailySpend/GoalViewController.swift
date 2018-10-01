@@ -46,8 +46,6 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func setGoals() {
         currentGoals = Goal.getIndentedGoals(excludeGoal: { $0.archived })
-        
-        // TODO: Auto archive goals past their end date.
         archivedGoals = Goal.getIndentedGoals(excludeGoal: { !$0.archived })
     }
 

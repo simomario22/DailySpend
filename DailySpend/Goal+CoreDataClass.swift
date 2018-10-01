@@ -29,9 +29,7 @@ class Goal: NSManagedObject {
             Logger.debug("couldn't unwrap amount in Goal")
             return nil
         }
-        
-        jsonObj["archived"] = archived
-        
+
         jsonObj["alwaysCarryOver"] = alwaysCarryOver
 
         jsonObj["adjustMonthAmountAutomatically"] = adjustMonthAmountAutomatically
@@ -102,13 +100,6 @@ class Goal: NSManagedObject {
             goal.amount = decimal
         } else {
             Logger.debug("couldn't unwrap amount in Goal")
-            return .Failure
-        }
-        
-        if let archived = json["archived"] as? NSNumber {
-            goal.archived = archived.boolValue
-        } else {
-            Logger.debug("couldn't unwrap archived in Goal")
             return .Failure
         }
         
@@ -335,7 +326,6 @@ class Goal: NSManagedObject {
         period: Period? = nil,
         payFrequency: Period? = nil,
         parentGoal: Goal?? = nil,
-        archived: Bool? = nil,
         alwaysCarryOver: Bool? = nil,
         adjustMonthAmountAutomatically: Bool? = nil,
         dateCreated: Date?? = nil
@@ -347,7 +337,6 @@ class Goal: NSManagedObject {
         let _period = period ?? self.period
         let _payFrequency = payFrequency ?? self.payFrequency
         let _parentGoal = parentGoal ?? self.parentGoal
-        let _archived = archived ?? self.archived
         let _alwaysCarryOver = alwaysCarryOver ?? self.alwaysCarryOver
         let _adjustMonthAmountAutomatically = adjustMonthAmountAutomatically ?? self.adjustMonthAmountAutomatically
         let _dateCreated = dateCreated ?? self.dateCreated
@@ -394,7 +383,6 @@ class Goal: NSManagedObject {
         self.period = _period
         self.payFrequency = _payFrequency
         self.parentGoal = _parentGoal
-        self.archived = _archived
         self.alwaysCarryOver = _alwaysCarryOver
         self.adjustMonthAmountAutomatically = _adjustMonthAmountAutomatically
         self.dateCreated = _dateCreated
@@ -565,12 +553,7 @@ class Goal: NSManagedObject {
     }
     
     var archived: Bool {
-        get {
-            return archived_
-        }
-        set {
-            archived_ = newValue
-        }
+        return end != nil && CalendarDay(dateInDay: end!) > CalendarDay()
     }
     
     var alwaysCarryOver: Bool {

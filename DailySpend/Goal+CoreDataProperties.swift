@@ -17,7 +17,6 @@ extension Goal {
     }
 
     @NSManaged var amount_: NSDecimalNumber?
-    @NSManaged var archived_: Bool
     @NSManaged var alwaysCarryOver_: Bool
     @NSManaged var adjustMonthAmountAutomatically_: Bool
     @NSManaged var dateCreated_: NSDate?
