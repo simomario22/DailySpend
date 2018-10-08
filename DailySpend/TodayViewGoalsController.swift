@@ -164,14 +164,9 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
         
         let explainerHeight: CGFloat = 15
         let titleHeight = height - explainerHeight
-
-        let explainerWidth = attributedExplainer.size().width
-        let explainerDoneWidth = attributedExplainer.size().width
-        let titleWidth = NSString(string: title).size(withAttributes: [.font: titleFont]).width
-        let greatestWidth = max(max(explainerDoneWidth, explainerWidth), titleWidth)
         
-        let maxBoundingWidth = view.bounds.size.width - (height * 2.5) // Save room for two square buttons
-        let width = min(greatestWidth, maxBoundingWidth)
+         // Save room for two square buttons, plus margin
+        let width = view.bounds.size.width - (height * 2.5)
         
         let titleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: width, height: titleHeight))
         titleLabel.text = title
