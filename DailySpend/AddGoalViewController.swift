@@ -107,6 +107,7 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
         toolbar.setItems([barButtonControl], animated: false)
         view.addSubview(toolbar)
 
+        let bottomInset = UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0
         // Set up table view.
         let tableViewFrame = CGRect(
             x: 0,
@@ -114,7 +115,14 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
             width: view.frame.size.width,
             height: view.frame.size.height - toolbarFrame.bottomEdge
         )
+        
         tableView = UITableView(frame: tableViewFrame, style: .grouped)
+        tableView.scrollIndicatorInsets = UIEdgeInsets(
+            top: 0,
+            left: 0,
+            bottom: bottomInset,
+            right: 0
+        )
         tableView.keyboardDismissMode = .onDrag
         tableView.delegate = self
         tableView.dataSource = self
