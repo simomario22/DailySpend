@@ -29,6 +29,7 @@
 		C53BCAA81E9203BC000B5EE1 /* cal_recur@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C53BCAA51E9203BC000B5EE1 /* cal_recur@2x.png */; };
 		C53BCAA91E9203BC000B5EE1 /* cal_recur@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C53BCAA61E9203BC000B5EE1 /* cal_recur@3x.png */; };
 		C53DFD12210C1989001F070A /* ImageSelectorController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C53DFD11210C1989001F070A /* ImageSelectorController.swift */; };
+		C544E5E9217D2C700098AB17 /* ReverseAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C544E5E8217D2C700098AB17 /* ReverseAnimator.swift */; };
 		C546170D204A4AFF00689DED /* GoalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C546170C204A4AFF00689DED /* GoalViewController.swift */; };
 		C54ABD9520561DB100334293 /* LICENCE_VENMO.txt in Resources */ = {isa = PBXBuildFile; fileRef = C54ABD9420561DB100334293 /* LICENCE_VENMO.txt */; };
 		C54ABD9720562A9900334293 /* ExplanatoryTextTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54ABD9620562A9900334293 /* ExplanatoryTextTableViewCell.swift */; };
@@ -60,13 +61,15 @@
 		C586813C1F2E85D5008D3AEE /* BorderedTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = C586813B1F2E85D5008D3AEE /* BorderedTextField.swift */; };
 		C586813E1F2E8BF2008D3AEE /* CGRect+Edges.swift in Sources */ = {isa = PBXBuildFile; fileRef = C586813D1F2E8BF2008D3AEE /* CGRect+Edges.swift */; };
 		C58681401F2E91E6008D3AEE /* UIView+MultipleSubviews.swift in Sources */ = {isa = PBXBuildFile; fileRef = C586813F1F2E91E6008D3AEE /* UIView+MultipleSubviews.swift */; };
+		C58BBB9721704FD900D9650C /* ReviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C58BBB9621704FD900D9650C /* ReviewViewController.swift */; };
+		C58BBB9A2170519500D9650C /* PeriodBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C58BBB992170519500D9650C /* PeriodBrowserView.swift */; };
 		C58FB040210ED88500246156 /* ImageSelectorTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C58FB03F210ED88500246156 /* ImageSelectorTableViewCell.swift */; };
 		C594F1CE1F47EDFE006CA097 /* CalendarDay.swift in Sources */ = {isa = PBXBuildFile; fileRef = C594F1CD1F47EDFE006CA097 /* CalendarDay.swift */; };
 		C594F1D01F47F206006CA097 /* CalendarMonth.swift in Sources */ = {isa = PBXBuildFile; fileRef = C594F1CF1F47F206006CA097 /* CalendarMonth.swift */; };
 		C594F1D61F494CD6006CA097 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = C594F1D51F494CD6006CA097 /* Logger.swift */; };
 		C59E2A2A205C71A8006D18B5 /* PickerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C59E2A29205C71A8006D18B5 /* PickerTableViewCell.swift */; };
 		C59E2A2E205C97F5006D18B5 /* ValueTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C59E2A2D205C97F5006D18B5 /* ValueTableViewCell.swift */; };
-		C5A0DD5C20429CC2004C6411 /* TodayViewGoalsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5A0DD5B20429CC2004C6411 /* TodayViewGoalsController.swift */; };
+		C5A0DD5C20429CC2004C6411 /* NavigationGoalPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5A0DD5B20429CC2004C6411 /* NavigationGoalPicker.swift */; };
 		C5A261A41F66645B007CBB21 /* PauseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5A261A31F66645B007CBB21 /* PauseViewController.swift */; };
 		C5A4AF901FA6B52900101809 /* TableViewCellHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5A4AF8F1FA6B52900101809 /* TableViewCellHelper.swift */; };
 		C5B367CF1EBBD65E006B5ADC /* cog.png in Resources */ = {isa = PBXBuildFile; fileRef = C5B367CC1EBBD65E006B5ADC /* cog.png */; };
@@ -146,6 +149,7 @@
 		C53BCAA51E9203BC000B5EE1 /* cal_recur@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cal_recur@2x.png"; sourceTree = "<group>"; };
 		C53BCAA61E9203BC000B5EE1 /* cal_recur@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cal_recur@3x.png"; sourceTree = "<group>"; };
 		C53DFD11210C1989001F070A /* ImageSelectorController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSelectorController.swift; sourceTree = "<group>"; };
+		C544E5E8217D2C700098AB17 /* ReverseAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReverseAnimator.swift; sourceTree = "<group>"; };
 		C546170C204A4AFF00689DED /* GoalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalViewController.swift; sourceTree = "<group>"; };
 		C54ABD9420561DB100334293 /* LICENCE_VENMO.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENCE_VENMO.txt; sourceTree = "<group>"; };
 		C54ABD9620562A9900334293 /* ExplanatoryTextTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExplanatoryTextTableViewCell.swift; sourceTree = "<group>"; };
@@ -185,13 +189,15 @@
 		C586813B1F2E85D5008D3AEE /* BorderedTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BorderedTextField.swift; sourceTree = "<group>"; };
 		C586813D1F2E8BF2008D3AEE /* CGRect+Edges.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGRect+Edges.swift"; sourceTree = "<group>"; };
 		C586813F1F2E91E6008D3AEE /* UIView+MultipleSubviews.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+MultipleSubviews.swift"; sourceTree = "<group>"; };
+		C58BBB9621704FD900D9650C /* ReviewViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReviewViewController.swift; sourceTree = "<group>"; };
+		C58BBB992170519500D9650C /* PeriodBrowserView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PeriodBrowserView.swift; sourceTree = "<group>"; };
 		C58FB03F210ED88500246156 /* ImageSelectorTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageSelectorTableViewCell.swift; sourceTree = "<group>"; };
 		C594F1CD1F47EDFE006CA097 /* CalendarDay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalendarDay.swift; sourceTree = "<group>"; };
 		C594F1CF1F47F206006CA097 /* CalendarMonth.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CalendarMonth.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		C594F1D51F494CD6006CA097 /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		C59E2A29205C71A8006D18B5 /* PickerTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PickerTableViewCell.swift; sourceTree = "<group>"; };
 		C59E2A2D205C97F5006D18B5 /* ValueTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValueTableViewCell.swift; sourceTree = "<group>"; };
-		C5A0DD5B20429CC2004C6411 /* TodayViewGoalsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayViewGoalsController.swift; sourceTree = "<group>"; };
+		C5A0DD5B20429CC2004C6411 /* NavigationGoalPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationGoalPicker.swift; sourceTree = "<group>"; };
 		C5A261A31F66645B007CBB21 /* PauseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PauseViewController.swift; sourceTree = "<group>"; };
 		C5A287C41EC1741200D3479A /* DailySpend 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "DailySpend 2.xcdatamodel"; sourceTree = "<group>"; };
 		C5A4AF8F1FA6B52900101809 /* TableViewCellHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewCellHelper.swift; sourceTree = "<group>"; };
@@ -364,10 +370,13 @@
 				C5E51E51209EC44B005C674B /* Today View */,
 				C53DFD13210C1991001F070A /* Expense View */,
 				C5E51E52209EC45A005C674B /* Goal View */,
+				C58BBB9821704FE000D9650C /* Review View */,
 				C5E51E53209EC47B005C674B /* Pause View */,
 				C5E51E54209EC481005C674B /* Adjustment View */,
 				C5E51E55209EC49A005C674B /* Export View and Logic */,
 				C5E51E58209EC505005C674B /* Settings View */,
+				C5A0DD5B20429CC2004C6411 /* NavigationGoalPicker.swift */,
+				C544E5E8217D2C700098AB17 /* ReverseAnimator.swift */,
 				C5A4AF8F1FA6B52900101809 /* TableViewCellHelper.swift */,
 				C5E51E56209EC4C8005C674B /* Extensions */,
 				C535275F204CF5B50038E747 /* Custom UI Elements */,
@@ -398,6 +407,15 @@
 				C5781DBF1E6E2060006BBC03 /* Info.plist */,
 			);
 			path = DailySpendUITests;
+			sourceTree = "<group>";
+		};
+		C58BBB9821704FE000D9650C /* Review View */ = {
+			isa = PBXGroup;
+			children = (
+				C58BBB9621704FD900D9650C /* ReviewViewController.swift */,
+				C58BBB992170519500D9650C /* PeriodBrowserView.swift */,
+			);
+			name = "Review View";
 			sourceTree = "<group>";
 		};
 		C5AA87D61F36D5B7001B9F08 /* Expense View */ = {
@@ -472,7 +490,6 @@
 			children = (
 				C5741D4D1FB93EDC00EEDDDD /* TodayViewController.swift */,
 				C51AD770209E8FA9002CC4AC /* TodayViewExpenseController.swift */,
-				C5A0DD5B20429CC2004C6411 /* TodayViewGoalsController.swift */,
 				C5E51E4F209EC438005C674B /* TodaySummaryView.swift */,
 			);
 			name = "Today View";
@@ -769,6 +786,7 @@
 				C573B9FF20324CDA0025A5A2 /* Pause+CoreDataProperties.swift in Sources */,
 				C573BA0320324CDA0025A5A2 /* Expense+CoreDataProperties.swift in Sources */,
 				C5781D9B1E6E2060006BBC03 /* AppDelegate.swift in Sources */,
+				C58BBB9A2170519500D9650C /* PeriodBrowserView.swift in Sources */,
 				C53DFD12210C1989001F070A /* ImageSelectorController.swift in Sources */,
 				C51AD771209E8FA9002CC4AC /* TodayViewExpenseController.swift in Sources */,
 				C586813E1F2E8BF2008D3AEE /* CGRect+Edges.swift in Sources */,
@@ -782,7 +800,7 @@
 				C5EDC2271EBBC12400DA5CB7 /* SettingsViewController.swift in Sources */,
 				C5A4AF901FA6B52900101809 /* TableViewCellHelper.swift in Sources */,
 				C5BB61E72071ECF400EC97C2 /* CalendarPeriodPickerView.swift in Sources */,
-				C5A0DD5C20429CC2004C6411 /* TodayViewGoalsController.swift in Sources */,
+				C5A0DD5C20429CC2004C6411 /* NavigationGoalPicker.swift in Sources */,
 				C5741D4E1FB93EDC00EEDDDD /* TodayViewController.swift in Sources */,
 				C55CCFD11F9D44E4001EF0B4 /* UIColor+255.swift in Sources */,
 				C573B9F420324C410025A5A2 /* Goal+CoreDataClass.swift in Sources */,
@@ -793,10 +811,12 @@
 				C5BB61E52071C30800EC97C2 /* CalendarPeriod.swift in Sources */,
 				C5B6CBC22079886B00B78069 /* CalendarPeriodPickerTableViewCell.swift in Sources */,
 				C573BA0020324CDA0025A5A2 /* Image+CoreDataClass.swift in Sources */,
+				C544E5E9217D2C700098AB17 /* ReverseAnimator.swift in Sources */,
 				C503F13A1EA1A8A200FA95A7 /* Export.swift in Sources */,
 				C5F75FF01F9D5A75005F3510 /* UILabel+Size.swift in Sources */,
 				C556D2541F247C6B008CA20E /* UIControl+Closures.swift in Sources */,
 				C5CB4D892116678200BB1EB9 /* GoalSelectorViewController.swift in Sources */,
+				C58BBB9721704FD900D9650C /* ReviewViewController.swift in Sources */,
 				C59E2A2E205C97F5006D18B5 /* ValueTableViewCell.swift in Sources */,
 				C546170D204A4AFF00689DED /* GoalViewController.swift in Sources */,
 				C573B9FE20324CDA0025A5A2 /* Image+CoreDataProperties.swift in Sources */,

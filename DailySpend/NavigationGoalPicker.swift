@@ -10,22 +10,23 @@ import Foundation
 import CoreData
 import UIKit
 
-class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDelegate, GoalViewControllerDelegate {
-    let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
-    var context: NSManagedObjectContext {
+class NavigationGoalPicker : NSObject, UITableViewDataSource, UITableViewDelegate, GoalViewControllerDelegate {
+    private let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
+    private var context: NSManagedObjectContext {
         return appDelegate.persistentContainer.viewContext
     }
     
-    let cellHeight: CGFloat = 66
-    let lastViewedGoalKey = "lastUsedGoal"
+    private let cellHeight: CGFloat = 66
+    private let lastViewedGoalKey = "lastUsedGoal"
     
-    var view: UIView
-    var navigationItem: UINavigationItem
-    var navigationBar: UINavigationBar
-    var present: (UIViewController, Bool, (() -> Void)?) -> ()
+    private var view: UIView!
+    private var navigationItem: UINavigationItem!
+    private var navigationBar: UINavigationBar!
+    private var present: ((UIViewController, Bool, (() -> Void)?) -> ())!
+    
     var currentGoal: Goal? {
         didSet {
-            delegate.goalChanged(newGoal: self.currentGoal)
+            delegate?.goalChanged(newGoal: self.currentGoal)
             setLastUsedGoal(goal: self.currentGoal)
             
             let title = self.currentGoal?.shortDescription ?? "DailySpend"
@@ -34,75 +35,70 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
             setExplainer(!tableShown)
         }
     }
-    var goals: [Goal.IndentedGoal]
-    var delegate: TodayViewGoalsDelegate
-    var tableShown: Bool
-    var setExplainer: ((Bool) -> ())!
-    
-    var maxTableHeight: CGFloat {
+    private var goals: [Goal.IndentedGoal]
+    private var tableShown: Bool
+    private var setExplainer: ((Bool) -> ())!
+
+    private var maxTableHeight: CGFloat {
         let navHeight = self.navigationBar.frame.size.height
         let statusBarSize = UIApplication.shared.statusBarFrame.size
         let statusBarHeight = min(statusBarSize.width, statusBarSize.height)
         
         return view.frame.height - navHeight - statusBarHeight
     }
-    var trueTableHeight: CGFloat {
+    private var trueTableHeight: CGFloat {
         return cellHeight * CGFloat(goals.count + 1)
     }
-    var tableHeight: CGFloat {
+    private var tableHeight: CGFloat {
         return min(cellHeight * CGFloat(goals.count + 1), maxTableHeight)
     }
     
-    var goalTable: UITableView!
-    var dimmingView: UIButton!
+    private var goalTable: UITableView!
+    private var dimmingView: UIButton!
+    
+    var delegate: GoalPickerDelegate?
 
-    init(view: UIView,
-         navigationItem: UINavigationItem,
-         navigationBar: UINavigationBar,
-         delegate: TodayViewGoalsDelegate,
-         present: @escaping (UIViewController, Bool, (() -> Void)?) -> ()) {
-        self.view = view
-        self.delegate = delegate
-        self.navigationItem = navigationItem
-        self.navigationBar = navigationBar
-        self.present = present
+    override init() {
         self.tableShown = false
         self.goals = []
         self.currentGoal = nil
         super.init()
         
-        let infoButton = UIButton(type: .infoLight)
-        infoButton.add(for: .touchUpInside, notImplemented)
-        let infoBBI = UIBarButtonItem(customView: infoButton)
-        self.navigationItem.rightBarButtonItem = infoBBI
-        
-        
         self.goals = getAllGoals()
         self.currentGoal = getLastUsedGoal()
-        delegate.goalChanged(newGoal: self.currentGoal) // didSet won't fire in init
+        delegate?.goalChanged(newGoal: self.currentGoal) // didSet won't fire in init
+    }
+    public func makeTitleView(
+        view: UIView,
+        item: UINavigationItem,
+        bar: UINavigationBar,
+        present: @escaping (UIViewController, Bool, (() -> Void)?) -> (),
+        detailViewLanguage: Bool
+    ) {
+        self.view = view
+        self.navigationItem = item
+        self.navigationBar = bar
+        self.present = present
         
-        let title = self.currentGoal?.shortDescription ?? "DailySpend"
+        var title = self.currentGoal?.shortDescription ?? "DailySpend"
+        if detailViewLanguage {
+            title += " Detail"
+        }
         let navHeight = self.navigationBar.frame.size.height
         self.navigationItem.titleView = makeTitleView(height: navHeight, title: title)
+        setExplainer(!tableShown)
     }
     
     func setGoal(newGoal: Goal) {
         self.currentGoal = newGoal
         self.goalTable?.reloadData()
     }
-
-    func notImplemented() {
-        let alertVC = UIAlertController(title: "Not Implemented", message: "This functionality is not implemented.", preferredStyle: .alert)
-        let cancel = UIAlertAction(title: "Okay", style: .cancel, handler: nil)
-        alertVC.addAction(cancel)
-        present(alertVC, true, nil)
-    }
     
-    func getAllGoals() -> [Goal.IndentedGoal] {
+    private func getAllGoals() -> [Goal.IndentedGoal] {
         return Goal.getIndentedGoals(excludeGoal: { $0.archived })
     }
     
-    func getLastUsedGoal() -> Goal? {
+    private func getLastUsedGoal() -> Goal? {
         // Try to get the last viewed goal.
         if let url = UserDefaults.standard.url(forKey: lastViewedGoalKey) {
             let psc = appDelegate.persistentContainer.persistentStoreCoordinator
@@ -125,7 +121,7 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
         }
     }
     
-    func setLastUsedGoal(goal: Goal?) {
+    private func setLastUsedGoal(goal: Goal?) {
         if let goal = goal {
             let id = goal.objectID.uriRepresentation()
             UserDefaults.standard.set(id, forKey: lastViewedGoalKey)
@@ -134,7 +130,7 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
         }
     }
     
-    func makeTitleView(height: CGFloat, title: String) -> UIView {
+    private func makeTitleView(height: CGFloat, title: String) -> UIView {
         let caret = "▼"
         let explainer = "Change Goal"
         let fullExplainer =  caret + " " + explainer + " " + caret
@@ -203,7 +199,7 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
     }
     
     
-    func showTable() {
+    private func showTable() {
         let height = tableHeight
         let width = view.bounds.size.width
 
@@ -247,7 +243,7 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
         )
     }
     
-    func hideTable() {
+    private func hideTable() {
         if goalTable == nil {
             return
         }
@@ -270,7 +266,7 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
         )
     }
     
-    func tappedTitleView() {
+    private func tappedTitleView() {
         if tableShown {
             hideTable()
             setExplainer(true)
@@ -363,6 +359,6 @@ class TodayViewGoalsController : NSObject, UITableViewDataSource, UITableViewDel
     }
 }
 
-protocol TodayViewGoalsDelegate {
+protocol GoalPickerDelegate {
     func goalChanged(newGoal: Goal?)
 }

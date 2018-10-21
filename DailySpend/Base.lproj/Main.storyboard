@@ -12,8 +12,7 @@
         <!--Spending-->
         <scene sceneID="Z8l-49-aEF">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="ad0-vS-oVf" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <viewController id="TrI-4h-IfM" customClass="TodayViewController" customModule="DailySpend" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="todayspending" useStoryboardIdentifierAsRestorationIdentifier="YES" id="TrI-4h-IfM" customClass="TodayViewController" customModule="DailySpend" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="I2f-tH-34z"/>
                         <viewControllerLayoutGuide type="bottom" id="3T5-eI-Ewk"/>
@@ -24,13 +23,14 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
                     <navigationItem key="navigationItem" title="Spending" id="lmG-2z-Z7d">
-                        <barButtonItem key="leftBarButtonItem" image="cog.png" id="s52-QJ-98g">
+                        <barButtonItem key="rightBarButtonItem" image="cog.png" id="s52-QJ-98g">
                             <connections>
                                 <segue destination="yEO-lX-J50" kind="presentation" id="aRl-vJ-srt"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ad0-vS-oVf" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="402" y="205"/>
         </scene>
@@ -267,7 +267,7 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Settings" id="L54-rA-1SU">
-                        <barButtonItem key="leftBarButtonItem" style="done" systemItem="done" id="Fyc-r8-PA1">
+                        <barButtonItem key="rightBarButtonItem" style="done" systemItem="done" id="Fyc-r8-PA1">
                             <connections>
                                 <action selector="done:" destination="xV2-YL-nJz" id="mOD-LY-ERo"/>
                             </connections>
@@ -281,7 +281,6 @@
         <!--Spend Indication Navigation Controller-->
         <scene sceneID="yxe-2D-80a">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="qQv-2d-aXX" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="G5v-Vy-ekD" customClass="SpendIndicationNavigationController" customModule="DailySpend" customModuleProvider="target" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="UDp-qA-nBa">
@@ -293,13 +292,13 @@
                         <segue destination="TrI-4h-IfM" kind="relationship" relationship="rootViewController" id="FOi-aK-IFx"/>
                     </connections>
                 </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="qQv-2d-aXX" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-487" y="206"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="m8c-gW-1mF">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="azB-dg-qBv" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="yEO-lX-J50" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="qfE-xv-jTS">
@@ -311,6 +310,7 @@
                         <segue destination="xV2-YL-nJz" kind="relationship" relationship="rootViewController" id="OEc-Mx-HP5"/>
                     </connections>
                 </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="azB-dg-qBv" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1314" y="205"/>
         </scene>

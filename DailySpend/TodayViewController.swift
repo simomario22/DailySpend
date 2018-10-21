@@ -9,20 +9,20 @@
 import UIKit
 import CoreData
 
-class TodayViewController: UIViewController, TodayViewGoalsDelegate, TodayViewExpensesDelegate {
+class TodayViewController: UIViewController, GoalPickerDelegate, TodayViewExpensesDelegate {
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
     var context: NSManagedObjectContext {
         return appDelegate.persistentContainer.viewContext
     }
 
-    var summaryViewHidden: Bool = true
-    var summaryView: TodaySummaryView!
-    var neutralBarColor: UIColor!
-    var tableView: UITableView!
-    var expensesController: TodayViewExpensesController!
-    var goalsController: TodayViewGoalsController!
-    var cellCreator: TableViewCellHelper!
-    var period: CalendarPeriod!
+    private var summaryViewHidden: Bool = true
+    private var summaryView: TodaySummaryView!
+    private var neutralBarColor: UIColor!
+    private var tableView: UITableView!
+    private var expensesController: TodayViewExpensesController!
+    private var cellCreator: TableViewCellHelper!
+    
+    var goalPicker: NavigationGoalPicker!
     var goal: Goal!
     
     let summaryViewHeightWithHint: CGFloat = 120
@@ -60,6 +60,7 @@ class TodayViewController: UIViewController, TodayViewGoalsDelegate, TodayViewEx
         // The border line hangs below the summary frame, so we'll use that one
         // so it slides out nicely.
         self.navigationController?.navigationBar.hideBorderLine()
+        self.navigationController?.delegate = self
 
         let navHeight = navigationController?.navigationBar.frame.size.height ?? 0
         let statusBarSize = UIApplication.shared.statusBarFrame.size
@@ -85,15 +86,17 @@ class TodayViewController: UIViewController, TodayViewGoalsDelegate, TodayViewEx
         tableView.delegate = expensesController
         tableView.dataSource = expensesController
         
-        goalsController = TodayViewGoalsController(
-            view: navigationController!.view,
-            navigationItem: navigationItem,
-            navigationBar: navigationController!.navigationBar,
-            delegate: self,
-            present: self.present
-        )
+        goalPicker = goalPicker ?? NavigationGoalPicker()
         
-        Logger.printAllCoreData()
+        let infoButton = UIButton(type: .infoLight)
+        infoButton.add(for: .touchUpInside, {
+            let reviewController = ReviewViewController()
+            reviewController.goalPicker = self.goalPicker
+            reviewController.goal = self.goal
+            self.navigationController?.pushViewController(reviewController, animated: true)
+        })
+        let infoBBI = UIBarButtonItem(customView: infoButton)
+        self.navigationItem.leftBarButtonItem = infoBBI
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -125,7 +128,7 @@ class TodayViewController: UIViewController, TodayViewGoalsDelegate, TodayViewEx
     func expensesChanged(goal: Goal) {
         if goal != self.goal {
             self.goal = goal
-            goalsController.setGoal(newGoal: goal)
+            goalPicker.setGoal(newGoal: goal)
             goalChanged(newGoal: goal)
         } else {
             updateSummaryViewForGoal(goal)
@@ -271,6 +274,38 @@ class TodayViewController: UIViewController, TodayViewGoalsDelegate, TodayViewEx
             UIView.animate(withDuration: 0.2) {
                 self.summaryView.backgroundColor = newColor
             }
+        }
+    }
+}
+
+
+extension TodayViewController : UINavigationControllerDelegate {
+    func navigationController(
+        _ navigationController: UINavigationController,
+        animationControllerFor operation: UINavigationControllerOperation,
+        from fromVC: UIViewController,
+        to toVC: UIViewController
+    ) -> UIViewControllerAnimatedTransitioning? {
+        let transition = ReverseAnimator()
+        transition.forward = (operation == .push)
+        return transition
+    }
+    
+    func navigationController(
+        _ navigationController: UINavigationController,
+        willShow viewController: UIViewController,
+        animated: Bool
+        ) {
+        if viewController == self {
+            goalPicker.delegate = self
+            goalPicker.makeTitleView(
+                view: navigationController.view,
+                item: navigationItem,
+                bar: navigationController.navigationBar,
+                present: present,
+                detailViewLanguage: false
+            )
+            self.goalChanged(newGoal: goalPicker.currentGoal)
         }
     }
 }
