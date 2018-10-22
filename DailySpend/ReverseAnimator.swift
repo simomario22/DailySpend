@@ -15,7 +15,7 @@ import UIKit
 
 class ReverseAnimator: NSObject, UIViewControllerAnimatedTransitioning, CAAnimationDelegate {
     var forward = true
-    let duration = 0.25
+    let duration: TimeInterval = 0.3
     
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         return duration
@@ -36,6 +36,14 @@ class ReverseAnimator: NSObject, UIViewControllerAnimatedTransitioning, CAAnimat
         }
         containerView.addSubview(originView)
         containerView.addSubview(animatedView)
+        
+        let shadowPath = UIBezierPath(rect: animatedView.bounds)
+        animatedView.layer.masksToBounds = false
+        animatedView.layer.shadowColor = UIColor.black.cgColor
+        animatedView.layer.shadowOffset = CGSize(width: 0.0, height: 5.0)
+        animatedView.layer.shadowOpacity = 0.3
+        animatedView.layer.shadowRadius = 5.0
+        animatedView.layer.shadowPath = shadowPath.cgPath
         
         let translationX = originView.frame.size.width
         let transform = CGAffineTransform(translationX: translationX, y: 0)

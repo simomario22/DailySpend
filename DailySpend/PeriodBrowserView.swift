@@ -10,7 +10,7 @@ import UIKit
 
 class PeriodBrowserView: BorderedView {
     private let margin: CGFloat = 4
-    private let currentLabel = UILabel()
+    private let currentButton = UIButton(type: .custom)
     private let previousButton = UIButton(type: .custom)
     private let nextButton = UIButton(type: .custom)
     private var colorNegative: Bool? = nil
@@ -34,7 +34,7 @@ class PeriodBrowserView: BorderedView {
             height: bounds.size.height - margin
         )
 
-        currentLabel.frame = CGRect(
+        currentButton.frame = CGRect(
             x: nextButton.frame.rightEdge + margin,
             y: margin,
             width: nextButton.frame.leftEdge - previousButton.frame.rightEdge - (margin * 2),
@@ -45,30 +45,33 @@ class PeriodBrowserView: BorderedView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        currentLabel.textAlignment = .center
+        currentButton.titleLabel?.textAlignment = .center
+        currentButton.setTitleColor(tintColor, for: .normal)
         
-        previousButton.titleLabel?.text = "◀"
+        previousButton.setTitle("◀", for: .normal)
+        previousButton.setTitleColor(tintColor, for: .normal)
         previousButton.titleLabel?.textAlignment = .center
         previousButton.contentVerticalAlignment = .center
         previousButton.add(for: .touchUpInside) {
             self.delegate?.tappedPrevious()
         }
         
-        nextButton.titleLabel?.text = "▶"
+        nextButton.setTitle("▶", for: .normal)
+        nextButton.setTitleColor(tintColor, for: .normal)
         nextButton.titleLabel?.textAlignment = .center
         nextButton.contentVerticalAlignment = .center
         nextButton.add(for: .touchUpInside) {
             self.delegate?.tappedNext()
         }
         
-        self.addSubviews([previousButton, nextButton, currentLabel])
+        self.addSubviews([previousButton, nextButton, currentButton])
         
         self.addOutsideBottomBorder(color: UIColor.black.withAlphaComponent(0.3), width: 0.5)
     }
     
     var labelText: String? = nil {
         didSet {
-            currentLabel.text = labelText
+            currentButton.setTitle(labelText, for: .normal)
         }
     }
     
@@ -83,14 +86,7 @@ class PeriodBrowserView: BorderedView {
             nextButton.isEnabled = nextButtonEnabled
         }
     }
-    
-    private func updateColor(value: CGFloat) {
-        if ( (value < 0) != colorNegative ) {
-            appDelegate.spendIndicationColor = value < 0 ? .overspent : .underspent
-            colorNegative = value < 0
-        }
-    }
-    
+
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

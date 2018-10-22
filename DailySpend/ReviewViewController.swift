@@ -57,11 +57,12 @@ class ReviewViewController: UIViewController, UINavigationControllerDelegate, Pe
         let width = view.frame.size.width
         let periodBrowserFrame = CGRect(
             x: 0,
-            y: -periodBrowserViewHeight,
+            y: 0,
             width: width,
             height: periodBrowserViewHeight
         )
         periodBrowserView = PeriodBrowserView(frame: periodBrowserFrame)
+        periodBrowserView.backgroundColor = appDelegate.spendIndicationColor
         
         // The border line hangs below the summary frame, so we'll use that one
         // so it slides out nicely.
@@ -77,7 +78,7 @@ class ReviewViewController: UIViewController, UINavigationControllerDelegate, Pe
         tableView.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubviews([tableView, periodBrowserView])
         
-        tableView.topAnchor.constraint(equalTo: periodBrowserView.bottomAnchor).isActive = true
+        tableView.topAnchor.constraint(equalTo: periodBrowserView.topAnchor).isActive = true
         tableView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true
         tableView.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true
         tableView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
