@@ -129,35 +129,39 @@ class NavigationGoalPicker : NSObject, UITableViewDataSource, UITableViewDelegat
             UserDefaults.standard.removeObject(forKey: lastViewedGoalKey)
         }
     }
+
+    private func caretAttr(_ highlighted: Bool) -> [NSAttributedStringKey: Any] {
+        return [
+            .font: UIFont.systemFont(ofSize: 8),
+            .foregroundColor: highlighted ? view.tintColor.withAlphaComponent(0.2) : view.tintColor
+        ]
+    }
+    
+    private func explainerAttr(_ highlighted: Bool) ->  [NSAttributedStringKey: Any] {
+        return [
+            .font: UIFont.systemFont(ofSize: 12),
+            .foregroundColor: highlighted ? view.tintColor.withAlphaComponent(0.2) : view.tintColor
+        ]
+    }
+    
+    private func downExplainer(_ highlighted: Bool) -> NSMutableAttributedString {
+        let attributedExplainer = NSMutableAttributedString(string: "▼ Change Goal ▼")
+        attributedExplainer.addAttributes(caretAttr(highlighted), range: NSMakeRange(0, 1))
+        attributedExplainer.addAttributes(explainerAttr(highlighted), range: NSMakeRange(1, 13))
+        attributedExplainer.addAttributes(caretAttr(highlighted), range: NSMakeRange(14, 1))
+        return attributedExplainer
+    }
+    
+    private func upExplainer(_ highlighted: Bool) -> NSMutableAttributedString {
+        let attributedExplainer = NSMutableAttributedString(string: "▲ Collapse ▲")
+        attributedExplainer.addAttributes(caretAttr(highlighted), range: NSMakeRange(0, 1))
+        attributedExplainer.addAttributes(explainerAttr(highlighted), range: NSMakeRange(1, 10))
+        attributedExplainer.addAttributes(caretAttr(highlighted), range: NSMakeRange(11, 1))
+        return attributedExplainer
+    }
     
     private func makeTitleView(height: CGFloat, title: String) -> UIView {
-        let caret = "▼"
-        let explainer = "Change Goal"
-        let fullExplainer =  caret + " " + explainer + " " + caret
-        
         let titleFont = UIFont.preferredFont(forTextStyle: .headline)
-        let explainerFont = UIFont.systemFont(ofSize: 12)
-        let caretFont = UIFont.systemFont(ofSize: 8)
-        
-        let attributedExplainer = NSMutableAttributedString(string: fullExplainer)
-        let attributedExplainerDone = NSMutableAttributedString(string: "▲ Collapse ▲")
-
-        let caretAttr: [NSAttributedStringKey: Any] = [
-            .font: caretFont,
-            .foregroundColor: view.tintColor
-        ]
-        let explainerAttr: [NSAttributedStringKey: Any] = [
-            .font: explainerFont,
-            .foregroundColor: view.tintColor
-        ]
-        attributedExplainer.addAttributes(caretAttr, range: NSMakeRange(0, 1))
-        attributedExplainer.addAttributes(explainerAttr, range: NSMakeRange(1, explainer.count + 2))
-        attributedExplainer.addAttributes(caretAttr, range: NSMakeRange(explainer.count + 3, 1))
-        
-        attributedExplainerDone.addAttributes(caretAttr, range: NSMakeRange(0, 1))
-        attributedExplainerDone.addAttributes(explainerAttr, range: NSMakeRange(1, 10))
-        attributedExplainerDone.addAttributes(caretAttr, range: NSMakeRange(11, 1))
-        
         let explainerHeight: CGFloat = 15
         let titleHeight = height - explainerHeight
         
@@ -170,30 +174,38 @@ class NavigationGoalPicker : NSObject, UITableViewDataSource, UITableViewDelegat
         titleLabel.textAlignment = .center
         
         let explainerLabel = UILabel(frame: CGRect(x: 0, y: titleHeight - 5, width: width, height: explainerHeight))
-        explainerLabel.attributedText = attributedExplainer
+        explainerLabel.attributedText = downExplainer(false)
         explainerLabel.textAlignment = .center
         
         let titleViewFrame = CGRect(x: 0, y: 0, width: width, height: height)
         
+        var highlighted = false
         setExplainer = { caretDown in
             if caretDown {
-                explainerLabel.attributedText = attributedExplainer
+                explainerLabel.attributedText = self.downExplainer(highlighted)
             } else {
-                explainerLabel.attributedText = attributedExplainerDone
+                explainerLabel.attributedText = self.upExplainer(highlighted)
             }
         }
         
         let button = UIButton(type: .custom)
         button.backgroundColor = UIColor.clear
         button.frame = titleViewFrame
+        button.add(for: [.touchDown, .touchDragEnter]) {
+            highlighted = true
+            self.setExplainer(!self.tableShown)
+        }
+        button.add(for: .touchDragExit) {
+            highlighted = false
+            self.setExplainer(!self.tableShown)
+        }
         button.add(for: .touchUpInside, {
+            highlighted = false
             self.tappedTitleView()
         })
         
         let titleView = UIView(frame: titleViewFrame)
-        titleView.addSubview(titleLabel)
-        titleView.addSubview(explainerLabel)
-        titleView.addSubview(button)
+        titleView.addSubviews([titleLabel, explainerLabel, button])
         
         return titleView
     }
