@@ -63,9 +63,6 @@ class ReviewViewController: UIViewController, UINavigationControllerDelegate, Pe
         )
         periodBrowserView = PeriodBrowserView(frame: periodBrowserFrame)
         periodBrowserView.backgroundColor = appDelegate.spendIndicationColor
-        
-        // The border line hangs below the summary frame, so we'll use that one
-        // so it slides out nicely.
         self.navigationController?.navigationBar.hideBorderLine()
 
         let navHeight = navigationController?.navigationBar.frame.size.height ?? 0
@@ -83,13 +80,12 @@ class ReviewViewController: UIViewController, UINavigationControllerDelegate, Pe
         tableView.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true
         tableView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
         
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, tappedAdd)
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             barButtonSystemItem: .done, {
             self.navigationController?.popViewController(animated: true)
         })
-        
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, tappedAdd)
-        
+
         goalPicker.delegate = self
         goalPicker.makeTitleView(
             view: navigationController!.view,
@@ -99,6 +95,7 @@ class ReviewViewController: UIViewController, UINavigationControllerDelegate, Pe
             detailViewLanguage: true
         )
         self.goalChanged(newGoal: goalPicker.currentGoal)
+
     }
     
     override func viewWillAppear(_ animated: Bool) {

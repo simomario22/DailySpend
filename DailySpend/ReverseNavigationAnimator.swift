@@ -13,7 +13,7 @@
 import UIKit
 
 
-class ReverseAnimator: NSObject, UIViewControllerAnimatedTransitioning, CAAnimationDelegate {
+class ReverseNavigationAnimator: NSObject, UIViewControllerAnimatedTransitioning, CAAnimationDelegate {
     var forward = true
     let duration: TimeInterval = 0.3
     

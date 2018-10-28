@@ -45,11 +45,14 @@ class PeriodBrowserView: BorderedView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
+        let lightTint = tintColor.withAlphaComponent(0.2)
         currentButton.titleLabel?.textAlignment = .center
         currentButton.setTitleColor(tintColor, for: .normal)
+        currentButton.setTitleColor(lightTint, for: .highlighted)
         
         previousButton.setTitle("◀", for: .normal)
         previousButton.setTitleColor(tintColor, for: .normal)
+        previousButton.setTitleColor(lightTint, for: .highlighted)
         previousButton.titleLabel?.textAlignment = .center
         previousButton.contentVerticalAlignment = .center
         previousButton.add(for: .touchUpInside) {
@@ -58,6 +61,7 @@ class PeriodBrowserView: BorderedView {
         
         nextButton.setTitle("▶", for: .normal)
         nextButton.setTitleColor(tintColor, for: .normal)
+        nextButton.setTitleColor(lightTint, for: .highlighted)
         nextButton.titleLabel?.textAlignment = .center
         nextButton.contentVerticalAlignment = .center
         nextButton.add(for: .touchUpInside) {

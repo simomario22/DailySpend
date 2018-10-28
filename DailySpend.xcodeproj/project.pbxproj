@@ -29,7 +29,7 @@
 		C53BCAA81E9203BC000B5EE1 /* cal_recur@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C53BCAA51E9203BC000B5EE1 /* cal_recur@2x.png */; };
 		C53BCAA91E9203BC000B5EE1 /* cal_recur@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C53BCAA61E9203BC000B5EE1 /* cal_recur@3x.png */; };
 		C53DFD12210C1989001F070A /* ImageSelectorController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C53DFD11210C1989001F070A /* ImageSelectorController.swift */; };
-		C544E5E9217D2C700098AB17 /* ReverseAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C544E5E8217D2C700098AB17 /* ReverseAnimator.swift */; };
+		C544E5E9217D2C700098AB17 /* ReverseNavigationAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C544E5E8217D2C700098AB17 /* ReverseNavigationAnimator.swift */; };
 		C546170D204A4AFF00689DED /* GoalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C546170C204A4AFF00689DED /* GoalViewController.swift */; };
 		C54ABD9520561DB100334293 /* LICENCE_VENMO.txt in Resources */ = {isa = PBXBuildFile; fileRef = C54ABD9420561DB100334293 /* LICENCE_VENMO.txt */; };
 		C54ABD9720562A9900334293 /* ExplanatoryTextTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54ABD9620562A9900334293 /* ExplanatoryTextTableViewCell.swift */; };
@@ -149,7 +149,7 @@
 		C53BCAA51E9203BC000B5EE1 /* cal_recur@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cal_recur@2x.png"; sourceTree = "<group>"; };
 		C53BCAA61E9203BC000B5EE1 /* cal_recur@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cal_recur@3x.png"; sourceTree = "<group>"; };
 		C53DFD11210C1989001F070A /* ImageSelectorController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSelectorController.swift; sourceTree = "<group>"; };
-		C544E5E8217D2C700098AB17 /* ReverseAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReverseAnimator.swift; sourceTree = "<group>"; };
+		C544E5E8217D2C700098AB17 /* ReverseNavigationAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReverseNavigationAnimator.swift; sourceTree = "<group>"; };
 		C546170C204A4AFF00689DED /* GoalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalViewController.swift; sourceTree = "<group>"; };
 		C54ABD9420561DB100334293 /* LICENCE_VENMO.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENCE_VENMO.txt; sourceTree = "<group>"; };
 		C54ABD9620562A9900334293 /* ExplanatoryTextTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExplanatoryTextTableViewCell.swift; sourceTree = "<group>"; };
@@ -376,7 +376,7 @@
 				C5E51E55209EC49A005C674B /* Export View and Logic */,
 				C5E51E58209EC505005C674B /* Settings View */,
 				C5A0DD5B20429CC2004C6411 /* NavigationGoalPicker.swift */,
-				C544E5E8217D2C700098AB17 /* ReverseAnimator.swift */,
+				C544E5E8217D2C700098AB17 /* ReverseNavigationAnimator.swift */,
 				C5A4AF8F1FA6B52900101809 /* TableViewCellHelper.swift */,
 				C5E51E56209EC4C8005C674B /* Extensions */,
 				C535275F204CF5B50038E747 /* Custom UI Elements */,
@@ -811,7 +811,7 @@
 				C5BB61E52071C30800EC97C2 /* CalendarPeriod.swift in Sources */,
 				C5B6CBC22079886B00B78069 /* CalendarPeriodPickerTableViewCell.swift in Sources */,
 				C573BA0020324CDA0025A5A2 /* Image+CoreDataClass.swift in Sources */,
-				C544E5E9217D2C700098AB17 /* ReverseAnimator.swift in Sources */,
+				C544E5E9217D2C700098AB17 /* ReverseNavigationAnimator.swift in Sources */,
 				C503F13A1EA1A8A200FA95A7 /* Export.swift in Sources */,
 				C5F75FF01F9D5A75005F3510 /* UILabel+Size.swift in Sources */,
 				C556D2541F247C6B008CA20E /* UIControl+Closures.swift in Sources */,

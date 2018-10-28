@@ -286,7 +286,7 @@ extension TodayViewController : UINavigationControllerDelegate {
         from fromVC: UIViewController,
         to toVC: UIViewController
     ) -> UIViewControllerAnimatedTransitioning? {
-        let transition = ReverseAnimator()
+        let transition = ReverseNavigationAnimator()
         transition.forward = (operation == .push)
         return transition
     }
