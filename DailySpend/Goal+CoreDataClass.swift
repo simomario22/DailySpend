@@ -413,11 +413,16 @@ class Goal: NSManagedObject {
                 return 0
             }
             let incrementalAmount = amount / Decimal(paymentsPerPeriod)
-            guard let incrementInterval = incrementalPaymentInterval(for: day.start) as? CalendarPeriod,
-                  let index = incrementInterval.periodIndexWithin(superPeriod: expensePeriod) else {
+            guard let incrementInterval = incrementalPaymentInterval(for: day.start),
+                  let incrementCalendarPeriod = CalendarPeriod(
+                        calendarDate: incrementInterval.start,
+                        period: payFrequency,
+                        beginningDateOfPeriod: incrementInterval.start
+                  ),
+                  let index = incrementCalendarPeriod.periodIndexWithin(superPeriod: expensePeriod) else {
                 return 0
             }
-            
+
             totalPaidAmount = incrementalAmount * Decimal(index + 1)
         } else {
             totalPaidAmount = amount
@@ -497,6 +502,19 @@ class Goal: NSManagedObject {
         
         return descendants
     }
+    
+    /**
+     * Returns a period with an end date at latest `exclusiveEnd`.
+     */
+    private func intervalBoundByEnd(_ interval: CalendarIntervalProvider) -> CalendarIntervalProvider {
+        if interval.end != nil &&
+           self.exclusiveEnd != nil &&
+           interval.end!.gmtDate > self.exclusiveEnd!.gmtDate {
+            return CalendarInterval(start: interval.start, end: self.exclusiveEnd)
+        } else {
+            return interval
+        }
+    }
 
     /**
      * Returns the period starting when the most recent incremental payment
@@ -514,12 +532,12 @@ class Goal: NSManagedObject {
         if !hasIncrementalPayment {
             return period
         }
-        
-        return CalendarPeriod(
+
+        return intervalBoundByEnd(CalendarPeriod(
             calendarDate: date,
             period: payFrequency,
             beginningDateOfPeriod: period.start
-        )
+        )!)
     }
 
     /**
@@ -529,16 +547,16 @@ class Goal: NSManagedObject {
         guard let start = self.start else {
             return nil
         }
-        
+
         if !isRecurring {
             return CalendarInterval(start: start, end: self.exclusiveEnd)
         }
-        
-        return CalendarPeriod(
+
+        return intervalBoundByEnd(CalendarPeriod(
             calendarDate: date,
             period: period,
             beginningDateOfPeriod: self.start!
-        )
+        )!)
     }
 
     var hasIncrementalPayment: Bool {
