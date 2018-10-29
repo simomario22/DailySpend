@@ -89,6 +89,7 @@ class TodayViewController: UIViewController, GoalPickerDelegate, TodayViewExpens
         goalPicker = goalPicker ?? NavigationGoalPicker()
         
         let infoButton = UIButton(type: .infoLight)
+        infoButton.isEnabled = false
         infoButton.add(for: .touchUpInside, {
             let reviewController = ReviewViewController()
             reviewController.goalPicker = self.goalPicker
@@ -115,6 +116,7 @@ class TodayViewController: UIViewController, GoalPickerDelegate, TodayViewExpens
      * goal is `nil`, puts those views into an appropriate state.
      */
     func goalChanged(newGoal: Goal?) {
+        self.navigationItem.leftBarButtonItem?.isEnabled = (newGoal != nil)
         self.goal = newGoal
         expensesController.loadExpensesForGoal(newGoal)
         updateSummaryViewForGoal(newGoal)
@@ -303,7 +305,8 @@ extension TodayViewController : UINavigationControllerDelegate {
                 item: navigationItem,
                 bar: navigationController.navigationBar,
                 present: present,
-                detailViewLanguage: false
+                detailViewLanguage: false,
+                buttonWidth: 50 // TODO: Make this a real number based on the button width
             )
             self.goalChanged(newGoal: goalPicker.currentGoal)
         }

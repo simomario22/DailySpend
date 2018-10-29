@@ -32,4 +32,8 @@ extension UIColor {
     class var tint: UIColor {
         return UIColor(red255: 0, green: 129, blue: 234)
     }
+    
+    class var disabled: UIColor {
+        return UIColor(white: 0.492583, alpha: 0.35)
+    }
 }

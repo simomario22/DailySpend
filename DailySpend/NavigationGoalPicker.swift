@@ -18,6 +18,8 @@ class NavigationGoalPicker : NSObject, UITableViewDataSource, UITableViewDelegat
     
     private let cellHeight: CGFloat = 66
     private let lastViewedGoalKey = "lastUsedGoal"
+    private var titleViewWidth: CGFloat = 0
+    private var detailViewLanguage: Bool = false
     
     private var view: UIView!
     private var navigationItem: UINavigationItem!
@@ -29,9 +31,12 @@ class NavigationGoalPicker : NSObject, UITableViewDataSource, UITableViewDelegat
             delegate?.goalChanged(newGoal: self.currentGoal)
             setLastUsedGoal(goal: self.currentGoal)
             
-            let title = self.currentGoal?.shortDescription ?? "DailySpend"
+            var title = self.currentGoal?.shortDescription ?? "DailySpend"
+            if detailViewLanguage {
+                title += " Detail"
+            }
             let navHeight = self.navigationBar.frame.size.height
-            self.navigationItem.titleView = makeTitleView(height: navHeight, title: title)
+            self.navigationItem.titleView = makeTitleView(height: navHeight, width: titleViewWidth, title: title)
             setExplainer(!tableShown)
         }
     }
@@ -73,19 +78,25 @@ class NavigationGoalPicker : NSObject, UITableViewDataSource, UITableViewDelegat
         item: UINavigationItem,
         bar: UINavigationBar,
         present: @escaping (UIViewController, Bool, (() -> Void)?) -> (),
-        detailViewLanguage: Bool
+        detailViewLanguage: Bool,
+        buttonWidth: CGFloat? = nil
     ) {
         self.view = view
         self.navigationItem = item
         self.navigationBar = bar
         self.present = present
+        self.detailViewLanguage = detailViewLanguage
         
         var title = self.currentGoal?.shortDescription ?? "DailySpend"
         if detailViewLanguage {
             title += " Detail"
         }
+        let margin: CGFloat = 5
         let navHeight = self.navigationBar.frame.size.height
-        self.navigationItem.titleView = makeTitleView(height: navHeight, title: title)
+        
+        let buttonWidth = (buttonWidth == nil) ? navHeight : buttonWidth
+        titleViewWidth = self.navigationBar.frame.size.width - ((buttonWidth! + margin) * 2)
+        self.navigationItem.titleView = makeTitleView(height: navHeight, width: titleViewWidth, title: title)
         setExplainer(!tableShown)
     }
     
@@ -160,13 +171,10 @@ class NavigationGoalPicker : NSObject, UITableViewDataSource, UITableViewDelegat
         return attributedExplainer
     }
     
-    private func makeTitleView(height: CGFloat, title: String) -> UIView {
+    private func makeTitleView(height: CGFloat, width: CGFloat, title: String) -> UIView {
         let titleFont = UIFont.preferredFont(forTextStyle: .headline)
         let explainerHeight: CGFloat = 15
         let titleHeight = height - explainerHeight
-        
-         // Save room for two square buttons, plus margin
-        let width = view.bounds.size.width - (height * 2.5)
         
         let titleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: width, height: titleHeight))
         titleLabel.text = title

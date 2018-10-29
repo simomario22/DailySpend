@@ -541,10 +541,16 @@ class Goal: NSManagedObject {
     }
 
     /**
-     * Returns the current period of this goal, or nil if start is not set.
+     * Returns the period that `date` is in for this goal, or nil if start is
+     * not set or date is not in any of this goal's periods.
      */
     func periodInterval(for date: CalendarDateProvider) -> CalendarIntervalProvider? {
         guard let start = self.start else {
+            return nil
+        }
+        
+        if date.gmtDate < start.gmtDate ||
+           (self.end != nil && date.gmtDate > self.end!.gmtDate) {
             return nil
         }
 

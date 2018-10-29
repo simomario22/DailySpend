@@ -35,7 +35,7 @@ class PeriodBrowserView: BorderedView {
         )
 
         currentButton.frame = CGRect(
-            x: nextButton.frame.rightEdge + margin,
+            x: previousButton.frame.rightEdge + margin,
             y: margin,
             width: nextButton.frame.leftEdge - previousButton.frame.rightEdge - (margin * 2),
             height: bounds.size.height - margin
@@ -49,10 +49,12 @@ class PeriodBrowserView: BorderedView {
         currentButton.titleLabel?.textAlignment = .center
         currentButton.setTitleColor(tintColor, for: .normal)
         currentButton.setTitleColor(lightTint, for: .highlighted)
+        currentButton.setTitleColor(.disabled, for: .disabled)
         
         previousButton.setTitle("◀", for: .normal)
         previousButton.setTitleColor(tintColor, for: .normal)
         previousButton.setTitleColor(lightTint, for: .highlighted)
+        previousButton.setTitleColor(.disabled, for: .disabled)
         previousButton.titleLabel?.textAlignment = .center
         previousButton.contentVerticalAlignment = .center
         previousButton.add(for: .touchUpInside) {
@@ -62,6 +64,7 @@ class PeriodBrowserView: BorderedView {
         nextButton.setTitle("▶", for: .normal)
         nextButton.setTitleColor(tintColor, for: .normal)
         nextButton.setTitleColor(lightTint, for: .highlighted)
+        nextButton.setTitleColor(.disabled, for: .disabled)
         nextButton.titleLabel?.textAlignment = .center
         nextButton.contentVerticalAlignment = .center
         nextButton.add(for: .touchUpInside) {

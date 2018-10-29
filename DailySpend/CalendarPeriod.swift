@@ -31,12 +31,28 @@ protocol CalendarDateProvider {
      * The date this provider represents, in GMT.
      */
     var gmtDate: Date { get }
+    
+    /**
+     * Returns a formatted string for the date represented by this provider.
+     */
+    func string(formatter: DateFormatter) -> String
 }
 
 struct GMTDate : CalendarDateProvider {
     var gmtDate: Date
     init(_ gmtDate: Date) {
         self.gmtDate = gmtDate
+    }
+    
+    func string(formatter: DateFormatter) -> String {
+        let origTZ = formatter.timeZone
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)!
+        
+        let s = formatter.string(from: self.gmtDate)
+        
+        formatter.timeZone = origTZ
+        
+        return s
     }
 }
 
