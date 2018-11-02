@@ -15,11 +15,16 @@ class ReviewViewController: UIViewController, UINavigationControllerDelegate, Pe
         return appDelegate.persistentContainer.viewContext
     }
 
-    private var periodBrowserView: PeriodBrowserView!
+    private var pbc: PeriodBrowserController!
     private var neutralBarColor: UIColor!
     private var tableView: UITableView!
     private var cellCreator: TableViewCellHelper!
-    private var period: CalendarPeriod?
+    
+    /**
+     * The current period that is being shown to the user, or `nil` if `goal`
+     * not a recurring period.
+     */
+    private var recurringGoalPeriod: CalendarPeriod?
     
     /**
      * Goal picker must be set prior to view loading with a
@@ -33,54 +38,36 @@ class ReviewViewController: UIViewController, UINavigationControllerDelegate, Pe
      * in this review controller.
      */
     var goal: Goal!
-    
-    let periodBrowserViewHeight: CGFloat = 40
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.tintColor = .tint
         
         NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(updateBarTintColor),
-            name: NSNotification.Name.init("ChangedSpendIndicationColor"),
-            object: nil
+            forName: .NSCalendarDayChanged,
+            object: nil,
+            queue: nil,
+            using: dayChanged
         )
         
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(dayChanged),
-            name: NSNotification.Name.NSCalendarDayChanged,
-            object: nil
-        )
-
-        let width = view.frame.size.width
-        let periodBrowserFrame = CGRect(
-            x: 0,
-            y: 0,
-            width: width,
-            height: periodBrowserViewHeight
-        )
-
-        periodBrowserView = PeriodBrowserView(frame: periodBrowserFrame)
-        periodBrowserView.delegate = self
-        periodBrowserView.backgroundColor = appDelegate.spendIndicationColor
-
         self.navigationController?.navigationBar.hideBorderLine()
+        pbc = PeriodBrowserController(delegate: self, view: self.view)
+        
+        let width = view.frame.size.width
         let navHeight = navigationController?.navigationBar.frame.size.height ?? 0
         let statusBarSize = UIApplication.shared.statusBarFrame.size
         let statusBarHeight = min(statusBarSize.width, statusBarSize.height)
         let tableHeight = view.frame.size.height - navHeight - statusBarHeight
         let tableFrame = CGRect(x: 0, y: 0, width: width, height: tableHeight)
-
         tableView = UITableView(frame: tableFrame, style: .grouped)
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubviews([tableView, periodBrowserView])
+        self.view.addSubview(tableView)
         
-        tableView.topAnchor.constraint(equalTo: periodBrowserView.topAnchor).isActive = true
+        tableView.topAnchor.constraint(equalTo: pbc.periodBrowser.bottomAnchor).isActive = true
         tableView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true
         tableView.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true
         tableView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
+        
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, tappedAdd)
         navigationItem.leftBarButtonItem = UIBarButtonItem(
@@ -97,88 +84,30 @@ class ReviewViewController: UIViewController, UINavigationControllerDelegate, Pe
             detailViewLanguage: true,
             buttonWidth: 70 // TODO: Make this a real number based on the done button width
         )
-        
+
         self.goalChanged(newGoal: goalPicker.currentGoal)
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        updatePeriodBrowser()
-    }
-    
-    /**
-     * Updates period browser with information based on selected period and goal.
-     */
-    func updatePeriodBrowser() {
-        if goal == nil {
-            periodBrowserView.previousButtonEnabled = false
-            periodBrowserView.nextButtonEnabled = false
-            periodBrowserView.labelText = "None"
-            return
-        }
-        let df = DateFormatter()
-        df.dateFormat = "M/d/yy"
-        
-        // Begin by assuming start is goal start and no end (non recurring).
-        var start = goal.start!.string(formatter: df)
-        var end = "Today"
-        periodBrowserView.previousButtonEnabled = false
-        periodBrowserView.nextButtonEnabled = false
-        
-        if let period = period {
-            // This is a recurring goal.
-            periodBrowserView.previousButtonEnabled = true
-            periodBrowserView.nextButtonEnabled = true
-            start = period.start.string(formatter: df)
-            
-            // Check if we need to update the end date.
-            if period.end != nil &&
-               goal.exclusiveEnd != nil &&
-               period.end!.gmtDate > goal.exclusiveEnd!.gmtDate {
-                // Goal has an end date before the end of this period.
-                end = CalendarDay(dateInDay: goal.end!).string(formatter: df)
-            } else if period.end != nil {
-                // Period has an end date.
-                end = CalendarDay(dateInDay: period.end!).subtract(days: 1).string(formatter: df)
-            }
-            
-            // Check for no previous period.
-            if period.previousCalendarPeriod().start.gmtDate < goal.start!.gmtDate {
-                periodBrowserView.previousButtonEnabled = false
-            }
-            
-            // Check for no next period.
-            let nextPeriodDate = period.nextCalendarPeriod().start.gmtDate
-            if nextPeriodDate > CalendarDay().start.gmtDate ||
-               (
-                    goal.exclusiveEnd != nil &&
-                    nextPeriodDate > goal.exclusiveEnd!.gmtDate
-               ) {
-                periodBrowserView.nextButtonEnabled = false
-            }
-        } else {
-            // This is a non-recurring goal. Check if it has an end date.
-            if goal.end != nil {
-                end = CalendarDay(dateInDay: goal.end!).string(formatter: df)
-            }
-        }
-        
-        periodBrowserView.labelText = "\(start) - \(end)"
+        pbc.updatePeriodBrowser(goal: goal, recurringGoalPeriod: recurringGoalPeriod)
     }
     
     /**
      * Called when the next button was tapped in the period browser.
      */
     func tappedNext() {
-        period = period?.nextCalendarPeriod()
-        updatePeriodBrowser()
+        if let nextPeriod = recurringGoalPeriod?.nextCalendarPeriod() {
+            recurringGoalPeriod = nextPeriod
+            pbc.updatePeriodBrowser(goal: goal, recurringGoalPeriod: recurringGoalPeriod)
+        }
     }
     
     /**
      * Called when the previous button was tapped in the period browser.
      */
     func tappedPrevious() {
-        period = period?.previousCalendarPeriod()
-        updatePeriodBrowser()
+        recurringGoalPeriod = recurringGoalPeriod?.previousCalendarPeriod()
+        pbc.updatePeriodBrowser(goal: goal, recurringGoalPeriod: recurringGoalPeriod)
     }
     
     /**
@@ -194,34 +123,8 @@ class ReviewViewController: UIViewController, UINavigationControllerDelegate, Pe
      */
     func goalChanged(newGoal: Goal?) {
         self.goal = newGoal
-        if goal != nil && goal.isRecurring {
-            // Try to get an interval for the current day.
-            var interval = goal.periodInterval(for: CalendarDay().start)
-            if interval == nil && goal.end != nil {
-                // Try to get an interval for last period of the goal.
-                interval = goal.periodInterval(for: goal.end!)
-            }
-
-            if interval != nil {
-                // Turn it into a calendar period.
-                // Note that if there's an end date in this period, it may
-                // not be the true interval of this period, but CalendarPeriod
-                // has convenient member functions.
-                period = CalendarPeriod(
-                    calendarDate: interval!.start,
-                    period: goal.period,
-                    beginningDateOfPeriod: interval!.start
-                )
-            } else {
-                // Can't get an interval (likely due to the goal having a start
-                // date after today, or the goal not having a start date)
-                period = nil
-                goal = nil
-            }
-        } else {
-            period = nil
-        }
-        updatePeriodBrowser()
+        recurringGoalPeriod = self.goal.mostRecentPeriod()
+        pbc.updatePeriodBrowser(goal: goal, recurringGoalPeriod: recurringGoalPeriod)
     }
     
     /**
@@ -257,20 +160,7 @@ class ReviewViewController: UIViewController, UINavigationControllerDelegate, Pe
     /*
      * Called when the day changes.
      */
-    @objc func dayChanged() {
+    func dayChanged(_: Notification) {
         
-    }
-
-    /**
-     * Updates the tint color of the navigation bar to the color specified
-     * by the app delegate.
-     */
-    @objc func updateBarTintColor() {
-        let newColor = self.appDelegate.spendIndicationColor
-        if self.periodBrowserView.backgroundColor != newColor {
-            UIView.animate(withDuration: 0.2) {
-                self.periodBrowserView.backgroundColor = newColor
-            }
-        }
     }
 }

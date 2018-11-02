@@ -77,7 +77,7 @@ class CalendarInterval : CalendarIntervalProvider {
 
 /**
  * An interval in time based on a `CalendarDay`, `CalendarWeek`, or
- * `CalendarMonth`, of length `period`.
+ * `CalendarMonth`, of maximum length `period`.
  */
 class CalendarPeriod : CalendarIntervalProvider {
     private(set) var start: CalendarDateProvider
@@ -89,6 +89,7 @@ class CalendarPeriod : CalendarIntervalProvider {
     private(set) var period: Period
     
     private var previousStart: CalendarDateProvider // Memoize this for quick subtraction.
+    private var isPartialPeriod: Bool = false
 
     /**
      * Initializes a concrete interval in time.
@@ -97,8 +98,18 @@ class CalendarPeriod : CalendarIntervalProvider {
      *    - calendarDate: A date in the period interval you'd like created.
      *    - period: The interval you'd like to represent.
      *    - intervalStart: The start of any period of this interval.
+     *    - endBound: If not `nil`, the end of the period will be bounded by
+     *                this value. That is, the end date will be no later than
+     *                this value. If this date is in the period interval, this
+     *                period will be considered a partial period and the
+     *                following period will be `nil`.
      */
-    init?(calendarDate date: CalendarDateProvider, period: Period, beginningDateOfPeriod intervalStart: CalendarDateProvider) {
+    init?(
+        calendarDate date: CalendarDateProvider,
+        period: Period,
+        beginningDateOfPeriod intervalStart: CalendarDateProvider,
+        boundingEndDate endBound: CalendarDateProvider?
+    ) {
         switch period.scope {
         case .Day:
             // Ensure day is at the beginning of a period.
@@ -140,6 +151,17 @@ class CalendarPeriod : CalendarIntervalProvider {
             return nil
         }
         
+        if endBound != nil {
+            if endBound!.gmtDate < self.start.gmtDate {
+                // This is an invalid end bound.
+                return nil
+            } else if endBound!.gmtDate < self.end!.gmtDate {
+                // This end bound is in the interval. Shorten the interval.
+                self.end = endBound!
+                self.isPartialPeriod = true
+            }
+        }
+        
         self.period = period
     }
     
@@ -160,7 +182,8 @@ class CalendarPeriod : CalendarIntervalProvider {
         let lastSubPeriod = CalendarPeriod(
             calendarDate: lastDayInThisCalendarPeriod.start,
             period: period,
-            beginningDateOfPeriod: self.start
+            beginningDateOfPeriod: self.start,
+            boundingEndDate: self.end
         )!
         
         let index = lastSubPeriod.periodIndexWithin(superPeriod: self)
@@ -210,12 +233,24 @@ class CalendarPeriod : CalendarIntervalProvider {
             return nil
         }
     }
+
+    /**
+     * Returns true if this interval contains the date, false otherwise.
+     */
+    func contains(date: CalendarDateProvider) -> Bool {
+        return date.gmtDate >= start.gmtDate && date.gmtDate < end!.gmtDate
+    }
     
-    func nextCalendarPeriod() -> CalendarPeriod {
+    func nextCalendarPeriod() -> CalendarPeriod? {
+        if isPartialPeriod {
+            return nil
+        }
+        
         return CalendarPeriod(
             calendarDate: end!,
             period: period,
-            beginningDateOfPeriod: start
+            beginningDateOfPeriod: start,
+            boundingEndDate: nil
         )!
     }
     
@@ -223,7 +258,8 @@ class CalendarPeriod : CalendarIntervalProvider {
         return CalendarPeriod(
             calendarDate: previousStart,
             period: period,
-            beginningDateOfPeriod: start
+            beginningDateOfPeriod: start,
+            boundingEndDate: nil
         )!
     }
 }

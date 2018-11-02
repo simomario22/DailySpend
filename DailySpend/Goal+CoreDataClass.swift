@@ -417,7 +417,8 @@ class Goal: NSManagedObject {
                   let incrementCalendarPeriod = CalendarPeriod(
                         calendarDate: incrementInterval.start,
                         period: payFrequency,
-                        beginningDateOfPeriod: incrementInterval.start
+                        beginningDateOfPeriod: incrementInterval.start,
+                        boundingEndDate: self.exclusiveEnd
                   ),
                   let index = incrementCalendarPeriod.periodIndexWithin(superPeriod: expensePeriod) else {
                 return 0
@@ -502,19 +503,6 @@ class Goal: NSManagedObject {
         
         return descendants
     }
-    
-    /**
-     * Returns a period with an end date at latest `exclusiveEnd`.
-     */
-    private func intervalBoundByEnd(_ interval: CalendarIntervalProvider) -> CalendarIntervalProvider {
-        if interval.end != nil &&
-           self.exclusiveEnd != nil &&
-           interval.end!.gmtDate > self.exclusiveEnd!.gmtDate {
-            return CalendarInterval(start: interval.start, end: self.exclusiveEnd)
-        } else {
-            return interval
-        }
-    }
 
     /**
      * Returns the period starting when the most recent incremental payment
@@ -533,11 +521,12 @@ class Goal: NSManagedObject {
             return period
         }
 
-        return intervalBoundByEnd(CalendarPeriod(
+        return CalendarPeriod(
             calendarDate: date,
             period: payFrequency,
-            beginningDateOfPeriod: period.start
-        )!)
+            beginningDateOfPeriod: period.start,
+            boundingEndDate: self.exclusiveEnd
+        )!
     }
 
     /**
@@ -558,12 +547,50 @@ class Goal: NSManagedObject {
             return CalendarInterval(start: start, end: self.exclusiveEnd)
         }
 
-        return intervalBoundByEnd(CalendarPeriod(
+        return CalendarPeriod(
             calendarDate: date,
             period: period,
-            beginningDateOfPeriod: self.start!
-        )!)
+            beginningDateOfPeriod: self.start!,
+            boundingEndDate: self.exclusiveEnd
+        )!
     }
+
+    /**
+     * Returns the most recent period interval in a recurring goal as a
+     * `CalendarPeriod`.
+     *
+     * If this goal is non-recurring goal, does not have a start date, or has
+     * a start date after today, this function returns `nil`.
+     */
+    func mostRecentPeriod() -> CalendarPeriod? {
+        if !isRecurring {
+            return nil
+        }
+        // Try to get an interval for the current day.
+        var interval = self.periodInterval(for: CalendarDay().start)
+        if interval == nil && end != nil {
+            // No valid interval for current day.
+            // Try to get an interval for last period of the goal.
+            interval = self.periodInterval(for: self.end!)
+        }
+        
+        if let interval = interval
+        {
+            // Get the interval with length of the goal period starting from
+            // the interval start, bounded by the exclusive end of the goal.
+            return CalendarPeriod(
+                calendarDate: interval.start,
+                period: self.period,
+                beginningDateOfPeriod: interval.start,
+                boundingEndDate: self.exclusiveEnd
+            )
+        } else {
+            // Can't get an interval (likely due to the goal having a start
+            // date after today, or the goal not having a start date)
+            return nil
+        }
+    }
+
 
     var hasIncrementalPayment: Bool {
         return self.payFrequency.scope != .None
@@ -666,12 +693,7 @@ class Goal: NSManagedObject {
         guard let end = end else {
             return nil
         }
-        let period = CalendarPeriod(
-            calendarDate: end,
-            period: self.period,
-            beginningDateOfPeriod: end
-        )
-        return period?.end
+        return CalendarDay(dateInDay: end).end
     }
     
     var amount: Decimal? {
