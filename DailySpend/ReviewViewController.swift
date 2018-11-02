@@ -9,7 +9,7 @@
 import UIKit
 import CoreData
 
-class ReviewViewController: UIViewController, UINavigationControllerDelegate, PeriodSelectorViewDelegate, GoalPickerDelegate {
+class ReviewViewController: UIViewController {
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
     var context: NSManagedObjectContext {
         return appDelegate.persistentContainer.viewContext
@@ -20,6 +20,8 @@ class ReviewViewController: UIViewController, UINavigationControllerDelegate, Pe
     private var tableView: UITableView!
     private var cellCreator: TableViewCellHelper!
     
+    private var expensesController: ReviewViewExpensesController!
+
     /**
      * The current period that is being shown to the user, or `nil` if `goal`
      * not a recurring period.
@@ -61,6 +63,8 @@ class ReviewViewController: UIViewController, UINavigationControllerDelegate, Pe
         let tableFrame = CGRect(x: 0, y: 0, width: width, height: tableHeight)
         tableView = UITableView(frame: tableFrame, style: .grouped)
         tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.delegate = self
+        tableView.dataSource = self
         self.view.addSubview(tableView)
         
         tableView.topAnchor.constraint(equalTo: pbc.periodBrowser.bottomAnchor).isActive = true
@@ -75,6 +79,7 @@ class ReviewViewController: UIViewController, UINavigationControllerDelegate, Pe
             self.navigationController?.popViewController(animated: true)
         })
 
+        cellCreator = TableViewCellHelper(tableView: tableView)
         goalPicker.delegate = self
         goalPicker.makeTitleView(
             view: navigationController!.view,
@@ -84,6 +89,8 @@ class ReviewViewController: UIViewController, UINavigationControllerDelegate, Pe
             detailViewLanguage: true,
             buttonWidth: 70 // TODO: Make this a real number based on the done button width
         )
+        
+        expensesController = ReviewViewExpensesController(section: 0, cellCreator: cellCreator)
 
         self.goalChanged(newGoal: goalPicker.currentGoal)
     }
@@ -91,25 +98,7 @@ class ReviewViewController: UIViewController, UINavigationControllerDelegate, Pe
     override func viewWillAppear(_ animated: Bool) {
         pbc.updatePeriodBrowser(goal: goal, recurringGoalPeriod: recurringGoalPeriod)
     }
-    
-    /**
-     * Called when the next button was tapped in the period browser.
-     */
-    func tappedNext() {
-        if let nextPeriod = recurringGoalPeriod?.nextCalendarPeriod() {
-            recurringGoalPeriod = nextPeriod
-            pbc.updatePeriodBrowser(goal: goal, recurringGoalPeriod: recurringGoalPeriod)
-        }
-    }
-    
-    /**
-     * Called when the previous button was tapped in the period browser.
-     */
-    func tappedPrevious() {
-        recurringGoalPeriod = recurringGoalPeriod?.previousCalendarPeriod()
-        pbc.updatePeriodBrowser(goal: goal, recurringGoalPeriod: recurringGoalPeriod)
-    }
-    
+
     /**
      * Updates the summary view frame and displayed data to that of the passed
      * goal, or hides the summary view if the passed goal is `nil`.
@@ -117,16 +106,7 @@ class ReviewViewController: UIViewController, UINavigationControllerDelegate, Pe
     func tappedAdd() {
         
     }
-    
-    /**
-     * Called when the goal has been changed by the goal picker.
-     */
-    func goalChanged(newGoal: Goal?) {
-        self.goal = newGoal
-        recurringGoalPeriod = self.goal.mostRecentPeriod()
-        pbc.updatePeriodBrowser(goal: goal, recurringGoalPeriod: recurringGoalPeriod)
-    }
-    
+
     /**
      * Returns a unique string associated with a particular goal.
      */
@@ -162,5 +142,84 @@ class ReviewViewController: UIViewController, UINavigationControllerDelegate, Pe
      */
     func dayChanged(_: Notification) {
         
+    }
+}
+
+extension ReviewViewController: GoalPickerDelegate {
+    /**
+     * Called when the goal has been changed by the goal picker.
+     */
+    func goalChanged(newGoal: Goal?) {
+        self.goal = newGoal
+        recurringGoalPeriod = self.goal.mostRecentPeriod()
+        pbc.updatePeriodBrowser(goal: self.goal, recurringGoalPeriod: recurringGoalPeriod)
+        
+        self.expensesController.setGoal(newGoal: goal)
+    }
+}
+
+extension ReviewViewController: PeriodSelectorViewDelegate {
+    /**
+     * Called when the next button was tapped in the period browser.
+     */
+    func tappedNext() {
+        if let nextPeriod = recurringGoalPeriod?.nextCalendarPeriod() {
+            recurringGoalPeriod = nextPeriod
+            pbc.updatePeriodBrowser(goal: goal, recurringGoalPeriod: recurringGoalPeriod)
+        }
+    }
+    
+    /**
+     * Called when the previous button was tapped in the period browser.
+     */
+    func tappedPrevious() {
+        recurringGoalPeriod = recurringGoalPeriod?.previousCalendarPeriod()
+        pbc.updatePeriodBrowser(goal: goal, recurringGoalPeriod: recurringGoalPeriod)
+    }
+}
+
+extension ReviewViewController: UITableViewDataSource, UITableViewDelegate {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        switch section {
+        case 0:
+            return "Expenses"
+        default:
+            return nil
+        }
+    }
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        switch section {
+        case 0:
+            return expensesController.tableView(tableView, numberOfRowsInSection: section)
+        default:
+            return 0
+        }
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        switch indexPath.section {
+        case 0:
+            return expensesController.tableView(tableView, cellForRowAt: indexPath)
+        default:
+            return UITableViewCell()
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        switch indexPath.section {
+        case 0:
+            expensesController.tableView(tableView, didSelectRowAt: indexPath)
+        default:
+            return
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 44
     }
 }

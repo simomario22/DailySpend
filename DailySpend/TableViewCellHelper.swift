@@ -67,12 +67,14 @@ class TableViewCellHelper {
     /**
      * Cell to display a label and a value, which can be tinted or crossed out.
      */
-    func valueDisplayCell(labelText: String,
-                                 valueText: String,
-                                 explanatoryText: String? = nil,
-                                tintColor: UIColor? = nil,
-                                strikeText: Bool = false,
-                                detailIndicator: Bool = false) -> UITableViewCell {
+    func valueDisplayCell(
+        labelText: String,
+        valueText: String,
+        explanatoryText: String? = nil,
+        tintColor: UIColor? = nil,
+        strikeText: Bool = false,
+        detailIndicator: Bool = false
+    ) -> UITableViewCell {
         var cell: ValueTableViewCell! = tableView.dequeueReusableCell(withIdentifier: "valueDisplay") as? ValueTableViewCell
         if cell == nil {
             cell = ValueTableViewCell(style: .value1, reuseIdentifier: "valueDisplay")
@@ -133,7 +135,7 @@ class TableViewCellHelper {
     }
 
     /**
-     * Return a cell with an editable text field.
+     * Return a cell with an editable currency-formatted text field.
      */
     func currencyDisplayCell(title: String? = nil,
                                      amount: Decimal? = nil,
@@ -159,6 +161,35 @@ class TableViewCellHelper {
         (cell.textField as! CalculatorTextField).maxValue = 1e7
         return cell
     }
+    
+    /**
+     * Return a non editable cell with the option for a detail disclosure
+     * indicator and an "undescribed" descriptor style.
+     */
+    func optionalDescriptorValueCell(
+        description: String?,
+        undescribed: Bool,
+        value: String?,
+        detailButton: Bool
+    ) -> UITableViewCell {
+        var cell: ValueTableViewCell! = tableView.dequeueReusableCell(withIdentifier: "optionalDescriptorValue") as? ValueTableViewCell
+        if cell == nil {
+            cell = ValueTableViewCell(style: .value1, reuseIdentifier: "optionalDescriptorValue")
+        }
+        
+        cell.textLabel!.text = description
+        if !undescribed {
+            cell.textLabel!.font = UIFont.systemFont(ofSize: 18)
+        } else {
+            cell.textLabel!.font = UIFont.italicSystemFont(ofSize: 18)
+        }
+        cell.detailTextLabel!.text = value
+        cell.detailTextLabel?.textColor = .black
+        
+        cell.accessoryType = detailButton ? .detailButton : .none
+        return cell
+    }
+
     
     /**
      * Return a cell with a segmented control.
@@ -288,7 +319,7 @@ class TableViewCellHelper {
     }
     
     /**
-     * Return a cell with a date picker.
+     * Return a dynamic expense cell.
      */
     func expenseCell(
         description: String?,

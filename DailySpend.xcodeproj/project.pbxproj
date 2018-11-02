@@ -14,7 +14,7 @@
 		C518791F1F00461000881FB6 /* PhotoBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = C518791E1F00461000881FB6 /* PhotoBox.swift */; };
 		C518B59A1E88C7F0009CA4BB /* Decimal+DoubleValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C518B5991E88C7F0009CA4BB /* Decimal+DoubleValue.swift */; };
 		C51AD76F209E5F40002CC4AC /* ChoiceTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C51AD76E209E5F40002CC4AC /* ChoiceTableViewCell.swift */; };
-		C51AD771209E8FA9002CC4AC /* TodayViewExpenseController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C51AD770209E8FA9002CC4AC /* TodayViewExpenseController.swift */; };
+		C51AD771209E8FA9002CC4AC /* TodayViewExpensesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C51AD770209E8FA9002CC4AC /* TodayViewExpensesController.swift */; };
 		C51D022820564C0F001946CA /* SwitchTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C51D022720564C0F001946CA /* SwitchTableViewCell.swift */; };
 		C51D022A20565A4E001946CA /* UITextView+Margins.swift in Sources */ = {isa = PBXBuildFile; fileRef = C51D022920565A4E001946CA /* UITextView+Margins.swift */; };
 		C5352729204B45CE0038E747 /* AddGoalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5352728204B45CE0038E747 /* AddGoalViewController.swift */; };
@@ -100,6 +100,7 @@
 		C5EE62A31E85769700CAEEE7 /* String+CharacterSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5EE62A21E85769700CAEEE7 /* String+CharacterSet.swift */; };
 		C5F75FF01F9D5A75005F3510 /* UILabel+Size.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5F75FEF1F9D5A75005F3510 /* UILabel+Size.swift */; };
 		C5F75FF21F9D6A29005F3510 /* UITextField+Size.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5F75FF11F9D6A29005F3510 /* UITextField+Size.swift */; };
+		C5FCDFE7218CDC4500CA5336 /* ReviewViewExpensesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5FCDFE6218CDC4500CA5336 /* ReviewViewExpensesController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -132,7 +133,7 @@
 		C518B59B1E88D668009CA4BB /* DailySpend-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "DailySpend-Bridging-Header.h"; path = "DailySpend/DailySpend-Bridging-Header.h"; sourceTree = "<group>"; };
 		C51A224D1EBFB32D00B53C24 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		C51AD76E209E5F40002CC4AC /* ChoiceTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChoiceTableViewCell.swift; sourceTree = "<group>"; };
-		C51AD770209E8FA9002CC4AC /* TodayViewExpenseController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayViewExpenseController.swift; sourceTree = "<group>"; };
+		C51AD770209E8FA9002CC4AC /* TodayViewExpensesController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayViewExpensesController.swift; sourceTree = "<group>"; };
 		C51B8C501F04DE65008AC0C6 /* ExpenseView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpenseView.swift; sourceTree = "<group>"; };
 		C51B8C521F04EDE5008AC0C6 /* DailySpend 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "DailySpend 3.xcdatamodel"; sourceTree = "<group>"; };
 		C51D022720564C0F001946CA /* SwitchTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwitchTableViewCell.swift; sourceTree = "<group>"; };
@@ -238,6 +239,7 @@
 		C5F75FEF1F9D5A75005F3510 /* UILabel+Size.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UILabel+Size.swift"; sourceTree = "<group>"; };
 		C5F75FF11F9D6A29005F3510 /* UITextField+Size.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextField+Size.swift"; sourceTree = "<group>"; };
 		C5F75FF31F9DB01E005F3510 /* DayReviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayReviewViewController.swift; sourceTree = "<group>"; };
+		C5FCDFE6218CDC4500CA5336 /* ReviewViewExpensesController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewViewExpensesController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -415,6 +417,7 @@
 			isa = PBXGroup;
 			children = (
 				C58BBB9621704FD900D9650C /* ReviewViewController.swift */,
+				C5FCDFE6218CDC4500CA5336 /* ReviewViewExpensesController.swift */,
 				C5568B5D2186C3B9000F0301 /* PeriodBrowserController.swift */,
 				C58BBB992170519500D9650C /* PeriodBrowserView.swift */,
 			);
@@ -492,7 +495,7 @@
 			isa = PBXGroup;
 			children = (
 				C5741D4D1FB93EDC00EEDDDD /* TodayViewController.swift */,
-				C51AD770209E8FA9002CC4AC /* TodayViewExpenseController.swift */,
+				C51AD770209E8FA9002CC4AC /* TodayViewExpensesController.swift */,
 				C5E51E4F209EC438005C674B /* TodaySummaryView.swift */,
 			);
 			name = "Today View";
@@ -788,11 +791,12 @@
 				C5E02501201C011500831269 /* CalendarWeek.swift in Sources */,
 				C573B9FF20324CDA0025A5A2 /* Pause+CoreDataProperties.swift in Sources */,
 				C573BA0320324CDA0025A5A2 /* Expense+CoreDataProperties.swift in Sources */,
+				C5FCDFE7218CDC4500CA5336 /* ReviewViewExpensesController.swift in Sources */,
 				C5781D9B1E6E2060006BBC03 /* AppDelegate.swift in Sources */,
 				C58BBB9A2170519500D9650C /* PeriodBrowserView.swift in Sources */,
 				C5568B5E2186C3B9000F0301 /* PeriodBrowserController.swift in Sources */,
 				C53DFD12210C1989001F070A /* ImageSelectorController.swift in Sources */,
-				C51AD771209E8FA9002CC4AC /* TodayViewExpenseController.swift in Sources */,
+				C51AD771209E8FA9002CC4AC /* TodayViewExpensesController.swift in Sources */,
 				C586813E1F2E8BF2008D3AEE /* CGRect+Edges.swift in Sources */,
 				C5E51E5A209FA8A8005C674B /* SpendIndicationNavigationController.swift in Sources */,
 				C51D022A20565A4E001946CA /* UITextView+Margins.swift in Sources */,
