@@ -95,6 +95,34 @@ class CalendarInterval : CalendarIntervalProvider {
         self.start = CalendarDay(localDateInDay: localStart).start
         self.end = localEnd != nil ? CalendarDay(localDateInDay: localEnd!).start : nil
     }
+    
+    /**
+     * Returns true if this interval contains the date, false otherwise.
+     */
+    func contains(date: CalendarDateProvider) -> Bool {
+        return date.gmtDate >= start.gmtDate &&
+                end == nil || date.gmtDate < end!.gmtDate
+    }
+
+    /**
+     * Returns true if this interval contains the entire interval, false
+     * otherwise.
+     */
+    func contains(interval: CalendarIntervalProvider) -> Bool {
+        if !self.contains(date: interval.start) {
+            return false
+        }
+        
+        if interval.end == nil && self.end != nil {
+            return false
+        }
+        
+        if interval.end != nil {
+            return self.contains(date: interval.end!)
+        }
+        
+        return true
+    }
 }
 
 /**
@@ -255,13 +283,6 @@ class CalendarPeriod : CalendarIntervalProvider {
             return nil
         }
     }
-
-    /**
-     * Returns true if this interval contains the date, false otherwise.
-     */
-    func contains(date: CalendarDateProvider) -> Bool {
-        return date.gmtDate >= start.gmtDate && date.gmtDate < end!.gmtDate
-    }
     
     func nextCalendarPeriod() -> CalendarPeriod? {
         if isPartialPeriod {
@@ -283,6 +304,23 @@ class CalendarPeriod : CalendarIntervalProvider {
             beginningDateOfPeriod: start,
             boundingEndDate: nil
         )!
+    }
+    
+    /**
+     * Returns true if this interval contains the date, false otherwise.
+     */
+    func contains(date: CalendarDateProvider) -> Bool {
+        return date.gmtDate >= start.gmtDate && date.gmtDate < end!.gmtDate
+    }
+    
+    /**
+     * Returns true if this interval contains the entire interval, false
+     * otherwise.
+     */
+    func contains(interval: CalendarIntervalProvider) -> Bool {
+        return self.contains(date: interval.start) &&
+            interval.end != nil &&
+            self.contains(date: interval.end!)
     }
 }
 

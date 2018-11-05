@@ -234,7 +234,10 @@ class Goal: NSManagedObject {
         }
     }
     
-    
+    /**
+     * A representation of a goal along with that goal's depth in the
+     * hierarchy.
+     */
     struct IndentedGoal {
         var goal: Goal
         var indentation: Int
@@ -283,19 +286,21 @@ class Goal: NSManagedObject {
      *    - children: Child goals to be made into indented goals
      *    - indentation: The level of indentation fo assign to each passed child
      * - Returns: An array of sorted goals and their children, excluding goals
-     that are in the excludedGoals set
+     *            that are in the excludedGoals set
      */
     private class func makeIndentedGoals(children: [Goal]?, indentation: Int, excluded: (Goal) -> Bool) -> [IndentedGoal] {
         return children?.flatMap({ childGoal -> [IndentedGoal] in
-            if excluded(childGoal) {
-                return []
-            }
             let children = makeIndentedGoals(
                 children: childGoal.sortedChildGoals,
                 indentation: indentation + 1,
                 excluded: excluded
             )
-            return [IndentedGoal(childGoal, indentation)] + children
+
+            if excluded(childGoal) {
+                return children
+            } else {
+                return [IndentedGoal(childGoal, indentation)] + children
+            }
         }) ?? []
     }
     
@@ -350,7 +355,7 @@ class Goal: NSManagedObject {
         }
         
         if _start == nil || !Goal.scopeConformsToDate(_start!.gmtDate, scope: _period.scope) {
-            return (false, "The goal must have a start date at the beginning of it's period.")
+            return (false, "This goal must have a start date at the beginning of it's period.")
         }
         
         
@@ -359,11 +364,31 @@ class Goal: NSManagedObject {
         }
         
         if _period.scope != .None && _payFrequency > _period {
-            return (false, "The pay freqency must have a lesser or equal interval than that of the period.")
+            return (false, "The pay freqency for this goal must have a lesser or equal interval than that of the period.")
+        }
+
+        if let parent = _parentGoal {
+            if parent == self {
+                return (false, "This goal cannot be a parent of itself.")
+            }
+            
+            let interval = CalendarInterval(start: _start!, end: _end)
+            let parentInterval = CalendarInterval(start: parent.start!, end: parent.exclusiveEnd)
+            
+            if !parentInterval.contains(interval: interval) {
+                return (false, "This goal's start and end date must be within it's parent's start and end date.")
+            }
         }
         
-        if _parentGoal == self {
-            return (false, "A goal cannot be a parent of itself.")
+        if let children = self.childGoals {
+            let interval = CalendarInterval(start: _start!, end: _end)
+            for child in children {
+                let childInterval = CalendarInterval(start: child.start!, end: child.exclusiveEnd)
+                
+                if !interval.contains(interval: childInterval) {
+                    return (false, "All of the start and end dates for this goal's children must be within this goal's start and end date.")
+                }
+            }
         }
         
         if _dateCreated == nil {
@@ -539,7 +564,7 @@ class Goal: NSManagedObject {
         }
         
         if date.gmtDate < start.gmtDate ||
-           (self.end != nil && date.gmtDate > self.end!.gmtDate) {
+           (self.exclusiveEnd != nil && date.gmtDate >= self.exclusiveEnd!.gmtDate) {
             return nil
         }
 
@@ -553,6 +578,24 @@ class Goal: NSManagedObject {
             beginningDateOfPeriod: self.start!,
             boundingEndDate: self.exclusiveEnd
         )!
+    }
+    
+    /**
+     * Returns the most recent calendar interval for this goal.
+     *
+     * If this goal does not have a start date, or has a start date after
+     * today and is a recurring goal, this function returns `nil`.
+     */
+    func mostRecentInterval() -> CalendarIntervalProvider? {
+        guard let start = start else {
+            return nil
+        }
+        
+        if isRecurring {
+            return self.mostRecentPeriod()
+        } else {
+            return self.periodInterval(for: start)
+        }
     }
 
     /**
@@ -600,8 +643,12 @@ class Goal: NSManagedObject {
         return self.period.scope != .None
     }
     
-    var archived: Bool {
-        return end != nil && CalendarDay(dateInDay: end!) < CalendarDay()
+    var isArchived: Bool {
+        return end != nil && CalendarDay(dateInDay: end!) < CalendarDay() || (parentGoal?.isArchived ?? false)
+    }
+    
+    var hasFutureStart: Bool {
+        return start == nil || CalendarDay(dateInDay: start!) > CalendarDay()
     }
     
     var alwaysCarryOver: Bool {

@@ -48,7 +48,7 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
     var expandedSection: GoalViewExpandableSectionType = .None
     var incrementalPayment = false
     var neverEnd = true
-    var cellSizeCache = [GoalViewCellType: CGFloat]()
+    var cellSizeCache = [AddGoalViewCellType: CGFloat]()
     
     /*
      * The start day, only updated when the start field is explicitly set, but
@@ -241,7 +241,7 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
         super.viewWillDisappear(animated)
     }
     
-    enum GoalViewCellType {
+    enum AddGoalViewCellType {
         case DescriptionCell
         case AmountPerPeriodCell
         case PeriodLengthCell
@@ -506,7 +506,7 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        func height(_ cellType: GoalViewCellType,
+        func height(_ cellType: AddGoalViewCellType,
                     _ tableViewCellType: ExplanatoryTextTableViewCell.Type,
                     _ text: String) -> CGFloat {
             var height = cellSizeCache[cellType]
@@ -734,13 +734,13 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
         reloadParentGoalCell()
     }
     
-    func cellTypeForIndexPath(indexPath: IndexPath) -> GoalViewCellType {
+    func cellTypeForIndexPath(indexPath: IndexPath) -> AddGoalViewCellType {
         let section = indexPath.section
         let row = indexPath.row
         
-        let defaultCellType: GoalViewCellType = .DescriptionCell
+        let defaultCellType: AddGoalViewCellType = .DescriptionCell
         
-        func cellTypeForDescriptionAmountSection(row: Int) -> GoalViewCellType? {
+        func cellTypeForDescriptionAmountSection(row: Int) -> AddGoalViewCellType? {
             switch row {
             case 0:
                 return .DescriptionCell
@@ -751,7 +751,7 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
             }
         }
         
-        func cellTypeForPeriodSection(row: Int) -> GoalViewCellType? {
+        func cellTypeForPeriodSection(row: Int) -> AddGoalViewCellType? {
             switch row {
             case 0:
                 return .PeriodLengthCell
@@ -776,7 +776,7 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
             }
         }
         
-        func cellTypeForPayIncrementalPaymentSection(row: Int) -> GoalViewCellType? {
+        func cellTypeForPayIncrementalPaymentSection(row: Int) -> AddGoalViewCellType? {
             switch row {
             case 0:
                 return .IncrementalPaymentCell
@@ -789,7 +789,7 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
             }
         }
         
-        func cellTypeForStartEndSection(row: Int) -> GoalViewCellType? {
+        func cellTypeForStartEndSection(row: Int) -> AddGoalViewCellType? {
             switch row {
             case 0:
                 return .StartCell

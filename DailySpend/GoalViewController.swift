@@ -19,6 +19,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     var tableView: UITableView!
     var currentGoals: [Goal.IndentedGoal] = []
     var archivedGoals: [Goal.IndentedGoal] = []
+    var futureStartGoals: [Goal.IndentedGoal] = []
     var changes = false
     
     override func viewDidLoad() {
@@ -45,13 +46,54 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func setGoals() {
-        currentGoals = Goal.getIndentedGoals(excludeGoal: { $0.archived })
-        archivedGoals = Goal.getIndentedGoals(excludeGoal: { !$0.archived })
+        currentGoals = Goal.getIndentedGoals(excludeGoal: { $0.isArchived || $0.hasFutureStart })
+        futureStartGoals = Goal.getIndentedGoals(excludeGoal: { !$0.hasFutureStart } )
+        archivedGoals = Goal.getIndentedGoals(excludeGoal: { !$0.isArchived })
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    private enum GoalViewSectionType {
+        case CurrentGoalsSection
+        case FutureStartGoalsSection
+        case ArchivedGoalsSection
+    }
+    
+    private func sectionForSectionIndex(_ section: Int) -> GoalViewSectionType {
+        switch section {
+        case 0:
+            if !currentGoals.isEmpty {
+                return .CurrentGoalsSection
+            } else if !futureStartGoals.isEmpty {
+                return .FutureStartGoalsSection
+            } else {
+                return .ArchivedGoalsSection
+            }
+        case 1:
+            if !futureStartGoals.isEmpty {
+                return .FutureStartGoalsSection
+            } else {
+                return .ArchivedGoalsSection
+            }
+        case 2:
+            return .ArchivedGoalsSection
+        default:
+            return .CurrentGoalsSection
+        }
+    }
+    
+    private func goalsForSection(_ section: Int) -> [Goal.IndentedGoal] {
+        switch sectionForSectionIndex(section) {
+        case .CurrentGoalsSection:
+            return currentGoals
+        case .FutureStartGoalsSection:
+            return futureStartGoals
+        case .ArchivedGoalsSection:
+            return archivedGoals
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -62,34 +104,55 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
 
         cell.accessoryType = .detailButton
         
-        let goals = indexPath.section == 1 ? archivedGoals : currentGoals
+        let goals = goalsForSection(indexPath.section)
+        let section = sectionForSectionIndex(indexPath.section)
         
-        cell.indentationLevel = goals[indexPath.row].indentation
+        if section == .CurrentGoalsSection {
+            cell.indentationLevel = goals[indexPath.row].indentation
+        } else {
+            cell.indentationLevel = 0
+        }
         cell.textLabel?.text = goals[indexPath.row].goal.shortDescription
 
         return cell
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        switch section {
-        case 1:
-            return !archivedGoals.isEmpty ? "Archived" : nil
+        switch sectionForSectionIndex(section) {
+        case .FutureStartGoalsSection:
+            return "Future Start"
+        case .ArchivedGoalsSection:
+            return "Archived"
         default:
             return nil
         }
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return section == 0 ? currentGoals.count : archivedGoals.count
+        switch sectionForSectionIndex(section) {
+        case .CurrentGoalsSection:
+            return currentGoals.count
+        case .FutureStartGoalsSection:
+            return futureStartGoals.count
+        case .ArchivedGoalsSection:
+            return archivedGoals.count
+        }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        var sections = 1
+        if !archivedGoals.isEmpty {
+            sections += 1
+        }
+        if !futureStartGoals.isEmpty {
+            sections += 1
+        }
+        return sections
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let vc = AddGoalViewController(nibName: nil, bundle: nil)
-        let goals = indexPath.section == 1 ? archivedGoals : currentGoals
+        let goals = goalsForSection(indexPath.section)
         vc.goal = goals[indexPath.row].goal
         vc.delegate = self
         
@@ -108,16 +171,36 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            if indexPath.section == 0 {
+            // No need to reload rows not in current goals section since they're not indented.
+            var children = 0
+            switch sectionForSectionIndex(indexPath.section) {
+            case .CurrentGoalsSection:
                 let indentedGoal = currentGoals.remove(at: indexPath.row)
+                children = indentedGoal.goal.childGoals?.count ?? 0
                 context.delete(indentedGoal.goal)
-            } else {
+            case .FutureStartGoalsSection:
+                let indentedGoal = futureStartGoals.remove(at: indexPath.row)
+                context.delete(indentedGoal.goal)
+            case .ArchivedGoalsSection:
                 let indentedGoal = archivedGoals.remove(at: indexPath.row)
                 context.delete(indentedGoal.goal)
             }
             changes = true
             appDelegate.saveContext()
+            
+            var childPaths = [IndexPath]()
+            
+            let row = indexPath.row
+            for i in row + 1..<row + 1 + children {
+                // This will only run if children > 0
+                currentGoals[i - 1].indentation -= 1
+                childPaths.append(IndexPath(row: i, section: indexPath.section))
+            }
+            
+            tableView.beginUpdates()
             tableView.deleteRows(at: [indexPath], with: .fade)
+            tableView.reloadRows(at: childPaths, with: .fade)
+            tableView.endUpdates()
         }
     }
     

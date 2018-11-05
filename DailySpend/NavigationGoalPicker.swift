@@ -106,7 +106,7 @@ class NavigationGoalPicker : NSObject, UITableViewDataSource, UITableViewDelegat
     }
     
     private func getAllGoals() -> [Goal.IndentedGoal] {
-        return Goal.getIndentedGoals(excludeGoal: { $0.archived })
+        return Goal.getIndentedGoals(excludeGoal: { $0.isArchived || $0.hasFutureStart })
     }
     
     private func getLastUsedGoal() -> Goal? {
