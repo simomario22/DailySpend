@@ -35,6 +35,10 @@ class ReviewViewController: UIViewController {
      */
     var goalPicker: NavigationGoalPicker!
     
+    var interval: CalendarIntervalProvider! {
+        return recurringGoalPeriod ?? self.goal?.periodInterval(for: self.goal.start!)
+    }
+    
     /**
      * Goal picker must be set prior to view loading with a goal to show
      * in this review controller.
@@ -137,6 +141,14 @@ class ReviewViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    /**
+     * Notifies entity controllers that there has been a change in goal or
+     * interval, and passes them this class's new information.
+     */
+    func notifyEntityControllers() {
+        self.expensesController.setGoal(goal, interval: interval)
+    }
+    
     /*
      * Called when the day changes.
      */
@@ -153,8 +165,9 @@ extension ReviewViewController: GoalPickerDelegate {
         self.goal = newGoal
         recurringGoalPeriod = self.goal.mostRecentPeriod()
         pbc.updatePeriodBrowser(goal: self.goal, recurringGoalPeriod: recurringGoalPeriod)
-        
-        self.expensesController.setGoal(newGoal: goal)
+
+        notifyEntityControllers()
+        self.tableView.reloadData()
     }
 }
 
@@ -163,10 +176,17 @@ extension ReviewViewController: PeriodSelectorViewDelegate {
      * Called when the next button was tapped in the period browser.
      */
     func tappedNext() {
-        if let nextPeriod = recurringGoalPeriod?.nextCalendarPeriod() {
-            recurringGoalPeriod = nextPeriod
-            pbc.updatePeriodBrowser(goal: goal, recurringGoalPeriod: recurringGoalPeriod)
+        guard let nextPeriod = recurringGoalPeriod?.nextCalendarPeriod() else {
+            return
         }
+        recurringGoalPeriod = nextPeriod
+        pbc.updatePeriodBrowser(goal: goal, recurringGoalPeriod: recurringGoalPeriod)
+        notifyEntityControllers()
+        
+        tableView.beginUpdates()
+        self.tableView.deleteSections(IndexSet(arrayLiteral: 0), with: .left)
+        self.tableView.insertSections(IndexSet(arrayLiteral: 0), with: .right)
+        tableView.endUpdates()
     }
     
     /**
@@ -175,6 +195,13 @@ extension ReviewViewController: PeriodSelectorViewDelegate {
     func tappedPrevious() {
         recurringGoalPeriod = recurringGoalPeriod?.previousCalendarPeriod()
         pbc.updatePeriodBrowser(goal: goal, recurringGoalPeriod: recurringGoalPeriod)
+        notifyEntityControllers()
+        
+        tableView.beginUpdates()
+        self.tableView.deleteSections(IndexSet(arrayLiteral: 0), with: .right)
+        self.tableView.insertSections(IndexSet(arrayLiteral: 0), with: .left)
+        tableView.endUpdates()
+
     }
 }
 
@@ -217,6 +244,16 @@ extension ReviewViewController: UITableViewDataSource, UITableViewDelegate {
         default:
             return
         }
+    }
+    
+    func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
+        switch indexPath.section {
+        case 0:
+            expensesController.tableView(tableView, accessoryButtonTappedForRowWith: indexPath)
+        default:
+            return
+        }
+
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

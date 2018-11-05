@@ -58,9 +58,7 @@ class PeriodBrowserController {
         let df = DateFormatter()
         df.dateFormat = "M/d/yy"
         
-        // Begin by assuming start is goal start and no end (non recurring).
-        var start = goal.start!.string(formatter: df)
-        var end = "Today"
+        var start, end: String
         periodBrowser.previousButtonEnabled = false
         periodBrowser.nextButtonEnabled = false
         
@@ -69,7 +67,8 @@ class PeriodBrowserController {
             periodBrowser.previousButtonEnabled = true
             periodBrowser.nextButtonEnabled = true
             start = period.start.string(formatter: df)
-            end = CalendarDay(dateInDay: period.end!).subtract(days: 1).string(formatter: df)
+            let inclusiveDay = CalendarDay(dateInDay: period.end!).subtract(days: 1)
+            end = inclusiveDay.string(formatter: df, friendly: true)
             
             // Check for no previous period.
             if period.previousCalendarPeriod().start.gmtDate < goal.start!.gmtDate {
@@ -82,9 +81,12 @@ class PeriodBrowserController {
                 periodBrowser.nextButtonEnabled = false
             }
         } else {
-            // This is a non-recurring goal. Check if it has an end date.
-            if goal.end != nil {
-                end = CalendarDay(dateInDay: goal.end!).string(formatter: df)
+            let interval = goal.periodInterval(for: goal.start!)!
+            start = interval.start.string(formatter: df)
+            if let intervalEnd = interval.end {
+                end = intervalEnd.string(formatter: df, friendly: true)
+            } else {
+                end = "Today"
             }
         }
 

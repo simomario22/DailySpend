@@ -65,6 +65,27 @@ class TableViewCellHelper {
     }
     
     /**
+     * Returns a cell with a single centered label.
+     */
+    func centeredLabelCell(labelText: String, disabled: Bool) -> UITableViewCell {
+        var cell: UITableViewCell! = tableView.dequeueReusableCell(withIdentifier: "centeredLabel")
+        if cell == nil {
+            cell = UITableViewCell(style: .default, reuseIdentifier: "centeredLabel")
+        }
+        
+        cell.textLabel!.text = labelText
+        cell.textLabel!.textAlignment = .center
+        
+        if disabled {
+            cell.textLabel?.textColor = .lightGray
+            cell.textLabel?.font = UIFont.italicSystemFont(ofSize: 17)
+        }
+        
+        return cell
+    }
+
+    
+    /**
      * Cell to display a label and a value, which can be tinted or crossed out.
      */
     func valueDisplayCell(

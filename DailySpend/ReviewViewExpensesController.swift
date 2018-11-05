@@ -21,6 +21,7 @@ class ReviewViewExpensesController {
     private var expenseCellData: [ExpenseCellDatum]
     private var section: Int
     private var cellCreator: TableViewCellHelper
+    private var present: (UIViewController, Bool, (() -> Void)?) -> ()
     
     init(section: Int, cellCreator: TableViewCellHelper) {
         self.goal = nil
@@ -29,29 +30,29 @@ class ReviewViewExpensesController {
         self.cellCreator = cellCreator
     }
     
-    func setGoal(newGoal: Goal?) {
+    func setGoal(_ newGoal: Goal?, interval: CalendarIntervalProvider) {
         self.goal = newGoal
+        expenseCellData = []
         if let goal = self.goal {
-            for expense in goal.sortedExpenses ?? [] {
+            let expenses = goal.getExpenses(interval: interval)
+            for expense in expenses {
                 expenseCellData.append(ExpenseCellDatum(
                     expense.shortDescription,
                     String.formatAsCurrency(amount: expense.amount ?? 0) ?? ""
                 ))
             }
-        } else {
-            expenseCellData = []
         }
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return expenseCellData.count
-    }
-    
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        return max(expenseCellData.count, 1)
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if expenseCellData.isEmpty {
+            return cellCreator.centeredLabelCell(labelText: "None", disabled: true)
+        }
+        
         let row = indexPath.row
         let description = expenseCellData[row].shortDescription ?? "No Description"
         let value = expenseCellData[row].amountDescription
@@ -63,6 +64,10 @@ class ReviewViewExpensesController {
         )
     }
     
+    func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
+        
+    }
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         return

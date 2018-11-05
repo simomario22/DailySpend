@@ -36,6 +36,12 @@ protocol CalendarDateProvider {
      * Returns a formatted string for the date represented by this provider.
      */
     func string(formatter: DateFormatter) -> String
+
+    /**
+     * Returns a formatted string for the date represented by this provider,
+     * optionally with human friendly relative dates.
+     */
+    func string(formatter: DateFormatter, friendly: Bool) -> String
 }
 
 struct GMTDate : CalendarDateProvider {
@@ -45,6 +51,22 @@ struct GMTDate : CalendarDateProvider {
     }
     
     func string(formatter: DateFormatter) -> String {
+        return self.string(formatter: formatter, friendly: false)
+    }
+    
+    func string(formatter: DateFormatter, friendly: Bool) -> String {
+        if friendly {
+            let today = CalendarDay()
+            let date = self.gmtDate
+            if date == today.start.gmtDate {
+                return "Today"
+            } else if date == today.add(days: 1).start.gmtDate {
+                return "Tomorrow"
+            } else if date == today.subtract(days: 1).start.gmtDate {
+                return "Yesterday"
+            }
+        }
+
         let origTZ = formatter.timeZone
         formatter.timeZone = TimeZone(secondsFromGMT: 0)!
         
