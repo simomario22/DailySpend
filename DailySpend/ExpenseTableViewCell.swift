@@ -175,8 +175,10 @@ class ExpenseTableViewCell: UITableViewCell, UITextFieldDelegate, CalculatorText
         descriptionField.borderStyle = .none
         descriptionField.delegate = self
         descriptionField.returnKeyType = .next
+        descriptionField.smartInsertDeleteType = .no
         
         amountField.borderStyle = .none
+        amountField.smartInsertDeleteType = .no
         amountField.delegate = self
         amountField.textAlignment = .right
         amountField.calcDelegate = self

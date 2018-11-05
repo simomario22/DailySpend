@@ -65,6 +65,7 @@ class TextFieldTableViewCell: ExplanatoryTextTableViewCell, UITextFieldDelegate,
     
     private func makeTextField(calculator: Bool) -> UITextField {
         let field = calculator ? CalculatorTextField() : UITextField()
+        field.smartInsertDeleteType = .no
         field.borderStyle = .none
         field.delegate = self
         field.addTarget(self, action: #selector(textFieldChanged(field:)), for: .editingChanged)
