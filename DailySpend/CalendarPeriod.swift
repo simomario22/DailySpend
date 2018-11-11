@@ -21,6 +21,17 @@ protocol CalendarIntervalProvider {
      * The first Date after `first` *not* included in the period, in GMT.
      */
     var end: CalendarDateProvider? { get }
+    
+    /**
+     * Returns true if this interval contains the date, false otherwise.
+     */
+    func contains(date: CalendarDateProvider) -> Bool
+    
+    /**
+     * Returns true if this interval contains the entire interval, false
+     * otherwise.
+     */
+    func contains(interval: CalendarIntervalProvider) -> Bool
 }
 
 /**

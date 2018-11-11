@@ -33,7 +33,7 @@ class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableVi
     private var notes: String!
     private var goal: Goal?
     private var goalSetupFinished = false
-    private var expense: Expense!
+    var expense: Expense!
 
     var imageSelectorDataSource: ImageSelectorDataSource!
     
@@ -109,6 +109,15 @@ class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableVi
             self.view.endEditing(false)
             self.dismiss(animated: true, completion: nil)
         }
+    }
+    
+    /**
+     * Setup this view controller with data from an expense that has already
+     * been partially edited in another part of the UI.
+     */
+    func setupExpenseWithGoal(goal: Goal) {
+        self.goal = goal
+        self.goalSetupFinished = true
     }
     
     /**

@@ -94,7 +94,12 @@ class ReviewViewController: UIViewController {
             buttonWidth: 70 // TODO: Make this a real number based on the done button width
         )
         
-        expensesController = ReviewViewExpensesController(section: 0, cellCreator: cellCreator)
+        expensesController = ReviewViewExpensesController(
+            section: 0,
+            cellCreator: cellCreator,
+            present: self.present
+        )
+        expensesController.delegate = self
 
         self.goalChanged(newGoal: goalPicker.currentGoal)
     }
@@ -108,7 +113,14 @@ class ReviewViewController: UIViewController {
      * goal, or hides the summary view if the passed goal is `nil`.
      */
     func tappedAdd() {
-        
+        let addSelectorAlert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        let actions = [
+            UIAlertAction(title: "New Expense", style: .default, handler: { _ in self.expensesController.presentCreateExpenseModal()
+            }),
+            UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        ]
+        addSelectorAlert.addActions(actions)
+        self.present(addSelectorAlert, animated: true, completion: nil)
     }
 
     /**
@@ -140,20 +152,35 @@ class ReviewViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
-    /**
-     * Notifies entity controllers that there has been a change in goal or
-     * interval, and passes them this class's new information.
-     */
-    func notifyEntityControllers() {
-        self.expensesController.setGoal(goal, interval: interval)
-    }
-    
+
     /*
      * Called when the day changes.
      */
     func dayChanged(_: Notification) {
         
+    }
+    
+    /**
+     * Notifies controllers controlling data in the review view that there has
+     * been a change in goal or interval, and passes them the new information
+     * from this class's member variables.
+     */
+    private func notifyControllersDataChanged() {
+        pbc.updatePeriodBrowser(goal: goal, recurringGoalPeriod: recurringGoalPeriod)
+        
+        expensesController.setGoal(goal, interval: interval)
+
+    }
+    
+    /**
+     * Animate an interval change, forward if `forward` is true, otherwise
+     * backward.
+     */
+    private func animateIntervalChange(forward: Bool) {
+        tableView.beginUpdates()
+        tableView.deleteSections(IndexSet(arrayLiteral: 0), with: forward ? .left : .right)
+        tableView.insertSections(IndexSet(arrayLiteral: 0), with: forward ? .right : .left)
+        tableView.endUpdates()
     }
 }
 
@@ -164,9 +191,7 @@ extension ReviewViewController: GoalPickerDelegate {
     func goalChanged(newGoal: Goal?) {
         self.goal = newGoal
         recurringGoalPeriod = self.goal.mostRecentPeriod()
-        pbc.updatePeriodBrowser(goal: self.goal, recurringGoalPeriod: recurringGoalPeriod)
-
-        notifyEntityControllers()
+        notifyControllersDataChanged()
         self.tableView.reloadData()
     }
 }
@@ -180,13 +205,8 @@ extension ReviewViewController: PeriodSelectorViewDelegate {
             return
         }
         recurringGoalPeriod = nextPeriod
-        pbc.updatePeriodBrowser(goal: goal, recurringGoalPeriod: recurringGoalPeriod)
-        notifyEntityControllers()
-        
-        tableView.beginUpdates()
-        self.tableView.deleteSections(IndexSet(arrayLiteral: 0), with: .left)
-        self.tableView.insertSections(IndexSet(arrayLiteral: 0), with: .right)
-        tableView.endUpdates()
+        notifyControllersDataChanged()
+        animateIntervalChange(forward: true)
     }
     
     /**
@@ -194,69 +214,191 @@ extension ReviewViewController: PeriodSelectorViewDelegate {
      */
     func tappedPrevious() {
         recurringGoalPeriod = recurringGoalPeriod?.previousCalendarPeriod()
-        pbc.updatePeriodBrowser(goal: goal, recurringGoalPeriod: recurringGoalPeriod)
-        notifyEntityControllers()
-        
-        tableView.beginUpdates()
-        self.tableView.deleteSections(IndexSet(arrayLiteral: 0), with: .right)
-        self.tableView.insertSections(IndexSet(arrayLiteral: 0), with: .left)
-        tableView.endUpdates()
-
+        notifyControllersDataChanged()
+        animateIntervalChange(forward: false)
     }
 }
 
 extension ReviewViewController: UITableViewDataSource, UITableViewDelegate {
+    private enum ReviewViewSectionType {
+        case ExpenseSection
+    }
+    
+    private func sectionTypeForSection(_ section: Int) -> ReviewViewSectionType {
+        return .ExpenseSection
+    }
+    
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        switch section {
-        case 0:
+        switch sectionTypeForSection(section) {
+        case .ExpenseSection:
             return "Expenses"
-        default:
-            return nil
         }
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        switch section {
-        case 0:
+        switch sectionTypeForSection(section) {
+        case .ExpenseSection:
             return expensesController.tableView(tableView, numberOfRowsInSection: section)
-        default:
-            return 0
         }
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        switch indexPath.section {
-        case 0:
+        switch sectionTypeForSection(indexPath.section) {
+        case .ExpenseSection:
             return expensesController.tableView(tableView, cellForRowAt: indexPath)
-        default:
-            return UITableViewCell()
         }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        switch indexPath.section {
-        case 0:
+        switch sectionTypeForSection(indexPath.section) {
+        case .ExpenseSection:
             expensesController.tableView(tableView, didSelectRowAt: indexPath)
-        default:
-            return
         }
     }
     
     func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
-        switch indexPath.section {
-        case 0:
+        switch sectionTypeForSection(indexPath.section) {
+        case .ExpenseSection:
             expensesController.tableView(tableView, accessoryButtonTappedForRowWith: indexPath)
-        default:
-            return
         }
-
+    }
+    
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        switch sectionTypeForSection(indexPath.section) {
+        case .ExpenseSection:
+            return expensesController.tableView(tableView, canEditRowAt: indexPath)
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        switch sectionTypeForSection(indexPath.section) {
+        case .ExpenseSection:
+            expensesController.tableView(tableView, commit: editingStyle, forRowAt: indexPath)
+        }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 44
+        switch sectionTypeForSection(indexPath.section) {
+        case .ExpenseSection:
+            return expensesController.tableView(tableView, heightForRowAt: indexPath)
+        }
     }
 }
+
+
+extension ReviewViewController: ReviewEntityControllerDelegate {
+    
+    /**
+     * Used to load a new interval and goal and switch the view so that a newly
+     * added or edited entity is visible.
+     */
+    private func loadNewInterval(in goal: Goal, for date: CalendarDateProvider) {
+        let goalChanged = self.goal != goal
+        if goalChanged {
+            self.goal = goal
+            self.goalPicker.setGoal(newGoal: goal)
+        }
+        
+        if let newInterval = goal.periodInterval(for: date) {
+            recurringGoalPeriod = newInterval as? CalendarPeriod
+            notifyControllersDataChanged()
+            
+            if goalChanged {
+                // Since we're changing goals, don't animate like we're switching
+                // intervals within a goal.
+                tableView.reloadData()
+            } else {
+                animateIntervalChange(forward: newInterval.start.gmtDate > interval.start.gmtDate)
+            }
+        } else {
+            Logger.warning("The added entity was not within any of this goal's periods.")
+        }
+    }
+    
+    /**
+     * Returns true if an entity with the passed date and goal would be
+     * displayed in the current view based on the currently selected interval
+     * and goal.
+     */
+    private func entityIsInCurrentView(date: CalendarDateProvider, goal: Goal) -> Bool {
+        return interval.contains(date: date) && (goal == self.goal || self.goal.isParentOf(goal: goal))
+    }
+    
+    func addedEntity(on date: CalendarDateProvider, with goal: Goal, at path: IndexPath, use animation: UITableView.RowAnimation, isFirst: Bool) {
+        if isFirst {
+            tableView.reloadSections(IndexSet(integer: path.section), with: animation)
+            return
+        }
+        
+        if !entityIsInCurrentView(date: date, goal: goal) {
+            loadNewInterval(in: goal, for: date)
+            return
+        }
+
+        tableView.insertRows(at: [path], with: animation)
+    }
+    
+    func editedEntity(on date: CalendarDateProvider, with goal: Goal, at path: IndexPath, movedTo newPath: IndexPath?, use animation: UITableView.RowAnimation) {
+        if !entityIsInCurrentView(date: date, goal: goal) {
+            loadNewInterval(in: goal, for: date)
+            return
+        }
+        
+        if newPath != nil {
+            tableView.moveRow(at: path, to: newPath!)
+            tableView.reloadRows(at: [newPath!], with: animation)
+        } else {
+            tableView.reloadRows(at: [path], with: animation)
+        }
+    }
+    
+    func deletedEntity(at path: IndexPath, use animation: UITableView.RowAnimation, isLast: Bool) {
+        if isLast {
+            tableView.reloadSections(IndexSet(integer: path.section), with: animation)
+            return
+        }
+        tableView.deleteRows(at: [path], with: animation)
+    }
+}
+
+protocol ReviewEntityControllerDelegate {
+    /**
+     * Notifies the delegate that an entity has been added with a date of
+     * `date`, located in the table view at `path`, and requests that the
+     * delegate use `animation` to show the new cell data.
+     *
+     * Note that the delegate may not animate as requested.
+     * Depending on the value of `date`, `isFirst`, and `goal`, it may choose
+     * to reload the view with a different set of dates or a different goal.
+     */
+    func addedEntity(on date: CalendarDateProvider, with goal: Goal, at path: IndexPath, use animation: UITableView.RowAnimation, isFirst: Bool)
+    
+    /**
+     * Notifies the delegate that an entity has been modified with a new date
+     * of `date`, located in the table view at `path`, and requests that the
+     * delegate use `animation` to show the new cell data.
+     *
+     * Optionally, a `newPath` can be provided, if the entities order has
+     * changed.
+     *
+     * Note that the delegate may not animate as requested.
+     * Depending on the value of `date` and `goal`, it may choose to reload
+     * the view with a different set of dates or a different goal.
+     */
+    func editedEntity(on date: CalendarDateProvider, with goal: Goal, at path: IndexPath, movedTo newPath: IndexPath?, use animation: UITableView.RowAnimation)
+    
+    /**
+     * Notifies the delegate that an entity has been deleted located in the
+     * table view at `path`, and requests that the delegate use `animation`
+     * remove that cell.
+     *
+     * Depending on the value of `isLast`, the delegate may choose to reload the
+     * view with a different set of dates or a different goal.
+     */
+    func deletedEntity(at path: IndexPath, use animation: UITableView.RowAnimation, isLast: Bool)
+}
+

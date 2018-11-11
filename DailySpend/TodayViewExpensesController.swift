@@ -323,7 +323,7 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
         // Needs to check this condition before caling `expenseChanged` because
         // this class will have a different `self.goal` after that function
         // returns.
-        if expense.goal != self.goal {
+        if expense.goal != self.goal && !self.goal.isParentOf(goal: expense.goal!) {
             delegate?.expensesChanged(goal: expense.goal!)
             return
         }
@@ -351,7 +351,7 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
         // Needs to check this condition before caling `expenseChanged` because
         // this class will have a different `self.goal` after that function
         // returns.
-        if expense.goal != self.goal {
+        if expense.goal != self.goal && !self.goal.isParentOf(goal: expense.goal!) {
             delegate?.expensesChanged(goal: expense.goal!)
             return
         }

@@ -304,6 +304,10 @@ class Goal: NSManagedObject {
         }) ?? []
     }
     
+    /**
+     * Returns true if this goal is a parent (possibly by multiple levels)
+     * of the passed goal.
+     */
     func isParentOf(goal: Goal) -> Bool {
         var parent = goal.parentGoal
         while parent != nil {
@@ -503,7 +507,10 @@ class Goal: NSManagedObject {
         } else {
             fetchRequest.predicate = NSPredicate(format: fs, self, self.childGoals ?? [], interval.start.gmtDate as CVarArg)
         }
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "dateCreated_", ascending: false)]
+        fetchRequest.sortDescriptors = [
+            NSSortDescriptor(key: "transactionDate_", ascending: false),
+            NSSortDescriptor(key: "dateCreated_", ascending: false)
+        ]
         
         let expenseResults = try! context.fetch(fetchRequest)
         

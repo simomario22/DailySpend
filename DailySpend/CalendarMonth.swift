@@ -8,7 +8,7 @@
 
 import Foundation
 
-class CalendarMonth : CalendarIntervalProvider {
+class CalendarMonth {
     private var date: Date
 
     /*
@@ -178,7 +178,13 @@ class CalendarMonth : CalendarIntervalProvider {
         _gmtCal = cal
         return cal
     }
+    
+    var period: PeriodScope {
+        return .Month
+    }
+}
 
+extension CalendarMonth: CalendarIntervalProvider {
     /*
      * This represents a point in time that is 12:00:00am on the first day of
      * the month that this CalendarMonth represents.
@@ -190,9 +196,22 @@ class CalendarMonth : CalendarIntervalProvider {
     var end: CalendarDateProvider? {
         return self.add(months: 1).start
     }
+
+    /**
+     * Returns true if this interval contains the date, false otherwise.
+     */
+    func contains(date: CalendarDateProvider) -> Bool {
+        return date.gmtDate >= start.gmtDate && date.gmtDate < end!.gmtDate
+    }
     
-    var period: PeriodScope {
-        return .Month
+    /**
+     * Returns true if this interval contains the entire interval, false
+     * otherwise.
+     */
+    func contains(interval: CalendarIntervalProvider) -> Bool {
+        return self.contains(date: interval.start) &&
+            interval.end != nil &&
+            self.contains(date: interval.end!)
     }
 }
 

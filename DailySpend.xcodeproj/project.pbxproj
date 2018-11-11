@@ -17,6 +17,7 @@
 		C51AD771209E8FA9002CC4AC /* TodayViewExpensesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C51AD770209E8FA9002CC4AC /* TodayViewExpensesController.swift */; };
 		C51D022820564C0F001946CA /* SwitchTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C51D022720564C0F001946CA /* SwitchTableViewCell.swift */; };
 		C51D022A20565A4E001946CA /* UITextView+Margins.swift in Sources */ = {isa = PBXBuildFile; fileRef = C51D022920565A4E001946CA /* UITextView+Margins.swift */; };
+		C5270BF3219690D50080878A /* UIAlertController+Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5270BF2219690D50080878A /* UIAlertController+Actions.swift */; };
 		C5352729204B45CE0038E747 /* AddGoalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5352728204B45CE0038E747 /* AddGoalViewController.swift */; };
 		C535272B204B5E770038E747 /* NavigationBar+BorderLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = C535272A204B5E770038E747 /* NavigationBar+BorderLine.swift */; };
 		C5352754204C94750038E747 /* VENCalculatorIconBackspace.png in Resources */ = {isa = PBXBuildFile; fileRef = C5352746204C94740038E747 /* VENCalculatorIconBackspace.png */; };
@@ -138,6 +139,7 @@
 		C51B8C521F04EDE5008AC0C6 /* DailySpend 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "DailySpend 3.xcdatamodel"; sourceTree = "<group>"; };
 		C51D022720564C0F001946CA /* SwitchTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwitchTableViewCell.swift; sourceTree = "<group>"; };
 		C51D022920565A4E001946CA /* UITextView+Margins.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextView+Margins.swift"; sourceTree = "<group>"; };
+		C5270BF2219690D50080878A /* UIAlertController+Actions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIAlertController+Actions.swift"; sourceTree = "<group>"; };
 		C5316BF51E78D80F00BC2918 /* OldExpenseTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OldExpenseTableViewCell.swift; sourceTree = "<group>"; };
 		C5352728204B45CE0038E747 /* AddGoalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddGoalViewController.swift; sourceTree = "<group>"; };
 		C535272A204B5E770038E747 /* NavigationBar+BorderLine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NavigationBar+BorderLine.swift"; sourceTree = "<group>"; };
@@ -541,6 +543,7 @@
 		C5E51E56209EC4C8005C674B /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				C5270BF2219690D50080878A /* UIAlertController+Actions.swift */,
 				C5E51E5B209FAF71005C674B /* UIImage+Color.swift */,
 				C5EE62A21E85769700CAEEE7 /* String+CharacterSet.swift */,
 				C518B5991E88C7F0009CA4BB /* Decimal+DoubleValue.swift */,
@@ -799,6 +802,7 @@
 				C51AD771209E8FA9002CC4AC /* TodayViewExpensesController.swift in Sources */,
 				C586813E1F2E8BF2008D3AEE /* CGRect+Edges.swift in Sources */,
 				C5E51E5A209FA8A8005C674B /* SpendIndicationNavigationController.swift in Sources */,
+				C5270BF3219690D50080878A /* UIAlertController+Actions.swift in Sources */,
 				C51D022A20565A4E001946CA /* UITextView+Margins.swift in Sources */,
 				C54ABD9720562A9900334293 /* ExplanatoryTextTableViewCell.swift in Sources */,
 				C5352729204B45CE0038E747 /* AddGoalViewController.swift in Sources */,

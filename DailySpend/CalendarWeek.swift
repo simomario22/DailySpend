@@ -8,7 +8,7 @@
 
 import Foundation
 
-class CalendarWeek : CalendarIntervalProvider {
+class CalendarWeek {
     private var date: Date
 
     /*
@@ -143,6 +143,13 @@ class CalendarWeek : CalendarIntervalProvider {
         return cal
     }
 
+    
+    var period: PeriodScope {
+        return .Week
+    }
+}
+
+extension CalendarWeek: CalendarIntervalProvider {
     /*
      * This represents a point in time that is 12:00:00am on the first day of
      * the week that this CalendarWeek represents.
@@ -154,11 +161,23 @@ class CalendarWeek : CalendarIntervalProvider {
     var end: CalendarDateProvider? {
         return self.add(weeks: 1).start
     }
-    
-    var period: PeriodScope {
-        return .Week
-    }
 
+    /**
+     * Returns true if this interval contains the date, false otherwise.
+     */
+    func contains(date: CalendarDateProvider) -> Bool {
+        return date.gmtDate >= start.gmtDate && date.gmtDate < end!.gmtDate
+    }
+    
+    /**
+     * Returns true if this interval contains the entire interval, false
+     * otherwise.
+     */
+    func contains(interval: CalendarIntervalProvider) -> Bool {
+        return self.contains(date: interval.start) &&
+            interval.end != nil &&
+            self.contains(date: interval.end!)
+    }
 }
 
 extension CalendarWeek: Comparable {

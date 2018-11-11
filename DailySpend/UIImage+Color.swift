@@ -8,7 +8,6 @@
 
 import Foundation
 
-
 extension UIImage {
     class func withColor(_ color: UIColor, size: CGSize = CGSize(width: 1, height: 1)) -> UIImage? {
         // Return a 1x1 px UIImage of a particular color

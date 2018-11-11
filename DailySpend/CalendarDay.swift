@@ -8,7 +8,7 @@
 
 import Foundation
 
-class CalendarDay : CalendarIntervalProvider {
+class CalendarDay {
     private var date: Date
 
     /*
@@ -131,7 +131,13 @@ class CalendarDay : CalendarIntervalProvider {
         CalendarDay._gmtCal = cal
         return cal
     }
+    
+    var period: PeriodScope {
+        return .Day
+    }
+}
 
+extension CalendarDay: CalendarIntervalProvider {
     /*
      * This represents a point in time that is 12:00:00am on the day that this
      * CalendarDay represents.
@@ -143,9 +149,22 @@ class CalendarDay : CalendarIntervalProvider {
     var end: CalendarDateProvider? {
         return self.add(days: 1).start
     }
-
-    var period: PeriodScope {
-        return .Day
+    
+    /**
+     * Returns true if this interval contains the date, false otherwise.
+     */
+    func contains(date: CalendarDateProvider) -> Bool {
+        return date.gmtDate >= start.gmtDate && date.gmtDate < end!.gmtDate
+    }
+    
+    /**
+     * Returns true if this interval contains the entire interval, false
+     * otherwise.
+     */
+    func contains(interval: CalendarIntervalProvider) -> Bool {
+        return self.contains(date: interval.start) &&
+            interval.end != nil &&
+            self.contains(date: interval.end!)
     }
 }
 

@@ -26,9 +26,8 @@ class NavigationGoalPicker : NSObject, UITableViewDataSource, UITableViewDelegat
     private var navigationBar: UINavigationBar!
     private var present: ((UIViewController, Bool, (() -> Void)?) -> ())!
     
-    var currentGoal: Goal? {
+    private(set) var currentGoal: Goal? {
         didSet {
-            delegate?.goalChanged(newGoal: self.currentGoal)
             setLastUsedGoal(goal: self.currentGoal)
             
             var title = self.currentGoal?.shortDescription ?? "DailySpend"
@@ -71,7 +70,7 @@ class NavigationGoalPicker : NSObject, UITableViewDataSource, UITableViewDelegat
         
         self.goals = getAllGoals()
         self.currentGoal = getLastUsedGoal()
-        delegate?.goalChanged(newGoal: self.currentGoal) // didSet won't fire in init
+        delegate?.goalChanged(newGoal: self.currentGoal)
     }
     public func makeTitleView(
         view: UIView,
@@ -349,6 +348,7 @@ class NavigationGoalPicker : NSObject, UITableViewDataSource, UITableViewDelegat
                 let oldGoalIndex = goals.index(where: { $0.goal == currentGoal! }) ?? indexPath.row
                 let oldGoalIndexPath = IndexPath(row: oldGoalIndex, section: 0)
                 self.currentGoal = newGoal
+                delegate?.goalChanged(newGoal: self.currentGoal)
                 self.goalTable.reloadRows(at: [indexPath, oldGoalIndexPath], with: .fade)
                 
                 // Hide goal selector table
@@ -363,8 +363,8 @@ class NavigationGoalPicker : NSObject, UITableViewDataSource, UITableViewDelegat
     
     func goalControllerWillDismissWithChangedGoals() {
         self.goals = getAllGoals()
-         // Will notify delegate in didSet
         self.currentGoal = getLastUsedGoal()
+        delegate?.goalChanged(newGoal: self.currentGoal)
         
         var frame = self.goalTable.frame
         frame.size.height = tableHeight
