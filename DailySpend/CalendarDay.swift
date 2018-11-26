@@ -10,6 +10,19 @@ import Foundation
 
 class CalendarDay {
     private var date: Date
+    
+    /*
+     * @param date A date representing a point in time that is in the
+     * desired day when using the GMT time zone.
+     */
+    init?(dateInDay date: CalendarDateProvider?) {
+        guard let date = date else {
+            return nil
+        }
+        // Set date to the beginning of the GMT day.
+        self.date = CalendarDay.gmtCal.startOfDay(for: date.gmtDate)
+    }
+
 
     /*
      * @param date A date representing a point in time that is in the
@@ -165,6 +178,40 @@ extension CalendarDay: CalendarIntervalProvider {
         return self.contains(date: interval.start) &&
             interval.end != nil &&
             self.contains(date: interval.end!)
+    }
+    
+    /**
+     * Returns true if any portion of this interval overlaps with any portion
+     * of the passed interval.
+     */
+    func overlaps(with interval: CalendarIntervalProvider) -> Bool {
+        if interval.end != nil && self.start.gmtDate > interval.end!.gmtDate {
+            return false
+        }
+        
+        if self.end!.gmtDate < interval.start.gmtDate {
+            return false
+        }
+        
+        return true
+    }
+    
+    /**
+     * Returns the interval of maximum size contained by both intervals, or
+     * `nil` if no such intervals exists.
+     */
+    func overlappingInterval(with interval: CalendarIntervalProvider) -> CalendarIntervalProvider? {
+        if self.contains(interval: interval) {
+            return interval
+        } else if interval.contains(interval: self) {
+            return self
+        } else if interval.end == nil || self.start.gmtDate < interval.end!.gmtDate {
+            return CalendarInterval(start: self.start, end: interval.end)
+        } else if interval.start.gmtDate < self.end!.gmtDate {
+            return CalendarInterval(start: interval.start, end: self.end)
+        } else {
+            return nil
+        }
     }
 }
 

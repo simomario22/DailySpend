@@ -22,23 +22,6 @@ extension Adjustment {
     @NSManaged var firstDateEffective_: NSDate?
     @NSManaged var lastDateEffective_: NSDate?
     @NSManaged var shortDescription_: String?
-    @NSManaged var goals_: NSSet?
-
-}
-
-// MARK: Generated accessors for goals_
-extension Adjustment {
-
-    @objc(addGoals_Object:)
-    @NSManaged func addToGoals_(_ value: Goal)
-
-    @objc(removeGoals_Object:)
-    @NSManaged func removeFromGoals_(_ value: Goal)
-
-    @objc(addGoals_:)
-    @NSManaged func addToGoals_(_ values: NSSet)
-
-    @objc(removeGoals_:)
-    @NSManaged func removeFromGoals_(_ values: NSSet)
+    @NSManaged var goal_: Goal?
 
 }

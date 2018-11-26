@@ -54,22 +54,19 @@ class Adjustment: NSManagedObject {
             return nil
         }
 
-        if let goals = goals {
+        if let goal = goal {
             var goalJsonIds = [Int]()
-            for goal in goals {
-                if let jsonId = jsonIds[goal.objectID] {
-                    goalJsonIds.append(jsonId)
-                } else {
-                    Logger.debug("a goal didn't have an associated jsonId in Adjustment")
-                    return nil
-                }
+            if let jsonId = jsonIds[goal.objectID] {
+                goalJsonIds.append(jsonId)
+            } else {
+                Logger.debug("a goal didn't have an associated jsonId in Adjustment")
+                return nil
             }
-            jsonObj["goals"] = goalJsonIds
+            jsonObj["goal"] = goalJsonIds
         } else {
-            Logger.debug("couldn't unwrap goals in Adjustment")
+            Logger.debug("couldn't unwrap goal in Adjustment")
             return nil
         }
-
         return jsonObj
     }
     
@@ -152,10 +149,14 @@ class Adjustment: NSManagedObject {
         }
         
         if let goalJsonIds = json["goals"] as? Array<Int> {
+            if goalJsonIds.count > 1 {
+                Logger.debug("there were multiple goals associated with an Adjustment")
+                return nil
+            }
             for goalJsonId in goalJsonIds {
                 if let objectID = jsonIds[goalJsonId],
                     let goal = context.object(with: objectID) as? Goal {
-                    adjustment.addGoal(goal)
+                    adjustment.goal = goal
                 } else {
                     Logger.debug("a goal didn't have an associated objectID in Adjustment")
                     return nil
@@ -191,17 +192,21 @@ class Adjustment: NSManagedObject {
      * return `(valid: false, problem: ...)` with problem set to a user
      * readable string describing why this adjustment wouldn't be valid.
      */
-    func propose(shortDescription: String?? = nil,
-                 amountPerDay: Decimal?? = nil,
-                 firstDayEffective: CalendarDay?? = nil,
-                 lastDayEffective: CalendarDay?? = nil,
-                 dateCreated: Date?? = nil) -> (valid: Bool, problem: String?) {
+    func propose(
+        shortDescription: String?? = nil,
+         amountPerDay: Decimal?? = nil,
+         firstDayEffective: CalendarDay?? = nil,
+         lastDayEffective: CalendarDay?? = nil,
+         dateCreated: Date?? = nil,
+         goal: Goal? = nil
+    ) -> (valid: Bool, problem: String?) {
         
         let _shortDescription = shortDescription ?? self.shortDescription
         let _amountPerDay = amountPerDay ?? self.amountPerDay
         let _firstDayEffective = firstDayEffective ?? self.firstDayEffective
         let _lastDayEffective = lastDayEffective ?? self.lastDayEffective
         let _dateCreated = dateCreated ?? self.dateCreated
+        let _goal = goal ?? self.goal
         
         if _shortDescription == nil || _shortDescription!.count == 0 {
             return (false, "This adjustment must have a description.")
@@ -220,12 +225,75 @@ class Adjustment: NSManagedObject {
             return (false, "The adjustment must have a date created.")
         }
         
+        if _goal!.start == nil || _firstDayEffective!.start.gmtDate < _goal!.start!.gmtDate {
+            return (false, "This adjustment must begin after its associated goal's start date.")
+        }
+        
+        if _goal!.exclusiveEnd != nil && _lastDayEffective!.start.gmtDate > _goal!.exclusiveEnd!.gmtDate {
+            return (false, "This adjustment must end before its associated goal's end date.")
+        }
+        
+        if _goal!.isRecurring {
+            let mostRecentPeriodEnd = _goal!.mostRecentPeriod()?.end?.gmtDate
+            if mostRecentPeriodEnd == nil ||
+                _firstDayEffective!.start.gmtDate > mostRecentPeriodEnd! {
+                return (false, "This adjustment must begin no later than end the most recent period for its goal.")
+            }
+        }
+
+        
         self.shortDescription = _shortDescription
         self.amountPerDay = _amountPerDay
         self.firstDayEffective = _firstDayEffective
         self.lastDayEffective = _lastDayEffective
         self.dateCreated = _dateCreated
+        self.goal = _goal
         return (true, nil)
+    }
+    
+    /**
+     * Returns the amount of money paid by this adjustment during the overlap
+     * between the interval for this adjustment and the passed interval.
+     */
+    func overlappingAmount(with interval: CalendarIntervalProvider) -> Decimal {
+        guard let amountPerDay = amountPerDay,
+              let overlappingInterval = effectiveInterval?.overlappingInterval(with: interval) else {
+            return 0
+        }
+    
+        let firstDay = CalendarDay(dateInDay: overlappingInterval.start)
+        
+        // We know overlappingInterval.end is not `nil` because our
+        // `effectiveInterval` has a non-`nil` `end`.
+        let exclusiveLastDay = CalendarDay(dateInDay: overlappingInterval.end)!
+        
+        let daysApplied = exclusiveLastDay.daysAfter(startDay: firstDay)
+        return amountPerDay * Decimal(daysApplied)
+    }
+    
+    func humanReadableInterval() -> String? {
+        guard let firstDayEffective = firstDayEffective,
+              let lastDayEffective = lastDayEffective else {
+            return nil
+        }
+        
+        // Format the dates like 3/6 or 3/6/16.
+        let thisYear = CalendarDay().year
+        let dateFormatter = DateFormatter()
+        if firstDayEffective.year == thisYear &&
+            lastDayEffective.year == thisYear {
+            dateFormatter.dateFormat = "M/d"
+        } else {
+            dateFormatter.dateFormat = "M/d/yy"
+        }
+        
+        let firstDay = firstDayEffective.string(formatter: dateFormatter)
+        if firstDayEffective == lastDayEffective {
+            return "\(firstDay)"
+        } else {
+            let lastDay = lastDayEffective.string(formatter: dateFormatter)
+            return "\(firstDay) - \(lastDay)"
+        }
     }
     
     // Accessor functions (for Swift 3 classes)
@@ -258,13 +326,46 @@ class Adjustment: NSManagedObject {
         }
         set {
             if newValue != nil {
-                amountPerDay_ = NSDecimalNumber(decimal: newValue!)
+                amountPerDay_ = NSDecimalNumber(decimal: newValue!.roundToNearest(th: 100))
             } else {
                 amountPerDay_ = nil
             }
         }
     }
     
+    /**
+     * The exclusive interval containing days when the adjustment should be
+     * applied.
+     */
+    var effectiveInterval: CalendarInterval? {
+        get {
+            guard
+                let firstDateEffective = firstDateEffective_ as Date?,
+                let lastDateEffective = lastDateEffective_ as Date?
+                else {
+                    return nil
+            }
+            
+            let firstDayEffective = GMTDate(firstDateEffective)
+            let lastDayEffective = CalendarDay(dateInDay: GMTDate(lastDateEffective))
+            return CalendarInterval(start: firstDayEffective, end: lastDayEffective.end)
+        }
+        set {
+            guard let interval = newValue else {
+                firstDateEffective_ = nil
+                lastDateEffective_ = nil
+                return
+            }
+            
+            let lastDayEffective = CalendarDay(dateInDay: interval.end!).subtract(days: 1)
+            firstDateEffective_ = CalendarDay(dateInDay: interval.start).start.gmtDate as NSDate
+            lastDateEffective_ = lastDayEffective.start.gmtDate as NSDate
+        }
+    }
+
+    /**
+     * The first day the adjustment should be applied.
+     */
     var firstDayEffective: CalendarDay? {
         get {
             if let day = firstDateEffective_ as Date? {
@@ -282,6 +383,9 @@ class Adjustment: NSManagedObject {
         }
     }
     
+    /**
+     * The last day the adjustment should be applied.
+     */
     var lastDayEffective: CalendarDay? {
         get {
             if let day = lastDateEffective_ as Date? {
@@ -298,37 +402,19 @@ class Adjustment: NSManagedObject {
             }
         }
     }
-    
+
+
     /**
-     * `goals` sorted in a deterministic way.
+     * Adjustments can currently only be associated with one goal. This is that
+     * goal, if it exists.
      */
-    var sortedGoals: [Goal]? {
-        if let g = goals {
-            return g.sorted(by: { $0.dateCreated! < $1.dateCreated! })
-        } else {
-            return nil
-        }
-    }
-    
-    var goals: Set<Goal>? {
+    var goal: Goal? {
         get {
-            return goals_ as! Set?
+            return goal_
         }
         set {
-            if newValue != nil {
-                goals_ = NSSet(set: newValue!)
-            } else {
-                goals_ = nil
-            }
+            goal_ = newValue
         }
-    }
-    
-    func addGoal(_ goal: Goal) {
-        addToGoals_(goal)
-    }
-    
-    func removeGoal(_ goal: Goal) {
-        removeFromGoals_(goal)
     }
 }
 

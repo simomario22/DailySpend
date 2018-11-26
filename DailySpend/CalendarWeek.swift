@@ -178,6 +178,40 @@ extension CalendarWeek: CalendarIntervalProvider {
             interval.end != nil &&
             self.contains(date: interval.end!)
     }
+    
+    /**
+     * Returns true if any portion of this interval overlaps with any portion
+     * of the passed interval.
+     */
+    func overlaps(with interval: CalendarIntervalProvider) -> Bool {
+        if interval.end != nil && self.start.gmtDate > interval.end!.gmtDate {
+            return false
+        }
+        
+        if self.end!.gmtDate < interval.start.gmtDate {
+            return false
+        }
+        
+        return true
+    }
+    
+    /**
+     * Returns the interval of maximum size contained by both intervals, or
+     * `nil` if no such intervals exists.
+     */
+    func overlappingInterval(with interval: CalendarIntervalProvider) -> CalendarIntervalProvider? {
+        if self.contains(interval: interval) {
+            return interval
+        } else if interval.contains(interval: self) {
+            return self
+        } else if interval.end == nil || self.start.gmtDate < interval.end!.gmtDate {
+            return CalendarInterval(start: self.start, end: interval.end)
+        } else if interval.start.gmtDate < self.end!.gmtDate {
+            return CalendarInterval(start: interval.start, end: self.end)
+        } else {
+            return nil
+        }
+    }
 }
 
 extension CalendarWeek: Comparable {

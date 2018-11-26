@@ -265,7 +265,7 @@ class Expense: NSManagedObject {
         }
         set {
             if newValue != nil {
-                amount_ = NSDecimalNumber(decimal: newValue!)
+                amount_ = NSDecimalNumber(decimal: newValue!.roundToNearest(th: 100))
             } else {
                 amount_ = nil
             }

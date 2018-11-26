@@ -101,6 +101,7 @@ class TodayViewController: UIViewController, GoalPickerDelegate, TodayViewExpens
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        
         updateSummaryViewForGoal(self.goal)
     }
 
@@ -166,6 +167,7 @@ class TodayViewController: UIViewController, GoalPickerDelegate, TodayViewExpens
             summaryView.countFrom(CGFloat(oldAmount), to: CGFloat(newAmount))
         } else {
             summaryView.setAmount(value: CGFloat(newAmount))
+            appDelegate.spendIndicationColor = newAmount < 0 ? .overspent : .underspent
         }
         setMostRecentlyUsedAmountForGoal(goal: goal, amount: newAmount)
         

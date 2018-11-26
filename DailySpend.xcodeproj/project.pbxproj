@@ -34,6 +34,8 @@
 		C546170D204A4AFF00689DED /* GoalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C546170C204A4AFF00689DED /* GoalViewController.swift */; };
 		C54ABD9520561DB100334293 /* LICENCE_VENMO.txt in Resources */ = {isa = PBXBuildFile; fileRef = C54ABD9420561DB100334293 /* LICENCE_VENMO.txt */; };
 		C54ABD9720562A9900334293 /* ExplanatoryTextTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54ABD9620562A9900334293 /* ExplanatoryTextTableViewCell.swift */; };
+		C54E324521AB69560014160A /* ReviewViewAdjustmentsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54E324421AB69560014160A /* ReviewViewAdjustmentsController.swift */; };
+		C54E324621AB710F0014160A /* ReviewViewAdjustmentsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54E324421AB69560014160A /* ReviewViewAdjustmentsController.swift */; };
 		C54E4F491EFD3984006A1CA3 /* ImageSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54E4F481EFD3984006A1CA3 /* ImageSelectorView.swift */; };
 		C55412892116E76B0049EB81 /* INSPhotoGalleryFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C55412882116E76B0049EB81 /* INSPhotoGalleryFramework.framework */; };
 		C5568B5E2186C3B9000F0301 /* PeriodBrowserController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5568B5D2186C3B9000F0301 /* PeriodBrowserController.swift */; };
@@ -185,7 +187,6 @@
 		C5D3FF331F646B1300D3C7A4 /* AddPauseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5D3FF321F646B1300D3C7A4 /* AddPauseViewController.swift */; };
 		C5D4DAB81F931D250013A6F3 /* SegmentedControlTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5D4DAB71F931D240013A6F3 /* SegmentedControlTableViewCell.swift */; };
 		C5E02501201C011500831269 /* CalendarWeek.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5E02500201C011500831269 /* CalendarWeek.swift */; };
-		C5E339011F930F5700785085 /* AdjustmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5E339001F930F5700785085 /* AdjustmentViewController.swift */; };
 		C5E339031F930F6600785085 /* AddAdjustmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5E339021F930F6600785085 /* AddAdjustmentViewController.swift */; };
 		C5E51E50209EC438005C674B /* TodaySummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5E51E4F209EC438005C674B /* TodaySummaryView.swift */; };
 		C5E51E5A209FA8A8005C674B /* SpendIndicationNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5E51E59209FA8A8005C674B /* SpendIndicationNavigationController.swift */; };
@@ -251,6 +252,7 @@
 		C54ABD9420561DB100334293 /* LICENCE_VENMO.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENCE_VENMO.txt; sourceTree = "<group>"; };
 		C54ABD9620562A9900334293 /* ExplanatoryTextTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExplanatoryTextTableViewCell.swift; sourceTree = "<group>"; };
 		C54BF5B41FF1911A007F628D /* ExpenseCellsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseCellsController.swift; sourceTree = "<group>"; };
+		C54E324421AB69560014160A /* ReviewViewAdjustmentsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReviewViewAdjustmentsController.swift; sourceTree = "<group>"; };
 		C54E4F481EFD3984006A1CA3 /* ImageSelectorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageSelectorView.swift; sourceTree = "<group>"; };
 		C55412882116E76B0049EB81 /* INSPhotoGalleryFramework.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = INSPhotoGalleryFramework.framework; path = Carthage/Build/iOS/INSPhotoGalleryFramework.framework; sourceTree = "<group>"; };
 		C5568B5D2186C3B9000F0301 /* PeriodBrowserController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeriodBrowserController.swift; sourceTree = "<group>"; };
@@ -481,10 +483,10 @@
 				C5E51E59209FA8A8005C674B /* SpendIndicationNavigationController.swift */,
 				C5E51E51209EC44B005C674B /* Today View */,
 				C53DFD13210C1991001F070A /* Expense View */,
+				C5E51E54209EC481005C674B /* Adjustment View */,
 				C5E51E52209EC45A005C674B /* Goal View */,
 				C58BBB9821704FE000D9650C /* Review View */,
 				C5E51E53209EC47B005C674B /* Pause View */,
-				C5E51E54209EC481005C674B /* Adjustment View */,
 				C5E51E55209EC49A005C674B /* Export View and Logic */,
 				C5E51E58209EC505005C674B /* Settings View */,
 				C5A0DD5B20429CC2004C6411 /* NavigationGoalPicker.swift */,
@@ -526,6 +528,7 @@
 			children = (
 				C58BBB9621704FD900D9650C /* ReviewViewController.swift */,
 				C5FCDFE6218CDC4500CA5336 /* ReviewViewExpensesController.swift */,
+				C54E324421AB69560014160A /* ReviewViewAdjustmentsController.swift */,
 				C5568B5D2186C3B9000F0301 /* PeriodBrowserController.swift */,
 				C58BBB992170519500D9650C /* PeriodBrowserView.swift */,
 			);
@@ -546,6 +549,7 @@
 			isa = PBXGroup;
 			children = (
 				C5AA87D61F36D5B7001B9F08 /* Expense View */,
+				C5E339001F930F5700785085 /* AdjustmentViewController.swift */,
 				C5BA55B41E8DAB0E00256E7A /* ReviewTableViewCell.swift */,
 				C5F75FF31F9DB01E005F3510 /* DayReviewViewController.swift */,
 				C556D2511F2466EB008CA20E /* ExpenseViewController.swift */,
@@ -631,7 +635,6 @@
 		C5E51E54209EC481005C674B /* Adjustment View */ = {
 			isa = PBXGroup;
 			children = (
-				C5E339001F930F5700785085 /* AdjustmentViewController.swift */,
 				C5E339021F930F6600785085 /* AddAdjustmentViewController.swift */,
 			);
 			name = "Adjustment View";
@@ -935,8 +938,8 @@
 			files = (
 				C55B336220A9318B00304680 /* ExpenseTableViewCell.swift in Sources */,
 				C517B1FF1EBC134200CDAA17 /* UICountingLabel.m in Sources */,
+				C54E324621AB710F0014160A /* ReviewViewAdjustmentsController.swift in Sources */,
 				C573B9F520324C410025A5A2 /* Goal+CoreDataProperties.swift in Sources */,
-				C5E339011F930F5700785085 /* AdjustmentViewController.swift in Sources */,
 				C5E339031F930F6600785085 /* AddAdjustmentViewController.swift in Sources */,
 				C5C65A221EBBFBC6002D1B12 /* ExportViewController.swift in Sources */,
 				C5EE62A31E85769700CAEEE7 /* String+CharacterSet.swift in Sources */,
@@ -1084,6 +1087,7 @@
 				C5BD280E2198E80D000C85F8 /* Goal+CoreDataClass.swift in Sources */,
 				C5BD280F2198E80D000C85F8 /* NavigationBar+BorderLine.swift in Sources */,
 				C5BD28102198E80D000C85F8 /* Pause+CoreDataClass.swift in Sources */,
+				C54E324521AB69560014160A /* ReviewViewAdjustmentsController.swift in Sources */,
 				C5BD28112198E80D000C85F8 /* SwitchTableViewCell.swift in Sources */,
 				C5BD28122198E80D000C85F8 /* ImageSelectorTableViewCell.swift in Sources */,
 				C5BD28132198E80D000C85F8 /* CalendarPeriod.swift in Sources */,

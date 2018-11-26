@@ -9,33 +9,36 @@
 import UIKit
 import CoreData
 
-class AddAdjustmentViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
-    let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
-    var context: NSManagedObjectContext {
+class AddAdjustmentViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, GoalSelectorDelegate {
+    
+    private let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
+    private var context: NSManagedObjectContext {
         return appDelegate.persistentContainer.viewContext
     }
     
-    var cellCreator: TableViewCellHelper!
+    private var cellCreator: TableViewCellHelper!
     
     var delegate: AddAdjustmentDelegate?
-    var tableView: UITableView!
+    private var tableView: UITableView!
     
-    var editingAmountField: UITextField? = nil
-    var editingFirstDate = false
-    var editingLastDate = false
+    private var editingAmountField: UITextField? = nil
+    private var editingFirstDate = false
+    private var editingLastDate = false
     
     var adjustment: Adjustment?
 
-    /*
-     * This is the total amount the user entered,
-     * not divided by the number of days.
-     */
-    var rawAmount: Decimal! = 0
-    var shortDescription: String! = ""
-    var firstDayEffective: CalendarDay!
-    var lastDayEffective: CalendarDay!
-    var daysInRange: Decimal! = 1
-    var deduct = false
+    private var goal: Goal?
+    private var goalSetupFinished = false
+    
+    private var firstDayEffective: CalendarDay!
+    private var firstDayEffectiveSetupFinished = false
+    
+    private var lastDayEffective: CalendarDay!
+    private var lastDayEffectiveSetupFinished = false
+    
+    private var amountPerDay: Decimal = 0
+    private var shortDescription: String = ""
+    private var deduct = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -49,33 +52,83 @@ class AddAdjustmentViewController: UIViewController, UITableViewDelegate, UITabl
         
         if let adjustment = self.adjustment {
             self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save, save)
+            shortDescription = adjustment.shortDescription!
             
-            shortDescription = adjustment.shortDescription
-            firstDayEffective = adjustment.firstDayEffective
-            lastDayEffective = adjustment.lastDayEffective
-            
-            let first = self.firstDayEffective!
-            let last = self.lastDayEffective!.add(days: 1)
-            self.daysInRange = Decimal(CalendarDay.daysInRange(start: first, end: last))
             if adjustment.amountPerDay! < 0 {
                 deduct = true
             }
-            rawAmount = abs(adjustment.amountPerDay! * daysInRange)
+            amountPerDay = abs(adjustment.amountPerDay!)
             
-            self.navigationItem.title = "Edit"
-        } else {
-            firstDayEffective = CalendarDay()
-            lastDayEffective = CalendarDay()
-            rawAmount = 0
-            self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Add", style: .done, save)
-            self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel) {
-                self.view.endEditing(false)
-                self.dismiss(animated: true, completion: nil)
+            if !goalSetupFinished {
+                goal = adjustment.goal
+                goalSetupFinished = true
             }
+            
+            if !firstDayEffectiveSetupFinished {
+                firstDayEffective = adjustment.firstDayEffective
+                firstDayEffectiveSetupFinished = true
+            }
+            
+            if !lastDayEffectiveSetupFinished {
+                lastDayEffective = adjustment.lastDayEffective
+                lastDayEffectiveSetupFinished = true
+            }
+
+            
+            self.navigationItem.title = "Edit Adjustment"
+        } else {
+            
+            amountPerDay = 0
+            if !goalSetupFinished {
+                goal = nil
+                goalSetupFinished = true
+            }
+            
+            if !firstDayEffectiveSetupFinished {
+                firstDayEffective = CalendarDay()
+                firstDayEffectiveSetupFinished = true
+            }
+            
+            if !lastDayEffectiveSetupFinished {
+                lastDayEffective = CalendarDay()
+                lastDayEffectiveSetupFinished = true
+            }
+
+            self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Add", style: .done, save)
             self.navigationItem.title = "New Adjustment"
         }
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel) {
+            self.view.endEditing(false)
+            self.dismiss(animated: true, completion: nil)
+        }
+
         
         cellCreator = TableViewCellHelper(tableView: tableView)
+    }
+    
+    /**
+     * Setup this view controller to default to a particular goal.
+     */
+    func setupAdjustment(
+        goal: Goal?,
+        firstDayEffective: CalendarDay?,
+        lastDayEffective: CalendarDay?
+    ) {
+        if let goal = goal {
+            self.goal = goal
+            self.goalSetupFinished = true
+        }
+        
+        if let firstDayEffective = firstDayEffective {
+            self.firstDayEffective = firstDayEffective
+            self.firstDayEffectiveSetupFinished = true
+        }
+
+
+        if let lastDayEffective = lastDayEffective {
+            self.lastDayEffective = lastDayEffective
+            self.lastDayEffectiveSetupFinished = true
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -84,7 +137,7 @@ class AddAdjustmentViewController: UIViewController, UITableViewDelegate, UITabl
     }
     
     func save() {
-        let amountPerDay = (rawAmount * (deduct ? -1 : 1)) / daysInRange
+        let multipliedAmountPerDay = self.amountPerDay * (deduct ? -1 : 1)
         
         var justCreated = false
         if adjustment == nil {
@@ -94,13 +147,18 @@ class AddAdjustmentViewController: UIViewController, UITableViewDelegate, UITabl
         }
         
         let validation = adjustment!.propose(shortDescription: shortDescription,
-                                             amountPerDay: amountPerDay,
+                                             amountPerDay: multipliedAmountPerDay,
                                              firstDayEffective: firstDayEffective,
-                                             lastDayEffective: lastDayEffective)
+                                             lastDayEffective: lastDayEffective,
+                                             goal: goal)
         if validation.valid {
             appDelegate.saveContext()
             self.view.endEditing(false)
-            delegate?.addedOrChangedAdjustment(adjustment!)
+            if justCreated {
+                delegate?.createdAdjustmentFromModal(adjustment!)
+            } else {
+                delegate?.editedAdjustmentFromModal(adjustment!)
+            }
             if self.navigationController!.viewControllers[0] == self {
                 self.navigationController!.dismiss(animated: true, completion: nil)
             } else {
@@ -132,6 +190,8 @@ class AddAdjustmentViewController: UIViewController, UITableViewDelegate, UITabl
         case FirstDayEffectiveDatePickerCell
         case LastDayEffectiveDisplayCell
         case LastDayEffectiveDatePickerCell
+        
+        case GoalsCell
     }
     
     func cellTypeForIndexPath(indexPath: IndexPath) -> AdjustmentViewCellType {
@@ -175,6 +235,10 @@ class AddAdjustmentViewController: UIViewController, UITableViewDelegate, UITabl
             }
         }
         
+        if section == 3 {
+            return .GoalsCell
+        }
+        
         return .DescriptionCell
     }
     
@@ -190,8 +254,6 @@ class AddAdjustmentViewController: UIViewController, UITableViewDelegate, UITabl
         
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "MMM d, yyyy"
-        
-        let amountPerDay = rawAmount / daysInRange
         
         if firstDayEffective == lastDayEffective {
             let formattedDate = firstDayEffective.string(formatter: dateFormatter)
@@ -210,13 +272,13 @@ class AddAdjustmentViewController: UIViewController, UITableViewDelegate, UITabl
                 formattedAmount = String.formatAsCurrency(amount: amountPerDay)!
             }
             let formattedType = deduct ? "decreased" : "increased"
-            return "The balances for \(formattedFirstDate) to " +
+            return "The balances from \(formattedFirstDate) to " +
                     "\(formattedLastDate) will be \(formattedType) by " +
                     "\(formattedAmount) each day."
         } else {
             var formattedAmount = "the above amount"
-            if rawAmount != 0 {
-                formattedAmount = String.formatAsCurrency(amount: rawAmount)!
+            if amountPerDay != 0 {
+                formattedAmount = String.formatAsCurrency(amount: amountPerDay)!
             }
             let formattedType = deduct ? "decreased" : "increased"
             return "The balance will be \(formattedType) by \(formattedAmount)."
@@ -256,9 +318,9 @@ class AddAdjustmentViewController: UIViewController, UITableViewDelegate, UITabl
             )
         case .AmountCell:
             return cellCreator.currencyDisplayCell(title: "Amount",
-                amount: self.rawAmount > 0 ? self.rawAmount : nil,
+                amount: self.amountPerDay > 0 ? self.amountPerDay : nil,
                 changedToAmount: { newValue in
-                    self.rawAmount = newValue ?? 0
+                    self.amountPerDay = newValue ?? 0
                 },
                 didBeginEditing: { _ in
                     cancelDateEditing()
@@ -299,10 +361,6 @@ class AddAdjustmentViewController: UIViewController, UITableViewDelegate, UITabl
                     self.lastDayEffective = self.firstDayEffective
                 }
                 
-                let first = self.firstDayEffective!
-                let last = self.lastDayEffective!.add(days: 1)
-                self.daysInRange = Decimal(CalendarDay.daysInRange(start: first, end: last))
-
                 tableView.reloadSections(IndexSet(arrayLiteral: 1, 2), with: .fade)
                 tableView.reloadSections(IndexSet(integer: 1), with: .fade)
             }
@@ -318,21 +376,22 @@ class AddAdjustmentViewController: UIViewController, UITableViewDelegate, UITabl
         case .LastDayEffectiveDatePickerCell:
             return cellCreator.datePickerCell(day: lastDayEffective) { (day: CalendarDay) in
                 self.lastDayEffective = day
-
-                if self.firstDayEffective! <= day {
-                    let first = self.firstDayEffective!
-                    let last = self.lastDayEffective!.add(days: 1)
-                    self.daysInRange = Decimal(CalendarDay.daysInRange(start: first, end: last))
-                }
-
+                
                 tableView.reloadSections(IndexSet(arrayLiteral: 1, 2), with: .fade)
                 tableView.reloadSections(IndexSet(integer: 1), with: .fade)
             }
+            
+        case .GoalsCell:
+            return cellCreator.valueDisplayCell(
+                labelText: "Goals",
+                valueText: goal?.shortDescription ?? "None",
+                detailIndicator: true
+            )
         }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 3
+        return 4
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -343,6 +402,8 @@ class AddAdjustmentViewController: UIViewController, UITableViewDelegate, UITabl
             return 2
         case 2:
             return editingFirstDate || editingLastDate ? 3 : 2
+        case 3:
+            return 1
         default:
             return 0
         }
@@ -351,6 +412,8 @@ class AddAdjustmentViewController: UIViewController, UITableViewDelegate, UITabl
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         switch cellTypeForIndexPath(indexPath: indexPath) {
         case .FirstDayEffectiveDisplayCell, .LastDayEffectiveDisplayCell:
+            return indexPath
+        case .GoalsCell:
             return indexPath
         default:
             return nil
@@ -397,6 +460,15 @@ class AddAdjustmentViewController: UIViewController, UITableViewDelegate, UITabl
             tableView.deselectRow(at: indexPath, animated: true)
             tableView.endUpdates()
             self.view.endEditing(false)
+        case .GoalsCell:
+            let goalSelectorVC = GoalSelectorViewController()
+            goalSelectorVC.setSelectedGoal(goal: goal)
+            let text = "Expenses attached to a child goal are also part of " +
+            "its parents' expenses."
+            goalSelectorVC.parentSelectionHelperText = text
+            goalSelectorVC.showParentSelection = true
+            goalSelectorVC.delegate = self
+            navigationController?.pushViewController(goalSelectorVC, animated: true)
         default:
             return
         }
@@ -412,8 +484,14 @@ class AddAdjustmentViewController: UIViewController, UITableViewDelegate, UITabl
             return 44
         }
     }
+    
+    func dismissedGoalSelectorWithSelectedGoal(_ goal: Goal?) {
+        self.goal = goal
+        tableView.reloadRows(at: [IndexPath(row: 0, section: 3)], with: .fade)
+    }
 }
 
 protocol AddAdjustmentDelegate {
-    func addedOrChangedAdjustment(_ adjustment: Adjustment)
+    func createdAdjustmentFromModal(_ adjustment: Adjustment)
+    func editedAdjustmentFromModal(_ adjustment: Adjustment)
 }

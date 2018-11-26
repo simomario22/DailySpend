@@ -112,41 +112,45 @@ class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     /**
-     * Setup this view controller with data from an expense that has already
-     * been partially edited in another part of the UI.
+     * Setup this view controller to default to a particular goal.
      */
     func setupExpenseWithGoal(goal: Goal) {
         self.goal = goal
         self.goalSetupFinished = true
     }
     
-    /**
-     * Setup this view controller with data from an expense that has already
-     * been partially edited in another part of the UI.
-     */
-    func setupPartiallyEditedExpense(expense: Expense, amount: Decimal?, shortDescription: String?) {
-        self.expense = expense
-        self.amount = amount
-        self.shortDescription = shortDescription
-        self.amountSetupFinished = true
-        self.shortDescriptionSetupFinished = true
+    func setupExpense(
+        expense: Expense? = nil,
+        goal: Goal? = nil,
+        transactionDay: CalendarDay? = nil,
+        amount: Decimal?? = nil,
+        shortDescription: String?? = nil
+    ) {
+        if let expense = expense {
+            self.expense = expense
+        }
+
+        if let goal = goal {
+            self.goal = goal
+            self.goalSetupFinished = true
+        }
+        
+        if let transactionDay = transactionDay {
+            self.transactionDay = transactionDay
+            self.transactionDaySetupFinished = true
+        }
+        
+        if let amount = amount {
+            self.amount = amount
+            self.amountSetupFinished = true
+        }
+        
+        if let shortDescription = shortDescription {
+            self.shortDescription = shortDescription
+            self.shortDescriptionSetupFinished = true
+        }
     }
     
-    /**
-     * Setup this view controller with data from an expense that has already
-     * been partially created (but not yet saved) in another part of the UI.
-     */
-    func setupPartiallyCreatedExpense(goal: Goal, transactionDay: CalendarDay, amount: Decimal?, shortDescription: String?) {
-        self.transactionDay = transactionDay
-        self.amount = amount
-        self.shortDescription = shortDescription
-        self.transactionDaySetupFinished = true
-        self.amountSetupFinished = true
-        self.shortDescriptionSetupFinished = true
-        self.goal = goal
-        self.goalSetupFinished = true
-    }
-
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.

@@ -32,6 +32,18 @@ protocol CalendarIntervalProvider {
      * otherwise.
      */
     func contains(interval: CalendarIntervalProvider) -> Bool
+    
+    /**
+     * Returns true if any portion of this interval overlaps with any portion
+     * of the passed interval.
+     */
+    func overlaps(with interval: CalendarIntervalProvider) -> Bool
+    
+    /**
+     * Returns the interval of maximum size contained by both intervals, or
+     * `nil` if no such intervals exists.
+     */
+    func overlappingInterval(with interval: CalendarIntervalProvider) -> CalendarIntervalProvider?
 }
 
 /**
@@ -97,12 +109,18 @@ class CalendarInterval : CalendarIntervalProvider {
     private(set) var start: CalendarDateProvider
     private(set) var end: CalendarDateProvider?
 
-    init(start: CalendarDateProvider, end: CalendarDateProvider?) {
+    init?(start: CalendarDateProvider, end: CalendarDateProvider?) {
+        if end != nil && start.gmtDate > end!.gmtDate {
+            return nil
+        }
         self.start = start
         self.end = end
     }
 
-    init(localStart: Date, localEnd: Date?) {
+    init?(localStart: Date, localEnd: Date?) {
+        if localEnd != nil && localStart > localEnd! {
+            return nil
+        }
         self.start = CalendarDay(localDateInDay: localStart).start
         self.end = localEnd != nil ? CalendarDay(localDateInDay: localEnd!).start : nil
     }
@@ -116,7 +134,7 @@ class CalendarInterval : CalendarIntervalProvider {
     }
 
     /**
-     * Returns true if this interval contains the entire interval, false
+     * Returns true if this interval wholly contains the entire interval, false
      * otherwise.
      */
     func contains(interval: CalendarIntervalProvider) -> Bool {
@@ -134,6 +152,40 @@ class CalendarInterval : CalendarIntervalProvider {
         
         return true
     }
+    
+    /**
+     * Returns true if any portion of this interval overlaps with any portion
+     * of the passed interval.
+     */
+    func overlaps(with interval: CalendarIntervalProvider) -> Bool {
+        if interval.end != nil && self.start.gmtDate > interval.end!.gmtDate {
+            return false
+        }
+        
+        if self.end != nil && self.end!.gmtDate < interval.start.gmtDate {
+            return false
+        }
+        
+        return true
+    }
+    
+    /**
+     * Returns the interval of maximum size contained by both intervals, or
+     * `nil` if no such intervals exists.
+     */
+    func overlappingInterval(with interval: CalendarIntervalProvider) -> CalendarIntervalProvider? {
+        if self.contains(interval: interval) {
+            return interval
+        } else if interval.contains(interval: self) {
+            return self
+        } else if interval.end == nil || self.start.gmtDate < interval.end!.gmtDate {
+            return CalendarInterval(start: self.start, end: interval.end)
+        } else if interval.start.gmtDate < self.end!.gmtDate {
+            return CalendarInterval(start: interval.start, end: self.end)
+        } else {
+            return nil
+        }
+    }
 }
 
 /**
@@ -142,6 +194,9 @@ class CalendarInterval : CalendarIntervalProvider {
  */
 class CalendarPeriod : CalendarIntervalProvider {
     private(set) var start: CalendarDateProvider
+    /**
+     * The end of the `CalendarPeriod`. This property will never be `nil`.
+     */
     private(set) var end: CalendarDateProvider?
     
     /**
@@ -332,6 +387,40 @@ class CalendarPeriod : CalendarIntervalProvider {
         return self.contains(date: interval.start) &&
             interval.end != nil &&
             self.contains(date: interval.end!)
+    }
+    
+    /**
+     * Returns true if any portion of this interval overlaps with any portion
+     * of the passed interval.
+     */
+    func overlaps(with interval: CalendarIntervalProvider) -> Bool {
+        if interval.end != nil && self.start.gmtDate > interval.end!.gmtDate {
+            return false
+        }
+        
+        if self.end!.gmtDate < interval.start.gmtDate {
+            return false
+        }
+        
+        return true
+    }
+    
+    /**
+     * Returns the interval of maximum size contained by both intervals, or
+     * `nil` if no such intervals exists.
+     */
+    func overlappingInterval(with interval: CalendarIntervalProvider) -> CalendarIntervalProvider? {
+        if self.contains(interval: interval) {
+            return interval
+        } else if interval.contains(interval: self) {
+            return self
+        } else if interval.end == nil || self.start.gmtDate < interval.end!.gmtDate {
+            return CalendarInterval(start: self.start, end: interval.end)
+        } else if self.end == nil || interval.start.gmtDate < self.end!.gmtDate {
+            return CalendarInterval(start: interval.start, end: self.end)
+        } else {
+            return nil
+        }
     }
 }
 

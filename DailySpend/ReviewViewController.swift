@@ -20,7 +20,11 @@ class ReviewViewController: UIViewController {
     private var tableView: UITableView!
     private var cellCreator: TableViewCellHelper!
     
-    private var expensesController: ReviewViewExpensesController!
+    private var entityProviders = [(
+        provider: ReviewEntityDataProvider,
+        labelMessage: String,
+        createMessage: String
+    )]()
 
     /**
      * The current period that is being shown to the user, or `nil` if `goal`
@@ -35,6 +39,11 @@ class ReviewViewController: UIViewController {
      */
     var goalPicker: NavigationGoalPicker!
     
+    /**
+     * The current interval that is being shown to the user, which may be an
+     * open ended period if this goal is not recurring and does not have an end
+     * date.
+     */
     var interval: CalendarIntervalProvider! {
         return recurringGoalPeriod ?? self.goal?.periodInterval(for: self.goal.start!)
     }
@@ -94,13 +103,28 @@ class ReviewViewController: UIViewController {
             buttonWidth: 70 // TODO: Make this a real number based on the done button width
         )
         
-        expensesController = ReviewViewExpensesController(
-            section: 0,
-            cellCreator: cellCreator,
-            present: self.present
-        )
-        expensesController.delegate = self
-
+        entityProviders = [
+            (
+                provider: ReviewViewExpensesController(
+                    section: 0,
+                    cellCreator: cellCreator,
+                    delegate: self,
+                    present: self.present
+                ),
+                labelMessage: "Expenses",
+                createMessage: "New Expense"
+            ),
+            (
+                provider: ReviewViewAdjustmentsController(
+                    section: 1,
+                    cellCreator: cellCreator,
+                    delegate: self,
+                    present: self.present
+                ),
+                labelMessage: "Adjustments",
+                createMessage: "New Adjustment"
+            )
+        ]
         self.goalChanged(newGoal: goalPicker.currentGoal)
     }
     
@@ -114,11 +138,16 @@ class ReviewViewController: UIViewController {
      */
     func tappedAdd() {
         let addSelectorAlert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        let actions = [
-            UIAlertAction(title: "New Expense", style: .default, handler: { _ in self.expensesController.presentCreateExpenseModal()
-            }),
-            UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        ]
+        
+        var actions = [UIAlertAction]()
+        for providerTuple in entityProviders {
+            let title = providerTuple.createMessage
+            actions.append(
+                UIAlertAction(title: title, style: .default, handler: { _ in providerTuple.provider.presentCreateModal()
+                })
+            )
+        }
+        actions.append(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         addSelectorAlert.addActions(actions)
         self.present(addSelectorAlert, animated: true, completion: nil)
     }
@@ -161,6 +190,22 @@ class ReviewViewController: UIViewController {
     }
     
     /**
+     * Updates the amount, globally, for the current goal and interval,
+     * updating the spend color as appropriate.
+     */
+    private func updateAmount() {
+        let evaluationDay = CalendarDay(dateInDay: interval.end)?.subtract(days: 1) ?? CalendarDay()
+        let newAmount = goal.balance(for: evaluationDay).doubleValue
+        
+        appDelegate.spendIndicationColor = newAmount < 0 ? .overspent : .underspent
+        
+        if evaluationDay == CalendarDay() {
+            // Memoize this amount, since we memoize amounts for today.
+            setMostRecentlyUsedAmountForGoal(goal: goal, amount: newAmount)
+        }
+    }
+    
+    /**
      * Notifies controllers controlling data in the review view that there has
      * been a change in goal or interval, and passes them the new information
      * from this class's member variables.
@@ -168,8 +213,9 @@ class ReviewViewController: UIViewController {
     private func notifyControllersDataChanged() {
         pbc.updatePeriodBrowser(goal: goal, recurringGoalPeriod: recurringGoalPeriod)
         
-        expensesController.setGoal(goal, interval: interval)
-
+        for providerTuple in entityProviders {
+            providerTuple.provider.setGoal(goal, interval: interval)
+        }
     }
     
     /**
@@ -177,9 +223,10 @@ class ReviewViewController: UIViewController {
      * backward.
      */
     private func animateIntervalChange(forward: Bool) {
+        let providersSections = IndexSet(integersIn: 0..<entityProviders.count)
         tableView.beginUpdates()
-        tableView.deleteSections(IndexSet(arrayLiteral: 0), with: forward ? .left : .right)
-        tableView.insertSections(IndexSet(arrayLiteral: 0), with: forward ? .right : .left)
+        tableView.deleteSections(providersSections, with: forward ? .left : .right)
+        tableView.insertSections(providersSections, with: forward ? .right : .left)
         tableView.endUpdates()
     }
 }
@@ -192,6 +239,7 @@ extension ReviewViewController: GoalPickerDelegate {
         self.goal = newGoal
         recurringGoalPeriod = self.goal.mostRecentPeriod()
         notifyControllersDataChanged()
+        updateAmount()
         self.tableView.reloadData()
     }
 }
@@ -206,6 +254,7 @@ extension ReviewViewController: PeriodSelectorViewDelegate {
         }
         recurringGoalPeriod = nextPeriod
         notifyControllersDataChanged()
+        updateAmount()
         animateIntervalChange(forward: true)
     }
     
@@ -215,77 +264,52 @@ extension ReviewViewController: PeriodSelectorViewDelegate {
     func tappedPrevious() {
         recurringGoalPeriod = recurringGoalPeriod?.previousCalendarPeriod()
         notifyControllersDataChanged()
+        updateAmount()
         animateIntervalChange(forward: false)
     }
 }
 
 extension ReviewViewController: UITableViewDataSource, UITableViewDelegate {
-    private enum ReviewViewSectionType {
-        case ExpenseSection
-    }
-    
-    private func sectionTypeForSection(_ section: Int) -> ReviewViewSectionType {
-        return .ExpenseSection
-    }
-    
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        return entityProviders.count
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        switch sectionTypeForSection(section) {
-        case .ExpenseSection:
-            return "Expenses"
-        }
+        return entityProviders[section].labelMessage
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        switch sectionTypeForSection(section) {
-        case .ExpenseSection:
-            return expensesController.tableView(tableView, numberOfRowsInSection: section)
-        }
+        return entityProviders[section].provider.tableView(tableView, numberOfRowsInSection: section) 
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        switch sectionTypeForSection(indexPath.section) {
-        case .ExpenseSection:
-            return expensesController.tableView(tableView, cellForRowAt: indexPath)
-        }
+        let section = indexPath.section
+        return entityProviders[section].provider.tableView(tableView, cellForRowAt: indexPath)
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        switch sectionTypeForSection(indexPath.section) {
-        case .ExpenseSection:
-            expensesController.tableView(tableView, didSelectRowAt: indexPath)
-        }
+        let section = indexPath.section
+        entityProviders[section].provider.tableView?(tableView, didSelectRowAt: indexPath)
     }
     
     func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
-        switch sectionTypeForSection(indexPath.section) {
-        case .ExpenseSection:
-            expensesController.tableView(tableView, accessoryButtonTappedForRowWith: indexPath)
-        }
+        let section = indexPath.section
+        entityProviders[section].provider.tableView?(tableView, accessoryButtonTappedForRowWith: indexPath)
     }
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        switch sectionTypeForSection(indexPath.section) {
-        case .ExpenseSection:
-            return expensesController.tableView(tableView, canEditRowAt: indexPath)
-        }
+        let section = indexPath.section
+        return entityProviders[section].provider.tableView?(tableView, canEditRowAt: indexPath) ?? false
     }
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        switch sectionTypeForSection(indexPath.section) {
-        case .ExpenseSection:
-            expensesController.tableView(tableView, commit: editingStyle, forRowAt: indexPath)
-        }
+        let section = indexPath.section
+        entityProviders[section].provider.tableView?(tableView, commit: editingStyle, forRowAt: indexPath)
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        switch sectionTypeForSection(indexPath.section) {
-        case .ExpenseSection:
-            return expensesController.tableView(tableView, heightForRowAt: indexPath)
-        }
+        let section = indexPath.section
+        return entityProviders[section].provider.tableView?(tableView, heightForRowAt: indexPath) ?? 0
     }
 }
 
@@ -320,31 +344,32 @@ extension ReviewViewController: ReviewEntityControllerDelegate {
     }
     
     /**
-     * Returns true if an entity with the passed date and goal would be
+     * Returns true if an entity with the passed interval and goal would be
      * displayed in the current view based on the currently selected interval
      * and goal.
      */
-    private func entityIsInCurrentView(date: CalendarDateProvider, goal: Goal) -> Bool {
-        return interval.contains(date: date) && (goal == self.goal || self.goal.isParentOf(goal: goal))
+    private func entityIsInCurrentView(interval: CalendarIntervalProvider, goal: Goal) -> Bool {
+        return self.interval.overlaps(with: interval) && (goal == self.goal || self.goal.isParentOf(goal: goal))
     }
     
-    func addedEntity(on date: CalendarDateProvider, with goal: Goal, at path: IndexPath, use animation: UITableView.RowAnimation, isFirst: Bool) {
-        if isFirst {
+    func addedEntity(with interval: CalendarIntervalProvider, within goal: Goal, at path: IndexPath, use animation: UITableView.RowAnimation, isOnlyEntity: Bool) {
+        if isOnlyEntity {
             tableView.reloadSections(IndexSet(integer: path.section), with: animation)
             return
         }
         
-        if !entityIsInCurrentView(date: date, goal: goal) {
-            loadNewInterval(in: goal, for: date)
+        if !entityIsInCurrentView(interval: interval, goal: goal) {
+            loadNewInterval(in: goal, for: interval.start)
             return
         }
 
         tableView.insertRows(at: [path], with: animation)
+        updateAmount()
     }
     
-    func editedEntity(on date: CalendarDateProvider, with goal: Goal, at path: IndexPath, movedTo newPath: IndexPath?, use animation: UITableView.RowAnimation) {
-        if !entityIsInCurrentView(date: date, goal: goal) {
-            loadNewInterval(in: goal, for: date)
+    func editedEntity(with interval: CalendarIntervalProvider, within goal: Goal, at path: IndexPath, movedTo newPath: IndexPath?, use animation: UITableView.RowAnimation) {
+        if !entityIsInCurrentView(interval: interval, goal: goal) {
+            loadNewInterval(in: goal, for: interval.start)
             return
         }
         
@@ -354,42 +379,45 @@ extension ReviewViewController: ReviewEntityControllerDelegate {
         } else {
             tableView.reloadRows(at: [path], with: animation)
         }
+        updateAmount()
     }
     
-    func deletedEntity(at path: IndexPath, use animation: UITableView.RowAnimation, isLast: Bool) {
-        if isLast {
+    func deletedEntity(at path: IndexPath, use animation: UITableView.RowAnimation, isOnlyEntity: Bool) {
+        if isOnlyEntity {
             tableView.reloadSections(IndexSet(integer: path.section), with: animation)
             return
         }
         tableView.deleteRows(at: [path], with: animation)
+        updateAmount()
     }
 }
 
 protocol ReviewEntityControllerDelegate {
     /**
-     * Notifies the delegate that an entity has been added with a date of
-     * `date`, located in the table view at `path`, and requests that the
+     * Notifies the delegate that an entity has been added with an interval of
+     * `interval`, located in the table view at `path`, and requests that the
      * delegate use `animation` to show the new cell data.
      *
      * Note that the delegate may not animate as requested.
-     * Depending on the value of `date`, `isFirst`, and `goal`, it may choose
-     * to reload the view with a different set of dates or a different goal.
+     * Depending on the value of `interval`, `isFirst`, and `goal`, it may
+     * choose to reload the view with a different set of dates or a different
+     * goal.
      */
-    func addedEntity(on date: CalendarDateProvider, with goal: Goal, at path: IndexPath, use animation: UITableView.RowAnimation, isFirst: Bool)
+    func addedEntity(with interval: CalendarIntervalProvider, within goal: Goal, at path: IndexPath, use animation: UITableView.RowAnimation, isOnlyEntity: Bool)
     
     /**
-     * Notifies the delegate that an entity has been modified with a new date
-     * of `date`, located in the table view at `path`, and requests that the
-     * delegate use `animation` to show the new cell data.
+     * Notifies the delegate that an entity has been modified with a new
+     * interval of `interval`, located in the table view at `path`, and requests
+     * that the delegate use `animation` to show the new cell data.
      *
      * Optionally, a `newPath` can be provided, if the entities order has
      * changed.
      *
      * Note that the delegate may not animate as requested.
-     * Depending on the value of `date` and `goal`, it may choose to reload
+     * Depending on the value of `interval` and `goal`, it may choose to reload
      * the view with a different set of dates or a different goal.
      */
-    func editedEntity(on date: CalendarDateProvider, with goal: Goal, at path: IndexPath, movedTo newPath: IndexPath?, use animation: UITableView.RowAnimation)
+    func editedEntity(with interval: CalendarIntervalProvider, within goal: Goal, at path: IndexPath, movedTo newPath: IndexPath?, use animation: UITableView.RowAnimation)
     
     /**
      * Notifies the delegate that an entity has been deleted located in the
@@ -399,6 +427,18 @@ protocol ReviewEntityControllerDelegate {
      * Depending on the value of `isLast`, the delegate may choose to reload the
      * view with a different set of dates or a different goal.
      */
-    func deletedEntity(at path: IndexPath, use animation: UITableView.RowAnimation, isLast: Bool)
+    func deletedEntity(at path: IndexPath, use animation: UITableView.RowAnimation, isOnlyEntity: Bool)
 }
 
+protocol ReviewEntityDataProvider : UITableViewDataSource, UITableViewDelegate {
+    /**
+     * Present a modal that allows the user to create this type of entity.
+     */
+    func presentCreateModal()
+    
+    /**
+     * Reload data store with entities from the given interval that are
+     * associated with the given goal.
+     */
+    func setGoal(_ newGoal: Goal?, interval: CalendarIntervalProvider)
+}

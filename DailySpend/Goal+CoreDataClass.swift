@@ -376,8 +376,8 @@ class Goal: NSManagedObject {
                 return (false, "This goal cannot be a parent of itself.")
             }
             
-            let interval = CalendarInterval(start: _start!, end: _end)
-            let parentInterval = CalendarInterval(start: parent.start!, end: parent.exclusiveEnd)
+            let interval = CalendarInterval(start: _start!, end: _end)!
+            let parentInterval = CalendarInterval(start: parent.start!, end: parent.exclusiveEnd)!
             
             if !parentInterval.contains(interval: interval) {
                 return (false, "This goal's start and end date must be within it's parent's start and end date.")
@@ -385,9 +385,9 @@ class Goal: NSManagedObject {
         }
         
         if let children = self.childGoals {
-            let interval = CalendarInterval(start: _start!, end: _end)
+            let interval = CalendarInterval(start: _start!, end: _end)!
             for child in children {
-                let childInterval = CalendarInterval(start: child.start!, end: child.exclusiveEnd)
+                let childInterval = CalendarInterval(start: child.start!, end: child.exclusiveEnd)!
                 
                 if !interval.contains(interval: childInterval) {
                     return (false, "All of the start and end dates for this goal's children must be within this goal's start and end date.")
@@ -423,49 +423,79 @@ class Goal: NSManagedObject {
      *            interval pay, and expenses.
      */
      func balance(for day: CalendarDay) -> Decimal {
-        guard let expenseInterval = periodInterval(for: day.start),
-              let amount = adjustedAmountForDateInPeriod(day.start) else {
+        guard let interval = periodInterval(for: day.start),
+              let totalPaidAmount = calculateTotalPaidAmount(for: day, in: interval) else {
             return 0
         }
-        let totalExpenseAmount = getExpenses(interval: expenseInterval)
+        
+        let totalExpenseAmount = getExpenses(interval: interval)
             .reduce(0, {(amount, expense) -> Decimal in
             return amount + (expense.amount ?? 0)
         })
-
-        var totalPaidAmount: Decimal = 0
-        if hasIncrementalPayment {
-            guard let expensePeriod = expenseInterval as? CalendarPeriod else {
-                return 0
-            }
-            let paymentsPerPeriod = expensePeriod.numberOfSubPeriodsOfLength(period: self.payFrequency)
-            if paymentsPerPeriod == 0 {
-                return 0
-            }
-            let incrementalAmount = amount / Decimal(paymentsPerPeriod)
-            guard let incrementInterval = incrementalPaymentInterval(for: day.start),
-                  let incrementCalendarPeriod = CalendarPeriod(
-                        calendarDate: incrementInterval.start,
-                        period: payFrequency,
-                        beginningDateOfPeriod: incrementInterval.start,
-                        boundingEndDate: self.exclusiveEnd
-                  ),
-                  let index = incrementCalendarPeriod.periodIndexWithin(superPeriod: expensePeriod) else {
-                return 0
-            }
-
-            totalPaidAmount = incrementalAmount * Decimal(index + 1)
-        } else {
-            totalPaidAmount = amount
+        
+        let totalAdjustmentAmount = getAdjustments(interval: interval)
+            .reduce(0, {(amount, adjustment) -> Decimal in
+            return amount + adjustment.overlappingAmount(with: interval)
+        })
+        
+        return totalPaidAmount + totalAdjustmentAmount - totalExpenseAmount
+    }
+    
+    /**
+     * Returns the total paid amount on a given day, taking into account
+     * intervals, period scope length differences and a pay schedule, if there
+     * is one.
+     *
+     * - Parameters:
+     *    - day: The day to compute the total paid amount on.
+     *    - interval: The `CalendarPeriod` in which the day is a part of.
+     */
+    private func calculateTotalPaidAmount(
+        for day: CalendarDay,
+        in interval: CalendarIntervalProvider
+    ) -> Decimal? {
+        guard let amount = adjustedAmountForDateInPeriod(day.start) else {
+            return nil
         }
         
-        return totalPaidAmount - totalExpenseAmount
+        if !hasIncrementalPayment {
+            return amount
+        }
+        
+        // Try to get a period from the passed interval, or try to create
+        // one from the day.
+        guard let period = interval as? CalendarPeriod ?? periodInterval(for: day.start) as? CalendarPeriod else {
+            return nil
+        }
+        
+        let paymentsPerPeriod = period.numberOfSubPeriodsOfLength(period: self.payFrequency)
+        if paymentsPerPeriod == 0 {
+            return nil
+        }
+        
+        let incrementalAmount = amount / Decimal(paymentsPerPeriod)
+        guard
+            let incrementInterval = incrementalPaymentInterval(for: day.start),
+            let incrementCalendarPeriod = CalendarPeriod(
+                calendarDate: incrementInterval.start,
+                period: payFrequency,
+                beginningDateOfPeriod: incrementInterval.start,
+                boundingEndDate: self.exclusiveEnd
+            ),
+            let index = incrementCalendarPeriod.periodIndexWithin(superPeriod: period)
+        else {
+                return nil
+        }
+
+        let incrementalPayment = incrementalAmount * Decimal(index + 1)
+        return incrementalPayment.roundToNearest(th: 100)
     }
     
     /**
      * The amount per period, adjusted for the days in the current month or
      * months for this period, if necessary.
      */
-    func adjustedAmountForDateInPeriod(_ date: CalendarDateProvider) -> Decimal? {
+    private func adjustedAmountForDateInPeriod(_ date: CalendarDateProvider) -> Decimal? {
         guard let amount = amount else {
             return nil
         }
@@ -482,7 +512,8 @@ class Goal: NSManagedObject {
             }
             
             let perDayAmount = amount / 30
-            return Decimal(totalDays) * perDayAmount
+            let adjustedAmount = Decimal(totalDays) * perDayAmount
+            return adjustedAmount.roundToNearest(th: 100)
         } else {
             return amount
         }
@@ -490,11 +521,12 @@ class Goal: NSManagedObject {
     
     /**
      * Returns the expenses in a particular period, or all the expenses if this
-     * is not a recurring goal, from most recently created to least recently.
+     * is not a recurring goal, from most recent transaction to least recent
+     * transaction, or if the transaction day is the same, from most recently
+     * created to least recently.
      *
      * - Parameters:
-     *    - period: The `CalendarInterval` for which to fetch expenses.
-     *              If period is nil, will return all expenses for the goal.
+     *    - interval: The `CalendarInterval` for which to fetch expenses.
      */
     func getExpenses(interval: CalendarIntervalProvider) -> [Expense] {
         let fetchRequest: NSFetchRequest<Expense> = Expense.fetchRequest()
@@ -516,6 +548,40 @@ class Goal: NSManagedObject {
         
         return expenseResults
     }
+    
+    /**
+     * Returns the adjustments overlapping with a particular period, or all the
+     * adjustments if this is not a recurring goal, from most recent begin day
+     * to least recent begin day, or if the begin day is the same, from most
+     * recently created to least recently.
+     *
+     * - Parameters:
+     *    - interval: The `CalendarInterval` for which to fetch overlapping
+     *              adjustments.
+     */
+    func getAdjustments(interval: CalendarIntervalProvider) -> [Adjustment] {
+        let fetchRequest: NSFetchRequest<Adjustment> = Adjustment.fetchRequest()
+        let descendants = allChildDescendants()
+        
+        var fs =  "(goal_ = %@ OR goal_ IN %@) AND lastDateEffective_ >= %@"
+        if let end = interval.end {
+            fs += "AND firstDateEffective_ < %@"
+            fetchRequest.predicate = NSPredicate(format: fs,
+                self, descendants ?? [],
+                interval.start.gmtDate as CVarArg, end.gmtDate as CVarArg)
+        } else {
+            fetchRequest.predicate = NSPredicate(format: fs, self, self.childGoals ?? [], interval.start.gmtDate as CVarArg)
+        }
+        fetchRequest.sortDescriptors = [
+            NSSortDescriptor(key: "firstDateEffective_", ascending: false),
+            NSSortDescriptor(key: "dateCreated_", ascending: false)
+        ]
+        
+        let adjustmentResults = try! context.fetch(fetchRequest)
+        
+        return adjustmentResults
+    }
+
     
     /**
      * Returns a set containg all of this goal's decendents:
@@ -756,7 +822,7 @@ class Goal: NSManagedObject {
         }
         set {
             if newValue != nil {
-                amount_ = NSDecimalNumber(decimal: newValue!)
+                amount_ = NSDecimalNumber(decimal: newValue!.roundToNearest(th: 100))
             } else {
                 amount_ = nil
             }

@@ -11,7 +11,9 @@ import Foundation
 class Logger {
     
     static func isTesting() -> Bool {
-        let bundleID = Bundle.main.bundleIdentifier!
+        guard let bundleID = Bundle.main.bundleIdentifier else {
+            return false
+        }
         return bundleID.contains("com.joshsherick.DailySpendTesting")
     }
     
@@ -58,8 +60,8 @@ class Logger {
             print("goal.adjustMonthAmountAutomatically: \(goal.adjustMonthAmountAutomatically)")
             print("goal.alwaysCarryOver: \(goal.alwaysCarryOver)")
             print("goal.amount: \(String(describing: goal.amount))")
-            print("goal.start: \(date(goal.start?.gmtDate))")
-            print("goal.end: \(date(goal.end?.gmtDate))")
+            print("goal.start: \(String(describing: goal.start?.string(formatter: dateFormatter)))")
+            print("goal.end: \(String(describing: goal.end?.string(formatter: dateFormatter)))")
             print("goal.hasIncrementalPayment: \(goal.hasIncrementalPayment)")
             print("goal.isRecurring: \(goal.isRecurring)")
             print("goal.payFrequency: \(goal.payFrequency)")
@@ -80,9 +82,10 @@ class Logger {
             let created = dateFormatter.string(from: expense.dateCreated!)
             print("expense.amount: \(expense.amount!)")
             print("expense.dateCreated: \(created)")
-            print("expense.transactionDay: \(date(expense.transactionDay?.start.gmtDate))")
+            print("expense.transactionDay: \(String(describing: expense.transactionDay?.string(formatter: dateFormatter)))")
             print("expense.notes: \(expense.notes ?? "None")")
             print("expense.shortDescription: \(String(describing: expense.shortDescription))")
+            print("expense.goal: \(String(describing: expense.goal?.shortDescription))")
             
             if (expense.images!.count > 0) {
                 print("\tImages:")
@@ -143,6 +146,7 @@ class Logger {
             print("adjustment.dateCreated: \(created)")
             print("adjustment.firstDayEffective: \(first)")
             print("adjustment.lastDayEffective: \(last)")
+            print("adjustment.goal: \(String(describing: adjustment.goal?.shortDescription))")
             print("")
         }
     }

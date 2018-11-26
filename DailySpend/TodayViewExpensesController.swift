@@ -182,14 +182,14 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
                 addExpenseVC.delegate = self
                 let navCtrl = UINavigationController(rootViewController: addExpenseVC)
                 if isAddCell {
-                    addExpenseVC.setupPartiallyCreatedExpense(
+                    addExpenseVC.setupExpense(
                         goal: self.goal,
                         transactionDay: CalendarDay(),
                         amount: datum.amount,
                         shortDescription: datum.shortDescription
                     )
                 } else {
-                    addExpenseVC.setupPartiallyEditedExpense(
+                    addExpenseVC.setupExpense(
                         expense: expense!,
                         amount: datum.amount,
                         shortDescription: datum.shortDescription
