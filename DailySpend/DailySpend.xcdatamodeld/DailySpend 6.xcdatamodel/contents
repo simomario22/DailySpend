@@ -6,6 +6,7 @@
         <attribute name="firstDateEffective_" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="lastDateEffective_" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="shortDescription_" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="type_" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <relationship name="goal_" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Goal" inverseName="adjustments_" inverseEntity="Goal" syncable="YES"/>
     </entity>
     <entity name="Expense" representedClassName="Expense" syncable="YES">
@@ -48,7 +49,7 @@
         <relationship name="goals_" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Goal" inverseName="pauses_" inverseEntity="Goal" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Adjustment" positionX="162" positionY="-72" width="128" height="135"/>
+        <element name="Adjustment" positionX="162" positionY="-72" width="128" height="150"/>
         <element name="Expense" positionX="-263" positionY="36" width="128" height="150"/>
         <element name="Goal" positionX="-54" positionY="27" width="128" height="285"/>
         <element name="Image" positionX="-207" positionY="-99" width="128" height="90"/>

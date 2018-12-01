@@ -402,6 +402,44 @@ class Adjustment: NSManagedObject {
             }
         }
     }
+    
+    /**
+     * This corresponds to the `type` property of an adjustment, telling us more
+     * about how it should behave.
+     */
+    enum AdjustmentType: Int {
+        /**
+         * This value signifies that the adjustment was explicity created by
+         * the user.
+         */
+        case UserCreated = 0
+        
+        /**
+         * This value signifies that the adjustment was created automatically
+         * as a carry over expense.
+         */
+        case CarryOver = 1
+        
+        /**
+         * This value signifies that the adjustment was created automatically
+         * as a carry over expense, but was then deleted by the user. Another
+         * carry over expense should not be created, and the value of this
+         * expense should not be used.
+         */
+        case CarryOverDeleted = 2
+    }
+    
+    /**
+     * This is the type of this adjustment.
+     */
+    var type: AdjustmentType {
+        get {
+            return AdjustmentType(rawValue: Int(type_))!
+        }
+        set {
+            type_ = Int64(newValue.rawValue)
+        }
+    }
 
 
     /**

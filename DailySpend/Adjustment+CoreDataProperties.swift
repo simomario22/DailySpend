@@ -22,6 +22,7 @@ extension Adjustment {
     @NSManaged var firstDateEffective_: NSDate?
     @NSManaged var lastDateEffective_: NSDate?
     @NSManaged var shortDescription_: String?
+    @NSManaged var type_: Int64
     @NSManaged var goal_: Goal?
 
 }
