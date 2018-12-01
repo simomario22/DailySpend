@@ -22,6 +22,7 @@ class TodayViewController: UIViewController, GoalPickerDelegate, TodayViewExpens
     private var expensesController: TodayViewExpensesController!
     private var cellCreator: TableViewCellHelper!
     
+    private let goalBalanceCache = GoalBalanceCache()
     var goalPicker: NavigationGoalPicker!
     var goal: Goal!
     
@@ -162,14 +163,14 @@ class TodayViewController: UIViewController, GoalPickerDelegate, TodayViewExpens
         // Update summary view with information from this goal for the
         // appropriate period.
         let newAmount = goal.balance(for: CalendarDay()).doubleValue
-        let oldAmount = mostRecentlyUsedAmountForGoal(goal: goal)
+        let oldAmount = goalBalanceCache.mostRecentlyDisplayedBalance(goal: goal)
         if oldAmount != newAmount {
             summaryView.countFrom(CGFloat(oldAmount), to: CGFloat(newAmount))
         } else {
             summaryView.setAmount(value: CGFloat(newAmount))
             appDelegate.spendIndicationColor = newAmount < 0 ? .overspent : .underspent
         }
-        setMostRecentlyUsedAmountForGoal(goal: goal, amount: newAmount)
+        goalBalanceCache.setMostRecentlyDisplayedBalance(goal: goal, amount: newAmount)
         
         // Determine what should be in the summary view hint and set it.
         var endDay: CalendarDay?
@@ -242,30 +243,6 @@ class TodayViewController: UIViewController, GoalPickerDelegate, TodayViewExpens
                 }
             )
         }
-    }
-    
-    /**
-     * Returns a unique string associated with a particular goal.
-     */
-    func keyForGoal(goal: Goal) -> String {
-        let id = goal.objectID.uriRepresentation()
-        return "mostRecentComputedAmount_\(id)"
-    }
-    
-    /**
-     * Retrieves the amount most recently displayed to the user in the summary
-     * view, persisting across app termination.
-     */
-    func mostRecentlyUsedAmountForGoal(goal: Goal) -> Double {
-        return UserDefaults.standard.double(forKey: keyForGoal(goal: goal))
-    }
-    
-    /**
-     * Set the amount most recently displayed to the user in the summary
-     * view, persisting across app termination.
-     */
-    func setMostRecentlyUsedAmountForGoal(goal: Goal, amount: Double) {
-        UserDefaults.standard.set(amount, forKey: keyForGoal(goal: goal))
     }
     
     /**

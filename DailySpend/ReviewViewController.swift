@@ -19,6 +19,7 @@ class ReviewViewController: UIViewController {
     private var neutralBarColor: UIColor!
     private var tableView: UITableView!
     private var cellCreator: TableViewCellHelper!
+    private let goalBalanceCache = GoalBalanceCache()
     
     private var entityProviders = [(
         provider: ReviewEntityDataProvider,
@@ -152,31 +153,6 @@ class ReviewViewController: UIViewController {
         self.present(addSelectorAlert, animated: true, completion: nil)
     }
 
-    /**
-     * Returns a unique string associated with a particular goal.
-     */
-    func keyForGoal(goal: Goal) -> String {
-        let id = goal.objectID.uriRepresentation()
-        return "mostRecentComputedAmount_\(id)"
-    }
-    
-    /**
-     * Retrieves the amount most recently displayed to the user in the summary
-     * view, persisting across app termination.
-     */
-    func mostRecentlyUsedAmountForGoal(goal: Goal) -> Double {
-        return UserDefaults.standard.double(forKey: keyForGoal(goal: goal))
-    }
-    
-    /**
-     * Set the amount most recently displayed to the user in the summary
-     * view, persisting across app termination.
-     */
-    func setMostRecentlyUsedAmountForGoal(goal: Goal, amount: Double) {
-        UserDefaults.standard.set(amount, forKey: keyForGoal(goal: goal))
-    }
-
-
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -200,8 +176,8 @@ class ReviewViewController: UIViewController {
         appDelegate.spendIndicationColor = newAmount < 0 ? .overspent : .underspent
         
         if evaluationDay == CalendarDay() {
-            // Memoize this amount, since we memoize amounts for today.
-            setMostRecentlyUsedAmountForGoal(goal: goal, amount: newAmount)
+            // Store this balance as the most recently displayed, since we do that for today.
+            goalBalanceCache.setMostRecentlyDisplayedBalance(goal: goal, amount: newAmount)
         }
     }
     
