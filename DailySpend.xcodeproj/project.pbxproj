@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		C503F13A1EA1A8A200FA95A7 /* Export.swift in Sources */ = {isa = PBXBuildFile; fileRef = C503F1391EA1A8A100FA95A7 /* Export.swift */; };
+		C507D7C921B3BE77000EB300 /* BorderedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C507D7C821B3BE77000EB300 /* BorderedView.swift */; };
+		C507D7CA21B3BE83000EB300 /* BorderedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C507D7C821B3BE77000EB300 /* BorderedView.swift */; };
+		C507D7CC21B3BE97000EB300 /* BorderedToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C507D7CB21B3BE97000EB300 /* BorderedToolbar.swift */; };
+		C507D7CD21B3BEAD000EB300 /* BorderedToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C507D7CB21B3BE97000EB300 /* BorderedToolbar.swift */; };
 		C517B1FE1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = C517B1EA1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt */; };
 		C517B1FF1EBC134200CDAA17 /* UICountingLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = C517B1EC1EBC134200CDAA17 /* UICountingLabel.m */; };
 		C518791A1F00416F00881FB6 /* ZipArchive.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C5A81A7A1F0040540032D9F1 /* ZipArchive.framework */; };
@@ -223,6 +227,8 @@
 /* Begin PBXFileReference section */
 		C502DB2B1F92B24C004136E5 /* DailySpend 5.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "DailySpend 5.xcdatamodel"; sourceTree = "<group>"; };
 		C503F1391EA1A8A100FA95A7 /* Export.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Export.swift; sourceTree = "<group>"; };
+		C507D7C821B3BE77000EB300 /* BorderedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderedView.swift; sourceTree = "<group>"; };
+		C507D7CB21B3BE97000EB300 /* BorderedToolbar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BorderedToolbar.swift; sourceTree = "<group>"; };
 		C5108977201BE8A1005AA672 /* DailySpend 6.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "DailySpend 6.xcdatamodel"; sourceTree = "<group>"; };
 		C5117DB01FB94A410032F854 /* ExpenseTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseTableViewCell.swift; sourceTree = "<group>"; };
 		C517B1EA1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "UICountingLabel-LICENSE.txt"; sourceTree = "<group>"; };
@@ -384,6 +390,35 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C507D7C621B3BE31000EB300 /* Data Processing */ = {
+			isa = PBXGroup;
+			children = (
+				C59AA77121B3456B00F40762 /* GoalBalanceCalculator.swift */,
+				C59AA76E21B33CE000F40762 /* CarryOverAdjustmentManager.swift */,
+			);
+			name = "Data Processing";
+			sourceTree = "<group>";
+		};
+		C507D7C721B3BE3F000EB300 /* Convenience Classes */ = {
+			isa = PBXGroup;
+			children = (
+				C59AA77321B3483400F40762 /* GoalBalanceCache.swift */,
+				C5A4AF8F1FA6B52900101809 /* TableViewCellHelper.swift */,
+			);
+			name = "Convenience Classes";
+			sourceTree = "<group>";
+		};
+		C507D7CE21B3BF0D000EB300 /* Navigation Components */ = {
+			isa = PBXGroup;
+			children = (
+				C5A0DD5B20429CC2004C6411 /* NavigationGoalPickerController.swift */,
+				C507D7C821B3BE77000EB300 /* BorderedView.swift */,
+				C507D7CB21B3BE97000EB300 /* BorderedToolbar.swift */,
+				C5E51E59209FA8A8005C674B /* SpendIndicationNavigationController.swift */,
+			);
+			name = "Navigation Components";
+			sourceTree = "<group>";
+		};
 		C517B1BC1EBC125600CDAA17 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -418,11 +453,11 @@
 			isa = PBXGroup;
 			children = (
 				C5E51E57209EC4DD005C674B /* Calculator */,
+				C5D4DAB91F931D3E0013A6F3 /* Control-based Table View Cells */,
 				C586813B1F2E85D5008D3AEE /* BorderedTextField.swift */,
 				C54E4F481EFD3984006A1CA3 /* ImageSelectorView.swift */,
 				C518791E1F00461000881FB6 /* PhotoBox.swift */,
 				C5BB61E62071ECF400EC97C2 /* CalendarPeriodPickerView.swift */,
-				C5D4DAB91F931D3E0013A6F3 /* Control-based Table View Cells */,
 			);
 			name = "Custom UI Elements";
 			sourceTree = "<group>";
@@ -487,21 +522,17 @@
 			children = (
 				C538FAB71E85696200295062 /* Main.storyboard */,
 				C5781D9A1E6E2060006BBC03 /* AppDelegate.swift */,
-				C5E51E59209FA8A8005C674B /* SpendIndicationNavigationController.swift */,
 				C5E51E51209EC44B005C674B /* Today View */,
 				C53DFD13210C1991001F070A /* Expense View */,
 				C5E51E54209EC481005C674B /* Adjustment View */,
 				C5E51E52209EC45A005C674B /* Goal View */,
 				C58BBB9821704FE000D9650C /* Review View */,
 				C5E51E53209EC47B005C674B /* Pause View */,
-				C5E51E55209EC49A005C674B /* Export View and Logic */,
 				C5E51E58209EC505005C674B /* Settings View */,
-				C59AA77321B3483400F40762 /* GoalBalanceCache.swift */,
-				C59AA77121B3456B00F40762 /* GoalBalanceCalculator.swift */,
-				C59AA76E21B33CE000F40762 /* CarryOverAdjustmentManager.swift */,
-				C5A0DD5B20429CC2004C6411 /* NavigationGoalPickerController.swift */,
-				C544E5E8217D2C700098AB17 /* ReverseNavigationAnimator.swift */,
-				C5A4AF8F1FA6B52900101809 /* TableViewCellHelper.swift */,
+				C507D7CE21B3BF0D000EB300 /* Navigation Components */,
+				C5E51E55209EC49A005C674B /* Export View and Logic */,
+				C507D7C621B3BE31000EB300 /* Data Processing */,
+				C507D7C721B3BE3F000EB300 /* Convenience Classes */,
 				C5E51E56209EC4C8005C674B /* Extensions */,
 				C535275F204CF5B50038E747 /* Custom UI Elements */,
 				C5316C2A1E7B241200BC2918 /* Calendar Classes */,
@@ -674,6 +705,7 @@
 				C5F75FF11F9D6A29005F3510 /* UITextField+Size.swift */,
 				C586813F1F2E91E6008D3AEE /* UIView+MultipleSubviews.swift */,
 				C586813D1F2E8BF2008D3AEE /* CGRect+Edges.swift */,
+				C544E5E8217D2C700098AB17 /* ReverseNavigationAnimator.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -946,6 +978,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C507D7CD21B3BEAD000EB300 /* BorderedToolbar.swift in Sources */,
 				C57F71FF21B3680A00E88CEF /* GoalBalanceCalculator.swift in Sources */,
 				C59AA77521B348BE00F40762 /* GoalBalanceCache.swift in Sources */,
 				C55B336220A9318B00304680 /* ExpenseTableViewCell.swift in Sources */,
@@ -986,6 +1019,7 @@
 				C58BBB9A2170519500D9650C /* PeriodBrowserView.swift in Sources */,
 				C59AA76F21B33CE000F40762 /* CarryOverAdjustmentManager.swift in Sources */,
 				C5568B5E2186C3B9000F0301 /* PeriodBrowserController.swift in Sources */,
+				C507D7CA21B3BE83000EB300 /* BorderedView.swift in Sources */,
 				C53DFD12210C1989001F070A /* ImageSelectorController.swift in Sources */,
 				C51AD771209E8FA9002CC4AC /* TodayViewExpensesController.swift in Sources */,
 				C586813E1F2E8BF2008D3AEE /* CGRect+Edges.swift in Sources */,
@@ -1058,6 +1092,7 @@
 				C5BD27E42198E80D000C85F8 /* Expense+CoreDataClass.swift in Sources */,
 				C5BD27E52198E80D000C85F8 /* Adjustment+CoreDataClass.swift in Sources */,
 				C5BD27E62198E80D000C85F8 /* TextFieldTableViewCell.swift in Sources */,
+				C507D7C921B3BE77000EB300 /* BorderedView.swift in Sources */,
 				C5BD27E72198E80D000C85F8 /* PauseViewController.swift in Sources */,
 				C5BD27E82198E80D000C85F8 /* BorderedTextField.swift in Sources */,
 				C5BD27E92198E80D000C85F8 /* UIView+MultipleSubviews.swift in Sources */,
@@ -1083,6 +1118,7 @@
 				C5BD27FC2198E80D000C85F8 /* PeriodBrowserController.swift in Sources */,
 				C5BD27FD2198E80D000C85F8 /* ImageSelectorController.swift in Sources */,
 				C5BD27FE2198E80D000C85F8 /* TodayViewExpensesController.swift in Sources */,
+				C507D7CC21B3BE97000EB300 /* BorderedToolbar.swift in Sources */,
 				C5BD27FF2198E80D000C85F8 /* CGRect+Edges.swift in Sources */,
 				C5BD28002198E80D000C85F8 /* SpendIndicationNavigationController.swift in Sources */,
 				C5BD28012198E80D000C85F8 /* UIAlertController+Actions.swift in Sources */,

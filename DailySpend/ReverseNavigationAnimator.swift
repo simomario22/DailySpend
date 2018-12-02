@@ -7,8 +7,8 @@
 //
 //  Derived from Sam Miller's article and example:
 //      https://www.hedgehoglab.com/blog/ios-transition-animations
-//  Created by Sam Miller on 08/02/2017.
-//  Copyright © 2017 B&M. All rights reserved.
+//      Created by Sam Miller on 08/02/2017.
+//      Copyright © 2017 B&M. All rights reserved.
 
 import UIKit
 
