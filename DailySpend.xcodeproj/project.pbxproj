@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		C503F13A1EA1A8A200FA95A7 /* Export.swift in Sources */ = {isa = PBXBuildFile; fileRef = C503F1391EA1A8A100FA95A7 /* Export.swift */; };
+		C507D7C421B3828C000EB300 /* GoalBalanceCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C507D7C321B3828C000EB300 /* GoalBalanceCache.swift */; };
+		C507D7C521B3829D000EB300 /* GoalBalanceCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C507D7C321B3828C000EB300 /* GoalBalanceCache.swift */; };
 		C517B1FE1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = C517B1EA1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt */; };
 		C517B1FF1EBC134200CDAA17 /* UICountingLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = C517B1EC1EBC134200CDAA17 /* UICountingLabel.m */; };
 		C518791A1F00416F00881FB6 /* ZipArchive.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C5A81A7A1F0040540032D9F1 /* ZipArchive.framework */; };
@@ -217,6 +219,7 @@
 /* Begin PBXFileReference section */
 		C502DB2B1F92B24C004136E5 /* DailySpend 5.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "DailySpend 5.xcdatamodel"; sourceTree = "<group>"; };
 		C503F1391EA1A8A100FA95A7 /* Export.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Export.swift; sourceTree = "<group>"; };
+		C507D7C321B3828C000EB300 /* GoalBalanceCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GoalBalanceCache.swift; sourceTree = "<group>"; };
 		C5108977201BE8A1005AA672 /* DailySpend 6.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "DailySpend 6.xcdatamodel"; sourceTree = "<group>"; };
 		C5117DB01FB94A410032F854 /* ExpenseTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseTableViewCell.swift; sourceTree = "<group>"; };
 		C517B1EA1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "UICountingLabel-LICENSE.txt"; sourceTree = "<group>"; };
@@ -490,6 +493,7 @@
 				C5A0DD5B20429CC2004C6411 /* NavigationGoalPicker.swift */,
 				C544E5E8217D2C700098AB17 /* ReverseNavigationAnimator.swift */,
 				C5A4AF8F1FA6B52900101809 /* TableViewCellHelper.swift */,
+				C507D7C321B3828C000EB300 /* GoalBalanceCache.swift */,
 				C5E51E56209EC4C8005C674B /* Extensions */,
 				C535275F204CF5B50038E747 /* Custom UI Elements */,
 				C5316C2A1E7B241200BC2918 /* Calendar Classes */,
@@ -934,6 +938,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C507D7C521B3829D000EB300 /* GoalBalanceCache.swift in Sources */,
 				C55B336220A9318B00304680 /* ExpenseTableViewCell.swift in Sources */,
 				C517B1FF1EBC134200CDAA17 /* UICountingLabel.m in Sources */,
 				C54E324621AB710F0014160A /* ReviewViewAdjustmentsController.swift in Sources */,
@@ -1069,6 +1074,7 @@
 				C5BD27FE2198E80D000C85F8 /* TodayViewExpensesController.swift in Sources */,
 				C5BD27FF2198E80D000C85F8 /* CGRect+Edges.swift in Sources */,
 				C5BD28002198E80D000C85F8 /* SpendIndicationNavigationController.swift in Sources */,
+				C507D7C421B3828C000EB300 /* GoalBalanceCache.swift in Sources */,
 				C5BD28012198E80D000C85F8 /* UIAlertController+Actions.swift in Sources */,
 				C5BD28022198E80D000C85F8 /* UITextView+Margins.swift in Sources */,
 				C5BD28032198E80D000C85F8 /* ExplanatoryTextTableViewCell.swift in Sources */,
