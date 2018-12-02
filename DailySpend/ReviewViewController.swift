@@ -37,7 +37,7 @@ class ReviewViewController: UIViewController {
      * NavigationGoalPicker associated with this controller's navigation
      * controller.
      */
-    var goalPicker: NavigationGoalPicker!
+    var goalPicker: NavigationGoalPickerController!
     
     /**
      * The current interval that is being shown to the user, which may be an

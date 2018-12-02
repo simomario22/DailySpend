@@ -79,7 +79,7 @@
 		C59AA77521B348BE00F40762 /* GoalBalanceCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C59AA77321B3483400F40762 /* GoalBalanceCache.swift */; };
 		C59E2A2A205C71A8006D18B5 /* PickerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C59E2A29205C71A8006D18B5 /* PickerTableViewCell.swift */; };
 		C59E2A2E205C97F5006D18B5 /* ValueTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C59E2A2D205C97F5006D18B5 /* ValueTableViewCell.swift */; };
-		C5A0DD5C20429CC2004C6411 /* NavigationGoalPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5A0DD5B20429CC2004C6411 /* NavigationGoalPicker.swift */; };
+		C5A0DD5C20429CC2004C6411 /* NavigationGoalPickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5A0DD5B20429CC2004C6411 /* NavigationGoalPickerController.swift */; };
 		C5A261A41F66645B007CBB21 /* PauseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5A261A31F66645B007CBB21 /* PauseViewController.swift */; };
 		C5A4AF901FA6B52900101809 /* TableViewCellHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5A4AF8F1FA6B52900101809 /* TableViewCellHelper.swift */; };
 		C5B367CF1EBBD65E006B5ADC /* cog.png in Resources */ = {isa = PBXBuildFile; fileRef = C5B367CC1EBBD65E006B5ADC /* cog.png */; };
@@ -139,7 +139,7 @@
 		C5BD28082198E80D000C85F8 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5EDC2261EBBC12400DA5CB7 /* SettingsViewController.swift */; };
 		C5BD28092198E80D000C85F8 /* TableViewCellHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5A4AF8F1FA6B52900101809 /* TableViewCellHelper.swift */; };
 		C5BD280A2198E80D000C85F8 /* CalendarPeriodPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5BB61E62071ECF400EC97C2 /* CalendarPeriodPickerView.swift */; };
-		C5BD280B2198E80D000C85F8 /* NavigationGoalPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5A0DD5B20429CC2004C6411 /* NavigationGoalPicker.swift */; };
+		C5BD280B2198E80D000C85F8 /* NavigationGoalPickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5A0DD5B20429CC2004C6411 /* NavigationGoalPickerController.swift */; };
 		C5BD280C2198E80D000C85F8 /* TodayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5741D4D1FB93EDC00EEDDDD /* TodayViewController.swift */; };
 		C5BD280D2198E80D000C85F8 /* UIColor+255.swift in Sources */ = {isa = PBXBuildFile; fileRef = C55CCFD01F9D44E4001EF0B4 /* UIColor+255.swift */; };
 		C5BD280E2198E80D000C85F8 /* Goal+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C573B9F220324C410025A5A2 /* Goal+CoreDataClass.swift */; };
@@ -305,7 +305,7 @@
 		C59AA77321B3483400F40762 /* GoalBalanceCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalBalanceCache.swift; sourceTree = "<group>"; };
 		C59E2A29205C71A8006D18B5 /* PickerTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PickerTableViewCell.swift; sourceTree = "<group>"; };
 		C59E2A2D205C97F5006D18B5 /* ValueTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValueTableViewCell.swift; sourceTree = "<group>"; };
-		C5A0DD5B20429CC2004C6411 /* NavigationGoalPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationGoalPicker.swift; sourceTree = "<group>"; };
+		C5A0DD5B20429CC2004C6411 /* NavigationGoalPickerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationGoalPickerController.swift; sourceTree = "<group>"; };
 		C5A261A31F66645B007CBB21 /* PauseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PauseViewController.swift; sourceTree = "<group>"; };
 		C5A287C41EC1741200D3479A /* DailySpend 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "DailySpend 2.xcdatamodel"; sourceTree = "<group>"; };
 		C5A4AF8F1FA6B52900101809 /* TableViewCellHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewCellHelper.swift; sourceTree = "<group>"; };
@@ -499,7 +499,7 @@
 				C59AA77321B3483400F40762 /* GoalBalanceCache.swift */,
 				C59AA77121B3456B00F40762 /* GoalBalanceCalculator.swift */,
 				C59AA76E21B33CE000F40762 /* CarryOverAdjustmentManager.swift */,
-				C5A0DD5B20429CC2004C6411 /* NavigationGoalPicker.swift */,
+				C5A0DD5B20429CC2004C6411 /* NavigationGoalPickerController.swift */,
 				C544E5E8217D2C700098AB17 /* ReverseNavigationAnimator.swift */,
 				C5A4AF8F1FA6B52900101809 /* TableViewCellHelper.swift */,
 				C5E51E56209EC4C8005C674B /* Extensions */,
@@ -1000,7 +1000,7 @@
 				C5EDC2271EBBC12400DA5CB7 /* SettingsViewController.swift in Sources */,
 				C5A4AF901FA6B52900101809 /* TableViewCellHelper.swift in Sources */,
 				C5BB61E72071ECF400EC97C2 /* CalendarPeriodPickerView.swift in Sources */,
-				C5A0DD5C20429CC2004C6411 /* NavigationGoalPicker.swift in Sources */,
+				C5A0DD5C20429CC2004C6411 /* NavigationGoalPickerController.swift in Sources */,
 				C5741D4E1FB93EDC00EEDDDD /* TodayViewController.swift in Sources */,
 				C55CCFD11F9D44E4001EF0B4 /* UIColor+255.swift in Sources */,
 				C573B9F420324C410025A5A2 /* Goal+CoreDataClass.swift in Sources */,
@@ -1095,7 +1095,7 @@
 				C5BD28082198E80D000C85F8 /* SettingsViewController.swift in Sources */,
 				C5BD28092198E80D000C85F8 /* TableViewCellHelper.swift in Sources */,
 				C5BD280A2198E80D000C85F8 /* CalendarPeriodPickerView.swift in Sources */,
-				C5BD280B2198E80D000C85F8 /* NavigationGoalPicker.swift in Sources */,
+				C5BD280B2198E80D000C85F8 /* NavigationGoalPickerController.swift in Sources */,
 				C5BD280C2198E80D000C85F8 /* TodayViewController.swift in Sources */,
 				C5BD280D2198E80D000C85F8 /* UIColor+255.swift in Sources */,
 				C5BD280E2198E80D000C85F8 /* Goal+CoreDataClass.swift in Sources */,

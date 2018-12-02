@@ -10,7 +10,7 @@ import Foundation
 import CoreData
 import UIKit
 
-class NavigationGoalPicker : NSObject, UITableViewDataSource, UITableViewDelegate, GoalViewControllerDelegate {
+class NavigationGoalPickerController: NSObject, UITableViewDataSource, UITableViewDelegate, GoalViewControllerDelegate {
     private let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
     private var context: NSManagedObjectContext {
         return appDelegate.persistentContainer.viewContext

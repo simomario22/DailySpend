@@ -22,7 +22,7 @@ class TodayViewController: UIViewController, GoalPickerDelegate, TodayViewExpens
     private var expensesController: TodayViewExpensesController!
     private var cellCreator: TableViewCellHelper!
     
-    var goalPicker: NavigationGoalPicker!
+    var goalPicker: NavigationGoalPickerController!
     var goal: Goal!
     
     let summaryViewHeightWithHint: CGFloat = 120
@@ -86,7 +86,7 @@ class TodayViewController: UIViewController, GoalPickerDelegate, TodayViewExpens
         tableView.delegate = expensesController
         tableView.dataSource = expensesController
         
-        goalPicker = goalPicker ?? NavigationGoalPicker()
+        goalPicker = goalPicker ?? NavigationGoalPickerController()
         
         let infoButton = UIButton(type: .infoLight)
         infoButton.isEnabled = false
