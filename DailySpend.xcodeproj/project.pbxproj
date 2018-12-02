@@ -37,9 +37,9 @@
 		C54E324521AB69560014160A /* ReviewViewAdjustmentsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54E324421AB69560014160A /* ReviewViewAdjustmentsController.swift */; };
 		C54E324621AB710F0014160A /* ReviewViewAdjustmentsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54E324421AB69560014160A /* ReviewViewAdjustmentsController.swift */; };
 		C54E4F491EFD3984006A1CA3 /* ImageSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54E4F481EFD3984006A1CA3 /* ImageSelectorView.swift */; };
-		C55412892116E76B0049EB81 /* INSPhotoGalleryFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C55412882116E76B0049EB81 /* INSPhotoGalleryFramework.framework */; };
 		C5568B5E2186C3B9000F0301 /* PeriodBrowserController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5568B5D2186C3B9000F0301 /* PeriodBrowserController.swift */; };
 		C556D2541F247C6B008CA20E /* UIControl+Closures.swift in Sources */ = {isa = PBXBuildFile; fileRef = C556D2531F247C6B008CA20E /* UIControl+Closures.swift */; };
+		C55AF80B21B37240008476F2 /* INSPhotoGallery.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C55AF80A21B37240008476F2 /* INSPhotoGallery.framework */; };
 		C55B336220A9318B00304680 /* ExpenseTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5117DB01FB94A410032F854 /* ExpenseTableViewCell.swift */; };
 		C55CCFD11F9D44E4001EF0B4 /* UIColor+255.swift in Sources */ = {isa = PBXBuildFile; fileRef = C55CCFD01F9D44E4001EF0B4 /* UIColor+255.swift */; };
 		C56CA07A1F64BDEB00874FA8 /* TextFieldTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56CA0791F64BDEB00874FA8 /* TextFieldTableViewCell.swift */; };
@@ -153,7 +153,6 @@
 		C5BD281C2198E80D000C85F8 /* ValueTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C59E2A2D205C97F5006D18B5 /* ValueTableViewCell.swift */; };
 		C5BD281D2198E80D000C85F8 /* GoalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C546170C204A4AFF00689DED /* GoalViewController.swift */; };
 		C5BD281E2198E80D000C85F8 /* Image+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C573B9F620324CDA0025A5A2 /* Image+CoreDataProperties.swift */; };
-		C5BD28202198E80D000C85F8 /* INSPhotoGalleryFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C55412882116E76B0049EB81 /* INSPhotoGalleryFramework.framework */; };
 		C5BD28212198E80D000C85F8 /* ZipArchive.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C5A81A7A1F0040540032D9F1 /* ZipArchive.framework */; };
 		C5BD28232198E80D000C85F8 /* UICountingLabel-LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = C517B1EA1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt */; };
 		C5BD28242198E80D000C85F8 /* cog@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5B367CD1EBBD65E006B5ADC /* cog@2x.png */; };
@@ -254,10 +253,10 @@
 		C54BF5B41FF1911A007F628D /* ExpenseCellsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseCellsController.swift; sourceTree = "<group>"; };
 		C54E324421AB69560014160A /* ReviewViewAdjustmentsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReviewViewAdjustmentsController.swift; sourceTree = "<group>"; };
 		C54E4F481EFD3984006A1CA3 /* ImageSelectorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageSelectorView.swift; sourceTree = "<group>"; };
-		C55412882116E76B0049EB81 /* INSPhotoGalleryFramework.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = INSPhotoGalleryFramework.framework; path = Carthage/Build/iOS/INSPhotoGalleryFramework.framework; sourceTree = "<group>"; };
 		C5568B5D2186C3B9000F0301 /* PeriodBrowserController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeriodBrowserController.swift; sourceTree = "<group>"; };
 		C556D2511F2466EB008CA20E /* ExpenseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpenseViewController.swift; sourceTree = "<group>"; };
 		C556D2531F247C6B008CA20E /* UIControl+Closures.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIControl+Closures.swift"; sourceTree = "<group>"; };
+		C55AF80A21B37240008476F2 /* INSPhotoGallery.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = INSPhotoGallery.framework; path = Carthage/Build/iOS/INSPhotoGallery.framework; sourceTree = "<group>"; };
 		C55CCFD01F9D44E4001EF0B4 /* UIColor+255.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+255.swift"; sourceTree = "<group>"; };
 		C56CA0791F64BDEB00874FA8 /* TextFieldTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextFieldTableViewCell.swift; sourceTree = "<group>"; };
 		C56F7ED81F64A22B00639F8D /* DatePickerTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatePickerTableViewCell.swift; sourceTree = "<group>"; };
@@ -346,7 +345,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C55412892116E76B0049EB81 /* INSPhotoGalleryFramework.framework in Frameworks */,
+				C55AF80B21B37240008476F2 /* INSPhotoGallery.framework in Frameworks */,
 				C518791A1F00416F00881FB6 /* ZipArchive.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -369,7 +368,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C5BD28202198E80D000C85F8 /* INSPhotoGalleryFramework.framework in Frameworks */,
 				C5BD28212198E80D000C85F8 /* ZipArchive.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -380,7 +378,7 @@
 		C517B1BC1EBC125600CDAA17 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				C55412882116E76B0049EB81 /* INSPhotoGalleryFramework.framework */,
+				C55AF80A21B37240008476F2 /* INSPhotoGallery.framework */,
 				C5A81A7A1F0040540032D9F1 /* ZipArchive.framework */,
 			);
 			name = Frameworks;
@@ -902,15 +900,15 @@
 			);
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/iOS/ZipArchive.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/INSPhotoGalleryFramework.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/INSPhotoGallery.framework",
 			);
 			outputPaths = (
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/INSPhotoGalleryFramework.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/INSPhotoGallery.framework",
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/ZipArchive.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/usr/local/bin/carthage copy-frameworks";
+			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
 		};
 		C5BD28372198E80D000C85F8 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -919,15 +917,15 @@
 			);
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/iOS/ZipArchive.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/INSPhotoGalleryFramework.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/INSPhotoGallery.framework",
 			);
 			outputPaths = (
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/INSPhotoGalleryFramework.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/INSPhotoGallery.framework",
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/ZipArchive.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/usr/local/bin/carthage copy-frameworks";
+			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
