@@ -19,7 +19,6 @@ class ReviewViewController: UIViewController {
     private var neutralBarColor: UIColor!
     private var tableView: UITableView!
     private var cellCreator: TableViewCellHelper!
-    private let goalBalanceCache = GoalBalanceCache()
     
     private var entityProviders = [(
         provider: ReviewEntityDataProvider,
@@ -171,13 +170,19 @@ class ReviewViewController: UIViewController {
      */
     private func updateAmount() {
         let evaluationDay = CalendarDay(dateInDay: interval.end)?.subtract(days: 1) ?? CalendarDay()
-        let newAmount = goal.balance(for: evaluationDay).doubleValue
         
-        appDelegate.spendIndicationColor = newAmount < 0 ? .overspent : .underspent
-        
-        if evaluationDay == CalendarDay() {
-            // Store this balance as the most recently displayed, since we do that for today.
-            goalBalanceCache.setMostRecentlyDisplayedBalance(goal: goal, amount: newAmount)
+        let balanceCalculator = GoalBalanceCalculator()
+        balanceCalculator.calculateBalance(for: goal, on: evaluationDay)
+        { (balance: Decimal?, _, _) in
+            guard let newAmount = balance?.doubleValue else {
+                return
+            }
+            self.appDelegate.spendIndicationColor = newAmount < 0 ? .overspent : .underspent
+            
+            if evaluationDay == CalendarDay() {
+                // Store this balance as the most recently displayed, since we do that for today.
+                GoalBalanceCache.setMostRecentlyDisplayedBalance(goal: self.goal, amount: newAmount)
+            }
         }
     }
     

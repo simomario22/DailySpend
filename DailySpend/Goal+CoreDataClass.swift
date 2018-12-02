@@ -414,34 +414,6 @@ class Goal: NSManagedObject {
     }
     
     /**
-     * Compute the balance amount in this goal on a particular day.
-     *
-     * - Parameters:
-     *    - day: The day to compute the balance for.
-     *
-     * - Returns: The balance on `day`, taking into account periods,
-     *            interval pay, and expenses.
-     */
-     func balance(for day: CalendarDay) -> Decimal {
-        guard let interval = periodInterval(for: day.start),
-              let totalPaidAmount = calculateTotalPaidAmount(for: day, in: interval) else {
-            return 0
-        }
-        
-        let totalExpenseAmount = getExpenses(interval: interval)
-            .reduce(0, {(amount, expense) -> Decimal in
-            return amount + (expense.amount ?? 0)
-        })
-        
-        let totalAdjustmentAmount = getAdjustments(interval: interval)
-            .reduce(0, {(amount, adjustment) -> Decimal in
-            return amount + adjustment.overlappingAmount(with: interval)
-        })
-        
-        return totalPaidAmount + totalAdjustmentAmount - totalExpenseAmount
-    }
-    
-    /**
      * Returns the total paid amount on a given day, taking into account
      * intervals, period scope length differences and a pay schedule, if there
      * is one.
@@ -450,7 +422,7 @@ class Goal: NSManagedObject {
      *    - day: The day to compute the total paid amount on.
      *    - interval: The `CalendarPeriod` in which the day is a part of.
      */
-    private func calculateTotalPaidAmount(
+    func calculateTotalPaidAmount(
         for day: CalendarDay,
         in interval: CalendarIntervalProvider
     ) -> Decimal? {
@@ -483,10 +455,10 @@ class Goal: NSManagedObject {
                 boundingEndDate: self.exclusiveEnd
             ),
             let index = incrementCalendarPeriod.periodIndexWithin(superPeriod: period)
-        else {
+            else {
                 return nil
         }
-
+        
         let incrementalPayment = incrementalAmount * Decimal(index + 1)
         return incrementalPayment.roundToNearest(th: 100)
     }
@@ -495,7 +467,7 @@ class Goal: NSManagedObject {
      * The amount per period, adjusted for the days in the current month or
      * months for this period, if necessary.
      */
-    private func adjustedAmountForDateInPeriod(_ date: CalendarDateProvider) -> Decimal? {
+    func adjustedAmountForDateInPeriod(_ date: CalendarDateProvider) -> Decimal? {
         guard let amount = amount else {
             return nil
         }

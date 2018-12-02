@@ -22,7 +22,6 @@ class TodayViewController: UIViewController, GoalPickerDelegate, TodayViewExpens
     private var expensesController: TodayViewExpensesController!
     private var cellCreator: TableViewCellHelper!
     
-    private let goalBalanceCache = GoalBalanceCache()
     var goalPicker: NavigationGoalPicker!
     var goal: Goal!
     
@@ -162,15 +161,21 @@ class TodayViewController: UIViewController, GoalPickerDelegate, TodayViewExpens
         
         // Update summary view with information from this goal for the
         // appropriate period.
-        let newAmount = goal.balance(for: CalendarDay()).doubleValue
-        let oldAmount = goalBalanceCache.mostRecentlyDisplayedBalance(goal: goal)
-        if oldAmount != newAmount {
-            summaryView.countFrom(CGFloat(oldAmount), to: CGFloat(newAmount))
-        } else {
-            summaryView.setAmount(value: CGFloat(newAmount))
-            appDelegate.spendIndicationColor = newAmount < 0 ? .overspent : .underspent
+        let balanceCalculator = GoalBalanceCalculator()
+        balanceCalculator.calculateBalance(for: goal, on: CalendarDay()) {
+            (balance: Decimal?, _, _) in
+            guard let newAmount = balance?.doubleValue else {
+                return
+            }
+            let oldAmount = GoalBalanceCache.mostRecentlyDisplayedBalance(goal: goal)
+            if oldAmount != newAmount {
+                self.summaryView.countFrom(CGFloat(oldAmount), to: CGFloat(newAmount))
+            } else {
+                self.summaryView.setAmount(value: CGFloat(newAmount))
+                self.appDelegate.spendIndicationColor = newAmount < 0 ? .overspent : .underspent
+            }
+            GoalBalanceCache.setMostRecentlyDisplayedBalance(goal: goal, amount: newAmount)
         }
-        goalBalanceCache.setMostRecentlyDisplayedBalance(goal: goal, amount: newAmount)
         
         // Determine what should be in the summary view hint and set it.
         var endDay: CalendarDay?

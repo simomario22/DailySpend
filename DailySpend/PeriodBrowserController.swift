@@ -33,7 +33,11 @@ class PeriodBrowserController {
         
         periodBrowser = PeriodBrowserView(frame: periodBrowserFrame)
         periodBrowser.delegate = delegate
-        periodBrowser.backgroundColor = appDelegate.spendIndicationColor
+        if appDelegate.spendIndicationColor == .underspent || appDelegate.spendIndicationColor == .overspent {
+            periodBrowser.backgroundColor = appDelegate.spendIndicationColor
+        } else {
+            periodBrowser.backgroundColor = UIColor(red255: 254, green: 254, blue: 254)
+        }
         
         view.addSubview(periodBrowser)
     }

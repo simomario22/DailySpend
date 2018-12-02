@@ -12,24 +12,24 @@ class GoalBalanceCache {
     /**
      * Returns a unique string associated with a particular goal.
      */
-    private func keyForGoal(goal: Goal) -> String {
+    private class func mostRecentDisplayedKey(goal: Goal) -> String {
         let id = goal.objectID.uriRepresentation()
-        return "mostRecentComputedAmount_\(id)"
+        return "mostRecentDisplayedAmount_\(id)"
     }
     
     /**
      * Retrieves the amount most recently displayed balance to the user for the
      * day they viewed it, persisting across app termination.
      */
-    func mostRecentlyDisplayedBalance(goal: Goal) -> Double {
-        return UserDefaults.standard.double(forKey: keyForGoal(goal: goal))
+    class func mostRecentlyDisplayedBalance(goal: Goal) -> Double {
+        return UserDefaults.standard.double(forKey: mostRecentDisplayedKey(goal: goal))
     }
     
     /**
      * Sets the amount most recently displayed balance to the user for the day
      * they viewed it, persisting across app termination.
      */
-    func setMostRecentlyDisplayedBalance(goal: Goal, amount: Double) {
-        UserDefaults.standard.set(amount, forKey: keyForGoal(goal: goal))
+    class func setMostRecentlyDisplayedBalance(goal: Goal, amount: Double) {
+        UserDefaults.standard.set(amount, forKey: mostRecentDisplayedKey(goal: goal))
     }
 }
