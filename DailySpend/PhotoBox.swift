@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import INSPhotoGalleryFramework
+import INSPhotoGallery
 
 class PhotoBox: NSObject, INSPhotoViewable {
     var photoId: Int

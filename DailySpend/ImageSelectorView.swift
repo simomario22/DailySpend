@@ -10,7 +10,7 @@ import UIKit
 import QuartzCore
 import AVFoundation
 import Photos
-import INSPhotoGalleryFramework
+import INSPhotoGallery
 
 class ImageSelectorView: UIScrollView,
 UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIScrollViewDelegate {
