@@ -509,7 +509,7 @@ class Goal: NSManagedObject {
             fs += " AND transactionDate_ < %@"
             fetchRequest.predicate = NSPredicate(format: fs, self, descendants ?? [], interval.start.gmtDate as CVarArg, end.gmtDate as CVarArg)
         } else {
-            fetchRequest.predicate = NSPredicate(format: fs, self, self.childGoals ?? [], interval.start.gmtDate as CVarArg)
+            fetchRequest.predicate = NSPredicate(format: fs, self, descendants ?? [], interval.start.gmtDate as CVarArg)
         }
         fetchRequest.sortDescriptors = [
             NSSortDescriptor(key: "transactionDate_", ascending: false),
@@ -532,25 +532,34 @@ class Goal: NSManagedObject {
      *              adjustments.
      */
     func getAdjustments(interval: CalendarIntervalProvider) -> [Adjustment] {
-        let fetchRequest: NSFetchRequest<Adjustment> = Adjustment.fetchRequest()
         let descendants = allChildDescendants()
-        
-        var fs =  "(goal_ = %@ OR goal_ IN %@) AND lastDateEffective_ >= %@"
-        if let end = interval.end {
-            fs += "AND firstDateEffective_ < %@"
-            fetchRequest.predicate = NSPredicate(format: fs,
-                self, descendants ?? [],
-                interval.start.gmtDate as CVarArg, end.gmtDate as CVarArg)
-        } else {
-            fetchRequest.predicate = NSPredicate(format: fs, self, self.childGoals ?? [], interval.start.gmtDate as CVarArg)
-        }
-        fetchRequest.sortDescriptors = [
-            NSSortDescriptor(key: "firstDateEffective_", ascending: false),
-            NSSortDescriptor(key: "dateCreated_", ascending: false)
-        ]
-        
-        let adjustmentResults = try! context.fetch(fetchRequest)
-        
+
+        let isCarryOver = Adjustment.AdjustmentType.isCarryOverAdjustmentPredicateString()
+        let isNotCarryOver = "(NOT " + isCarryOver + ")"
+
+        let isGoalOrDecendant = "(goal_ = $goal OR goal_ IN $goalDescendants)"
+        let isGoal = "(goal_ = $goal)"
+        let isInInterval = "(lastDateEffective_ >= $intervalStart" + (interval.end == nil ? ")" : " AND firstDateEffective_ < $intervalEnd)")
+        let formatString = "(\(isNotCarryOver) AND \(isGoalOrDecendant) AND \(isInInterval)) OR" +
+                           "(\(isCarryOver) AND \(isGoal) AND \(isInInterval))"
+
+        let predicateTemplate = NSPredicate(format: formatString)
+        let predicate = predicateTemplate.withSubstitutionVariables([
+            "goal": self,
+            "goalDescendants": descendants ?? Set<Goal>(),
+            "intervalStart": interval.start.gmtDate,
+            "intervalEnd": interval.end?.gmtDate ?? Date()
+        ])
+
+        let adjustmentResults = Adjustment.get(
+            context: context,
+            predicate: predicate,
+            sortDescriptors: [
+                NSSortDescriptor(key: "firstDateEffective_", ascending: false),
+                NSSortDescriptor(key: "dateCreated_", ascending: false)
+            ]
+        ) ?? []
+
         return adjustmentResults
     }
 

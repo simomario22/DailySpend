@@ -24,7 +24,11 @@ class GoalBalanceCalculator {
      */
     func calculateBalance(for goals: [Goal], on day: CalendarDay, completion: @escaping BalanceCompletion) {
         for goal in goals {
-            balance(for: goal, on: day, completion: completion)
+            let queueLabel = "com.joshsherick.DailySpend.CalculateBalance"
+            let queue = DispatchQueue(label: queueLabel, qos: .userInitiated, attributes: .concurrent)
+            queue.async {
+                self.balance(for: goal, on: day, completion: completion)
+            }
         }
     }
 
@@ -34,7 +38,11 @@ class GoalBalanceCalculator {
      * argument if a result could not be computed.
      */
     func calculateBalance(for goal: Goal, on day: CalendarDay, completion: @escaping BalanceCompletion) {
-        balance(for: goal, on: day, completion: completion)
+        let queueLabel = "com.joshsherick.DailySpend.CalculateBalance"
+        let queue = DispatchQueue(label: queueLabel, qos: .userInitiated, attributes: .concurrent)
+        queue.async {
+            self.balance(for: goal, on: day, completion: completion)
+        }
     }
     
     /**
@@ -113,8 +121,7 @@ class GoalBalanceCalculator {
         return goal.getExpenses(interval: interval)
             .reduce(0, {(amount, expense) -> Decimal in
                 return amount + (expense.amount ?? 0)
-            }
-        )
+            })
     }
     
     /**
@@ -139,8 +146,7 @@ class GoalBalanceCalculator {
         return goal.getAdjustments(interval: interval)
             .reduce(0, {(amount, adjustment) -> Decimal in
                 return amount + adjustment.overlappingAmount(with: interval)
-            }
-        )
+            })
     }
     
     /**

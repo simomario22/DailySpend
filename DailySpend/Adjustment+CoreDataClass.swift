@@ -427,6 +427,18 @@ class Adjustment: NSManagedObject {
          * expense should not be used.
          */
         case CarryOverDeleted = 2
+
+        /**
+         * Returns a string for a fetch request's predicate that will match
+         * all types of carry over expenses.
+         *
+         * Note that the returned string is enclosed in parenthsis, and, if used
+         * with other conditions, must be chained using logical operators.
+         */
+        static func isCarryOverAdjustmentPredicateString() -> String {
+            return "(type_ == \(Adjustment.AdjustmentType.CarryOver.rawValue) OR " +
+                   "type_ == \(Adjustment.AdjustmentType.CarryOverDeleted.rawValue))"
+        }
     }
     
     /**

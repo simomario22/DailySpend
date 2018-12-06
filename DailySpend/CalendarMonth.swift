@@ -249,7 +249,7 @@ extension CalendarMonth: CalendarIntervalProvider {
     }
 }
 
-extension CalendarMonth: Comparable {
+extension CalendarMonth: Comparable, Hashable {
     static func == (lhs: CalendarMonth, rhs: CalendarMonth) -> Bool {
         return lhs.start.gmtDate == rhs.start.gmtDate
     }
@@ -268,5 +268,9 @@ extension CalendarMonth: Comparable {
 
     static func >= (lhs: CalendarMonth, rhs: CalendarMonth) -> Bool {
         return lhs.start.gmtDate >= rhs.start.gmtDate
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(self.start.gmtDate)
     }
 }

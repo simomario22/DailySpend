@@ -214,7 +214,7 @@ extension CalendarWeek: CalendarIntervalProvider {
     }
 }
 
-extension CalendarWeek: Comparable {
+extension CalendarWeek: Comparable, Hashable {
     static func == (lhs: CalendarWeek, rhs: CalendarWeek) -> Bool {
         return lhs.start.gmtDate == rhs.start.gmtDate
     }
@@ -233,5 +233,9 @@ extension CalendarWeek: Comparable {
 
     static func >= (lhs: CalendarWeek, rhs: CalendarWeek) -> Bool {
         return lhs.start.gmtDate >= rhs.start.gmtDate
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(self.start.gmtDate)
     }
 }
