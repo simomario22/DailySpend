@@ -129,7 +129,7 @@ extension ExpenseCellDescriptionTextView: UITextViewDelegate {
             textView.selectedTextRange = textView.textRange(from: textView.beginningOfDocument, to: textView.beginningOfDocument)
             style = .placeholder
         }
-
+        delegate?.textViewDidChange?(self)
         return false
     }
 

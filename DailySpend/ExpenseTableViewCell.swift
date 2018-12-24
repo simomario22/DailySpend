@@ -361,6 +361,7 @@ extension ExpenseTableViewCell: ButtonPickerViewDelegate {
     func tappedButton(at index: Int, with label: String) {
         self.setButtonPicker(show: false, buttonValues: nil)
         self.descriptionText = label
+        self.textViewDidChange(descriptionView)
         if (self.amountField.evaluatedValue() ?? 0) != 0 {
             self.descriptionView.becomeFirstResponder()
         } else {
