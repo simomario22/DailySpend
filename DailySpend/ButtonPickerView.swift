@@ -68,7 +68,7 @@ class ButtonPickerView: UIScrollView {
         }
 
         if let lastButtonEdge = buttons.last?.frame.rightEdge {
-            self.contentSize = CGSize(width: lastButtonEdge, height: bounds.size.height)
+            self.contentSize = CGSize(width: lastButtonEdge + layoutEngine.xMargin, height: bounds.size.height)
         }
     }
 

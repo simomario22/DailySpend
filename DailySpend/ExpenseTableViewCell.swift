@@ -160,15 +160,21 @@ class ExpenseTableViewCell: UITableViewCell {
         }
 
         if buttonPicker != nil {
-            let leftSide = plusButtonOnscreen ? plusButton.frame.rightEdge + margin : inset
-            let rightSide = inset
+            let leftSide = plusButtonOnscreen ? plusButton.frame.rightEdge + margin : 0
 
             buttonPicker.frame = CGRect(
                 x: leftSide,
                 y: amountField.frame.bottomEdge,
-                width: bounds.size.width - leftSide - rightSide,
+                width: bounds.size.width - leftSide,
                 height: amountHeight
             )
+
+            let insets = plusButtonOnscreen ? UIEdgeInsets.zero : UIEdgeInsets(top: 0, left: inset, bottom: 0, right: 0)
+            buttonPicker.contentInset = insets
+            buttonPicker.scrollIndicatorInsets = insets
+            if (buttonPicker.contentOffset.x == 0) {
+                buttonPicker.contentOffset = CGPoint(x: plusButtonOnscreen ? 0 : -inset, y: 0)
+            }
         }
 
         let bottomEdge = (descriptionView.isHidden ? buttonPicker : descriptionView).frame.bottomEdge
