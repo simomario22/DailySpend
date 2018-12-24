@@ -139,7 +139,7 @@ class Logger {
             let last = adjustment.lastDayEffective!.string(formatter: dateFormatter)
             
             print("adjustment.amountPerDay: \(adjustment.amountPerDay!)")
-            print("adjustment.shortDescription: \(adjustment.shortDescription!)")
+            print("adjustment.shortDescription: \(adjustment.shortDescription ?? "None")")
             print("adjustment.dateCreated: \(created)")
             print("adjustment.firstDayEffective: \(first)")
             print("adjustment.lastDayEffective: \(last)")

@@ -349,88 +349,67 @@ class TableViewCellHelper {
         showPlus: Bool,
         showDetailDisclosure: Bool,
         tappedSave: @escaping (String?, Decimal?, ()->()) -> (),
-        tappedCancel: @escaping ( ExpenseTableViewCell, ()->() ) -> (),
+        tappedCancel: @escaping ( ()->(), ()->() ) -> (),
         selectedDetailDisclosure: @escaping () -> (),
         didBeginEditing: @escaping ((ExpenseTableViewCell) -> ()),
         changedToDescription: @escaping (String?) -> (),
-        changedToAmount: @escaping (Decimal?) -> ()
+        changedToAmount: @escaping (Decimal?) -> (),
+        changedCellHeight: @escaping (CGFloat, CGFloat) -> ()
     ) -> UITableViewCell {
         var cell: ExpenseTableViewCell! = tableView.dequeueReusableCell(withIdentifier: "addExpense") as? ExpenseTableViewCell
         if cell == nil {
             cell = ExpenseTableViewCell(style: .default, reuseIdentifier: "addExpense")
             cell.clipsToBounds = true
+        } else {
+            cell.resetCellHeight()
         }
         
-        cell.willReturn = { (_, _, newField) in
+        cell.willReturn = { (newField) in
             newField.becomeFirstResponder()
         }
         
-        cell.beganEditing = { (cell: ExpenseTableViewCell, field: UITextField) in
+        cell.beganEditing = { (cell: ExpenseTableViewCell) in
             didBeginEditing(cell)
         }
         cell.selectedDetailDisclosure = selectedDetailDisclosure
-        
-        func changedDescriptionField(_ textField: UITextField) {
-            if undescribed && textField.text != nil && !textField.text!.isEmpty{
-                cell.descriptionField.font = UIFont.systemFont(ofSize: 18)
-            } else if undescribed {
-                cell.descriptionField.font = UIFont.italicSystemFont(ofSize: 18)
-            }
-            changedToDescription(textField.text)
-        }
 
-        cell.changedDescription = changedDescriptionField
-        cell.endedEditing = { (cell: ExpenseTableViewCell, field: UITextField) in
+        cell.changedDescription = changedToDescription
+        cell.endedEditing = { (shortDesc: String?, amount: Decimal?) in
             // Send changed events since autocorrect can change the text on
             // when editing ends.
-            if field == cell.amountField {
-                changedToAmount(cell.amountField.evaluatedValue())
-            } else {
-                changedDescriptionField(field)
-            }
+            changedToAmount(amount)
+            changedToDescription(shortDesc)
         }
-        cell.tappedSave = { (descriptionField: UITextField, amountField: CalculatorTextField) in
-            tappedSave(
-                descriptionField.text,
-                amountField.evaluatedValue(),
-                {
-                    descriptionField.resignFirstResponder()
-                    amountField.resignFirstResponder()
-                }
-            )
+        cell.tappedSave = { (shortDesc: String?, amount: Decimal?, resign: () -> ()) in
+            tappedSave(shortDesc, amount, resign)
         }
-        cell.tappedCancel = { descriptionField, amountField in
-            tappedCancel(cell, {
-                descriptionField.resignFirstResponder()
-                amountField.resignFirstResponder()
-            })
+        cell.tappedCancel = { (resign: () -> (), reset: () -> ()) in
+            tappedCancel(resign, reset)
         }
-        cell.changedEvaluatedAmount = { _, amount in
+        cell.changedEvaluatedAmount = { amount in
             changedToAmount(amount)
         }
 
-        cell.amountField.placeholder = "$0.00"
-        cell.amountField.font = UIFont.systemFont(ofSize: 18)
+        cell.changedCellHeight = changedCellHeight
+
+        cell.amountPlaceholder = "$0.00"
 
         // Note: Side effect of setting text property is that
         // changedEvaluatedAmount gets called. Ensure that
         // changedEvaluatedAmount is set up before calling this function.
         let amountText = amount != nil ? "\(amount!)" : nil
-        cell.amountField.text = amountText
-        cell.amountField.maxValue = 1e7
-        
-        cell.descriptionField.text = description
-        cell.descriptionField.placeholder = "Description"
-        if undescribed {
-            cell.descriptionField.placeholder = "No Description"
-            cell.descriptionField.font = UIFont.italicSystemFont(ofSize: 18)
-        } else {
-            cell.descriptionField.font = UIFont.systemFont(ofSize: 18)
-        }
-        
+        cell.amountText = amountText
+        cell.amountMaxValue = 1e7
+
+
+        cell.descriptionText = description
+        cell.descriptionPlaceholder = undescribed ? "No Description" : "Description"
+        cell.descriptionPlaceholderUsesUndescribedStyle = undescribed
         cell.setPlusButton(show: showPlus, animated: false)
         cell.setDetailDisclosure(show: showDetailDisclosure, animated: false)
-        
+
+        cell.notifyHeightReceiver()
+
         cell.setNeedsLayout()
         return cell
     }

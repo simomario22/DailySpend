@@ -36,4 +36,8 @@ extension UIColor {
     class var disabled: UIColor {
         return UIColor(white: 0.492583, alpha: 0.35)
     }
+
+    class var textPlaceholder: UIColor {
+        return UIColor(red255: 199, green: 199, blue: 205)
+    }
 }

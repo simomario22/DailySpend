@@ -14,10 +14,14 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
         var shortDescription: String?
         var amount: Decimal?
         var clean: Bool
+        var expandedHeight: CGFloat
+        var collapsedHeight: CGFloat
         init(_ shortDescription: String?, _ amount: Decimal?, _ clean: Bool) {
             self.shortDescription = shortDescription
             self.amount = amount
             self.clean = clean
+            self.expandedHeight = 100
+            self.collapsedHeight = 160
         }
         
         convenience init() {
@@ -60,9 +64,6 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
     
     var delegate: TodayViewExpensesDelegate?
     
-    let collapsedCellSize: CGFloat = 44
-    let expandedCellSize: CGFloat = 88
-
     private var tableView: UITableView
     private var present: (UIViewController, Bool, (() -> Void)?) -> ()
     private var goal: Goal!
@@ -78,7 +79,7 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
         self.tableView = tableView
         self.present = present
         self.cellCreator = TableViewCellHelper(tableView: tableView)
-        self.tableView.keyboardDismissMode = .onDrag
+        self.tableView.keyboardDismissMode = .interactive
         super.init()
         
         let nc = NotificationCenter.default
@@ -96,18 +97,12 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
         }
         
         if let size = (userInfo[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size {
-            var contentInsets: UIEdgeInsets
-            if UIApplication.shared.statusBarOrientation.isPortrait {
-                contentInsets = UIEdgeInsets(top: 0, left: 0, bottom: size.height, right: 0)
-            } else {
-                contentInsets = UIEdgeInsets(top: 0, left: 0, bottom: size.width, right: 0)
-            }
-
+            let bottom = size.height - (UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0)
+            let contentInsets = UIEdgeInsets(top: 0, left: 0, bottom: bottom, right: 0)
             let duration = (userInfo[UIKeyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0.3
             UIView.animate(withDuration: duration) {
                 self.tableView.contentInset = contentInsets
                 self.tableView.scrollIndicatorInsets = contentInsets
-                self.tableView.scrollToRow(at: self.mostRecentlyEditedCellIndex, at: .middle, animated: true)
             }
         }
     }
@@ -125,6 +120,7 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        print("calledCellForRowAt: \(indexPath.row)")
         let isAddCell = indexPath.row == 0
         let expenseData = expenseCellData[indexPath.row]
         let undescribed = !isAddCell && expenseData.shortDescription == nil
@@ -145,28 +141,24 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
                     }
                 }
                 
-                self.tableView.beginUpdates()
-                resignFirstResponder()
-                datum.clean = true
-                self.tableView.reloadRows(at: [IndexPath(row: updatingRow.row, section: 0)], with: .fade)
-                
-                if isAddCell {
-                    // Make a new add cell.
-                    self.createNewAddCellDatum()
-                    self.tableView.insertRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
-                }
+                self.tableView.performBatchUpdates({
+                    resignFirstResponder()
+                    datum.clean = true
+                    self.tableView.reloadRows(at: [IndexPath(row: updatingRow.row, section: 0)], with: .fade)
 
-                self.tableView.endUpdates()
-            }, tappedCancel: { expenseCell, resignFirstResponder in
-                resignFirstResponder()
+                    if isAddCell {
+                        // Make a new add cell.
+                        self.createNewAddCellDatum()
+                        self.tableView.insertRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+                    }
+                })
+            }, tappedCancel: { resign, resetCleanAddCell in
+                resign()
                 if isAddCell {
-                    expenseCell.setPlusButton(show: true, animated: true)
-                    expenseCell.setDetailDisclosure(show: false, animated: true)
+                    resetCleanAddCell()
                     datum.amount = nil
                     datum.shortDescription = nil
                     datum.clean = true
-                    expenseCell.amountField.text = nil
-                    expenseCell.descriptionField.text = nil
                 } else if !datum.clean {
                     datum.amount = expense!.amount
                     datum.shortDescription = expense!.shortDescription
@@ -174,8 +166,7 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
                     self.tableView.reloadRows(at: [IndexPath(row: updatingRow.row, section: 0)], with: .automatic)
                 }
                 UIView.animate(withDuration: 0.2, animations: {
-                    tableView.beginUpdates()
-                    tableView.endUpdates()
+                    self.tableView.performBatchUpdates({})
                 })
             }, selectedDetailDisclosure: {
                 let addExpenseVC = AddExpenseViewController()
@@ -198,17 +189,28 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
                 self.present(navCtrl, true, nil)
                 
             }, didBeginEditing: { (expenseCell: ExpenseTableViewCell) in
-                self.mostRecentlyEditedCellIndex = IndexPath(row: updatingRow.row, section: 0)
-                expenseCell.setPlusButton(show: false, animated: true)
-                expenseCell.setDetailDisclosure(show: true, animated: true)
-                datum.clean = false
-                tableView.beginUpdates()
-                tableView.endUpdates()
+                if datum.clean {
+                    self.mostRecentlyEditedCellIndex = IndexPath(row: updatingRow.row, section: 0)
+                    expenseCell.setPlusButton(show: false, animated: true)
+                    expenseCell.setDetailDisclosure(show: true, animated: true)
+                    datum.clean = false
+                    self.tableView.performBatchUpdates({})
+                }
+                // Scroll after any potential keyboard height changes fire.
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05, execute: {
+                    self.tableView.scrollToRow(at: IndexPath(row: updatingRow.row, section: 0), at: .middle, animated: true)
+                })
             }, changedToDescription: { (newDescription: String?) in
                 let desc = newDescription == "" ? nil : newDescription
                 datum.shortDescription = desc
             }, changedToAmount: { (newAmount: Decimal?) in
                 datum.amount = newAmount
+            }, changedCellHeight: { (newCollapsedHeight: CGFloat, newExpandedHeight: CGFloat) in
+                print("updated cell \(updatingRow.row) height to: \(newCollapsedHeight), \(newExpandedHeight)")
+                tableView.performBatchUpdates({
+                    datum.collapsedHeight = newCollapsedHeight
+                    datum.expandedHeight = newExpandedHeight
+                })
             }
         )
     }
@@ -242,11 +244,9 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if expenseCellData[indexPath.row].clean {
-            return collapsedCellSize
-        } else {
-            return expandedCellSize
-        }
+        let datum = expenseCellData[indexPath.row]
+        print("providing height \(datum.clean ? datum.collapsedHeight : datum.expandedHeight) for cell \(indexPath.row)")
+        return datum.clean ? datum.collapsedHeight : datum.expandedHeight
     }
     
     private func createNewAddCellDatum() {
@@ -337,10 +337,10 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
         
         let addCellIndexPath = IndexPath(row: 0, section: 0)
         let newCellIndexPath = IndexPath(row: 1, section: 0)
-        self.tableView.beginUpdates()
-        self.tableView.reloadRows(at: [addCellIndexPath], with: .fade)
-        self.tableView.insertRows(at: [addCellIndexPath], with: .automatic)
-        self.tableView.endUpdates()
+        self.tableView.performBatchUpdates({
+            self.tableView.reloadRows(at: [addCellIndexPath], with: .fade)
+            self.tableView.insertRows(at: [addCellIndexPath], with: .automatic)
+        })
         self.tableView.selectRow(at: newCellIndexPath, animated: true, scrollPosition: .none)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             self.tableView.deselectRow(at: newCellIndexPath, animated: true)
@@ -365,6 +365,7 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
         expenses[index] = expense
         expenseCellData[index + 1] = newDatum
         let indexPath = IndexPath(row: index + 1, section: 0)
+        print("reloading \(index + 1)")
         self.tableView.reloadRows(at: [indexPath], with: .fade)
         self.tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {

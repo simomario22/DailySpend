@@ -40,6 +40,10 @@
 		C55AF80B21B37240008476F2 /* INSPhotoGallery.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C55AF80A21B37240008476F2 /* INSPhotoGallery.framework */; };
 		C55B336220A9318B00304680 /* ExpenseTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5117DB01FB94A410032F854 /* ExpenseTableViewCell.swift */; };
 		C55CCFD11F9D44E4001EF0B4 /* UIColor+255.swift in Sources */ = {isa = PBXBuildFile; fileRef = C55CCFD01F9D44E4001EF0B4 /* UIColor+255.swift */; };
+		C5631E8521CF64B800561CE3 /* DSButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5631E8421CF64B800561CE3 /* DSButton.swift */; };
+		C5631E8621CF64FD00561CE3 /* DSButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5631E8421CF64B800561CE3 /* DSButton.swift */; };
+		C5631E8821CF683400561CE3 /* ExpenseCellDescriptionTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5631E8721CF683400561CE3 /* ExpenseCellDescriptionTextView.swift */; };
+		C5631E8921CF688D00561CE3 /* ExpenseCellDescriptionTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5631E8721CF683400561CE3 /* ExpenseCellDescriptionTextView.swift */; };
 		C56CA07A1F64BDEB00874FA8 /* TextFieldTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56CA0791F64BDEB00874FA8 /* TextFieldTableViewCell.swift */; };
 		C56F7ED91F64A22B00639F8D /* DatePickerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56F7ED81F64A22B00639F8D /* DatePickerTableViewCell.swift */; };
 		C573B9F420324C410025A5A2 /* Goal+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C573B9F220324C410025A5A2 /* Goal+CoreDataClass.swift */; };
@@ -69,6 +73,8 @@
 		C594F1CE1F47EDFE006CA097 /* CalendarDay.swift in Sources */ = {isa = PBXBuildFile; fileRef = C594F1CD1F47EDFE006CA097 /* CalendarDay.swift */; };
 		C594F1D01F47F206006CA097 /* CalendarMonth.swift in Sources */ = {isa = PBXBuildFile; fileRef = C594F1CF1F47F206006CA097 /* CalendarMonth.swift */; };
 		C594F1D61F494CD6006CA097 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = C594F1D51F494CD6006CA097 /* Logger.swift */; };
+		C59B004821BE0FBB00C9316A /* ButtonPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C59B004721BE0FBB00C9316A /* ButtonPickerView.swift */; };
+		C59B004921BE100B00C9316A /* ButtonPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C59B004721BE0FBB00C9316A /* ButtonPickerView.swift */; };
 		C59E2A2A205C71A8006D18B5 /* PickerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C59E2A29205C71A8006D18B5 /* PickerTableViewCell.swift */; };
 		C59E2A2E205C97F5006D18B5 /* ValueTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C59E2A2D205C97F5006D18B5 /* ValueTableViewCell.swift */; };
 		C5A0DD5C20429CC2004C6411 /* NavigationGoalPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5A0DD5B20429CC2004C6411 /* NavigationGoalPicker.swift */; };
@@ -256,6 +262,8 @@
 		C556D2531F247C6B008CA20E /* UIControl+Closures.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIControl+Closures.swift"; sourceTree = "<group>"; };
 		C55AF80A21B37240008476F2 /* INSPhotoGallery.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = INSPhotoGallery.framework; path = Carthage/Build/iOS/INSPhotoGallery.framework; sourceTree = "<group>"; };
 		C55CCFD01F9D44E4001EF0B4 /* UIColor+255.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+255.swift"; sourceTree = "<group>"; };
+		C5631E8421CF64B800561CE3 /* DSButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DSButton.swift; sourceTree = "<group>"; };
+		C5631E8721CF683400561CE3 /* ExpenseCellDescriptionTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseCellDescriptionTextView.swift; sourceTree = "<group>"; };
 		C56CA0791F64BDEB00874FA8 /* TextFieldTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextFieldTableViewCell.swift; sourceTree = "<group>"; };
 		C56F7ED81F64A22B00639F8D /* DatePickerTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatePickerTableViewCell.swift; sourceTree = "<group>"; };
 		C573B9F220324C410025A5A2 /* Goal+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Goal+CoreDataClass.swift"; path = "DailySpend/Goal+CoreDataClass.swift"; sourceTree = "<group>"; };
@@ -292,6 +300,7 @@
 		C594F1CD1F47EDFE006CA097 /* CalendarDay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalendarDay.swift; sourceTree = "<group>"; };
 		C594F1CF1F47F206006CA097 /* CalendarMonth.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CalendarMonth.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		C594F1D51F494CD6006CA097 /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+		C59B004721BE0FBB00C9316A /* ButtonPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonPickerView.swift; sourceTree = "<group>"; };
 		C59E2A29205C71A8006D18B5 /* PickerTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PickerTableViewCell.swift; sourceTree = "<group>"; };
 		C59E2A2D205C97F5006D18B5 /* ValueTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValueTableViewCell.swift; sourceTree = "<group>"; };
 		C5A0DD5B20429CC2004C6411 /* NavigationGoalPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationGoalPicker.swift; sourceTree = "<group>"; };
@@ -406,9 +415,12 @@
 		C535275F204CF5B50038E747 /* Custom UI Elements */ = {
 			isa = PBXGroup;
 			children = (
+				C5631E8721CF683400561CE3 /* ExpenseCellDescriptionTextView.swift */,
+				C5631E8421CF64B800561CE3 /* DSButton.swift */,
 				C5E51E57209EC4DD005C674B /* Calculator */,
 				C586813B1F2E85D5008D3AEE /* BorderedTextField.swift */,
 				C54E4F481EFD3984006A1CA3 /* ImageSelectorView.swift */,
+				C59B004721BE0FBB00C9316A /* ButtonPickerView.swift */,
 				C518791E1F00461000881FB6 /* PhotoBox.swift */,
 				C5BB61E62071ECF400EC97C2 /* CalendarPeriodPickerView.swift */,
 				C5D4DAB91F931D3E0013A6F3 /* Control-based Table View Cells */,
@@ -931,6 +943,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C5631E8921CF688D00561CE3 /* ExpenseCellDescriptionTextView.swift in Sources */,
+				C5631E8621CF64FD00561CE3 /* DSButton.swift in Sources */,
+				C59B004921BE100B00C9316A /* ButtonPickerView.swift in Sources */,
 				C55B336220A9318B00304680 /* ExpenseTableViewCell.swift in Sources */,
 				C517B1FF1EBC134200CDAA17 /* UICountingLabel.m in Sources */,
 				C573B9F520324C410025A5A2 /* Goal+CoreDataProperties.swift in Sources */,
@@ -1047,8 +1062,10 @@
 				C5BD27EB2198E80D000C85F8 /* UIImage+Color.swift in Sources */,
 				C5BD27EC2198E80D000C85F8 /* Decimal+DoubleValue.swift in Sources */,
 				C5BD27ED2198E80D000C85F8 /* PhotoBox.swift in Sources */,
+				C59B004821BE0FBB00C9316A /* ButtonPickerView.swift in Sources */,
 				C5BD27EE2198E80D000C85F8 /* DailySpend.xcdatamodeld in Sources */,
 				C5BD27EF2198E80D000C85F8 /* Logger.swift in Sources */,
+				C5631E8821CF683400561CE3 /* ExpenseCellDescriptionTextView.swift in Sources */,
 				C5BD27F02198E80D000C85F8 /* SegmentedControlTableViewCell.swift in Sources */,
 				C5BD27F12198E80D000C85F8 /* PickerTableViewCell.swift in Sources */,
 				C5BD27F22198E80D000C85F8 /* DatePickerTableViewCell.swift in Sources */,
@@ -1067,6 +1084,7 @@
 				C5BD27FF2198E80D000C85F8 /* CGRect+Edges.swift in Sources */,
 				C5BD28002198E80D000C85F8 /* SpendIndicationNavigationController.swift in Sources */,
 				C5BD28012198E80D000C85F8 /* UIAlertController+Actions.swift in Sources */,
+				C5631E8521CF64B800561CE3 /* DSButton.swift in Sources */,
 				C5BD28022198E80D000C85F8 /* UITextView+Margins.swift in Sources */,
 				C5BD28032198E80D000C85F8 /* ExplanatoryTextTableViewCell.swift in Sources */,
 				C5BD28042198E80D000C85F8 /* AddGoalViewController.swift in Sources */,
