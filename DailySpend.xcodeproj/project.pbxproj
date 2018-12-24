@@ -44,6 +44,8 @@
 		C5631E8621CF64FD00561CE3 /* DSButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5631E8421CF64B800561CE3 /* DSButton.swift */; };
 		C5631E8821CF683400561CE3 /* ExpenseCellDescriptionTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5631E8721CF683400561CE3 /* ExpenseCellDescriptionTextView.swift */; };
 		C5631E8921CF688D00561CE3 /* ExpenseCellDescriptionTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5631E8721CF683400561CE3 /* ExpenseCellDescriptionTextView.swift */; };
+		C5631E8B21D0B21E00561CE3 /* ExpenseSuggestionDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5631E8A21D0B21E00561CE3 /* ExpenseSuggestionDataProvider.swift */; };
+		C5631E8C21D0B4B900561CE3 /* ExpenseSuggestionDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5631E8A21D0B21E00561CE3 /* ExpenseSuggestionDataProvider.swift */; };
 		C56CA07A1F64BDEB00874FA8 /* TextFieldTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56CA0791F64BDEB00874FA8 /* TextFieldTableViewCell.swift */; };
 		C56F7ED91F64A22B00639F8D /* DatePickerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56F7ED81F64A22B00639F8D /* DatePickerTableViewCell.swift */; };
 		C573B9F420324C410025A5A2 /* Goal+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C573B9F220324C410025A5A2 /* Goal+CoreDataClass.swift */; };
@@ -264,6 +266,7 @@
 		C55CCFD01F9D44E4001EF0B4 /* UIColor+255.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+255.swift"; sourceTree = "<group>"; };
 		C5631E8421CF64B800561CE3 /* DSButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DSButton.swift; sourceTree = "<group>"; };
 		C5631E8721CF683400561CE3 /* ExpenseCellDescriptionTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseCellDescriptionTextView.swift; sourceTree = "<group>"; };
+		C5631E8A21D0B21E00561CE3 /* ExpenseSuggestionDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseSuggestionDataProvider.swift; sourceTree = "<group>"; };
 		C56CA0791F64BDEB00874FA8 /* TextFieldTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextFieldTableViewCell.swift; sourceTree = "<group>"; };
 		C56F7ED81F64A22B00639F8D /* DatePickerTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatePickerTableViewCell.swift; sourceTree = "<group>"; };
 		C573B9F220324C410025A5A2 /* Goal+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Goal+CoreDataClass.swift"; path = "DailySpend/Goal+CoreDataClass.swift"; sourceTree = "<group>"; };
@@ -500,6 +503,7 @@
 				C5A0DD5B20429CC2004C6411 /* NavigationGoalPicker.swift */,
 				C544E5E8217D2C700098AB17 /* ReverseNavigationAnimator.swift */,
 				C5A4AF8F1FA6B52900101809 /* TableViewCellHelper.swift */,
+				C5631E8A21D0B21E00561CE3 /* ExpenseSuggestionDataProvider.swift */,
 				C5E51E56209EC4C8005C674B /* Extensions */,
 				C535275F204CF5B50038E747 /* Custom UI Elements */,
 				C5316C2A1E7B241200BC2918 /* Calendar Classes */,
@@ -943,6 +947,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C5631E8C21D0B4B900561CE3 /* ExpenseSuggestionDataProvider.swift in Sources */,
 				C5631E8921CF688D00561CE3 /* ExpenseCellDescriptionTextView.swift in Sources */,
 				C5631E8621CF64FD00561CE3 /* DSButton.swift in Sources */,
 				C59B004921BE100B00C9316A /* ButtonPickerView.swift in Sources */,
@@ -1053,6 +1058,7 @@
 				C5BD27E22198E80D000C85F8 /* CalendarMonth.swift in Sources */,
 				C5BD27E32198E80D000C85F8 /* UITextField+Size.swift in Sources */,
 				C5BD27E42198E80D000C85F8 /* Expense+CoreDataClass.swift in Sources */,
+				C5631E8B21D0B21E00561CE3 /* ExpenseSuggestionDataProvider.swift in Sources */,
 				C5BD27E52198E80D000C85F8 /* Adjustment+CoreDataClass.swift in Sources */,
 				C5BD27E62198E80D000C85F8 /* TextFieldTableViewCell.swift in Sources */,
 				C5BD27E72198E80D000C85F8 /* PauseViewController.swift in Sources */,

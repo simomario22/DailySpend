@@ -347,9 +347,11 @@ class TableViewCellHelper {
         undescribed: Bool,
         amount: Decimal?,
         showPlus: Bool,
+        showButtonPicker: Bool,
+        buttonPickerValues: [String]?,
         showDetailDisclosure: Bool,
         tappedSave: @escaping (String?, Decimal?, ()->()) -> (),
-        tappedCancel: @escaping ( ()->(), ()->() ) -> (),
+        tappedCancel: @escaping ( ()->(), ([String]?)->() ) -> (),
         selectedDetailDisclosure: @escaping () -> (),
         didBeginEditing: @escaping ((ExpenseTableViewCell) -> ()),
         changedToDescription: @escaping (String?) -> (),
@@ -383,7 +385,7 @@ class TableViewCellHelper {
         cell.tappedSave = { (shortDesc: String?, amount: Decimal?, resign: () -> ()) in
             tappedSave(shortDesc, amount, resign)
         }
-        cell.tappedCancel = { (resign: () -> (), reset: () -> ()) in
+        cell.tappedCancel = { (resign: () -> (), reset: ([String]?) -> ()) in
             tappedCancel(resign, reset)
         }
         cell.changedEvaluatedAmount = { amount in
@@ -401,12 +403,13 @@ class TableViewCellHelper {
         cell.amountText = amountText
         cell.amountMaxValue = 1e7
 
-
         cell.descriptionText = description
         cell.descriptionPlaceholder = undescribed ? "No Description" : "Description"
         cell.descriptionPlaceholderUsesUndescribedStyle = undescribed
         cell.setPlusButton(show: showPlus, animated: false)
         cell.setDetailDisclosure(show: showDetailDisclosure, animated: false)
+
+        cell.setButtonPicker(show: showButtonPicker, buttonValues: buttonPickerValues)
 
         cell.notifyHeightReceiver()
 

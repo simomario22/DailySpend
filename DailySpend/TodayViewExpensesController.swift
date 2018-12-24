@@ -70,6 +70,7 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
     private var expenses = [Expense]()
     private var expenseCellData = [ExpenseCellDatum]()
     private var cellCreator: TableViewCellHelper
+    private var expenseSuggestor: ExpenseSuggestionDataProvider
     private var mostRecentlyEditedCellIndex: IndexPath = IndexPath(row: NSNotFound, section: 0)
     
     init(
@@ -79,6 +80,7 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
         self.tableView = tableView
         self.present = present
         self.cellCreator = TableViewCellHelper(tableView: tableView)
+        self.expenseSuggestor = ExpenseSuggestionDataProvider()
         self.tableView.keyboardDismissMode = .interactive
         super.init()
         
@@ -120,7 +122,6 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        print("calledCellForRowAt: \(indexPath.row)")
         let isAddCell = indexPath.row == 0
         let expenseData = expenseCellData[indexPath.row]
         let undescribed = !isAddCell && expenseData.shortDescription == nil
@@ -133,6 +134,8 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
             undescribed: undescribed,
             amount: expenseData.amount,
             showPlus: isAddCell && expenseData.clean,
+            showButtonPicker: isAddCell && expenseData.shortDescription == nil,
+            buttonPickerValues: expenseSuggestor.quickSuggestStrings(),
             showDetailDisclosure: !(isAddCell && expenseData.clean),
             tappedSave: { (shortDescription: String?, amount: Decimal?, resignFirstResponder) in
                 if !datum.clean {
@@ -155,7 +158,8 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
             }, tappedCancel: { resign, resetCleanAddCell in
                 resign()
                 if isAddCell {
-                    resetCleanAddCell()
+                    let buttonStrings = self.expenseSuggestor.quickSuggestStrings()
+                    resetCleanAddCell(buttonStrings)
                     datum.amount = nil
                     datum.shortDescription = nil
                     datum.clean = true
@@ -206,7 +210,6 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
             }, changedToAmount: { (newAmount: Decimal?) in
                 datum.amount = newAmount
             }, changedCellHeight: { (newCollapsedHeight: CGFloat, newExpandedHeight: CGFloat) in
-                print("updated cell \(updatingRow.row) height to: \(newCollapsedHeight), \(newExpandedHeight)")
                 tableView.performBatchUpdates({
                     datum.collapsedHeight = newCollapsedHeight
                     datum.expandedHeight = newExpandedHeight
@@ -245,7 +248,6 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let datum = expenseCellData[indexPath.row]
-        print("providing height \(datum.clean ? datum.collapsedHeight : datum.expandedHeight) for cell \(indexPath.row)")
         return datum.clean ? datum.collapsedHeight : datum.expandedHeight
     }
     
@@ -365,7 +367,6 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
         expenses[index] = expense
         expenseCellData[index + 1] = newDatum
         let indexPath = IndexPath(row: index + 1, section: 0)
-        print("reloading \(index + 1)")
         self.tableView.reloadRows(at: [indexPath], with: .fade)
         self.tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {

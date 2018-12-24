@@ -20,7 +20,7 @@ class ExpenseTableViewCell: UITableViewCell {
 
     private var descriptionView: ExpenseCellDescriptionTextView!
     private var amountField: CalculatorTextField!
-//    private var buttonPicker: ButtonPickerView!
+    private var buttonPicker: ButtonPickerView!
     private var detailDisclosureButton: UIButton!
     private var plusButton: UIButton!
     private var saveButton: DSButton!
@@ -37,7 +37,7 @@ class ExpenseTableViewCell: UITableViewCell {
     var changedDescription: ((String?) -> ())?
     var changedEvaluatedAmount: ((Decimal?) -> ())?
     var tappedSave: ((String?, Decimal?, () -> ()) -> ())?
-    var tappedCancel: ((() -> (), () -> ()) -> ())?
+    var tappedCancel: ((() -> (), ([String]?) -> ()) -> ())?
     var selectedDetailDisclosure: (() -> ())?
     var changedCellHeight: ((CGFloat, CGFloat) -> ())?
 
@@ -159,22 +159,25 @@ class ExpenseTableViewCell: UITableViewCell {
             )
         }
 
-//        if buttonPicker != nil {
-//            let leftSide = plusButtonOnscreen ? plusButton.frame.rightEdge + margin : inset
-//            let rightSide = inset
-//            buttonPicker.frame = CGRect(
-//                x: leftSide,
-//                y: amountField.frame.bottomEdge,
-//                width: bounds.size.width - leftSide - rightSide,
-//                height: amountHeight
-//            )
-//        }
+        if buttonPicker != nil {
+            let leftSide = plusButtonOnscreen ? plusButton.frame.rightEdge + margin : inset
+            let rightSide = inset
+
+            buttonPicker.frame = CGRect(
+                x: leftSide,
+                y: amountField.frame.bottomEdge,
+                width: bounds.size.width - leftSide - rightSide,
+                height: amountHeight
+            )
+        }
+
+        let bottomEdge = (descriptionView.isHidden ? buttonPicker : descriptionView).frame.bottomEdge
 
         // Bottom buttons
         let halfWidth = bounds.size.width / 2
         let cancelFrame = CGRect(
             x: 0,
-            y: descriptionView.frame.bottomEdge + margin + 1,
+            y: bottomEdge + margin + 1,
             width: halfWidth,
             height: buttonHeight
         ).insetBy(dx: margin, dy: margin)
@@ -187,7 +190,7 @@ class ExpenseTableViewCell: UITableViewCell {
             saveButton.frame = cancelFrame.offsetBy(dx: halfWidth, dy: 0).shiftedRightEdge(by: -margin)
         }
 
-        let newCollapsedHeight = descriptionView.frame.bottomEdge + margin
+        let newCollapsedHeight = bottomEdge + margin
         let newExpandedHeight = saveButton.frame.bottomEdge + margin
         if newCollapsedHeight != collapsedHeight || newExpandedHeight != expandedHeight {
             collapsedHeight = newCollapsedHeight
@@ -205,7 +208,7 @@ class ExpenseTableViewCell: UITableViewCell {
         
         descriptionView = ExpenseCellDescriptionTextView(delegate: self)
         amountField = CalculatorTextField()
-//        buttonPicker = ButtonPickerView()
+        buttonPicker = ButtonPickerView()
 
         descriptionView.textViewDelegate = self
         descriptionView.returnKeyType = .done
@@ -213,14 +216,14 @@ class ExpenseTableViewCell: UITableViewCell {
         descriptionView.textContainerInset = .zero
         descriptionView.textContainer.lineFragmentPadding = 0
         descriptionView.font = UIFont.systemFont(ofSize: descriptionPointSize)
-        
+
         amountField.borderStyle = .none
         amountField.smartInsertDeleteType = .no
         amountField.font = UIFont.systemFont(ofSize: amountPointSize, weight: .bold)
         amountField.delegate = self
         amountField.calcDelegate = self
 
-//        buttonPicker.buttonTitles = ["Restaurant", "Groceries", "Gas", "Snack"]
+        buttonPicker.pickerDelegate = self
 
         amountField.add(for: .editingChanged) {
             self.setNeedsLayout()
@@ -257,16 +260,17 @@ class ExpenseTableViewCell: UITableViewCell {
             self.tappedCancel?({
                 self.descriptionView.resignFirstResponder()
                 self.amountField.resignFirstResponder()
-            }, {
+            }, { (buttonValues: [String]?) in
                 self.descriptionView.userText = nil
                 self.amountField.text = nil
                 self.setPlusButton(show: true, animated: true)
                 self.setDetailDisclosure(show: false, animated: true)
+                self.setButtonPicker(show: true, buttonValues: buttonValues)
                 self.setNeedsLayout()
             })
         }
         
-        self.addSubviews([amountField, descriptionView, detailDisclosureButton, plusButton, saveButton, cancelButton])
+        self.addSubviews([amountField, descriptionView, buttonPicker, detailDisclosureButton, plusButton, saveButton, cancelButton])
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -285,6 +289,18 @@ class ExpenseTableViewCell: UITableViewCell {
             plusButtonOnscreen = show
             self.layoutOwnSubviews(animated: animated)
         }
+    }
+
+    func setButtonPicker(show: Bool, buttonValues: [String]?) {
+        if show && buttonValues != nil && !buttonValues!.isEmpty {
+            buttonPicker.isHidden = false
+            descriptionView.isHidden = true
+            buttonPicker.buttonTitles = buttonValues!
+        } else {
+            buttonPicker.isHidden = true
+            descriptionView.isHidden = false
+        }
+
     }
 
     /**
@@ -341,3 +357,21 @@ extension ExpenseTableViewCell: ExpenseCellDescriptionTextViewDelegate, Calculat
     }
 }
 
+extension ExpenseTableViewCell: ButtonPickerViewDelegate {
+    func tappedButton(at index: Int, with label: String) {
+        self.setButtonPicker(show: false, buttonValues: nil)
+        self.descriptionText = label
+        if (self.amountField.evaluatedValue() ?? 0) != 0 {
+            self.descriptionView.becomeFirstResponder()
+        } else {
+            self.amountField.becomeFirstResponder()
+        }
+        self.setNeedsLayout()
+    }
+
+    func tappedCustomButton() {
+        self.setButtonPicker(show: false, buttonValues: nil)
+        self.descriptionView.becomeFirstResponder()
+        self.setNeedsLayout()
+    }
+}

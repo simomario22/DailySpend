@@ -101,7 +101,6 @@ extension ExpenseCellDescriptionTextView: UITextViewDelegate {
     }
 
     func textViewDidChange(_ textView: UITextView) {
-        #warning("make sure this does not get called when we change the text to placeholder text")
         textViewDelegate?.textViewDidChange?(textView)
     }
 
