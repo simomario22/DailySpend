@@ -89,15 +89,15 @@ class CalculatorInputView: UIView, UIInputViewAudioFeedback {
     
     private func addAllButtons() {
         let buttonDefs: [ButtonDefinition] = [
-            ButtonDefinition("1", 0, 0, false),
-            ButtonDefinition("2", 0, 1, false),
-            ButtonDefinition("3", 0, 2, false),
+            ButtonDefinition("7", 0, 0, false),
+            ButtonDefinition("8", 0, 1, false),
+            ButtonDefinition("9", 0, 2, false),
             ButtonDefinition("4", 1, 0, false),
             ButtonDefinition("5", 1, 1, false),
             ButtonDefinition("6", 1, 2, false),
-            ButtonDefinition("7", 2, 0, false),
-            ButtonDefinition("8", 2, 1, false),
-            ButtonDefinition("9", 2, 2, false),
+            ButtonDefinition("1", 2, 0, false),
+            ButtonDefinition("2", 2, 1, false),
+            ButtonDefinition("3", 2, 2, false),
             ButtonDefinition("0", 3, 1, false),
             ButtonDefinition(".", 3, 0, true),
             ButtonDefinition("÷", 0, 3, true),
