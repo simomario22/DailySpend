@@ -191,9 +191,12 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
                 UIView.animate(withDuration: 0.2, animations: {
                     self.tableView.performBatchUpdates({})
                 })
-        }, selectedDetailDisclosure: { (shouldHighlightDate: Bool) in
+            }, selectedDetailDisclosure: { (shouldHighlightDate: Bool) in
                 let addExpenseVC = AddExpenseViewController()
                 addExpenseVC.delegate = self
+                if shouldHighlightDate {
+                    addExpenseVC.openDateForEditing()
+                }
                 let navCtrl = UINavigationController(rootViewController: addExpenseVC)
                 if isAddCell {
                     addExpenseVC.setupPartiallyCreatedExpense(

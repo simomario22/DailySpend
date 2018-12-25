@@ -349,6 +349,10 @@ class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableVi
             return nil
         }
     }
+
+    func openDateForEditing() {
+        editingDate = true
+    }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch cellTypeForIndexPath(indexPath: indexPath) {
