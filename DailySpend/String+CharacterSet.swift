@@ -71,7 +71,7 @@ extension String {
                      maxHeight: CGFloat? = nil) -> CGFloat {
         var fontSize: CGFloat = font.pointSize
         
-        var attr = [NSAttributedStringKey.font: font]
+        var attr = [NSAttributedString.Key.font: font]
         var size = self.size(withAttributes: attr)
         
         // Continue to decrease size while one of the next two conditions is true:

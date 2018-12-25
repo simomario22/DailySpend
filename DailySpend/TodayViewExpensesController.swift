@@ -88,8 +88,8 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
         super.init()
         
         let nc = NotificationCenter.default
-        nc.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: .UIKeyboardWillChangeFrame, object: nil)
-        nc.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: .UIKeyboardWillHide, object: nil)
+        nc.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+        nc.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     deinit {
@@ -101,10 +101,10 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
             return
         }
         
-        if let size = (userInfo[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size {
+        if let size = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size {
             let bottom = size.height - (UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0)
             let contentInsets = UIEdgeInsets(top: 0, left: 0, bottom: bottom, right: 0)
-            let duration = (userInfo[UIKeyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0.3
+            let duration = (userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0.3
             UIView.animate(withDuration: duration) {
                 self.tableView.contentInset = contentInsets
                 self.tableView.scrollIndicatorInsets = contentInsets
@@ -113,7 +113,7 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
     }
     
     @objc func keyboardWillHide(_ notification: Notification) {
-        let duration = (notification.userInfo?[UIKeyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0.3
+        let duration = (notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0.3
         UIView.animate(withDuration: duration) {
             self.tableView.contentInset = UIEdgeInsets.zero
             self.tableView.scrollIndicatorInsets = UIEdgeInsets.zero
@@ -247,7 +247,7 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
         return indexPath.row != 0
     }
     
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle != .delete {
             return
         }

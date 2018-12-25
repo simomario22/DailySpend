@@ -274,7 +274,7 @@ extension ReviewViewController: UITableViewDataSource, UITableViewDelegate {
         }
     }
     
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         switch sectionTypeForSection(indexPath.section) {
         case .ExpenseSection:
             expensesController.tableView(tableView, commit: editingStyle, forRowAt: indexPath)

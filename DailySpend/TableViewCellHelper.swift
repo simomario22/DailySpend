@@ -106,7 +106,7 @@ class TableViewCellHelper {
         cell.setExplanatoryText(explanatoryText)
         
         let attributedText = NSMutableAttributedString(string: valueText)
-        let attr: [NSAttributedStringKey: Any] = [
+        let attr: [NSAttributedString.Key: Any] = [
             .foregroundColor: tintColor ?? UIColor.black,
             .strikethroughColor: tintColor ?? UIColor.black,
             // NSUnderlineStyle.styleNone and .styleSingle weren't working, so
