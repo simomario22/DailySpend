@@ -46,6 +46,16 @@
 		C5631E8921CF688D00561CE3 /* ExpenseCellDescriptionTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5631E8721CF683400561CE3 /* ExpenseCellDescriptionTextView.swift */; };
 		C5631E8B21D0B21E00561CE3 /* ExpenseSuggestionDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5631E8A21D0B21E00561CE3 /* ExpenseSuggestionDataProvider.swift */; };
 		C5631E8C21D0B4B900561CE3 /* ExpenseSuggestionDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5631E8A21D0B21E00561CE3 /* ExpenseSuggestionDataProvider.swift */; };
+		C5631E8E21D15A0B00561CE3 /* Collection+SafeIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5631E8D21D15A0B00561CE3 /* Collection+SafeIndex.swift */; };
+		C5631E8F21D15A4400561CE3 /* Collection+SafeIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5631E8D21D15A0B00561CE3 /* Collection+SafeIndex.swift */; };
+		C5631E9321D1685500561CE3 /* calendar@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5631E9021D1685500561CE3 /* calendar@3x.png */; };
+		C5631E9421D1685500561CE3 /* calendar.png in Resources */ = {isa = PBXBuildFile; fileRef = C5631E9121D1685500561CE3 /* calendar.png */; };
+		C5631E9521D1685500561CE3 /* calendar@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5631E9221D1685500561CE3 /* calendar@2x.png */; };
+		C5631E9621D1687800561CE3 /* calendar.png in Resources */ = {isa = PBXBuildFile; fileRef = C5631E9121D1685500561CE3 /* calendar.png */; };
+		C5631E9721D1687800561CE3 /* calendar@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5631E9221D1685500561CE3 /* calendar@2x.png */; };
+		C5631E9821D1687800561CE3 /* calendar@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5631E9021D1685500561CE3 /* calendar@3x.png */; };
+		C5631E9A21D16B7300561CE3 /* RelativeDatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5631E9921D16B7300561CE3 /* RelativeDatePicker.swift */; };
+		C5631E9B21D16CAB00561CE3 /* RelativeDatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5631E9921D16B7300561CE3 /* RelativeDatePicker.swift */; };
 		C56CA07A1F64BDEB00874FA8 /* TextFieldTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56CA0791F64BDEB00874FA8 /* TextFieldTableViewCell.swift */; };
 		C56F7ED91F64A22B00639F8D /* DatePickerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56F7ED81F64A22B00639F8D /* DatePickerTableViewCell.swift */; };
 		C573B9F420324C410025A5A2 /* Goal+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C573B9F220324C410025A5A2 /* Goal+CoreDataClass.swift */; };
@@ -267,6 +277,11 @@
 		C5631E8421CF64B800561CE3 /* DSButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DSButton.swift; sourceTree = "<group>"; };
 		C5631E8721CF683400561CE3 /* ExpenseCellDescriptionTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseCellDescriptionTextView.swift; sourceTree = "<group>"; };
 		C5631E8A21D0B21E00561CE3 /* ExpenseSuggestionDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseSuggestionDataProvider.swift; sourceTree = "<group>"; };
+		C5631E8D21D15A0B00561CE3 /* Collection+SafeIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Collection+SafeIndex.swift"; sourceTree = "<group>"; };
+		C5631E9021D1685500561CE3 /* calendar@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "calendar@3x.png"; sourceTree = "<group>"; };
+		C5631E9121D1685500561CE3 /* calendar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = calendar.png; sourceTree = "<group>"; };
+		C5631E9221D1685500561CE3 /* calendar@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "calendar@2x.png"; sourceTree = "<group>"; };
+		C5631E9921D16B7300561CE3 /* RelativeDatePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelativeDatePicker.swift; sourceTree = "<group>"; };
 		C56CA0791F64BDEB00874FA8 /* TextFieldTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextFieldTableViewCell.swift; sourceTree = "<group>"; };
 		C56F7ED81F64A22B00639F8D /* DatePickerTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatePickerTableViewCell.swift; sourceTree = "<group>"; };
 		C573B9F220324C410025A5A2 /* Goal+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Goal+CoreDataClass.swift"; path = "DailySpend/Goal+CoreDataClass.swift"; sourceTree = "<group>"; };
@@ -418,12 +433,14 @@
 		C535275F204CF5B50038E747 /* Custom UI Elements */ = {
 			isa = PBXGroup;
 			children = (
+				C5631E9921D16B7300561CE3 /* RelativeDatePicker.swift */,
 				C5631E8721CF683400561CE3 /* ExpenseCellDescriptionTextView.swift */,
 				C5631E8421CF64B800561CE3 /* DSButton.swift */,
 				C5E51E57209EC4DD005C674B /* Calculator */,
 				C586813B1F2E85D5008D3AEE /* BorderedTextField.swift */,
 				C54E4F481EFD3984006A1CA3 /* ImageSelectorView.swift */,
 				C59B004721BE0FBB00C9316A /* ButtonPickerView.swift */,
+				C5631E8D21D15A0B00561CE3 /* Collection+SafeIndex.swift */,
 				C518791E1F00461000881FB6 /* PhotoBox.swift */,
 				C5BB61E62071ECF400EC97C2 /* CalendarPeriodPickerView.swift */,
 				C5D4DAB91F931D3E0013A6F3 /* Control-based Table View Cells */,
@@ -584,6 +601,9 @@
 				C5CF5F5E1E7BB68600C35539 /* cal.png */,
 				C5CF5F5F1E7BB68600C35539 /* cal@2x.png */,
 				C5CF5F601E7BB68600C35539 /* cal@3x.png */,
+				C5631E9121D1685500561CE3 /* calendar.png */,
+				C5631E9221D1685500561CE3 /* calendar@2x.png */,
+				C5631E9021D1685500561CE3 /* calendar@3x.png */,
 				C5CF5F611E7BB68600C35539 /* today.png */,
 				C5CF5F621E7BB68600C35539 /* today@2x.png */,
 				C5CF5F631E7BB68600C35539 /* today@3x.png */,
@@ -839,6 +859,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C5631E9621D1687800561CE3 /* calendar.png in Resources */,
+				C5631E9721D1687800561CE3 /* calendar@2x.png in Resources */,
+				C5631E9821D1687800561CE3 /* calendar@3x.png in Resources */,
 				C517B1FE1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt in Resources */,
 				C5B367D01EBBD65E006B5ADC /* cog@2x.png in Resources */,
 				C5B367D11EBBD65E006B5ADC /* cog@3x.png in Resources */,
@@ -887,6 +910,7 @@
 				C5BD28272198E80D000C85F8 /* cal_recur@3x.png in Resources */,
 				C5BD28282198E80D000C85F8 /* today.png in Resources */,
 				C5BD28292198E80D000C85F8 /* VENCalculatorIconBackspace.png in Resources */,
+				C5631E9521D1685500561CE3 /* calendar@2x.png in Resources */,
 				C5BD282A2198E80D000C85F8 /* today@2x.png in Resources */,
 				C5BD282B2198E80D000C85F8 /* Assets.xcassets in Resources */,
 				C5BD282C2198E80D000C85F8 /* cal_recur@2x.png in Resources */,
@@ -896,10 +920,12 @@
 				C5BD28302198E80D000C85F8 /* cal.png in Resources */,
 				C5BD28312198E80D000C85F8 /* LICENCE_VENMO.txt in Resources */,
 				C5BD28322198E80D000C85F8 /* VENCalculatorIconBackspace@3x.png in Resources */,
+				C5631E9321D1685500561CE3 /* calendar@3x.png in Resources */,
 				C5BD28332198E80D000C85F8 /* cog.png in Resources */,
 				C5BD28342198E80D000C85F8 /* cal@2x.png in Resources */,
 				C5BD28352198E80D000C85F8 /* cal_recur.png in Resources */,
 				C5BD28362198E80D000C85F8 /* VENCalculatorIconBackspace@2x.png in Resources */,
+				C5631E9421D1685500561CE3 /* calendar.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -947,6 +973,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C5631E9B21D16CAB00561CE3 /* RelativeDatePicker.swift in Sources */,
+				C5631E8F21D15A4400561CE3 /* Collection+SafeIndex.swift in Sources */,
 				C5631E8C21D0B4B900561CE3 /* ExpenseSuggestionDataProvider.swift in Sources */,
 				C5631E8921CF688D00561CE3 /* ExpenseCellDescriptionTextView.swift in Sources */,
 				C5631E8621CF64FD00561CE3 /* DSButton.swift in Sources */,
@@ -1059,6 +1087,7 @@
 				C5BD27E32198E80D000C85F8 /* UITextField+Size.swift in Sources */,
 				C5BD27E42198E80D000C85F8 /* Expense+CoreDataClass.swift in Sources */,
 				C5631E8B21D0B21E00561CE3 /* ExpenseSuggestionDataProvider.swift in Sources */,
+				C5631E9A21D16B7300561CE3 /* RelativeDatePicker.swift in Sources */,
 				C5BD27E52198E80D000C85F8 /* Adjustment+CoreDataClass.swift in Sources */,
 				C5BD27E62198E80D000C85F8 /* TextFieldTableViewCell.swift in Sources */,
 				C5BD27E72198E80D000C85F8 /* PauseViewController.swift in Sources */,
@@ -1096,6 +1125,7 @@
 				C5BD28042198E80D000C85F8 /* AddGoalViewController.swift in Sources */,
 				C5BD28052198E80D000C85F8 /* ChoiceTableViewCell.swift in Sources */,
 				C5BD28062198E80D000C85F8 /* TodaySummaryView.swift in Sources */,
+				C5631E8E21D15A0B00561CE3 /* Collection+SafeIndex.swift in Sources */,
 				C5BD28072198E80D000C85F8 /* CalculatorTextField.swift in Sources */,
 				C5BD28082198E80D000C85F8 /* SettingsViewController.swift in Sources */,
 				C5BD28092198E80D000C85F8 /* TableViewCellHelper.swift in Sources */,

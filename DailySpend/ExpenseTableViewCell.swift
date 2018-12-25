@@ -20,7 +20,8 @@ class ExpenseTableViewCell: UITableViewCell {
 
     private var descriptionView: ExpenseCellDescriptionTextView!
     private var amountField: CalculatorTextField!
-    private var buttonPicker: ButtonPickerView!
+    private var quickSuggestView: ButtonPickerView!
+    private var relativeDatePickerView: RelativeDatePicker!
     private var detailDisclosureButton: UIButton!
     private var plusButton: UIButton!
     private var saveButton: DSButton!
@@ -30,15 +31,17 @@ class ExpenseTableViewCell: UITableViewCell {
     private var expandedHeight: CGFloat = -1
     private var detailDisclosureButtonOnscreen: Bool = false
     private var plusButtonOnscreen: Bool = false
+    private var relativeDatePickerOnscreen: Bool = true
 
     var beganEditing: ((ExpenseTableViewCell) -> ())?
     var endedEditing: ((String?, Decimal?) -> ())?
     var willReturn: ((UIResponder) -> ())?
     var changedDescription: ((String?) -> ())?
     var changedEvaluatedAmount: ((Decimal?) -> ())?
+    var changedDay: ((CalendarDay) -> ())?
     var tappedSave: ((String?, Decimal?, () -> ()) -> ())?
     var tappedCancel: ((() -> (), ([String]?) -> ()) -> ())?
-    var selectedDetailDisclosure: (() -> ())?
+    var selectedDetailDisclosure: ((Bool) -> ())?
     var changedCellHeight: ((CGFloat, CGFloat) -> ())?
 
     var descriptionPlaceholder: String? {
@@ -87,6 +90,15 @@ class ExpenseTableViewCell: UITableViewCell {
     var amountPlaceholder: String? {
         didSet {
             amountField.placeholder = amountPlaceholder
+        }
+    }
+
+    var day: CalendarDay? {
+        get {
+            return relativeDatePickerView.selectedDay
+        }
+        set {
+            relativeDatePickerView.selectedDay = newValue
         }
     }
     
@@ -159,10 +171,10 @@ class ExpenseTableViewCell: UITableViewCell {
             )
         }
 
-        if buttonPicker != nil {
+        if quickSuggestView != nil {
             let leftSide = plusButtonOnscreen ? plusButton.frame.rightEdge + margin : 0
 
-            buttonPicker.frame = CGRect(
+            quickSuggestView.frame = CGRect(
                 x: leftSide,
                 y: amountField.frame.bottomEdge,
                 width: bounds.size.width - leftSide,
@@ -170,20 +182,35 @@ class ExpenseTableViewCell: UITableViewCell {
             )
 
             let insets = plusButtonOnscreen ? UIEdgeInsets.zero : UIEdgeInsets(top: 0, left: inset, bottom: 0, right: 0)
-            buttonPicker.contentInset = insets
-            buttonPicker.scrollIndicatorInsets = insets
-            if (buttonPicker.contentOffset.x == 0) {
-                buttonPicker.contentOffset = CGPoint(x: plusButtonOnscreen ? 0 : -inset, y: 0)
+            quickSuggestView.contentInset = insets
+            quickSuggestView.scrollIndicatorInsets = insets
+            if (quickSuggestView.contentOffset.x == 0) {
+                quickSuggestView.contentOffset = CGPoint(x: plusButtonOnscreen ? 0 : -inset, y: 0)
             }
         }
 
-        let bottomEdge = (descriptionView.isHidden ? buttonPicker : descriptionView).frame.bottomEdge
+        let collapsedBottomEdge = (descriptionView.isHidden ? quickSuggestView : descriptionView).frame.bottomEdge
+
+        if relativeDatePickerView != nil {
+            let width = bounds.size.width - inset
+            let leftSide = relativeDatePickerOnscreen ? inset : -width - inset
+            let y = collapsedBottomEdge + margin + 1
+
+            relativeDatePickerView.frame = CGRect(
+                x: leftSide,
+                y: y,
+                width: width,
+                height: amountHeight
+            )
+        }
+
+        let buttonTop = relativeDatePickerOnscreen ? relativeDatePickerView.frame.bottomEdge : collapsedBottomEdge
 
         // Bottom buttons
         let halfWidth = bounds.size.width / 2
         let cancelFrame = CGRect(
             x: 0,
-            y: bottomEdge + margin + 1,
+            y: buttonTop,
             width: halfWidth,
             height: buttonHeight
         ).insetBy(dx: margin, dy: margin)
@@ -196,7 +223,7 @@ class ExpenseTableViewCell: UITableViewCell {
             saveButton.frame = cancelFrame.offsetBy(dx: halfWidth, dy: 0).shiftedRightEdge(by: -margin)
         }
 
-        let newCollapsedHeight = bottomEdge + margin
+        let newCollapsedHeight = collapsedBottomEdge + margin
         let newExpandedHeight = saveButton.frame.bottomEdge + margin
         if newCollapsedHeight != collapsedHeight || newExpandedHeight != expandedHeight {
             collapsedHeight = newCollapsedHeight
@@ -211,10 +238,10 @@ class ExpenseTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
         descriptionView = ExpenseCellDescriptionTextView(delegate: self)
         amountField = CalculatorTextField()
-        buttonPicker = ButtonPickerView()
+        quickSuggestView = ButtonPickerView()
+        relativeDatePickerView = RelativeDatePicker()
 
         descriptionView.textViewDelegate = self
         descriptionView.returnKeyType = .done
@@ -229,7 +256,9 @@ class ExpenseTableViewCell: UITableViewCell {
         amountField.delegate = self
         amountField.calcDelegate = self
 
-        buttonPicker.pickerDelegate = self
+        quickSuggestView.pickerDelegate = self
+
+        relativeDatePickerView.delegate = self
 
         amountField.add(for: .editingChanged) {
             self.setNeedsLayout()
@@ -237,7 +266,7 @@ class ExpenseTableViewCell: UITableViewCell {
 
         detailDisclosureButton = UIButton(type: .detailDisclosure)
         detailDisclosureButton.add(for: .touchUpInside) {
-            self.selectedDetailDisclosure?()
+            self.selectedDetailDisclosure?(false)
         }
         
         plusButton = UIButton(type: .custom)
@@ -271,12 +300,21 @@ class ExpenseTableViewCell: UITableViewCell {
                 self.amountField.text = nil
                 self.setPlusButton(show: true, animated: true)
                 self.setDetailDisclosure(show: false, animated: true)
-                self.setButtonPicker(show: true, buttonValues: buttonValues)
+                self.setQuickSuggest(show: true, buttonValues: buttonValues)
                 self.setNeedsLayout()
             })
         }
         
-        self.addSubviews([amountField, descriptionView, buttonPicker, detailDisclosureButton, plusButton, saveButton, cancelButton])
+        self.addSubviews([
+            amountField,
+            descriptionView,
+            quickSuggestView,
+            relativeDatePickerView,
+            detailDisclosureButton,
+            plusButton,
+            saveButton,
+            cancelButton
+        ])
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -297,16 +335,22 @@ class ExpenseTableViewCell: UITableViewCell {
         }
     }
 
-    func setButtonPicker(show: Bool, buttonValues: [String]?) {
+    func setQuickSuggest(show: Bool, buttonValues: [String]?) {
         if show && buttonValues != nil && !buttonValues!.isEmpty {
-            buttonPicker.isHidden = false
+            quickSuggestView.isHidden = false
             descriptionView.isHidden = true
-            buttonPicker.buttonTitles = buttonValues!
+            quickSuggestView.buttonTitles = buttonValues!
         } else {
-            buttonPicker.isHidden = true
+            quickSuggestView.isHidden = true
             descriptionView.isHidden = false
         }
+    }
 
+    func setRelativeDatePickerView(show: Bool) {
+        if relativeDatePickerOnscreen != show {
+            relativeDatePickerOnscreen = show
+            self.setNeedsLayout()
+        }
     }
 
     /**
@@ -364,21 +408,35 @@ extension ExpenseTableViewCell: ExpenseCellDescriptionTextViewDelegate, Calculat
 }
 
 extension ExpenseTableViewCell: ButtonPickerViewDelegate {
-    func tappedButton(at index: Int, with label: String) {
-        self.setButtonPicker(show: false, buttonValues: nil)
-        self.descriptionText = label
-        self.textViewDidChange(descriptionView)
-        if (self.amountField.evaluatedValue() ?? 0) != 0 {
-            self.descriptionView.becomeFirstResponder()
-        } else {
-            self.amountField.becomeFirstResponder()
+    func tappedButton(in picker: ButtonPickerView, at index: Int, with label: String) {
+        if picker == self.quickSuggestView {
+            self.setQuickSuggest(show: false, buttonValues: nil)
+            self.descriptionText = label
+            self.textViewDidChange(descriptionView)
+            if (self.amountField.evaluatedValue() ?? 0) != 0 {
+                self.descriptionView.becomeFirstResponder()
+            } else {
+                self.amountField.becomeFirstResponder()
+            }
+            self.setNeedsLayout()
         }
-        self.setNeedsLayout()
     }
 
-    func tappedCustomButton() {
-        self.setButtonPicker(show: false, buttonValues: nil)
-        self.descriptionView.becomeFirstResponder()
-        self.setNeedsLayout()
+    func tappedCustomButton(in picker: ButtonPickerView) {
+        if picker == self.quickSuggestView {
+            self.setQuickSuggest(show: false, buttonValues: nil)
+            self.descriptionView.becomeFirstResponder()
+            self.setNeedsLayout()
+        }
+    }
+}
+
+extension ExpenseTableViewCell: RelativeDatePickerDelegate {
+    func selectedDay(_ day: CalendarDay) {
+        changedDay?(day)
+    }
+
+    func selectedExpandedDateSelection() {
+        selectedDetailDisclosure?(true)
     }
 }

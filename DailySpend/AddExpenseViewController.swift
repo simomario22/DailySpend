@@ -124,12 +124,14 @@ class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableVi
      * Setup this view controller with data from an expense that has already
      * been partially edited in another part of the UI.
      */
-    func setupPartiallyEditedExpense(expense: Expense, amount: Decimal?, shortDescription: String?) {
+    func setupPartiallyEditedExpense(expense: Expense, transactionDay: CalendarDay, amount: Decimal?, shortDescription: String?) {
         self.expense = expense
         self.amount = amount
         self.shortDescription = shortDescription
+        self.transactionDay = transactionDay
         self.amountSetupFinished = true
         self.shortDescriptionSetupFinished = true
+        self.transactionDaySetupFinished = true
     }
     
     /**

@@ -14,18 +14,20 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
         var shortDescription: String?
         var amount: Decimal?
         var clean: Bool
+        var day: CalendarDay
         var expandedHeight: CGFloat
         var collapsedHeight: CGFloat
-        init(_ shortDescription: String?, _ amount: Decimal?, _ clean: Bool) {
+        init(_ shortDescription: String?, _ amount: Decimal?, _ day: CalendarDay?, _ clean: Bool) {
             self.shortDescription = shortDescription
             self.amount = amount
+            self.day = day ?? CalendarDay()
             self.clean = clean
             self.expandedHeight = 100
             self.collapsedHeight = 160
         }
         
         convenience init() {
-            self.init(nil, nil, true)
+            self.init(nil, nil, nil, true)
         }
     }
     
@@ -67,6 +69,7 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
     private var tableView: UITableView
     private var present: (UIViewController, Bool, (() -> Void)?) -> ()
     private var goal: Goal!
+    private var currentInterval: CalendarIntervalProvider? = nil
     private var expenses = [Expense]()
     private var expenseCellData = [ExpenseCellDatum]()
     private var cellCreator: TableViewCellHelper
@@ -133,6 +136,7 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
             description: expenseData.shortDescription,
             undescribed: undescribed,
             amount: expenseData.amount,
+            day: expenseData.day,
             showPlus: isAddCell && expenseData.clean,
             showButtonPicker: isAddCell && expenseData.shortDescription == nil,
             buttonPickerValues: expenseSuggestor.quickSuggestStrings(),
@@ -154,6 +158,19 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
                         self.createNewAddCellDatum()
                         self.tableView.insertRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
                     }
+                }, completion: { _ in
+                    if self.currentInterval != nil &&
+                       !self.currentInterval!.contains(date: datum.day.start) {
+                        self.tableView.performBatchUpdates({
+                            let rowIndex = updatingRow.row
+                            let index = rowIndex - 1
+
+                            self.expenses.remove(at: index)
+                            self.expenseCellData.remove(at: rowIndex)
+                            self.removeUpdatingRow(at: rowIndex)
+                            tableView.deleteRows(at: [IndexPath(row: rowIndex, section: 0)], with: .left)
+                        })
+                    }
                 })
             }, tappedCancel: { resign, resetCleanAddCell in
                 resign()
@@ -172,20 +189,21 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
                 UIView.animate(withDuration: 0.2, animations: {
                     self.tableView.performBatchUpdates({})
                 })
-            }, selectedDetailDisclosure: {
+        }, selectedDetailDisclosure: { (shouldHighlightDate: Bool) in
                 let addExpenseVC = AddExpenseViewController()
                 addExpenseVC.delegate = self
                 let navCtrl = UINavigationController(rootViewController: addExpenseVC)
                 if isAddCell {
                     addExpenseVC.setupPartiallyCreatedExpense(
                         goal: self.goal,
-                        transactionDay: CalendarDay(),
+                        transactionDay: datum.day,
                         amount: datum.amount,
                         shortDescription: datum.shortDescription
                     )
                 } else {
                     addExpenseVC.setupPartiallyEditedExpense(
                         expense: expense!,
+                        transactionDay: datum.day,
                         amount: datum.amount,
                         shortDescription: datum.shortDescription
                     )
@@ -209,6 +227,8 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
                 datum.shortDescription = desc
             }, changedToAmount: { (newAmount: Decimal?) in
                 datum.amount = newAmount
+            }, changedToDay: { (newDay: CalendarDay) in
+                datum.day = newDay
             }, changedCellHeight: { (newCollapsedHeight: CGFloat, newExpandedHeight: CGFloat) in
                 tableView.performBatchUpdates({
                     datum.collapsedHeight = newCollapsedHeight
@@ -263,13 +283,12 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
             justCreated = true
             expense = Expense(context: context)
             expense.dateCreated = Date()
-            expense.transactionDay = CalendarDay()
         }
         
         let validation = expense.propose(
             amount: datum.amount,
             shortDescription: datum.shortDescription,
-            transactionDay: expense!.transactionDay,
+            transactionDay: datum.day,
             notes: expense!.notes,
             dateCreated: expense!.dateCreated,
             goal: goal
@@ -305,11 +324,12 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
         if let goal = goal,
             let currentInterval = goal.incrementalPaymentInterval(for: CalendarDay().start) {
             self.goal = goal
-            expenses = goal.getExpenses(interval: currentInterval)
+            self.expenses = goal.getExpenses(interval: currentInterval)
+            self.currentInterval = currentInterval
             
             expenseCellData = []
             for e in expenses {
-                let d = ExpenseCellDatum(e.shortDescription, e.amount, true)
+                let d = ExpenseCellDatum(e.shortDescription, e.amount, e.transactionDay, true)
                 expenseCellData.append(d)
                 appendNewUpdatingRow()
             }
@@ -331,7 +351,7 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
         }
         delegate?.expensesChanged(goal: goal)
         expenses.insert(expense, at: 0)
-        let newDatum = ExpenseCellDatum(expense.shortDescription, expense.amount, true)
+        let newDatum = ExpenseCellDatum(expense.shortDescription, expense.amount, expense.transactionDay, true)
         expenseCellData[0] = newDatum
         
         tableView.endEditing(false)
@@ -342,11 +362,22 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
         self.tableView.performBatchUpdates({
             self.tableView.reloadRows(at: [addCellIndexPath], with: .fade)
             self.tableView.insertRows(at: [addCellIndexPath], with: .automatic)
-        })
-        self.tableView.selectRow(at: newCellIndexPath, animated: true, scrollPosition: .none)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            self.tableView.selectRow(at: addCellIndexPath, animated: true, scrollPosition: .none)
+        }, completion: { _ in
             self.tableView.deselectRow(at: newCellIndexPath, animated: true)
-        }
+            if self.currentInterval != nil &&
+                !self.currentInterval!.contains(date: expense.transactionDay!.start) {
+                self.tableView.performBatchUpdates({
+                    let rowIndex = newCellIndexPath.row
+                    let index = rowIndex - 1
+
+                    self.expenses.remove(at: index)
+                    self.expenseCellData.remove(at: rowIndex)
+                    self.removeUpdatingRow(at: rowIndex)
+                    self.tableView.deleteRows(at: [IndexPath(row: rowIndex, section: 0)], with: .left)
+                })
+            }
+        })
     }
     
     func editedExpenseFromModal(_ expense: Expense) {
@@ -363,15 +394,29 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
             return
         }
 
-        let newDatum = ExpenseCellDatum(expense.shortDescription, expense.amount, true)
+        let newDatum = ExpenseCellDatum(expense.shortDescription, expense.amount, expense.transactionDay, true)
         expenses[index] = expense
         expenseCellData[index + 1] = newDatum
         let indexPath = IndexPath(row: index + 1, section: 0)
-        self.tableView.reloadRows(at: [indexPath], with: .fade)
-        self.tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+        self.tableView.performBatchUpdates({
+            self.tableView.reloadRows(at: [indexPath], with: .fade)
+            self.tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
+        }, completion: { _ in
             self.tableView.deselectRow(at: indexPath, animated: true)
-        }
+            if self.currentInterval != nil &&
+               !self.currentInterval!.contains(date: expense.transactionDay!.start) {
+                self.tableView.performBatchUpdates({
+                    let rowIndex = indexPath.row
+                    let index = rowIndex - 1
+
+                    self.expenses.remove(at: index)
+                    self.expenseCellData.remove(at: rowIndex)
+                    self.removeUpdatingRow(at: rowIndex)
+                    self.tableView.deleteRows(at: [IndexPath(row: rowIndex, section: 0)], with: .left)
+                })
+            }
+        })
+
     }
 }
 

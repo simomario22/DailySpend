@@ -14,26 +14,7 @@ class ButtonPickerView: UIScrollView {
     private var oldButtonTitles = [String]()
     var buttonTitles = [String]() {
         didSet {
-            if buttonTitles == oldButtonTitles {
-                return
-            }
-            oldButtonTitles = buttonTitles
-            for button in buttons {
-                button.removeFromSuperview()
-            }
-            buttons = createButtons(from: buttonTitles)
-            for (i, button) in buttons.enumerated() {
-                button.add(for: .touchUpInside) {
-                    if i == 0 {
-                        self.pickerDelegate?.tappedCustomButton()
-                    } else {
-                        let index = i - 1
-                        self.pickerDelegate?.tappedButton(at: index, with: self.buttonTitles[index])
-                    }
-                }
-                self.addSubview(button)
-            }
-            self.setNeedsLayout()
+            remakeViewIfNecessary()
         }
     }
 
@@ -43,8 +24,61 @@ class ButtonPickerView: UIScrollView {
         }
     }
 
+    private var oldSelectedButtonIndex: Int = -1
+    var selectedButtonIndex: Int = -1 {
+        didSet {
+            if selectedButtonIndex != oldSelectedButtonIndex {
+                if let button = buttons[safe: oldSelectedButtonIndex] {
+                    button.isSelected = false
+                }
+
+                if let button = buttons[safe: selectedButtonIndex] {
+                    button.isSelected = true
+                }
+                oldSelectedButtonIndex = selectedButtonIndex
+            }
+        }
+    }
+
+    private var oldCustomButtonTitle: String? = nil
+    var customButtonTitle: String? = "Custom" {
+        didSet {
+            remakeViewIfNecessary()
+        }
+    }
+
     private var buttons = [UIButton]()
-    let customButtonTitle = ["Custom"]
+    private var hasCustomTitle: Bool {
+        return customButtonTitle != nil
+    }
+
+    private func remakeViewIfNecessary() {
+        if buttonTitles == oldButtonTitles &&
+            customButtonTitle == oldCustomButtonTitle {
+            return
+        }
+        oldButtonTitles = buttonTitles
+        oldCustomButtonTitle = customButtonTitle
+        for button in buttons {
+            button.removeFromSuperview()
+        }
+        buttons = createButtons(from: buttonTitles)
+        for (i, button) in buttons.enumerated() {
+            button.add(for: .touchUpInside) {
+                if i == 0 && self.hasCustomTitle {
+                    self.pickerDelegate?.tappedCustomButton(in: self)
+                } else {
+                    let index = self.hasCustomTitle ? i - 1 : i
+                    self.pickerDelegate?.tappedButton(in: self, at: index, with: self.buttonTitles[index])
+                }
+            }
+            if i == selectedButtonIndex {
+                button.isSelected = true
+            }
+            self.addSubview(button)
+        }
+        self.setNeedsLayout()
+    }
 
     override func layoutSubviews() {
         super.layoutSubviews()
@@ -54,12 +88,12 @@ class ButtonPickerView: UIScrollView {
         )
 
         let (size, frames) = layoutEngine.makeButtonsFramesForCorrespondingStrings(
-            strings: customButtonTitle + buttonTitles,
+            strings: (hasCustomTitle ? [customButtonTitle!] : []) + buttonTitles,
             font: UIFont.systemFont(ofSize: UIFont.systemFontSize)
         )
 
         for (i, button) in buttons.enumerated() {
-            if i == 0 {
+            if i == 0 && hasCustomTitle {
                 button.titleLabel!.font = UIFont.italicSystemFont(ofSize: size)
             } else {
                 button.titleLabel!.font = button.titleLabel!.font.withSize(size)
@@ -74,7 +108,7 @@ class ButtonPickerView: UIScrollView {
 
     private func createButtons(from buttonTitles: [String]) -> [UIButton] {
         var buttons = [UIButton]()
-        for title in customButtonTitle + buttonTitles {
+        for title in (hasCustomTitle ? [customButtonTitle!] : []) + buttonTitles {
             let button = DSButton()
             button.setTitle(title, for: .normal)
             buttons.append(button)
@@ -163,7 +197,7 @@ fileprivate class ButtonPickerLayoutEngine {
             let frame = CGRect(
                 x: maxRowX[currentRow],
                 y: topRowY[currentRow],
-                width: size.width + (padding * 2),
+                width: max(rowHeight, size.width + (padding * 2)),
                 height: rowHeight
             )
             maxRowX[currentRow] += frame.width + xMargin
@@ -175,6 +209,6 @@ fileprivate class ButtonPickerLayoutEngine {
 }
 
 protocol ButtonPickerViewDelegate {
-    func tappedButton(at index: Int, with label: String)
-    func tappedCustomButton()
+    func tappedButton(in picker: ButtonPickerView, at index: Int, with label: String)
+    func tappedCustomButton(in picker: ButtonPickerView)
 }

@@ -346,16 +346,18 @@ class TableViewCellHelper {
         description: String?,
         undescribed: Bool,
         amount: Decimal?,
+        day: CalendarDay,
         showPlus: Bool,
         showButtonPicker: Bool,
         buttonPickerValues: [String]?,
         showDetailDisclosure: Bool,
         tappedSave: @escaping (String?, Decimal?, ()->()) -> (),
         tappedCancel: @escaping ( ()->(), ([String]?)->() ) -> (),
-        selectedDetailDisclosure: @escaping () -> (),
+        selectedDetailDisclosure: @escaping (Bool) -> (),
         didBeginEditing: @escaping ((ExpenseTableViewCell) -> ()),
         changedToDescription: @escaping (String?) -> (),
         changedToAmount: @escaping (Decimal?) -> (),
+        changedToDay: @escaping (CalendarDay) -> (),
         changedCellHeight: @escaping (CGFloat, CGFloat) -> ()
     ) -> UITableViewCell {
         var cell: ExpenseTableViewCell! = tableView.dequeueReusableCell(withIdentifier: "addExpense") as? ExpenseTableViewCell
@@ -392,6 +394,8 @@ class TableViewCellHelper {
             changedToAmount(amount)
         }
 
+        cell.changedDay = changedToDay
+
         cell.changedCellHeight = changedCellHeight
 
         cell.amountPlaceholder = "$0.00"
@@ -403,13 +407,15 @@ class TableViewCellHelper {
         cell.amountText = amountText
         cell.amountMaxValue = 1e7
 
+        cell.day = day
+
         cell.descriptionText = description
         cell.descriptionPlaceholder = undescribed ? "No Description" : "Description"
         cell.descriptionPlaceholderUsesUndescribedStyle = undescribed
         cell.setPlusButton(show: showPlus, animated: false)
         cell.setDetailDisclosure(show: showDetailDisclosure, animated: false)
 
-        cell.setButtonPicker(show: showButtonPicker, buttonValues: buttonPickerValues)
+        cell.setQuickSuggest(show: showButtonPicker, buttonValues: buttonPickerValues)
 
         cell.notifyHeightReceiver()
 

@@ -10,23 +10,6 @@ import Foundation
 
 class DSButton : UIButton {
     var pressedColor = UIColor.clear
-
-    var nonHighlightedBackgroundColor: UIColor? {
-        didSet {
-            backgroundColor = nonHighlightedBackgroundColor
-        }
-    }
-
-    override open var isHighlighted: Bool {
-        didSet {
-            if isHighlighted {
-                backgroundColor = pressedColor
-            } else {
-                backgroundColor = nonHighlightedBackgroundColor
-            }
-        }
-    }
-
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -36,11 +19,17 @@ class DSButton : UIButton {
         self.layer.borderColor = self.tintColor.cgColor
         self.layer.borderWidth = 1
 
-        self.nonHighlightedBackgroundColor = .clear
         self.backgroundColor = .clear
 
         self.setTitleColor(self.tintColor, for: .normal)
         self.setTitleColor(.white, for: .highlighted)
+        self.setTitleColor(.white, for: .selected)
+
+        let pressedColorImage = UIImage.withColor(pressedColor)
+        self.setBackgroundImage(pressedColorImage, for: .highlighted)
+        self.setBackgroundImage(pressedColorImage, for: .selected)
+
+        self.clipsToBounds = true
     }
 
     required init?(coder aDecoder: NSCoder) {
