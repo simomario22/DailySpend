@@ -179,10 +179,12 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
                     resetCleanAddCell(buttonStrings)
                     datum.amount = nil
                     datum.shortDescription = nil
+                    datum.day = CalendarDay()
                     datum.clean = true
                 } else if !datum.clean {
                     datum.amount = expense!.amount
                     datum.shortDescription = expense!.shortDescription
+                    datum.day = expense!.transactionDay ?? CalendarDay()
                     datum.clean = true
                     self.tableView.reloadRows(at: [IndexPath(row: updatingRow.row, section: 0)], with: .automatic)
                 }
