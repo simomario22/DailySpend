@@ -97,6 +97,10 @@ class ExpenseCellDescriptionTextView: UITextView {
 
 extension ExpenseCellDescriptionTextView: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
+        let beginningRange = textView.textRange(from: textView.beginningOfDocument, to: textView.beginningOfDocument)
+        if style == .placeholder && textView.selectedTextRange != beginningRange {
+            textView.selectedTextRange = beginningRange
+        }
         textViewDelegate?.textViewDidBeginEditing?(textView)
     }
 

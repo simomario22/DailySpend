@@ -102,6 +102,9 @@ class TodayViewController: UIViewController, GoalPickerDelegate, TodayViewExpens
     
     override func viewWillAppear(_ animated: Bool) {
         updateSummaryViewForGoal(self.goal)
+
+         // Settings can change suggested options in add cell.
+        expensesController.reloadAddCell()
     }
 
     override func didReceiveMemoryWarning() {
@@ -297,7 +300,7 @@ extension TodayViewController : UINavigationControllerDelegate {
         _ navigationController: UINavigationController,
         willShow viewController: UIViewController,
         animated: Bool
-        ) {
+    ) {
         if viewController == self {
             goalPicker.delegate = self
             goalPicker.makeTitleView(

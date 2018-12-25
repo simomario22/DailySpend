@@ -56,6 +56,8 @@
 		C5631E9821D1687800561CE3 /* calendar@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5631E9021D1685500561CE3 /* calendar@3x.png */; };
 		C5631E9A21D16B7300561CE3 /* RelativeDatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5631E9921D16B7300561CE3 /* RelativeDatePicker.swift */; };
 		C5631E9B21D16CAB00561CE3 /* RelativeDatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5631E9921D16B7300561CE3 /* RelativeDatePicker.swift */; };
+		C5631E9D21D1F2FC00561CE3 /* ManageQuickEntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5631E9C21D1F2FC00561CE3 /* ManageQuickEntryViewController.swift */; };
+		C5631E9E21D1F3EF00561CE3 /* ManageQuickEntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5631E9C21D1F2FC00561CE3 /* ManageQuickEntryViewController.swift */; };
 		C56CA07A1F64BDEB00874FA8 /* TextFieldTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56CA0791F64BDEB00874FA8 /* TextFieldTableViewCell.swift */; };
 		C56F7ED91F64A22B00639F8D /* DatePickerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56F7ED81F64A22B00639F8D /* DatePickerTableViewCell.swift */; };
 		C573B9F420324C410025A5A2 /* Goal+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C573B9F220324C410025A5A2 /* Goal+CoreDataClass.swift */; };
@@ -79,6 +81,8 @@
 		C586813C1F2E85D5008D3AEE /* BorderedTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = C586813B1F2E85D5008D3AEE /* BorderedTextField.swift */; };
 		C586813E1F2E8BF2008D3AEE /* CGRect+Edges.swift in Sources */ = {isa = PBXBuildFile; fileRef = C586813D1F2E8BF2008D3AEE /* CGRect+Edges.swift */; };
 		C58681401F2E91E6008D3AEE /* UIView+MultipleSubviews.swift in Sources */ = {isa = PBXBuildFile; fileRef = C586813F1F2E91E6008D3AEE /* UIView+MultipleSubviews.swift */; };
+		C587E7F921D1FA8100B21FAE /* AddQuickEntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C587E7F821D1FA8100B21FAE /* AddQuickEntryViewController.swift */; };
+		C587E7FA21D1FCF800B21FAE /* AddQuickEntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C587E7F821D1FA8100B21FAE /* AddQuickEntryViewController.swift */; };
 		C58BBB9721704FD900D9650C /* ReviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C58BBB9621704FD900D9650C /* ReviewViewController.swift */; };
 		C58BBB9A2170519500D9650C /* PeriodBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C58BBB992170519500D9650C /* PeriodBrowserView.swift */; };
 		C58FB040210ED88500246156 /* ImageSelectorTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C58FB03F210ED88500246156 /* ImageSelectorTableViewCell.swift */; };
@@ -282,6 +286,7 @@
 		C5631E9121D1685500561CE3 /* calendar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = calendar.png; sourceTree = "<group>"; };
 		C5631E9221D1685500561CE3 /* calendar@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "calendar@2x.png"; sourceTree = "<group>"; };
 		C5631E9921D16B7300561CE3 /* RelativeDatePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelativeDatePicker.swift; sourceTree = "<group>"; };
+		C5631E9C21D1F2FC00561CE3 /* ManageQuickEntryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageQuickEntryViewController.swift; sourceTree = "<group>"; };
 		C56CA0791F64BDEB00874FA8 /* TextFieldTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextFieldTableViewCell.swift; sourceTree = "<group>"; };
 		C56F7ED81F64A22B00639F8D /* DatePickerTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatePickerTableViewCell.swift; sourceTree = "<group>"; };
 		C573B9F220324C410025A5A2 /* Goal+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Goal+CoreDataClass.swift"; path = "DailySpend/Goal+CoreDataClass.swift"; sourceTree = "<group>"; };
@@ -312,6 +317,7 @@
 		C586813B1F2E85D5008D3AEE /* BorderedTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BorderedTextField.swift; sourceTree = "<group>"; };
 		C586813D1F2E8BF2008D3AEE /* CGRect+Edges.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGRect+Edges.swift"; sourceTree = "<group>"; };
 		C586813F1F2E91E6008D3AEE /* UIView+MultipleSubviews.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+MultipleSubviews.swift"; sourceTree = "<group>"; };
+		C587E7F821D1FA8100B21FAE /* AddQuickEntryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddQuickEntryViewController.swift; sourceTree = "<group>"; };
 		C58BBB9621704FD900D9650C /* ReviewViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReviewViewController.swift; sourceTree = "<group>"; };
 		C58BBB992170519500D9650C /* PeriodBrowserView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PeriodBrowserView.swift; sourceTree = "<group>"; };
 		C58FB03F210ED88500246156 /* ImageSelectorTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageSelectorTableViewCell.swift; sourceTree = "<group>"; };
@@ -711,6 +717,8 @@
 		C5E51E58209EC505005C674B /* Settings View */ = {
 			isa = PBXGroup;
 			children = (
+				C5631E9C21D1F2FC00561CE3 /* ManageQuickEntryViewController.swift */,
+				C587E7F821D1FA8100B21FAE /* AddQuickEntryViewController.swift */,
 				C5EDC2261EBBC12400DA5CB7 /* SettingsViewController.swift */,
 			);
 			name = "Settings View";
@@ -973,6 +981,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C587E7FA21D1FCF800B21FAE /* AddQuickEntryViewController.swift in Sources */,
+				C5631E9E21D1F3EF00561CE3 /* ManageQuickEntryViewController.swift in Sources */,
 				C5631E9B21D16CAB00561CE3 /* RelativeDatePicker.swift in Sources */,
 				C5631E8F21D15A4400561CE3 /* Collection+SafeIndex.swift in Sources */,
 				C5631E8C21D0B4B900561CE3 /* ExpenseSuggestionDataProvider.swift in Sources */,
@@ -1076,6 +1086,7 @@
 				C5BD27D82198E80D000C85F8 /* ExpenseTableViewCell.swift in Sources */,
 				C5BD27D92198E80D000C85F8 /* UICountingLabel.m in Sources */,
 				C5BD27DA2198E80D000C85F8 /* Goal+CoreDataProperties.swift in Sources */,
+				C587E7F921D1FA8100B21FAE /* AddQuickEntryViewController.swift in Sources */,
 				C5BD27DB2198E80D000C85F8 /* AdjustmentViewController.swift in Sources */,
 				C5BD27DC2198E80D000C85F8 /* AddAdjustmentViewController.swift in Sources */,
 				C5BD27DD2198E80D000C85F8 /* ExportViewController.swift in Sources */,
@@ -1092,6 +1103,7 @@
 				C5BD27E62198E80D000C85F8 /* TextFieldTableViewCell.swift in Sources */,
 				C5BD27E72198E80D000C85F8 /* PauseViewController.swift in Sources */,
 				C5BD27E82198E80D000C85F8 /* BorderedTextField.swift in Sources */,
+				C5631E9D21D1F2FC00561CE3 /* ManageQuickEntryViewController.swift in Sources */,
 				C5BD27E92198E80D000C85F8 /* UIView+MultipleSubviews.swift in Sources */,
 				C5BD27EA2198E80D000C85F8 /* ImageSelectorView.swift in Sources */,
 				C5BD27EB2198E80D000C85F8 /* UIImage+Color.swift in Sources */,

@@ -12,9 +12,9 @@ class ExpenseSuggestionDataProvider {
     private let defaultsKey = "quickSuggestStrings"
 
     func quickSuggestStrings() -> [String] {
-        let values = ["Restaurant", "Groceries", "Gas", "Snack", "Potato 1", "Potato 2"]
-        return values
-//        return UserDefaults.standard.stringArray(forKey: defaultsKey) ?? []
+//        let values = ["Restaurant", "Groceries", "Gas", "Snack", "Potato 1", "Potato 2"]
+//        return values
+        return UserDefaults.standard.stringArray(forKey: defaultsKey) ?? []
     }
 
     func setQuickSuggestStrings(strings: [String]) {

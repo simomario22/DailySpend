@@ -416,7 +416,10 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
                 })
             }
         })
+    }
 
+    func reloadAddCell() {
+        self.tableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .fade)
     }
 }
 
