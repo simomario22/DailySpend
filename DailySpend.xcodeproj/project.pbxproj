@@ -217,6 +217,8 @@
 		C5CF5F671E7BB68600C35539 /* today.png in Resources */ = {isa = PBXBuildFile; fileRef = C5CF5F611E7BB68600C35539 /* today.png */; };
 		C5CF5F681E7BB68600C35539 /* today@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5CF5F621E7BB68600C35539 /* today@2x.png */; };
 		C5CF5F691E7BB68600C35539 /* today@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5CF5F631E7BB68600C35539 /* today@3x.png */; };
+		C5D3124C21DACD7900BD0995 /* BalanceBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5D3124B21DACD7900BD0995 /* BalanceBarView.swift */; };
+		C5D3124D21DACF9500BD0995 /* BalanceBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5D3124B21DACD7900BD0995 /* BalanceBarView.swift */; };
 		C5D3FF331F646B1300D3C7A4 /* AddPauseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5D3FF321F646B1300D3C7A4 /* AddPauseViewController.swift */; };
 		C5D4DAB81F931D250013A6F3 /* SegmentedControlTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5D4DAB71F931D240013A6F3 /* SegmentedControlTableViewCell.swift */; };
 		C5E02501201C011500831269 /* CalendarWeek.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5E02500201C011500831269 /* CalendarWeek.swift */; };
@@ -371,6 +373,7 @@
 		C5CF5F611E7BB68600C35539 /* today.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = today.png; sourceTree = "<group>"; };
 		C5CF5F621E7BB68600C35539 /* today@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "today@2x.png"; sourceTree = "<group>"; };
 		C5CF5F631E7BB68600C35539 /* today@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "today@3x.png"; sourceTree = "<group>"; };
+		C5D3124B21DACD7900BD0995 /* BalanceBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceBarView.swift; sourceTree = "<group>"; };
 		C5D3FF321F646B1300D3C7A4 /* AddPauseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddPauseViewController.swift; sourceTree = "<group>"; };
 		C5D3FF341F646BF300D3C7A4 /* DailySpend 4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "DailySpend 4.xcdatamodel"; sourceTree = "<group>"; };
 		C5D4DAB71F931D240013A6F3 /* SegmentedControlTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentedControlTableViewCell.swift; sourceTree = "<group>"; };
@@ -439,7 +442,6 @@
 			isa = PBXGroup;
 			children = (
 				C59AA77321B3483400F40762 /* GoalBalanceCache.swift */,
-				C5A4AF8F1FA6B52900101809 /* TableViewCellHelper.swift */,
 			);
 			name = "Convenience Classes";
 			sourceTree = "<group>";
@@ -447,7 +449,6 @@
 		C507D7CE21B3BF0D000EB300 /* Navigation Components */ = {
 			isa = PBXGroup;
 			children = (
-				C5A0DD5B20429CC2004C6411 /* NavigationGoalPickerController.swift */,
 				C507D7C821B3BE77000EB300 /* BorderedView.swift */,
 				C507D7CB21B3BE97000EB300 /* BorderedToolbar.swift */,
 				C5E51E59209FA8A8005C674B /* SpendIndicationNavigationController.swift */,
@@ -574,7 +575,7 @@
 				C5E51E55209EC49A005C674B /* Export View and Logic */,
 				C507D7C621B3BE31000EB300 /* Data Processing */,
 				C507D7C721B3BE3F000EB300 /* Convenience Classes */,
-				C5A0DD5B20429CC2004C6411 /* NavigationGoalPicker.swift */,
+				C5A0DD5B20429CC2004C6411 /* NavigationGoalPickerController.swift */,
 				C544E5E8217D2C700098AB17 /* ReverseNavigationAnimator.swift */,
 				C5A4AF8F1FA6B52900101809 /* TableViewCellHelper.swift */,
 				C5631E8A21D0B21E00561CE3 /* ExpenseSuggestionDataProvider.swift */,
@@ -615,8 +616,9 @@
 				C58BBB9621704FD900D9650C /* ReviewViewController.swift */,
 				C5FCDFE6218CDC4500CA5336 /* ReviewViewExpensesController.swift */,
 				C54E324421AB69560014160A /* ReviewViewAdjustmentsController.swift */,
-				C5568B5D2186C3B9000F0301 /* PeriodBrowserController.swift */,
 				C5A416F621BA29B10057DB47 /* BalanceBarController.swift */,
+				C5D3124B21DACD7900BD0995 /* BalanceBarView.swift */,
+				C5568B5D2186C3B9000F0301 /* PeriodBrowserController.swift */,
 				C58BBB992170519500D9650C /* PeriodBrowserView.swift */,
 			);
 			name = "Review View";
@@ -754,7 +756,6 @@
 				C5F75FF11F9D6A29005F3510 /* UITextField+Size.swift */,
 				C586813F1F2E91E6008D3AEE /* UIView+MultipleSubviews.swift */,
 				C586813D1F2E8BF2008D3AEE /* CGRect+Edges.swift */,
-				C544E5E8217D2C700098AB17 /* ReverseNavigationAnimator.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -1036,6 +1037,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C5D3124D21DACF9500BD0995 /* BalanceBarView.swift in Sources */,
 				C5A416F821BA2A1C0057DB47 /* BalanceBarController.swift in Sources */,
 				C507D7CD21B3BEAD000EB300 /* BorderedToolbar.swift in Sources */,
 				C57F71FF21B3680A00E88CEF /* GoalBalanceCalculator.swift in Sources */,
@@ -1193,6 +1195,7 @@
 				C5BD27FD2198E80D000C85F8 /* ImageSelectorController.swift in Sources */,
 				C5BD27FE2198E80D000C85F8 /* TodayViewExpensesController.swift in Sources */,
 				C507D7CC21B3BE97000EB300 /* BorderedToolbar.swift in Sources */,
+				C5D3124C21DACD7900BD0995 /* BalanceBarView.swift in Sources */,
 				C5BD27FF2198E80D000C85F8 /* CGRect+Edges.swift in Sources */,
 				C5BD28002198E80D000C85F8 /* SpendIndicationNavigationController.swift in Sources */,
 				C5BD28012198E80D000C85F8 /* UIAlertController+Actions.swift in Sources */,

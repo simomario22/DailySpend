@@ -188,6 +188,9 @@ class ReviewViewController: UIViewController {
      */
     private func notifyControllersDataChanged() {
         pbc.updatePeriodBrowser(goal: goal, recurringGoalPeriod: recurringGoalPeriod)
+
+        let balanceDay = CalendarDay(dateInDay: interval.end)?.subtract(days: 1) ?? CalendarDay()
+        bbc.updateWithBalanceFor(goal: goal, day: balanceDay)
         
         for providerTuple in entityProviders {
             providerTuple.provider.setGoal(goal, interval: interval)
@@ -215,7 +218,6 @@ extension ReviewViewController: BalanceBarControllerDelegate {
         let carryOverManager = CarryOverAdjustmentManager(persistentContainer: appDelegate.persistentContainer)
         carryOverManager.updateCarryOverAdjustments(for: goal) {
             (updatedAmount: Set<Adjustment>?, deleted: Set<Adjustment>?, inserted: Set<Adjustment>?) in
-            //Logger.printAllCoreData()
             if updatedAmount == nil {
                 Logger.debug("Failed to create carry over adjustments.")
             } else {
@@ -309,7 +311,7 @@ extension ReviewViewController: UITableViewDataSource, UITableViewDelegate {
         let section = indexPath.section
         return entityProviders[section].provider.tableView?(tableView, canEditRowAt: indexPath) ?? false
     }
-    
+
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         let section = indexPath.section
         entityProviders[section].provider.tableView?(tableView, commit: editingStyle, forRowAt: indexPath)
