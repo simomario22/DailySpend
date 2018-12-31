@@ -197,6 +197,7 @@ class Adjustment: NSManagedObject {
          amountPerDay: Decimal?? = nil,
          firstDayEffective: CalendarDay?? = nil,
          lastDayEffective: CalendarDay?? = nil,
+         type: AdjustmentType? = nil,
          dateCreated: Date?? = nil,
          goal: Goal? = nil
     ) -> (valid: Bool, problem: String?) {
@@ -205,12 +206,9 @@ class Adjustment: NSManagedObject {
         let _amountPerDay = amountPerDay ?? self.amountPerDay
         let _firstDayEffective = firstDayEffective ?? self.firstDayEffective
         let _lastDayEffective = lastDayEffective ?? self.lastDayEffective
+        let _type = type ?? self.type
         let _dateCreated = dateCreated ?? self.dateCreated
         let _goal = goal ?? self.goal
-        
-        if _shortDescription == nil || _shortDescription!.count == 0 {
-            return (false, "This adjustment must have a description.")
-        }
         
         if _amountPerDay == nil || _amountPerDay! == 0 {
             return (false, "This adjustment must have an amount specified.")
@@ -246,6 +244,7 @@ class Adjustment: NSManagedObject {
         self.amountPerDay = _amountPerDay
         self.firstDayEffective = _firstDayEffective
         self.lastDayEffective = _lastDayEffective
+        self.type = _type
         self.dateCreated = _dateCreated
         self.goal = _goal
         return (true, nil)
@@ -432,12 +431,24 @@ class Adjustment: NSManagedObject {
          * Returns a string for a fetch request's predicate that will match
          * all types of carry over expenses.
          *
-         * Note that the returned string is enclosed in parenthsis, and, if used
-         * with other conditions, must be chained using logical operators.
+         * Note that the returned string is enclosed in parenthesis, and, if
+         * used with other conditions, must be chained using logical operators.
          */
         static func isCarryOverAdjustmentPredicateString() -> String {
             return "(type_ == \(Adjustment.AdjustmentType.CarryOver.rawValue) OR " +
                    "type_ == \(Adjustment.AdjustmentType.CarryOverDeleted.rawValue))"
+        }
+
+        /**
+         * Returns a string for a fetch request's predicate that will match
+         * adjustments that are valid to be counted in a goal's balance (i.e.
+         * not deleted carry over adjustments).
+         *
+         * Note that the returned string is enclosed in parenthesis, and, if
+         * used with other conditions, must be chained using logical operators.
+         */
+        static func isValidCarryOverAdjustmentPredicateString() -> String {
+            return "(type_ == \(Adjustment.AdjustmentType.CarryOver.rawValue))"
         }
     }
     
@@ -453,6 +464,13 @@ class Adjustment: NSManagedObject {
         }
     }
 
+    /**
+     * `true` if this adjustment is a carry over adjustment and should be
+     * counted as part of a goal's balance, otherwise `false`.
+     */
+    var isValidCarryOverAdjustmentType: Bool {
+        return type == .CarryOver
+    }
 
     /**
      * Adjustments can currently only be associated with one goal. This is that

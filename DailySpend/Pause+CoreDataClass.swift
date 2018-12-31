@@ -171,7 +171,8 @@ class Pause: NSManagedObject {
         return pauseResults
     }
     
-    func propose(shortDescription: String?? = nil,
+    func propose(context: NSManagedObjectContext,
+                 shortDescription: String?? = nil,
                  firstDayEffective: CalendarDay?? = nil,
                  lastDayEffective: CalendarDay?? = nil,
                  dateCreated: Date?? = nil) -> (valid: Bool, problem: String?) {

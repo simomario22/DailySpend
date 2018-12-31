@@ -161,7 +161,7 @@ class TodayViewController: UIViewController, GoalPickerDelegate, TodayViewExpens
         
         // Update summary view with information from this goal for the
         // appropriate period.
-        let balanceCalculator = GoalBalanceCalculator()
+        let balanceCalculator = GoalBalanceCalculator(persistentContainer: appDelegate.persistentContainer)
         balanceCalculator.calculateBalance(for: goal, on: CalendarDay()) {
             (balance: Decimal?, _, _) in
             guard let newAmount = balance?.doubleValue else {

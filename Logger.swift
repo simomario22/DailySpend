@@ -9,14 +9,28 @@
 import Foundation
 
 class Logger {
-    
-    static func isTesting() -> Bool {
+
+    static var _isTesting: Bool?
+    private static func isTesting() -> Bool {
+        if _isTesting != nil {
+            return _isTesting!
+        }
+
         guard let bundleID = Bundle.main.bundleIdentifier else {
             return false
         }
-        return bundleID.contains("com.joshsherick.DailySpendTesting")
+        
+        _isTesting = bundleID.contains("com.joshsherick.DailySpendTesting")
+        return _isTesting!
     }
-    
+
+    private static var dateFormatter: DateFormatter {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .full
+        dateFormatter.timeStyle = .full
+        return dateFormatter
+    }
+
     static func debug(_ message: String) {
         if isTesting() {
             print(message)
@@ -39,9 +53,6 @@ class Logger {
         let expenses = Expense.get(context: context,sortDescriptors: [sortDesc])!
         let goals = Goal.get(context: context, sortDescriptors: [sortDesc])!
 
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .full
-        dateFormatter.timeStyle = .full
         func date(_ d: Date?) -> String {
             if let u = d {
                 return dateFormatter.string(from: u)
@@ -136,18 +147,26 @@ class Logger {
         print("\(allAdjustments.count) adjustments")
         
         for adjustment in allAdjustments {
-            print("Adjustment:")
-            let created = dateFormatter.string(from: adjustment.dateCreated!)
-            let first = adjustment.firstDayEffective!.string(formatter: dateFormatter)
-            let last = adjustment.lastDayEffective!.string(formatter: dateFormatter)
-            
-            print("adjustment.amountPerDay: \(adjustment.amountPerDay!)")
-            print("adjustment.shortDescription: \(adjustment.shortDescription!)")
-            print("adjustment.dateCreated: \(created)")
-            print("adjustment.firstDayEffective: \(first)")
-            print("adjustment.lastDayEffective: \(last)")
-            print("adjustment.goal: \(String(describing: adjustment.goal?.shortDescription))")
-            print("")
+            printAdjustment(adjustment)
         }
+    }
+
+    static func printAdjustment(_ adjustment: Adjustment) {
+        if !isTesting() {
+            return
+        }
+
+        print("Adjustment:")
+        let created = dateFormatter.string(from: adjustment.dateCreated!)
+        let first = adjustment.firstDayEffective!.string(formatter: dateFormatter)
+        let last = adjustment.lastDayEffective!.string(formatter: dateFormatter)
+
+        print("adjustment.amountPerDay: \(adjustment.amountPerDay!)")
+        print("adjustment.shortDescription: \(String(describing: adjustment.shortDescription))")
+        print("adjustment.dateCreated: \(created)")
+        print("adjustment.firstDayEffective: \(first)")
+        print("adjustment.lastDayEffective: \(last)")
+        print("adjustment.type: \(adjustment.type)")
+        print("adjustment.goal: \(String(describing: adjustment.goal?.shortDescription))")
     }
 }

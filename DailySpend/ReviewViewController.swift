@@ -16,6 +16,7 @@ class ReviewViewController: UIViewController {
     }
 
     private var pbc: PeriodBrowserController!
+    private var bbc: BalanceBarController!
     private var neutralBarColor: UIColor!
     private var tableView: UITableView!
     private var cellCreator: TableViewCellHelper!
@@ -67,25 +68,19 @@ class ReviewViewController: UIViewController {
         
         self.navigationController?.navigationBar.hideBorderLine()
         pbc = PeriodBrowserController(delegate: self, view: self.view)
+        bbc = BalanceBarController(delegate: self, view: self.view, topY: pbc.periodBrowser.bottomAnchor)
         
-        let width = view.frame.size.width
-        let navHeight = navigationController?.navigationBar.frame.size.height ?? 0
-        let statusBarSize = UIApplication.shared.statusBarFrame.size
-        let statusBarHeight = min(statusBarSize.width, statusBarSize.height)
-        let tableHeight = view.frame.size.height - navHeight - statusBarHeight
-        let tableFrame = CGRect(x: 0, y: 0, width: width, height: tableHeight)
-        tableView = UITableView(frame: tableFrame, style: .grouped)
+        tableView = UITableView(frame: CGRect(), style: .grouped)
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.delegate = self
         tableView.dataSource = self
         self.view.addSubview(tableView)
         
-        tableView.topAnchor.constraint(equalTo: pbc.periodBrowser.bottomAnchor).isActive = true
+        tableView.topAnchor.constraint(equalTo: bbc.balanceBar.bottomAnchor).isActive = true
         tableView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true
         tableView.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true
         tableView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
-        
-        
+
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, tappedAdd)
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             barButtonSystemItem: .done, {
@@ -171,7 +166,7 @@ class ReviewViewController: UIViewController {
     private func updateAmount() {
         let evaluationDay = CalendarDay(dateInDay: interval.end)?.subtract(days: 1) ?? CalendarDay()
         
-        let balanceCalculator = GoalBalanceCalculator()
+        let balanceCalculator = GoalBalanceCalculator(persistentContainer: appDelegate.persistentContainer)
         balanceCalculator.calculateBalance(for: goal, on: evaluationDay)
         { (balance: Decimal?, _, _) in
             guard let newAmount = balance?.doubleValue else {
@@ -209,6 +204,38 @@ class ReviewViewController: UIViewController {
         tableView.deleteSections(providersSections, with: forward ? .left : .right)
         tableView.insertSections(providersSections, with: forward ? .right : .left)
         tableView.endUpdates()
+    }
+}
+
+extension ReviewViewController: BalanceBarControllerDelegate {
+    func requestedReloadOfCarryOverAdjustments() {
+        guard let goal = goal else {
+            return
+        }
+        let carryOverManager = CarryOverAdjustmentManager(persistentContainer: appDelegate.persistentContainer)
+        carryOverManager.updateCarryOverAdjustments(for: goal) {
+            (updatedAmount: Set<Adjustment>?, deleted: Set<Adjustment>?, inserted: Set<Adjustment>?) in
+            //Logger.printAllCoreData()
+            if updatedAmount == nil {
+                Logger.debug("Failed to create carry over adjustments.")
+            } else {
+                Logger.debug("Successfully updated carry over adjustments!")
+                Logger.debug("Updated: ")
+                for adjustment in updatedAmount! {
+                    Logger.printAdjustment(adjustment)
+                }
+
+                Logger.debug("Deleted: ")
+                for adjustment in deleted! {
+                    Logger.printAdjustment(adjustment)
+                }
+
+                Logger.debug("Inserted: ")
+                for adjustment in inserted! {
+                    Logger.printAdjustment(adjustment)
+                }
+            }
+        }
     }
 }
 

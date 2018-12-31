@@ -74,9 +74,12 @@ class AddPauseViewController: UIViewController, UITableViewDelegate, UITableView
             pause!.dateCreated = Date()
         }
         
-        let validation = pause!.propose(shortDescription: shortDescription,
-                                         firstDayEffective: firstDayEffective,
-                                         lastDayEffective: lastDayEffective)
+        let validation = pause!.propose(
+            context: context,
+            shortDescription: shortDescription,
+            firstDayEffective: firstDayEffective,
+            lastDayEffective: lastDayEffective
+        )
         if validation.valid {
             appDelegate.saveContext()
             self.view.endEditing(false)

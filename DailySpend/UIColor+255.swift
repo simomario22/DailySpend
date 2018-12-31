@@ -36,4 +36,8 @@ extension UIColor {
     class var disabled: UIColor {
         return UIColor(white: 0.492583, alpha: 0.35)
     }
+
+    class var navigationBarBackground: UIColor {
+        return UIColor(red255: 254, green: 254, blue: 254)
+    }
 }

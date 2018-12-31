@@ -46,9 +46,9 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func setGoals() {
-        currentGoals = Goal.getIndentedGoals(excludeGoal: { $0.isArchived || $0.hasFutureStart })
-        futureStartGoals = Goal.getIndentedGoals(excludeGoal: { !$0.hasFutureStart } )
-        archivedGoals = Goal.getIndentedGoals(excludeGoal: { !$0.isArchived })
+        currentGoals = Goal.getIndentedGoals(context: context, excludeGoal: { $0.isArchived || $0.hasFutureStart })
+        futureStartGoals = Goal.getIndentedGoals(context: context, excludeGoal: { !$0.hasFutureStart } )
+        archivedGoals = Goal.getIndentedGoals(context: context, excludeGoal: { !$0.isArchived })
     }
 
     override func didReceiveMemoryWarning() {

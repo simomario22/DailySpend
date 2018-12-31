@@ -16,6 +16,7 @@ class PeriodBrowserController {
     
     init(delegate: PeriodSelectorViewDelegate, view: UIView) {
         self.periodBrowser = PeriodBrowserView()
+        self.periodBrowser.translatesAutoresizingMaskIntoConstraints = false
 
         NotificationCenter.default.addObserver(
             forName: .init("ChangedSpendIndicationColor"),
@@ -38,8 +39,13 @@ class PeriodBrowserController {
         } else {
             periodBrowser.backgroundColor = UIColor(red255: 254, green: 254, blue: 254)
         }
-        
+
         view.addSubview(periodBrowser)
+
+        periodBrowser.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        periodBrowser.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        periodBrowser.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        periodBrowser.heightAnchor.constraint(equalToConstant: periodBrowserViewHeight).isActive = true
     }
     
     /**

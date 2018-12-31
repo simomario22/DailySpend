@@ -7,16 +7,21 @@
 //
 
 import Foundation
+import CoreData
 
 class ReviewViewAdjustmentsController: NSObject, AddAdjustmentDelegate, ReviewEntityDataProvider {
-    
+    let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
+    var context: NSManagedObjectContext {
+        return appDelegate.persistentContainer.viewContext
+    }
+
     var delegate: ReviewEntityControllerDelegate
     
     struct AdjustmentCellDatum {
         var shortDescription: String?
         var amountDescription: String
         var datesDescription: String
-        init(_ shortDescription: String, _ amountDescription: String, _ datesDescription: String) {
+        init(_ shortDescription: String?, _ amountDescription: String, _ datesDescription: String) {
             self.shortDescription = shortDescription
             self.amountDescription = amountDescription
             self.datesDescription = datesDescription
@@ -46,8 +51,16 @@ class ReviewViewAdjustmentsController: NSObject, AddAdjustmentDelegate, ReviewEn
     }
     
     private func makeAdjustmentCellDatum(_ adjustment: Adjustment) -> AdjustmentCellDatum {
+        var description = adjustment.shortDescription
+        if adjustment.isValidCarryOverAdjustmentType && interval != nil {
+            let formatter = DateFormatter()
+            formatter.timeStyle = .none
+            formatter.dateStyle = .short
+            let endOfPreviousPeriod = CalendarDay(dateInDay: interval!.start).subtract(days: 1).string(formatter: formatter)
+            description = "Carry over from \(endOfPreviousPeriod)"
+        }
         return AdjustmentCellDatum(
-            adjustment.shortDescription!,
+            description,
             String.formatAsCurrency(amount: adjustment.amountPerDay ?? 0)!,
             adjustment.humanReadableInterval()!
         )
@@ -82,7 +95,7 @@ class ReviewViewAdjustmentsController: NSObject, AddAdjustmentDelegate, ReviewEn
             return
         }
         
-        adjustments = goal.getAdjustments(interval: interval)
+        adjustments = goal.getAdjustments(context: context, interval: interval)
         for adjustment in adjustments {
             adjustmentCellData.append(makeAdjustmentCellDatum(adjustment))
         }
@@ -120,7 +133,7 @@ class ReviewViewAdjustmentsController: NSObject, AddAdjustmentDelegate, ReviewEn
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        if adjustmentCellData.count == 0 {
+        if adjustmentCellData.count == 0 || adjustments[indexPath.row].isValidCarryOverAdjustmentType {
             return
         }
         
@@ -133,7 +146,7 @@ class ReviewViewAdjustmentsController: NSObject, AddAdjustmentDelegate, ReviewEn
     }
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        return adjustmentCellData.count > 0
+        return adjustmentCellData.count > 0 && !adjustments[indexPath.row].isValidCarryOverAdjustmentType
     }
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {

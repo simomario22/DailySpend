@@ -8,7 +8,7 @@
 
 import Foundation
 
-class CalendarDay {
+class CalendarDay: CustomStringConvertible {
     private var date: Date
     
     /*
@@ -147,6 +147,13 @@ class CalendarDay {
     
     var period: PeriodScope {
         return .Day
+    }
+
+    var description: String {
+        let formatter = DateFormatter()
+        formatter.timeStyle = .none
+        formatter.dateStyle = .short
+        return self.string(formatter: formatter)
     }
 }
 

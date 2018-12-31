@@ -85,6 +85,8 @@
 		C59E2A2E205C97F5006D18B5 /* ValueTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C59E2A2D205C97F5006D18B5 /* ValueTableViewCell.swift */; };
 		C5A0DD5C20429CC2004C6411 /* NavigationGoalPickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5A0DD5B20429CC2004C6411 /* NavigationGoalPickerController.swift */; };
 		C5A261A41F66645B007CBB21 /* PauseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5A261A31F66645B007CBB21 /* PauseViewController.swift */; };
+		C5A416F721BA29B10057DB47 /* BalanceBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5A416F621BA29B10057DB47 /* BalanceBarController.swift */; };
+		C5A416F821BA2A1C0057DB47 /* BalanceBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5A416F621BA29B10057DB47 /* BalanceBarController.swift */; };
 		C5A4AF901FA6B52900101809 /* TableViewCellHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5A4AF8F1FA6B52900101809 /* TableViewCellHelper.swift */; };
 		C5B367CF1EBBD65E006B5ADC /* cog.png in Resources */ = {isa = PBXBuildFile; fileRef = C5B367CC1EBBD65E006B5ADC /* cog.png */; };
 		C5B367D01EBBD65E006B5ADC /* cog@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5B367CD1EBBD65E006B5ADC /* cog@2x.png */; };
@@ -314,6 +316,7 @@
 		C5A0DD5B20429CC2004C6411 /* NavigationGoalPickerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationGoalPickerController.swift; sourceTree = "<group>"; };
 		C5A261A31F66645B007CBB21 /* PauseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PauseViewController.swift; sourceTree = "<group>"; };
 		C5A287C41EC1741200D3479A /* DailySpend 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "DailySpend 2.xcdatamodel"; sourceTree = "<group>"; };
+		C5A416F621BA29B10057DB47 /* BalanceBarController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BalanceBarController.swift; sourceTree = "<group>"; };
 		C5A4AF8F1FA6B52900101809 /* TableViewCellHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewCellHelper.swift; sourceTree = "<group>"; };
 		C5A81A7A1F0040540032D9F1 /* ZipArchive.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ZipArchive.framework; path = Carthage/Build/iOS/ZipArchive.framework; sourceTree = "<group>"; };
 		C5B367CC1EBBD65E006B5ADC /* cog.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cog.png; sourceTree = "<group>"; };
@@ -571,6 +574,7 @@
 				C5FCDFE6218CDC4500CA5336 /* ReviewViewExpensesController.swift */,
 				C54E324421AB69560014160A /* ReviewViewAdjustmentsController.swift */,
 				C5568B5D2186C3B9000F0301 /* PeriodBrowserController.swift */,
+				C5A416F621BA29B10057DB47 /* BalanceBarController.swift */,
 				C58BBB992170519500D9650C /* PeriodBrowserView.swift */,
 			);
 			name = "Review View";
@@ -978,6 +982,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C5A416F821BA2A1C0057DB47 /* BalanceBarController.swift in Sources */,
 				C507D7CD21B3BEAD000EB300 /* BorderedToolbar.swift in Sources */,
 				C57F71FF21B3680A00E88CEF /* GoalBalanceCalculator.swift in Sources */,
 				C59AA77521B348BE00F40762 /* GoalBalanceCache.swift in Sources */,
@@ -1113,6 +1118,7 @@
 				C5BD27F82198E80D000C85F8 /* Expense+CoreDataProperties.swift in Sources */,
 				C5BD27F92198E80D000C85F8 /* ReviewViewExpensesController.swift in Sources */,
 				C5BD27FA2198E80D000C85F8 /* AppDelegate.swift in Sources */,
+				C5A416F721BA29B10057DB47 /* BalanceBarController.swift in Sources */,
 				C5BD27FB2198E80D000C85F8 /* PeriodBrowserView.swift in Sources */,
 				C59AA77421B3483400F40762 /* GoalBalanceCache.swift in Sources */,
 				C5BD27FC2198E80D000C85F8 /* PeriodBrowserController.swift in Sources */,

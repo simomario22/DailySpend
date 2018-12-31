@@ -42,7 +42,7 @@ class GoalSelectorViewController: UIViewController, UITableViewDelegate, UITable
         view.addSubview(tableView)
         cellCreator = TableViewCellHelper(tableView: tableView)
         
-        goals = Goal.getIndentedGoals(excludedGoals: excludedGoals)
+        goals = Goal.getIndentedGoals(context: context, excludedGoals: excludedGoals)
         for (i, indentedGoal) in goals.enumerated() {
             if parentSelectionHelperText != nil && indentedGoal.indentation > 0 {
                 showHelperText = true

@@ -254,7 +254,7 @@ class Goal: NSManagedObject {
      *    - excludeGoal: a function that returns true if the goal and its
      *                   children are to be excluded from the indented goals.
      */
-    class func getIndentedGoals(excludeGoal: (Goal) -> Bool) -> [IndentedGoal] {
+    class func getIndentedGoals(context: NSManagedObjectContext, excludeGoal: (Goal) -> Bool) -> [IndentedGoal] {
         guard let topLevelGoals = Goal.get(
             context: context,
             predicate: NSPredicate(format: "parentGoal_ == nil"),
@@ -273,8 +273,8 @@ class Goal: NSManagedObject {
      *    - excludedGoals: goals to exclude from the hierarchy, along with
      *                     their children.
      */
-    class func getIndentedGoals(excludedGoals: Set<Goal>?) -> [IndentedGoal] {
-        return getIndentedGoals(excludeGoal: { (goal) -> Bool in
+    class func getIndentedGoals(context: NSManagedObjectContext, excludedGoals: Set<Goal>?) -> [IndentedGoal] {
+        return getIndentedGoals(context: context, excludeGoal: { (goal) -> Bool in
             return excludedGoals?.contains(goal) ?? false
         })
     }
@@ -483,7 +483,7 @@ class Goal: NSManagedObject {
                 month = month.add(months: 1)
             }
             
-            let perDayAmount = amount / 30
+            let perDayAmount = amount / Decimal(30 * period.multiplier)
             let adjustedAmount = Decimal(totalDays) * perDayAmount
             return adjustedAmount.roundToNearest(th: 100)
         } else {
@@ -500,7 +500,7 @@ class Goal: NSManagedObject {
      * - Parameters:
      *    - interval: The `CalendarInterval` for which to fetch expenses.
      */
-    func getExpenses(interval: CalendarIntervalProvider) -> [Expense] {
+    func getExpenses(context: NSManagedObjectContext, interval: CalendarIntervalProvider) -> [Expense] {
         let fetchRequest: NSFetchRequest<Expense> = Expense.fetchRequest()
         
         let descendants = allChildDescendants()
@@ -531,10 +531,10 @@ class Goal: NSManagedObject {
      *    - interval: The `CalendarInterval` for which to fetch overlapping
      *              adjustments.
      */
-    func getAdjustments(interval: CalendarIntervalProvider) -> [Adjustment] {
+    func getAdjustments(context: NSManagedObjectContext, interval: CalendarIntervalProvider) -> [Adjustment] {
         let descendants = allChildDescendants()
 
-        let isCarryOver = Adjustment.AdjustmentType.isCarryOverAdjustmentPredicateString()
+        let isCarryOver = Adjustment.AdjustmentType.isValidCarryOverAdjustmentPredicateString()
         let isNotCarryOver = "(NOT " + isCarryOver + ")"
 
         let isGoalOrDecendant = "(goal_ = $goal OR goal_ IN $goalDescendants)"

@@ -9,16 +9,12 @@
 import Foundation
 import CoreData
 
-let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
-var context: NSManagedObjectContext {
+fileprivate let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
+fileprivate var context: NSManagedObjectContext {
     return appDelegate.persistentContainer.viewContext
 }
 
-let encoding = String.Encoding.utf8
-
-func desc(_ obj: Any) -> String {
-    return String(describing: obj)
-}
+fileprivate let encoding = String.Encoding.utf8
 
 class Exporter {
     class func exportPhotos() -> URL? {

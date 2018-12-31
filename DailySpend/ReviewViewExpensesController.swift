@@ -7,8 +7,13 @@
 //
 
 import Foundation
+import CoreData
 
 class ReviewViewExpensesController: NSObject, AddExpenseDelegate, ReviewEntityDataProvider {
+    let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
+    var context: NSManagedObjectContext {
+        return appDelegate.persistentContainer.viewContext
+    }
     
     var delegate: ReviewEntityControllerDelegate
     
@@ -74,7 +79,7 @@ class ReviewViewExpensesController: NSObject, AddExpenseDelegate, ReviewEntityDa
             return
         }
         
-        expenses = goal.getExpenses(interval: interval)
+        expenses = goal.getExpenses(context: context, interval: interval)
         for expense in expenses {
             expenseCellData.append(makeExpenseCellDatum(expense))
         }

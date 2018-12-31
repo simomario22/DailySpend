@@ -10,12 +10,13 @@ import Foundation
 import CoreData
 
 class GoalBalanceCalculator {
-    private let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
-    private var context: NSManagedObjectContext {
-        return appDelegate.persistentContainer.viewContext
+    private var persistentContainer: NSPersistentContainer
+
+    init(persistentContainer: NSPersistentContainer) {
+        self.persistentContainer = persistentContainer
     }
     
-    typealias BalanceCompletion = (_ balance: Decimal?, _ day: CalendarDay, _ goal: Goal) -> ()
+    typealias BalanceCompletion = (_ balance: Decimal?, _ day: CalendarDay, _ goal: Goal?) -> ()
     
     /**
      * Calculates the balance for particular goals on a given day, calling
@@ -27,7 +28,10 @@ class GoalBalanceCalculator {
             let queueLabel = "com.joshsherick.DailySpend.CalculateBalance"
             let queue = DispatchQueue(label: queueLabel, qos: .userInitiated, attributes: .concurrent)
             queue.async {
-                self.balance(for: goal, on: day, completion: completion)
+                self.persistentContainer.performBackgroundTask({ (context) in
+                    let goal = context.object(with: goal.objectID) as! Goal
+                    self.balance(context: context, for: goal, on: day, completion: completion)
+                })
             }
         }
     }
@@ -41,7 +45,10 @@ class GoalBalanceCalculator {
         let queueLabel = "com.joshsherick.DailySpend.CalculateBalance"
         let queue = DispatchQueue(label: queueLabel, qos: .userInitiated, attributes: .concurrent)
         queue.async {
-            self.balance(for: goal, on: day, completion: completion)
+            self.persistentContainer.performBackgroundTask({ (context) in
+                let goal = context.object(with: goal.objectID) as! Goal
+                self.balance(context: context, for: goal, on: day, completion: completion)
+            })
         }
     }
     
@@ -55,9 +62,14 @@ class GoalBalanceCalculator {
      * - Returns: The balance for `goal` on `day`, taking into account periods,
      *            interval pay, and expenses.
      */
-    private func balance(for goal: Goal, on day: CalendarDay, completion: @escaping BalanceCompletion) {
+    private func balance(
+        context: NSManagedObjectContext,
+        for goal: Goal,
+        on day: CalendarDay,
+        completion: @escaping BalanceCompletion
+    ) {
         guard let interval = goal.periodInterval(for: day.start) else {
-            completion(nil, day, goal)
+            completionOnMain(completion, balance: nil, day: day, goal: goal)
             return
         }
         let id = goal.objectID.uriRepresentation()
@@ -68,17 +80,32 @@ class GoalBalanceCalculator {
         var totalPaidAmount: Decimal? = nil
         var totalExpenseAmount: Decimal = 0
         var totalAdjustmentAmount: Decimal = 0
-        
-        queue.async(group: group) {
-            totalPaidAmount = self.getTotalPaidAmount(goal, day, interval)
+
+        group.enter()
+        queue.async {
+            self.persistentContainer.performBackgroundTask({ (context) in
+                let goal = context.object(with: goal.objectID) as! Goal
+                totalPaidAmount = self.getTotalPaidAmount(goal, day, interval)
+                group.leave()
+            })
         }
-        
-        queue.async(group: group) {
-            totalExpenseAmount = self.getTotalExpenses(goal, interval)
+
+        group.enter()
+        queue.async {
+            self.persistentContainer.performBackgroundTask({ (context) in
+                let goal = context.object(with: goal.objectID) as! Goal
+                totalExpenseAmount = self.getTotalExpenses(context, goal, interval)
+                group.leave()
+            })
         }
-        
-        queue.async(group: group) {
-            totalAdjustmentAmount = self.getTotalAdjustments(goal, interval)
+
+        group.enter()
+        queue.async {
+            self.persistentContainer.performBackgroundTask({ (context) in
+                let goal = context.object(with: goal.objectID) as! Goal
+                totalAdjustmentAmount = self.getTotalAdjustments(context, goal, interval)
+                group.leave()
+            })
         }
         
         group.notify(queue: .main) {
@@ -86,7 +113,28 @@ class GoalBalanceCalculator {
             if let totalPaidAmount = totalPaidAmount {
                 balance = totalPaidAmount + totalAdjustmentAmount - totalExpenseAmount
             }
-            completion(balance, day, goal)
+            self.completionOnMain(completion, balance: balance, day: day, goal: goal)
+        }
+    }
+
+    /**
+     * Calls `completion` on the main thread with the given arguments.
+     */
+    private func completionOnMain(
+        _ completion: @escaping BalanceCompletion,
+        balance: Decimal?,
+        day: CalendarDay,
+        goal: Goal
+    ) {
+        if let goalOnMain = persistentContainer.viewContext.object(with: goal.objectID) as? Goal {
+            DispatchQueue.main.async {
+                completion(balance, day, goalOnMain)
+            }
+        } else {
+            DispatchQueue.main.async {
+                completion(nil, day, nil)
+            }
+
         }
     }
     
@@ -116,9 +164,9 @@ class GoalBalanceCalculator {
      * A function which, given a goal and an interval within that goal,
      * calculates the total amount of the expenses occuring within that interval.
      */
-    var getTotalExpenses: (Goal, CalendarIntervalProvider) -> Decimal = {
-        (goal: Goal, interval: CalendarIntervalProvider) in
-        return goal.getExpenses(interval: interval)
+    private var getTotalExpenses: (NSManagedObjectContext, Goal, CalendarIntervalProvider) -> Decimal = {
+        (context: NSManagedObjectContext, goal: Goal, interval: CalendarIntervalProvider) in
+        return goal.getExpenses(context: context, interval: interval)
             .reduce(0, {(amount, expense) -> Decimal in
                 return amount + (expense.amount ?? 0)
             })
@@ -133,7 +181,7 @@ class GoalBalanceCalculator {
      *      within that goal, calculates the total amount of the expenses occuring
      *      within that interval.
      */
-    func customTotalExpenseAmount(calculationFunction: @escaping (Goal, CalendarIntervalProvider) -> Decimal) {
+    func customTotalExpenseAmount(calculationFunction: @escaping (NSManagedObjectContext, Goal, CalendarIntervalProvider) -> Decimal) {
         getTotalExpenses = calculationFunction
     }
     
@@ -141,9 +189,9 @@ class GoalBalanceCalculator {
      * A function which, given a goal and an interval within that goal,
      * calculates the total amount of adjustments occuring within that interval.
      */
-    var getTotalAdjustments: (Goal, CalendarIntervalProvider) -> Decimal = {
-        (goal: Goal, interval: CalendarIntervalProvider) in
-        return goal.getAdjustments(interval: interval)
+    private var getTotalAdjustments: (NSManagedObjectContext, Goal, CalendarIntervalProvider) -> Decimal = {
+        (context: NSManagedObjectContext, goal: Goal, interval: CalendarIntervalProvider) in
+        return goal.getAdjustments(context: context, interval: interval)
             .reduce(0, {(amount, adjustment) -> Decimal in
                 return amount + adjustment.overlappingAmount(with: interval)
             })
@@ -158,7 +206,7 @@ class GoalBalanceCalculator {
      *      within that goal, calculates the total amount of the adjustments
      *      occuring within that interval.
      */
-    func customTotalAdjustmentAmount(calculationFunction: @escaping (Goal, CalendarIntervalProvider) -> Decimal) {
+    func customTotalAdjustmentAmount(calculationFunction: @escaping (NSManagedObjectContext, Goal, CalendarIntervalProvider) -> Decimal) {
         getTotalAdjustments = calculationFunction
     }
 }
