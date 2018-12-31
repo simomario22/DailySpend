@@ -126,7 +126,7 @@ class ExportViewController: UITableViewController {
         let exportButton = self.navigationItem.rightBarButtonItem
 
         // Initialize spinner and frame and add to nav bar.
-        let spinner = UIActivityIndicatorView(activityIndicatorStyle: .gray)
+        let spinner = UIActivityIndicatorView(style: .gray)
         let bbi = UIBarButtonItem(customView: spinner)
         spinner.startAnimating()
 

@@ -40,4 +40,8 @@ extension UIColor {
     class var navigationBarBackground: UIColor {
         return UIColor(red255: 254, green: 254, blue: 254)
     }
+
+    class var textPlaceholder: UIColor {
+        return UIColor(red255: 199, green: 199, blue: 205)
+    }
 }

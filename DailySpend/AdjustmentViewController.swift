@@ -173,7 +173,7 @@ class AdjustmentViewController: UIViewController, UITableViewDelegate, UITableVi
         return true
     }
 
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             let adjustment = adjustments.remove(at: indexPath.row)
             context.delete(adjustment)

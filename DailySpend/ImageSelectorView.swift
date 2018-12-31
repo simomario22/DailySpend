@@ -113,7 +113,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIScrollViewDel
             // Make images scale with higher quality anti-aliasing
             photoButton.imageView?.layer.shouldRasterize = true
             photoButton.imageView?.layer.rasterizationScale = 6
-            photoButton.imageView?.layer.minificationFilter = kCAFilterTrilinear
+            photoButton.imageView?.layer.minificationFilter = CALayerContentsFilter.trilinear
             photoButton.imageView?.contentMode = .scaleAspectFill
 
 
@@ -234,7 +234,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIScrollViewDel
         }
     }
     
-    private func showImagePickerForSourceType(_ sourceType: UIImagePickerControllerSourceType) {
+    private func showImagePickerForSourceType(_ sourceType: UIImagePickerController.SourceType) {
         // Present an image picker for the source type, once we've determined
         // what it is and gotten permissions as necessary.
         if UIImagePickerController.isSourceTypeAvailable(sourceType) {
@@ -257,18 +257,19 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIScrollViewDel
     }
     
     func imagePickerController(_ picker: UIImagePickerController,
-                               didFinishPickingMediaWithInfo info: [String : Any]) {
+                               didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+
         // The user chose an image. Add the image to our boxes array and
         // add a PhotoBox with the image so we don't have to create one
         // when the user wants to view the image later.
-        let image = info[UIImagePickerControllerOriginalImage] as! UIImage
+        let image = info[.originalImage] as! UIImage
 
         // We have the raw photo data as a UIImage, so the format doesn't
         // really matter, we'd just like to make a simple effort to match the
         // compression to the original if it's a PNG - otherwise we'll use JPEG
         // compression.
         var imageType = "jpeg"
-        if let asset = info[UIImagePickerControllerPHAsset] as? PHAsset {
+        if let asset = info[.phAsset] as? PHAsset {
             let assetResources = PHAssetResource.assetResources(for: asset)
             if let filename = assetResources.first?.originalFilename {
                 if filename.lowercased().hasSuffix("png") {
@@ -346,7 +347,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIScrollViewDel
                                   completion: nil, sender: self)
     }
 
-    private func makeButton(index: Int, type: UIButtonType = .system) -> UIButton {
+    private func makeButton(index: Int, type: UIButton.ButtonType = .system) -> UIButton {
         // Create a button at a particular index, properly setting visual
         // attributes and the frame of the button.
         let sideSize: CGFloat = self.frame.height

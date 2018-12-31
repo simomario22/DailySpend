@@ -169,7 +169,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
         return true
     }
     
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             // No need to reload rows not in current goals section since they're not indented.
             var children = 0

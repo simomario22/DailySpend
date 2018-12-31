@@ -22,7 +22,7 @@ class ClosureSleeve {
 }
 
 extension UIControl {
-    func add(for controlEvents: UIControlEvents, _ closure: @escaping ()->()) {
+    func add(for controlEvents: UIControl.Event, _ closure: @escaping ()->()) {
         let sleeve = ClosureSleeve(closure)
         addTarget(sleeve, action: #selector(ClosureSleeve.invoke), for: controlEvents)
         var key = String(format: "[%d]", arc4random())
@@ -34,7 +34,7 @@ extension UIControl {
 }
 
 extension UIBarButtonItem {
-    convenience init(title: String?, style: UIBarButtonItemStyle, _ closure: @escaping ()->()) {
+    convenience init(title: String?, style: UIBarButtonItem.Style, _ closure: @escaping ()->()) {
         let sleeve = ClosureSleeve(closure)
         self.init(title: title, style: style, target: sleeve, action: #selector(ClosureSleeve.invoke))
         var key = String(format: "[%d]", arc4random())
@@ -44,7 +44,7 @@ extension UIBarButtonItem {
         objc_setAssociatedObject(self, key, sleeve, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN)
     }
     
-    convenience init(barButtonSystemItem: UIBarButtonSystemItem, _ closure: @escaping ()->()) {
+    convenience init(barButtonSystemItem: UIBarButtonItem.SystemItem, _ closure: @escaping ()->()) {
         let sleeve = ClosureSleeve(closure)
         self.init(barButtonSystemItem: barButtonSystemItem, target: sleeve, action: #selector(ClosureSleeve.invoke))
         var key = String(format: "[%d]", arc4random())

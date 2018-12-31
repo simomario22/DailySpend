@@ -51,13 +51,14 @@ extension String {
     }
     
     /**
-     * Determines the maximum font size this string can be, rendered with a
-     * particular font `font` inside a contrained space of `size`, and returns
-     * `font` in that size.
+     * Determines the maximum font size this string can be, less than
+     * `font.pointSize`, of font `font` inside a rectangle with width `maxWidth`
+     * and height `maxHeight`, and returns that font size.
      *
      * - Parameters:
-     *   - font: The font, set to the initial, desired font size.
-     *   - maxSize: The size constraining the string.
+     *   - font: The font, set to the maximum font size permissible.
+     *   - maxWidth: The maximum width the string can take up.
+     *   - maxHeight: The maximum height the string can take up.
      *   - minFontSize: Optional minimum font size to return.
      *
      * - Returns:
@@ -66,11 +67,11 @@ extension String {
      * in font, and greater than `minFontSize`, if specified.
      */
     func maximumFontSize(_ font: UIFont,
-                     maxWidth: CGFloat?,
-                     maxHeight: CGFloat?) -> CGFloat {
+                     maxWidth: CGFloat? = nil,
+                     maxHeight: CGFloat? = nil) -> CGFloat {
         var fontSize: CGFloat = font.pointSize
         
-        var attr = [NSAttributedStringKey.font: font]
+        var attr = [NSAttributedString.Key.font: font]
         var size = self.size(withAttributes: attr)
         
         // Continue to decrease size while one of the next two conditions is true:
@@ -90,7 +91,10 @@ extension String {
     
     func calculatedHeightForWidth(_ width: CGFloat, font: UIFont?, exclusionPaths: [UIBezierPath] = []) -> CGFloat {
         let textStorage = NSTextStorage(string: self)
-        let textContainer = NSTextContainer(size: CGSize(width: width, height: .greatestFiniteMagnitude))
+        let textContainer = NSTextContainer(size: CGSize(
+            width: width,
+            height: .greatestFiniteMagnitude
+        ))
         let layoutManager = NSLayoutManager()
         
         layoutManager.addTextContainer(textContainer)
@@ -108,7 +112,10 @@ extension String {
     
     func calculatedWidthForHeight(_ height: CGFloat, font: UIFont?, exclusionPaths: [UIBezierPath] = []) -> CGFloat {
         let textStorage = NSTextStorage(string: self)
-        let textContainer = NSTextContainer(size: CGSize(width: .greatestFiniteMagnitude, height: height))
+        let textContainer = NSTextContainer(size: CGSize(
+            width: .greatestFiniteMagnitude,
+            height: height
+        ))
         let layoutManager = NSLayoutManager()
         
         layoutManager.addTextContainer(textContainer)
@@ -128,7 +135,10 @@ extension String {
         let textStorage = NSTextStorage(string: self)
         // Do NOT remove the CGFloat from the first .greatestFiniteMagnitude!
         // Xcode does NOT like it, bugs out and it's a pain in the ass to fix...
-        let textContainer = NSTextContainer(size: CGSize(width: CGFloat.greatestFiniteMagnitude, height: .greatestFiniteMagnitude))
+        let textContainer = NSTextContainer(size: CGSize(
+            width: CGFloat.greatestFiniteMagnitude,
+            height: .greatestFiniteMagnitude
+        ))
         let layoutManager = NSLayoutManager()
         
         layoutManager.addTextContainer(textContainer)

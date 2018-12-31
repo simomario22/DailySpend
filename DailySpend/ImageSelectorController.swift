@@ -126,9 +126,9 @@ class ImageSelectorDataSource {
         
         func compress(image: UIImage, with format: String) -> Data? {
             if format == "png" {
-                return UIImagePNGRepresentation(image)
+                return image.pngData()
             } else {
-                return UIImageJPEGRepresentation(image, 0.85)
+                return image.jpegData(compressionQuality: 0.85)
             }
         }
         

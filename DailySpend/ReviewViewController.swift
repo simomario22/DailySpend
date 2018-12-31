@@ -310,7 +310,7 @@ extension ReviewViewController: UITableViewDataSource, UITableViewDelegate {
         return entityProviders[section].provider.tableView?(tableView, canEditRowAt: indexPath) ?? false
     }
     
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         let section = indexPath.section
         entityProviders[section].provider.tableView?(tableView, commit: editingStyle, forRowAt: indexPath)
     }

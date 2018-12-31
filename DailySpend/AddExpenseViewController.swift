@@ -111,14 +111,6 @@ class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableVi
         }
     }
     
-    /**
-     * Setup this view controller to default to a particular goal.
-     */
-    func setupExpenseWithGoal(goal: Goal) {
-        self.goal = goal
-        self.goalSetupFinished = true
-    }
-    
     func setupExpense(
         expense: Expense? = nil,
         goal: Goal? = nil,
@@ -350,6 +342,10 @@ class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableVi
         default:
             return nil
         }
+    }
+
+    func openDateForEditing() {
+        editingDate = true
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

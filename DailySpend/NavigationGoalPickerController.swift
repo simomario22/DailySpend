@@ -140,14 +140,14 @@ class NavigationGoalPickerController: NSObject, UITableViewDataSource, UITableVi
         }
     }
 
-    private func caretAttr(_ highlighted: Bool) -> [NSAttributedStringKey: Any] {
+    private func caretAttr(_ highlighted: Bool) -> [NSAttributedString.Key: Any] {
         return [
             .font: UIFont.systemFont(ofSize: 8),
             .foregroundColor: highlighted ? view.tintColor.withAlphaComponent(0.2) : view.tintColor
         ]
     }
     
-    private func explainerAttr(_ highlighted: Bool) ->  [NSAttributedStringKey: Any] {
+    private func explainerAttr(_ highlighted: Bool) ->  [NSAttributedString.Key: Any] {
         return [
             .font: UIFont.systemFont(ofSize: 12),
             .foregroundColor: highlighted ? view.tintColor.withAlphaComponent(0.2) : view.tintColor
