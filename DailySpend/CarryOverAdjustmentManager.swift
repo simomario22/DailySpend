@@ -40,6 +40,7 @@ class CarryOverAdjustmentManager {
     ) {
         if !goal.isRecurring {
             completionOnMain(completion, amountUpdated: nil, deleted: nil, inserted: nil)
+            return
         }
         let queueLabel = "com.joshsherick.DailySpend.GetCarryOverAdjustments"
         let queue = DispatchQueue(label: queueLabel, qos: .userInitiated, attributes: .concurrent)

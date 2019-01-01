@@ -39,12 +39,20 @@ class ImageSelectorDataSource {
     }
     
     init(expense: Expense?) {
-        self.containers = expense?.sortedImages?.map({ image in
-            return ImageContainer(image: image.image!,
-                                  imageName: image.imageName!,
-                                  imageType: nil,
-                                  saved: true)
-        }) ?? [ImageContainer]()
+        self.containers = [ImageContainer]()
+        for image in expense?.sortedImages ?? [] {
+            guard let imageData = image.image,
+                  let imageName = image.imageName else {
+                continue
+            }
+            let container = ImageContainer(
+                image: imageData,
+                imageName: imageName,
+                imageType: nil,
+                saved: true
+            )
+            self.containers.append(container)
+        }
     }
     
     

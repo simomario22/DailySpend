@@ -38,8 +38,8 @@ class GoalBalanceCalculator {
 
     /**
      * Calculates the balance with carry over adjustments for a particular goal
-     * on a given day, calling `completion` when finished with the result, or `nil` as the first
-     * argument if a result could not be computed.
+     * on a given day, calling `completion` when finished with the result, or
+     * `nil` as the first argument if a result could not be computed.
      */
     func calculateBalanceAfterBatchJobs(for goal: Goal, on day: CalendarDay, completion: @escaping BalanceCompletion) {
 
