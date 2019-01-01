@@ -53,9 +53,20 @@ class BalanceBarController {
             self.balanceBar.setTextLabel(textLabel)
             self.balanceBar.setAmountLabel(amountLabel)
             self.balanceBar.setIsAnimating(false)
+
+            guard let amount = amount else {
+                return
+            }
+
+            self.appDelegate.spendIndicationColor = amount < 0 ? .overspent : .underspent
+
+            if day == CalendarDay() {
+                // Store this balance as the most recently displayed, since we do that for today.
+                GoalBalanceCache.setMostRecentlyDisplayedBalance(goal: goal, amount: amount.doubleValue)
+            }
         }
     }
-    
+
     /**
      * Updates the tint color of the navigation bar to the color specified
      * by the app delegate.

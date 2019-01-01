@@ -34,10 +34,12 @@ class ReviewViewAdjustmentsController: NSObject, AddAdjustmentDelegate, ReviewEn
     private var section: Int
     private var cellCreator: TableViewCellHelper
     private var present: (UIViewController, Bool, (() -> Void)?) -> ()
+    private var tableView: UITableView
     
     init(
         section: Int,
         cellCreator: TableViewCellHelper,
+        tableView: UITableView,
         delegate: ReviewEntityControllerDelegate,
         present: @escaping (UIViewController, Bool, (() -> Void)?) -> ()
     ) {
@@ -46,6 +48,7 @@ class ReviewViewAdjustmentsController: NSObject, AddAdjustmentDelegate, ReviewEn
         self.adjustmentCellData = []
         self.section = section
         self.cellCreator = cellCreator
+        self.tableView = tableView
         self.delegate = delegate
         self.present = present
     }
@@ -98,6 +101,21 @@ class ReviewViewAdjustmentsController: NSObject, AddAdjustmentDelegate, ReviewEn
         adjustments = goal.getAdjustments(context: context, interval: interval)
         for adjustment in adjustments {
             adjustmentCellData.append(makeAdjustmentCellDatum(adjustment))
+        }
+
+        let manager = CarryOverAdjustmentManager(persistentContainer: appDelegate.persistentContainer)
+        manager.updateCarryOverAdjustments(for: goal) {
+            (updated, deleted, inserted) in
+            guard updated != nil else {
+                return
+            }
+            let union = updated!.union(deleted!).union(inserted!)
+            for (i, adjustment) in self.adjustments.enumerated() {
+                if union.contains(adjustment) {
+                    self.adjustmentCellData[i] = self.makeAdjustmentCellDatum(adjustment)
+                    self.tableView.reloadRows(at: [IndexPath(row: i, section: self.section)], with: .automatic)
+                }
+            }
         }
     }
     

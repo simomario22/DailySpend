@@ -113,6 +113,7 @@ class ReviewViewController: UIViewController {
                 provider: ReviewViewAdjustmentsController(
                     section: 1,
                     cellCreator: cellCreator,
+                    tableView: tableView,
                     delegate: self,
                     present: self.present
                 ),
@@ -164,21 +165,9 @@ class ReviewViewController: UIViewController {
      * updating the spend color as appropriate.
      */
     private func updateAmount() {
-        let evaluationDay = CalendarDay(dateInDay: interval.end)?.subtract(days: 1) ?? CalendarDay()
-        
-        let balanceCalculator = GoalBalanceCalculator(persistentContainer: appDelegate.persistentContainer)
-        balanceCalculator.calculateBalance(for: goal, on: evaluationDay)
-        { (balance: Decimal?, _, _) in
-            guard let newAmount = balance?.doubleValue else {
-                return
-            }
-            self.appDelegate.spendIndicationColor = newAmount < 0 ? .overspent : .underspent
-            
-            if evaluationDay == CalendarDay() {
-                // Store this balance as the most recently displayed, since we do that for today.
-                GoalBalanceCache.setMostRecentlyDisplayedBalance(goal: self.goal, amount: newAmount)
-            }
-        }
+        let balanceDay = CalendarDay(dateInDay: interval.end)?.subtract(days: 1) ?? CalendarDay()
+
+        bbc.updateWithBalanceFor(goal: goal, day: balanceDay)
     }
     
     /**
@@ -249,7 +238,6 @@ extension ReviewViewController: GoalPickerDelegate {
         self.goal = newGoal
         recurringGoalPeriod = self.goal.mostRecentPeriod()
         notifyControllersDataChanged()
-        updateAmount()
         self.tableView.reloadData()
     }
 }
@@ -264,7 +252,6 @@ extension ReviewViewController: PeriodSelectorViewDelegate {
         }
         recurringGoalPeriod = nextPeriod
         notifyControllersDataChanged()
-        updateAmount()
         animateIntervalChange(forward: true)
     }
     
@@ -274,7 +261,6 @@ extension ReviewViewController: PeriodSelectorViewDelegate {
     func tappedPrevious() {
         recurringGoalPeriod = recurringGoalPeriod?.previousCalendarPeriod()
         notifyControllersDataChanged()
-        updateAmount()
         animateIntervalChange(forward: false)
     }
 }
@@ -365,6 +351,7 @@ extension ReviewViewController: ReviewEntityControllerDelegate {
     func addedEntity(with interval: CalendarIntervalProvider, within goal: Goal, at path: IndexPath, use animation: UITableView.RowAnimation, isOnlyEntity: Bool) {
         if isOnlyEntity {
             tableView.reloadSections(IndexSet(integer: path.section), with: animation)
+            updateAmount()
             return
         }
         
@@ -378,11 +365,12 @@ extension ReviewViewController: ReviewEntityControllerDelegate {
     }
     
     func editedEntity(with interval: CalendarIntervalProvider, within goal: Goal, at path: IndexPath, movedTo newPath: IndexPath?, use animation: UITableView.RowAnimation) {
+
         if !entityIsInCurrentView(interval: interval, goal: goal) {
             loadNewInterval(in: goal, for: interval.start)
             return
         }
-        
+
         if newPath != nil {
             tableView.moveRow(at: path, to: newPath!)
             tableView.reloadRows(at: [newPath!], with: animation)
@@ -395,6 +383,7 @@ extension ReviewViewController: ReviewEntityControllerDelegate {
     func deletedEntity(at path: IndexPath, use animation: UITableView.RowAnimation, isOnlyEntity: Bool) {
         if isOnlyEntity {
             tableView.reloadSections(IndexSet(integer: path.section), with: animation)
+            updateAmount()
             return
         }
         tableView.deleteRows(at: [path], with: animation)

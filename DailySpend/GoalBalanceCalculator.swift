@@ -37,6 +37,28 @@ class GoalBalanceCalculator {
     }
 
     /**
+     * Calculates the balance with carry over adjustments for a particular goal
+     * on a given day, calling `completion` when finished with the result, or `nil` as the first
+     * argument if a result could not be computed.
+     */
+    func calculateBalanceAfterBatchJobs(for goal: Goal, on day: CalendarDay, completion: @escaping BalanceCompletion) {
+
+        let adjustmentManager = CarryOverAdjustmentManager(persistentContainer: persistentContainer)
+        adjustmentManager.updateCarryOverAdjustments(for: goal) { (_, _, _) in
+            let queueLabel = "com.joshsherick.DailySpend.CalculateBalance"
+            let queue = DispatchQueue(label: queueLabel, qos: .userInitiated, attributes: .concurrent)
+            queue.async {
+                self.persistentContainer.performBackgroundTask({ (context) in
+                    let goal = context.object(with: goal.objectID) as! Goal
+                    self.balance(context: context, for: goal, on: day, completion: completion)
+                })
+            }
+
+        }
+    }
+
+
+    /**
      * Calculates the balance for a particular goal on a given day, calling
      * `completion` when finished with the result, or `nil` as the first
      * argument if a result could not be computed.
