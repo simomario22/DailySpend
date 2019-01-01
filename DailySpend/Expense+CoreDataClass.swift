@@ -221,7 +221,7 @@ class Expense: NSManagedObject {
             return (false, "This expense must be after it's associated goal's start date.")
         }
         
-        if _goal!.exclusiveEnd != nil && _transactionDay!.start.gmtDate < _goal!.exclusiveEnd!.gmtDate {
+        if _goal!.exclusiveEnd != nil && _transactionDay!.start.gmtDate > _goal!.exclusiveEnd!.gmtDate {
             return (false, "This expense must be before it's associated goal's end date.")
         }
         
