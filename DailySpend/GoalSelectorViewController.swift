@@ -11,9 +11,6 @@ import CoreData
 
 class GoalSelectorViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
-    var context: NSManagedObjectContext {
-        return appDelegate.persistentContainer.viewContext
-    }
     
     private var tableView: UITableView!
     private var cellCreator: TableViewCellHelper!
@@ -42,7 +39,7 @@ class GoalSelectorViewController: UIViewController, UITableViewDelegate, UITable
         view.addSubview(tableView)
         cellCreator = TableViewCellHelper(tableView: tableView)
         
-        goals = Goal.getIndentedGoals(context: context, excludedGoals: excludedGoals)
+        goals = Goal.getIndentedGoals(context: appDelegate.persistentContainer.viewContext, excludedGoals: excludedGoals)
         for (i, indentedGoal) in goals.enumerated() {
             if parentSelectionHelperText != nil && indentedGoal.indentation > 0 {
                 showHelperText = true

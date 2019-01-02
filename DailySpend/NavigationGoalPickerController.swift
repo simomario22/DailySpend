@@ -12,9 +12,6 @@ import UIKit
 
 class NavigationGoalPickerController: NSObject, UITableViewDataSource, UITableViewDelegate, GoalViewControllerDelegate {
     private let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
-    private var context: NSManagedObjectContext {
-        return appDelegate.persistentContainer.viewContext
-    }
     
     private let cellHeight: CGFloat = 66
     private let lastViewedGoalKey = "lastUsedGoal"
@@ -105,7 +102,7 @@ class NavigationGoalPickerController: NSObject, UITableViewDataSource, UITableVi
     }
     
     private func getAllGoals() -> [Goal.IndentedGoal] {
-        return Goal.getIndentedGoals(context: context, excludeGoal: { $0.isArchived || $0.hasFutureStart })
+        return Goal.getIndentedGoals(context: appDelegate.persistentContainer.viewContext, excludeGoal: { $0.isArchived || $0.hasFutureStart })
     }
     
     private func getLastUsedGoal() -> Goal? {
@@ -113,8 +110,8 @@ class NavigationGoalPickerController: NSObject, UITableViewDataSource, UITableVi
         if let url = UserDefaults.standard.url(forKey: lastViewedGoalKey) {
             let psc = appDelegate.persistentContainer.persistentStoreCoordinator
             if let id = psc.managedObjectID(forURIRepresentation: url),
-               let goal = context.object(with: id) as? Goal {
-                if !goal.isFault {
+               let goal = appDelegate.persistentContainer.viewContext.object(with: id) as? Goal {
+                if !goal.isFault { // Not sure this would make it invalid.
                     return goal
                 }
             }
@@ -122,7 +119,7 @@ class NavigationGoalPickerController: NSObject, UITableViewDataSource, UITableVi
         
         // Find the first created goal, or return nil if there are no goals.
         let sortDescriptors = [NSSortDescriptor(key: "dateCreated_", ascending: true)]
-        if let firstGoal = Goal.get(context: context, sortDescriptors: sortDescriptors, fetchLimit: 1)?.first {
+        if let firstGoal = Goal.get(context: appDelegate.persistentContainer.viewContext, sortDescriptors: sortDescriptors, fetchLimit: 1)?.first {
             let id = firstGoal.objectID.uriRepresentation()
             UserDefaults.standard.set(id, forKey: lastViewedGoalKey)
             return firstGoal

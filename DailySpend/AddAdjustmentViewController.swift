@@ -10,12 +10,9 @@ import UIKit
 import CoreData
 
 class AddAdjustmentViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, GoalSelectorDelegate {
-    
+
     private let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
-    private var context: NSManagedObjectContext {
-        return appDelegate.persistentContainer.viewContext
-    }
-    
+
     private var cellCreator: TableViewCellHelper!
     
     var delegate: AddAdjustmentDelegate?
@@ -25,7 +22,7 @@ class AddAdjustmentViewController: UIViewController, UITableViewDelegate, UITabl
     private var editingFirstDate = false
     private var editingLastDate = false
     
-    var adjustment: Adjustment?
+    var adjustmentId: NSManagedObjectID?
 
     private var goal: Goal?
     private var goalSetupFinished = false
@@ -49,8 +46,11 @@ class AddAdjustmentViewController: UIViewController, UITableViewDelegate, UITabl
         tableView.delegate = self
         tableView.dataSource = self
         self.view.addSubview(tableView)
+
         
-        if let adjustment = self.adjustment {
+        let adjustment = (Adjustment.inContext(adjustmentId) as? Adjustment)
+        
+        if let adjustment = adjustment {
             self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save, save)
             shortDescription = adjustment.shortDescription!
             
@@ -137,27 +137,39 @@ class AddAdjustmentViewController: UIViewController, UITableViewDelegate, UITabl
     }
     
     func save() {
-        let multipliedAmountPerDay = self.amountPerDay * (deduct ? -1 : 1)
+        let context = appDelegate.persistentContainer.newBackgroundContext()
+        var adjustment: Adjustment
         
         var justCreated = false
-        if adjustment == nil {
+        if adjustmentId == nil {
             justCreated = true
             adjustment = Adjustment(context: context)
-            adjustment!.dateCreated = Date()
+            adjustment.dateCreated = Date()
+        } else {
+            adjustment = (context.object(with: adjustmentId!) as! Adjustment)
         }
+
+        let multipliedAmountPerDay = self.amountPerDay * (deduct ? -1 : 1)
+        let validation = adjustment.propose(
+            shortDescription: shortDescription,
+            amountPerDay: multipliedAmountPerDay,
+            firstDayEffective: firstDayEffective,
+            lastDayEffective: lastDayEffective,
+            goal: Goal.inContext(goal, context: context)
+        )
         
-        let validation = adjustment!.propose(shortDescription: shortDescription,
-                                             amountPerDay: multipliedAmountPerDay,
-                                             firstDayEffective: firstDayEffective,
-                                             lastDayEffective: lastDayEffective,
-                                             goal: goal)
         if validation.valid {
-            appDelegate.saveContext()
+            if context.hasChanges {
+                try! context.save()
+            }
+
             self.view.endEditing(false)
+
+            let adjustmentOnViewContext = Adjustment.inContext(adjustment)!
             if justCreated {
-                delegate?.createdAdjustmentFromModal(adjustment!)
+                delegate?.createdAdjustmentFromModal(adjustmentOnViewContext)
             } else {
-                delegate?.editedAdjustmentFromModal(adjustment!)
+                delegate?.editedAdjustmentFromModal(adjustmentOnViewContext)
             }
             if self.navigationController!.viewControllers[0] == self {
                 self.navigationController!.dismiss(animated: true, completion: nil)
@@ -166,9 +178,8 @@ class AddAdjustmentViewController: UIViewController, UITableViewDelegate, UITabl
             }
         } else {
             if justCreated {
-                context.delete(adjustment!)
-                adjustment = nil
-                appDelegate.saveContext()
+                context.rollback()
+                try! context.save()
             }
             let alert = UIAlertController(title: "Couldn't Save",
                                           message: validation.problem!,

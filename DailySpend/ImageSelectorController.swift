@@ -11,9 +11,6 @@ import CoreData
 
 class ImageSelectorDataSource {
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
-    var context: NSManagedObjectContext {
-        return appDelegate.persistentContainer.viewContext
-    }
 
     private struct ImageContainer {
         var image: UIImage
@@ -80,15 +77,17 @@ class ImageSelectorDataSource {
      * them as appropriate. If there is an error deleting an image, it will
      * be logged, but this function will still succeed.
      *
+     * This function does not call context.save, that is the job of the caller.
+     *
      * - Parameters:
      *     - expense: The expense on which to save the staged images.
      *
      * - Returns: A boolean value indicating whether the commit operation
      *            succeeded
      */
-    func saveImages(expense: Expense) -> Bool {
+    func saveImages(expense: Expense, context: NSManagedObjectContext) -> Bool {
         // Delete any images that the user has deleted.
-        removeImages(expense: expense)
+        removeImages(expense: expense, context: context)
         
         // Remove all images from expense image set.
         expense.images = Set<Image>()
@@ -103,6 +102,7 @@ class ImageSelectorDataSource {
                     return false
                 }
             }
+
             let image = Image(context: context)
             image.expense = expense
             image.dateCreated = Date()
@@ -151,12 +151,11 @@ class ImageSelectorDataSource {
         return imageName
     }
     
-    private func removeImages(expense: Expense) {
+    private func removeImages(expense: Expense, context: NSManagedObjectContext) {
         for container in imagesToRemove {
             if !container.saved {
                 continue
             }
-            
             for image in expense.images! {
                 if image.imageName == container.imageName {
                     let imageURL = self.imageURL(name: image.imageName!)
@@ -166,6 +165,8 @@ class ImageSelectorDataSource {
                         Logger.warning("Could not delete image at \(imageURL.path).")
                         break
                     }
+
+                    let image = context.object(with: image.objectID)
                     context.delete(image)
                 }
             }

@@ -11,9 +11,6 @@ import CoreData
 
 class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, ImageSelectorController, GoalSelectorDelegate {
     private let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
-    private var context: NSManagedObjectContext {
-        return appDelegate.persistentContainer.viewContext
-    }
     
     private var cellCreator: TableViewCellHelper!
     
@@ -33,7 +30,7 @@ class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableVi
     private var notes: String!
     private var goal: Goal?
     private var goalSetupFinished = false
-    var expense: Expense!
+    var expenseId: NSManagedObjectID?
 
     var imageSelectorDataSource: ImageSelectorDataSource!
     
@@ -48,6 +45,8 @@ class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableVi
         self.view.addSubview(tableView)
         
         cellCreator = TableViewCellHelper(tableView: tableView)
+
+        let expense = (Expense.inContext(expenseId) as? Expense)
         
         // Set up singleton image selector to be re-used.
         imageSelector = ImageSelectorView()
@@ -58,7 +57,7 @@ class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableVi
         imageSelectorDataSource.provide(to: imageSelector.addImage)
         imageSelector.scrollToRightEdge()
         
-        if let expense = self.expense {
+        if let expense = expense {
             self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save, save)
             self.navigationItem.title = "Edit Expense"
             
@@ -112,14 +111,14 @@ class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     func setupExpense(
-        expense: Expense? = nil,
+        expenseId: NSManagedObjectID? = nil,
         goal: Goal? = nil,
         transactionDay: CalendarDay? = nil,
         amount: Decimal?? = nil,
         shortDescription: String?? = nil
     ) {
-        if let expense = expense {
-            self.expense = expense
+        if let expenseId = expenseId {
+            self.expenseId = expenseId
         }
 
         if let goal = goal {
@@ -150,32 +149,39 @@ class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableVi
     
     func save() {
         var justCreated = false
-        if expense == nil {
+        let context = appDelegate.persistentContainer.newBackgroundContext()
+        var expense: Expense
+        if expenseId == nil {
             justCreated = true
             expense = Expense(context: context)
-            expense!.dateCreated = Date()
+            expense.dateCreated = Date()
+        } else {
+            expense = (context.object(with: expenseId!) as! Expense)
         }
-        
-        var validation = expense!.propose(
+
+        var validation = expense.propose(
             amount: amount,
             shortDescription: shortDescription,
             transactionDay: transactionDay,
             notes: notes,
-            goal: goal
+            goal: Goal.inContext(goal, context: context)
         )
         
-        if validation.valid && !imageSelectorDataSource.saveImages(expense: expense) {
+        if validation.valid && !imageSelectorDataSource.saveImages(expense: expense, context: context) {
             validation.valid = false
             validation.problem = "Could not save images associated with the expense."
         }
         
         if validation.valid {
-            appDelegate.saveContext()
+            if context.hasChanges {
+                try! context.save()
+            }
             self.view.endEditing(false)
+            let expenseOnViewContext = Expense.inContext(expense)!
             if justCreated {
-                delegate?.createdExpenseFromModal(expense)
+                delegate?.createdExpenseFromModal(expenseOnViewContext)
             } else {
-                delegate?.editedExpenseFromModal(expense)
+                delegate?.editedExpenseFromModal(expenseOnViewContext)
             }
             if self.navigationController!.viewControllers[0] == self {
                 self.navigationController!.dismiss(animated: true, completion: nil)
@@ -184,10 +190,10 @@ class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableVi
             }
         } else {
             if justCreated {
-                context.delete(expense!)
-                expense = nil
-                appDelegate.saveContext()
+                context.rollback()
+                try! context.save()
             }
+
             let alert = UIAlertController(title: "Couldn't Save",
                                           message: validation.problem!,
                                           preferredStyle: .alert)

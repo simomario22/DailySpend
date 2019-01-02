@@ -60,9 +60,6 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
     }
 
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
-    var context: NSManagedObjectContext {
-        return appDelegate.persistentContainer.viewContext
-    }
     
     var delegate: TodayViewExpensesDelegate?
     
@@ -207,7 +204,7 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
                     )
                 } else {
                     addExpenseVC.setupExpense(
-                        expense: expense!,
+                        expenseId: expense!.objectID,
                         transactionDay: datum.day,
                         amount: datum.amount,
                         shortDescription: datum.shortDescription
@@ -252,10 +249,10 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
             return
         }
         let index = indexPath.row - 1
-        let expense = expenses[index]
-        
+        let context = appDelegate.persistentContainer.newBackgroundContext()
+        let expense = Expense.inContext(expenses[index], context: context)!
         context.delete(expense)
-        appDelegate.saveContext()
+        try! context.save()
         expenses.remove(at: index)
         expenseCellData.remove(at: indexPath.row)
         removeUpdatingRow(at: indexPath.row)
@@ -283,13 +280,15 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
     
     private func saveExpense(at index: Int, with datum: ExpenseCellDatum) -> Bool {
         var justCreated = false
-        var expense: Expense! = index >= 0 ? expenses[index] : nil
+        let context = appDelegate.persistentContainer.newBackgroundContext()
+        var expense: Expense! = index >= 0 ? (context.object(with: expenses[index].objectID) as! Expense) : nil
         if expense == nil {
             justCreated = true
             expense = Expense(context: context)
             expense.dateCreated = Date()
         }
-        
+
+        let goal = Goal.inContext(self.goal, context: context)
         let validation = expense.propose(
             amount: datum.amount,
             shortDescription: datum.shortDescription,
@@ -300,18 +299,22 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
         )
         
         if validation.valid {
-            appDelegate.saveContext()
-            if justCreated {
-                expenses.insert(expense, at: 0)
-            } else {
-                expenses[index] = expense
+            if context.hasChanges {
+                try! context.save()
             }
-            delegate?.expensesChanged(goal: goal)
+
+            let expenseOnViewContext = Expense.inContext(expense)!
+            if justCreated {
+                expenses.insert(expenseOnViewContext, at: 0)
+            } else {
+                expenses[index] = expenseOnViewContext
+            }
+            delegate?.expensesChanged(goal: expenseOnViewContext.goal!)
             return true
         } else {
             if justCreated {
-                context.delete(expense)
-                appDelegate.saveContext()
+                context.rollback()
+                try! context.save()
             }
 
             let alert = UIAlertController(title: "Couldn't Save",
@@ -329,6 +332,7 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
         if let goal = goal,
             let currentInterval = goal.incrementalPaymentInterval(for: CalendarDay().start) {
             self.goal = goal
+            let context = appDelegate.persistentContainer.viewContext
             self.expenses = goal.getExpenses(context: context, interval: currentInterval)
             self.currentInterval = currentInterval
             

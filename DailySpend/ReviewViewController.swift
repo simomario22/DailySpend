@@ -11,9 +11,6 @@ import CoreData
 
 class ReviewViewController: UIViewController {
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
-    var context: NSManagedObjectContext {
-        return appDelegate.persistentContainer.viewContext
-    }
 
     private var pbc: PeriodBrowserController!
     private var bbc: BalanceBarController!

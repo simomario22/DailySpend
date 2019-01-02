@@ -11,9 +11,6 @@ import CoreData
 
 class GoalViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, AddGoalDelegate {
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
-    var context: NSManagedObjectContext {
-        return appDelegate.persistentContainer.viewContext
-    }
 
     var delegate: GoalViewControllerDelegate?
     var tableView: UITableView!
@@ -46,6 +43,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func setGoals() {
+        let context = appDelegate.persistentContainer.viewContext
         currentGoals = Goal.getIndentedGoals(context: context, excludeGoal: { $0.isArchived || $0.hasFutureStart })
         futureStartGoals = Goal.getIndentedGoals(context: context, excludeGoal: { !$0.hasFutureStart } )
         archivedGoals = Goal.getIndentedGoals(context: context, excludeGoal: { !$0.isArchived })
@@ -172,6 +170,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             // No need to reload rows not in current goals section since they're not indented.
+            let context = appDelegate.persistentContainer.newBackgroundContext()
             var children = 0
             switch sectionForSectionIndex(indexPath.section) {
             case .CurrentGoalsSection:

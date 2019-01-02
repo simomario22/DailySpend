@@ -11,9 +11,6 @@ import CoreData
 
 class TodayViewController: UIViewController, GoalPickerDelegate, TodayViewExpensesDelegate {
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
-    var context: NSManagedObjectContext {
-        return appDelegate.persistentContainer.viewContext
-    }
 
     private var summaryViewHidden: Bool = true
     private var summaryView: TodaySummaryView!

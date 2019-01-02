@@ -11,9 +11,6 @@ import CoreData
 
 class ReviewViewExpensesController: NSObject, AddExpenseDelegate, ReviewEntityDataProvider {
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
-    var context: NSManagedObjectContext {
-        return appDelegate.persistentContainer.viewContext
-    }
     
     var delegate: ReviewEntityControllerDelegate
     
@@ -79,7 +76,7 @@ class ReviewViewExpensesController: NSObject, AddExpenseDelegate, ReviewEntityDa
             return
         }
         
-        expenses = goal.getExpenses(context: context, interval: interval)
+        expenses = goal.getExpenses(context: appDelegate.persistentContainer.viewContext, interval: interval)
         for expense in expenses {
             expenseCellData.append(makeExpenseCellDatum(expense))
         }
@@ -123,7 +120,7 @@ class ReviewViewExpensesController: NSObject, AddExpenseDelegate, ReviewEntityDa
         
         let addExpenseVC = AddExpenseViewController()
         addExpenseVC.delegate = self
-        addExpenseVC.expense = expenses[indexPath.row]
+        addExpenseVC.expenseId = expenses[indexPath.row].objectID
         let navCtrl = UINavigationController(rootViewController: addExpenseVC)
         self.present(navCtrl, true, nil)
 
@@ -137,11 +134,13 @@ class ReviewViewExpensesController: NSObject, AddExpenseDelegate, ReviewEntityDa
         if editingStyle != .delete {
             return
         }
+        let context = appDelegate.persistentContainer.newBackgroundContext()
         let row = indexPath.row
-        let expense = expenses[row]
+        let expense = context.object(with: expenses[row].objectID)
         context.delete(expense)
-        appDelegate.saveContext()
-        
+        if context.hasChanges {
+            try! context.save()
+        }
         expenses.remove(at: row)
         expenseCellData.remove(at: row)
         delegate.deletedEntity(at: indexPath, use: .automatic, isOnlyEntity: expenses.count == 0)

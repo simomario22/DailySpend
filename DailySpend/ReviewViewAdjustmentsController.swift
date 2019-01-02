@@ -178,7 +178,7 @@ class ReviewViewAdjustmentsController: NSObject, AddAdjustmentDelegate, ReviewEn
         
         let addAdjustmentVC = AddAdjustmentViewController()
         addAdjustmentVC.delegate = self
-        addAdjustmentVC.adjustment = adjustments[indexPath.row]
+        addAdjustmentVC.adjustmentId = adjustments[indexPath.row].objectID
         let navCtrl = UINavigationController(rootViewController: addAdjustmentVC)
         self.present(navCtrl, true, nil)
 

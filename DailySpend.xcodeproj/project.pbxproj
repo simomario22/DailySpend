@@ -219,6 +219,8 @@
 		C5CF5F691E7BB68600C35539 /* today@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5CF5F631E7BB68600C35539 /* today@3x.png */; };
 		C5D3124C21DACD7900BD0995 /* BalanceBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5D3124B21DACD7900BD0995 /* BalanceBarView.swift */; };
 		C5D3124D21DACF9500BD0995 /* BalanceBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5D3124B21DACD7900BD0995 /* BalanceBarView.swift */; };
+		C5D3124F21DD637A00BD0995 /* NSManagedObject+Context.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5D3124E21DD637A00BD0995 /* NSManagedObject+Context.swift */; };
+		C5D3125021DD639500BD0995 /* NSManagedObject+Context.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5D3124E21DD637A00BD0995 /* NSManagedObject+Context.swift */; };
 		C5D3FF331F646B1300D3C7A4 /* AddPauseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5D3FF321F646B1300D3C7A4 /* AddPauseViewController.swift */; };
 		C5D4DAB81F931D250013A6F3 /* SegmentedControlTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5D4DAB71F931D240013A6F3 /* SegmentedControlTableViewCell.swift */; };
 		C5E02501201C011500831269 /* CalendarWeek.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5E02500201C011500831269 /* CalendarWeek.swift */; };
@@ -374,6 +376,7 @@
 		C5CF5F621E7BB68600C35539 /* today@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "today@2x.png"; sourceTree = "<group>"; };
 		C5CF5F631E7BB68600C35539 /* today@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "today@3x.png"; sourceTree = "<group>"; };
 		C5D3124B21DACD7900BD0995 /* BalanceBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceBarView.swift; sourceTree = "<group>"; };
+		C5D3124E21DD637A00BD0995 /* NSManagedObject+Context.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSManagedObject+Context.swift"; sourceTree = "<group>"; };
 		C5D3FF321F646B1300D3C7A4 /* AddPauseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddPauseViewController.swift; sourceTree = "<group>"; };
 		C5D3FF341F646BF300D3C7A4 /* DailySpend 4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "DailySpend 4.xcdatamodel"; sourceTree = "<group>"; };
 		C5D4DAB71F931D240013A6F3 /* SegmentedControlTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentedControlTableViewCell.swift; sourceTree = "<group>"; };
@@ -744,6 +747,7 @@
 		C5E51E56209EC4C8005C674B /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				C5D3124E21DD637A00BD0995 /* NSManagedObject+Context.swift */,
 				C5270BF2219690D50080878A /* UIAlertController+Actions.swift */,
 				C5E51E5B209FAF71005C674B /* UIImage+Color.swift */,
 				C5EE62A21E85769700CAEEE7 /* String+CharacterSet.swift */,
@@ -1037,6 +1041,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C5D3125021DD639500BD0995 /* NSManagedObject+Context.swift in Sources */,
 				C5D3124D21DACF9500BD0995 /* BalanceBarView.swift in Sources */,
 				C5A416F821BA2A1C0057DB47 /* BalanceBarController.swift in Sources */,
 				C507D7CD21B3BEAD000EB300 /* BorderedToolbar.swift in Sources */,
@@ -1199,6 +1204,7 @@
 				C5BD27FF2198E80D000C85F8 /* CGRect+Edges.swift in Sources */,
 				C5BD28002198E80D000C85F8 /* SpendIndicationNavigationController.swift in Sources */,
 				C5BD28012198E80D000C85F8 /* UIAlertController+Actions.swift in Sources */,
+				C5D3124F21DD637A00BD0995 /* NSManagedObject+Context.swift in Sources */,
 				C5631E8521CF64B800561CE3 /* DSButton.swift in Sources */,
 				C5BD28022198E80D000C85F8 /* UITextView+Margins.swift in Sources */,
 				C5BD28032198E80D000C85F8 /* ExplanatoryTextTableViewCell.swift in Sources */,
