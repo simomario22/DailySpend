@@ -11,10 +11,6 @@ import CoreData
 
 class ReviewViewAdjustmentsController: NSObject, AddAdjustmentDelegate, ReviewEntityDataProvider {
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
-    var context: NSManagedObjectContext {
-        return appDelegate.persistentContainer.viewContext
-    }
-
     var delegate: ReviewEntityControllerDelegate
     
     struct AdjustmentCellDatum {
@@ -98,7 +94,7 @@ class ReviewViewAdjustmentsController: NSObject, AddAdjustmentDelegate, ReviewEn
             return
         }
         
-        adjustments = goal.getAdjustments(context: context, interval: interval)
+        adjustments = goal.getAdjustments(context: appDelegate.persistentContainer.viewContext, interval: interval)
         for adjustment in adjustments {
             adjustmentCellData.append(makeAdjustmentCellDatum(adjustment))
         }
@@ -193,9 +189,10 @@ class ReviewViewAdjustmentsController: NSObject, AddAdjustmentDelegate, ReviewEn
             return
         }
         let row = indexPath.row
-        let adjustment = adjustments[row]
+        let context = appDelegate.persistentContainer.newBackgroundContext()
+        let adjustment = Adjustment.inContext(adjustments[row], context: context)!
         context.delete(adjustment)
-        appDelegate.saveContext()
+        try! context.save()
         
         adjustments.remove(at: row)
         adjustmentCellData.remove(at: row)
