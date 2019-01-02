@@ -45,6 +45,21 @@ class ReviewViewController: UIViewController {
     var interval: CalendarIntervalProvider! {
         return recurringGoalPeriod ?? self.goal?.periodInterval(for: self.goal.start!)
     }
+
+    /**
+     * Returns the day for which balance should be calculated.
+     */
+    var balanceDay: CalendarDay! {
+        guard let goal = goal else {
+            return nil
+        }
+        let intervalEnd = CalendarDay(dateInDay: interval.end)?.subtract(days: 1)
+        let today = CalendarDay()
+        if !goal.isRecurring {
+            return intervalEnd ?? today
+        }
+        return intervalEnd! > today ? today : intervalEnd!
+    }
     
     /**
      * Goal picker must be set prior to view loading with a goal to show
@@ -162,8 +177,6 @@ class ReviewViewController: UIViewController {
      * updating the spend color as appropriate.
      */
     private func updateAmount() {
-        let balanceDay = CalendarDay(dateInDay: interval.end)?.subtract(days: 1) ?? CalendarDay()
-
         bbc.updateWithBalanceFor(goal: goal, day: balanceDay)
     }
     
@@ -175,7 +188,6 @@ class ReviewViewController: UIViewController {
     private func notifyControllersDataChanged() {
         pbc.updatePeriodBrowser(goal: goal, recurringGoalPeriod: recurringGoalPeriod)
 
-        let balanceDay = CalendarDay(dateInDay: interval.end)?.subtract(days: 1) ?? CalendarDay()
         bbc.updateWithBalanceFor(goal: goal, day: balanceDay)
         
         for providerTuple in entityProviders {
