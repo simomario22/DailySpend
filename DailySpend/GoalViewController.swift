@@ -151,7 +151,7 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let vc = AddGoalViewController(nibName: nil, bundle: nil)
         let goals = goalsForSection(indexPath.section)
-        vc.goal = goals[indexPath.row].goal
+        vc.goalId = goals[indexPath.row].goal.objectID
         vc.delegate = self
         
         let navController = UINavigationController(rootViewController: vc)
@@ -174,18 +174,18 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
             var children = 0
             switch sectionForSectionIndex(indexPath.section) {
             case .CurrentGoalsSection:
-                let indentedGoal = currentGoals.remove(at: indexPath.row)
-                children = indentedGoal.goal.childGoals?.count ?? 0
-                context.delete(indentedGoal.goal)
+                let goal = Goal.inContext(currentGoals.remove(at: indexPath.row).goal, context: context)!
+                children = goal.childGoals?.count ?? 0
+                context.delete(goal)
             case .FutureStartGoalsSection:
-                let indentedGoal = futureStartGoals.remove(at: indexPath.row)
-                context.delete(indentedGoal.goal)
+                let goal = Goal.inContext(futureStartGoals.remove(at: indexPath.row).goal, context: context)!
+                context.delete(goal)
             case .ArchivedGoalsSection:
-                let indentedGoal = archivedGoals.remove(at: indexPath.row)
-                context.delete(indentedGoal.goal)
+                let goal = Goal.inContext(archivedGoals.remove(at: indexPath.row).goal, context: context)!
+                context.delete(goal)
             }
             changes = true
-            appDelegate.saveContext()
+            try! context.save()
             
             var childPaths = [IndexPath]()
             

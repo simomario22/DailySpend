@@ -11,10 +11,7 @@ import CoreData
 
 class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableViewDelegate, UITableViewDataSource {
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
-    var context: NSManagedObjectContext {
-        return appDelegate.persistentContainer.viewContext
-    }
-    
+
     let periodLengthExplanatoryText = "The length of the period you have to " +
             "spend the above amount."
     
@@ -41,7 +38,7 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
     var segmentedControl: UISegmentedControl!
     var toolbar: BorderedToolbar!
     
-    var goal: Goal?
+    var goalId: NSManagedObjectID?
     
     // Cell State
     var recurring = true
@@ -131,8 +128,9 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
         view.backgroundColor = tableView.backgroundColor
         
         cellCreator = TableViewCellHelper(tableView: tableView)
-        
-        if let goal = self.goal {
+
+        let goal = (Goal.inContext(goalId) as? Goal)
+        if let goal = goal {
             self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save, save)
             self.navigationItem.title = "Edit Goal"
 
@@ -187,29 +185,36 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
     }
     
     func save() {
+        let context = appDelegate.persistentContainer.newBackgroundContext()
+        var goal: Goal
         var justCreated = false
-        if goal == nil {
+        if goalId == nil {
             justCreated = true
             goal = Goal(context: context)
-            goal!.dateCreated = Date()
+            goal.dateCreated = Date()
+        } else {
+            goal = (context.object(with: goalId!) as! Goal)
         }
         
-        let validation = goal!.propose(
+        let validation = goal.propose(
             shortDescription: shortDescription,
             amount: amount,
             start: start,
             end: neverEnd ? nil : end,
             period: recurring ? period : Period.none,
             payFrequency: recurring && incrementalPayment ? payFrequency : Period.none,
-            parentGoal: parentGoal,
+            parentGoal: Goal.inContext(parentGoal, context: context),
             alwaysCarryOver: recurring ? alwaysCarryOver : nil,
             adjustMonthAmountAutomatically: recurring && period.scope == .Month ? adjustMonthAmountAutomatically : nil
         )
 
         if validation.valid {
-            appDelegate.saveContext()
+            if context.hasChanges {
+                try! context.save()
+            }
             self.view.endEditing(false)
-            delegate?.addedOrChangedGoal(goal!)
+            let goalOnViewContext = Goal.inContext(goal)!
+            delegate?.addedOrChangedGoal(goalOnViewContext)
             if self.navigationController!.viewControllers[0] == self {
                 self.navigationController!.dismiss(animated: true, completion: nil)
             } else {
@@ -217,9 +222,8 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
             }
         } else {
             if justCreated {
-                context.delete(goal!)
-                goal = nil
-                appDelegate.saveContext()
+                context.rollback()
+                try! context.save()
             }
             let alert = UIAlertController(title: "Couldn't Save",
                                           message: validation.problem!,
@@ -493,7 +497,8 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
             if let parentGoal = parentGoal {
                 goalSelectorVC.setSelectedGoal(goal: parentGoal)
             }
-            if let goal = goal {
+            if let goalId = goalId {
+                let goal = (Goal.inContext(goalId) as! Goal)
                 goalSelectorVC.excludedGoals = Set<Goal>([goal])
             }
             goalSelectorVC.showParentSelection = false
