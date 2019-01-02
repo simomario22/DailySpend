@@ -106,7 +106,6 @@
 		C59E2A2A205C71A8006D18B5 /* PickerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C59E2A29205C71A8006D18B5 /* PickerTableViewCell.swift */; };
 		C59E2A2E205C97F5006D18B5 /* ValueTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C59E2A2D205C97F5006D18B5 /* ValueTableViewCell.swift */; };
 		C5A0DD5C20429CC2004C6411 /* NavigationGoalPickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5A0DD5B20429CC2004C6411 /* NavigationGoalPickerController.swift */; };
-		C5A261A41F66645B007CBB21 /* PauseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5A261A31F66645B007CBB21 /* PauseViewController.swift */; };
 		C5A416F721BA29B10057DB47 /* BalanceBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5A416F621BA29B10057DB47 /* BalanceBarController.swift */; };
 		C5A416F821BA2A1C0057DB47 /* BalanceBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5A416F621BA29B10057DB47 /* BalanceBarController.swift */; };
 		C5A4AF901FA6B52900101809 /* TableViewCellHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5A4AF8F1FA6B52900101809 /* TableViewCellHelper.swift */; };
@@ -641,6 +640,7 @@
 			isa = PBXGroup;
 			children = (
 				C5AA87D61F36D5B7001B9F08 /* Expense View */,
+				C5A261A31F66645B007CBB21 /* PauseViewController.swift */,
 				C5E339001F930F5700785085 /* AdjustmentViewController.swift */,
 				C5BA55B41E8DAB0E00256E7A /* ReviewTableViewCell.swift */,
 				C5F75FF31F9DB01E005F3510 /* DayReviewViewController.swift */,
@@ -721,7 +721,6 @@
 		C5E51E53209EC47B005C674B /* Pause View */ = {
 			isa = PBXGroup;
 			children = (
-				C5A261A31F66645B007CBB21 /* PauseViewController.swift */,
 				C5D3FF321F646B1300D3C7A4 /* AddPauseViewController.swift */,
 			);
 			name = "Pause View";
@@ -1070,7 +1069,6 @@
 				C573BA0420324CDA0025A5A2 /* Expense+CoreDataClass.swift in Sources */,
 				C573BA0220324CDA0025A5A2 /* Adjustment+CoreDataClass.swift in Sources */,
 				C56CA07A1F64BDEB00874FA8 /* TextFieldTableViewCell.swift in Sources */,
-				C5A261A41F66645B007CBB21 /* PauseViewController.swift in Sources */,
 				C586813C1F2E85D5008D3AEE /* BorderedTextField.swift in Sources */,
 				C58681401F2E91E6008D3AEE /* UIView+MultipleSubviews.swift in Sources */,
 				C54E4F491EFD3984006A1CA3 /* ImageSelectorView.swift in Sources */,

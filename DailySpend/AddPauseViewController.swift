@@ -11,10 +11,7 @@ import CoreData
 
 class AddPauseViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
-    var context: NSManagedObjectContext {
-        return appDelegate.persistentContainer.viewContext
-    }
-    
+
     var cellCreator: TableViewCellHelper!
     
     var delegate: AddPauseDelegate?
@@ -24,7 +21,7 @@ class AddPauseViewController: UIViewController, UITableViewDelegate, UITableView
     var editingFirstDate = false
     var editingLastDate = false
     
-    var pause: Pause?
+    var pauseId: NSManagedObjectID?
     
     var shortDescription: String! = ""
     var firstDayEffective: CalendarDay!
@@ -41,8 +38,9 @@ class AddPauseViewController: UIViewController, UITableViewDelegate, UITableView
         self.view.addSubview(tableView)
         
         cellCreator = TableViewCellHelper(tableView: tableView)
-        
-        if let pause = self.pause {
+
+        let pause = (Pause.inContext(pauseId) as? Pause)
+        if let pause = pause {
             self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save, save)
             self.navigationItem.title = "Edit Pause"
             
@@ -67,23 +65,29 @@ class AddPauseViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func save() {
+        let context = appDelegate.persistentContainer.newBackgroundContext()
+        var pause: Pause
         var justCreated = false
-        if pause == nil {
+        if pauseId == nil {
             justCreated = true
             pause = Pause(context: context)
-            pause!.dateCreated = Date()
+            pause.dateCreated = Date()
+        } else {
+            pause = (context.object(with: pauseId!) as! Pause)
         }
         
-        let validation = pause!.propose(
+        let validation = pause.propose(
             context: context,
             shortDescription: shortDescription,
             firstDayEffective: firstDayEffective,
             lastDayEffective: lastDayEffective
         )
+
         if validation.valid {
-            appDelegate.saveContext()
+            try! context.save()
             self.view.endEditing(false)
-            delegate?.addedOrChangedPause(pause!)
+            let pauseOnViewContext = Pause.inContext(pause)!
+            delegate?.addedOrChangedPause(pauseOnViewContext)
             if self.navigationController!.viewControllers[0] == self {
                 self.navigationController!.dismiss(animated: true, completion: nil)
             } else {
@@ -91,9 +95,8 @@ class AddPauseViewController: UIViewController, UITableViewDelegate, UITableView
             }
         } else {
             if justCreated {
-                context.delete(pause!)
-                pause = nil
-                appDelegate.saveContext()
+                context.rollback()
+                try! context.save()
             }
             let alert = UIAlertController(title: "Couldn't Save",
                                           message: validation.problem!,
