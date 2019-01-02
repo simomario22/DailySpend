@@ -14,19 +14,15 @@ import CoreData
 class Adjustment: NSManagedObject {
     func json(jsonIds: [NSManagedObjectID: Int]) -> [String: Any]? {
         var jsonObj = [String: Any]()
+
+        jsonObj["shortDescription"] = shortDescription
+        jsonObj["adjustmentType"] = type.rawValue
         
         if let amountPerDay = amountPerDay {
             let num = amountPerDay as NSNumber
             jsonObj["amountPerDay"] = num
         } else {
             Logger.debug("couldn't unwrap amountPerDay in Adjustment")
-            return nil
-        }
-        
-        if let shortDescription = shortDescription {
-            jsonObj["shortDescription"] = shortDescription
-        } else {
-            Logger.debug("couldn't unwrap shortDescription in Adjustment")
             return nil
         }
         
@@ -62,7 +58,7 @@ class Adjustment: NSManagedObject {
                 Logger.debug("a goal didn't have an associated jsonId in Adjustment")
                 return nil
             }
-            jsonObj["goal"] = goalJsonIds
+            jsonObj["goals"] = goalJsonIds
         } else {
             Logger.debug("couldn't unwrap goal in Adjustment")
             return nil
@@ -81,19 +77,35 @@ class Adjustment: NSManagedObject {
     
     class func create(context: NSManagedObjectContext,
                       json: [String: Any],
-                      jsonIds: [Int: NSManagedObjectID]) -> Adjustment? {
+                      jsonIds: [Int: NSManagedObjectID]) -> (Adjustment?, Bool) {
         let adjustment = Adjustment(context: context)
+
+        if let type = json["adjustmentType"] as? NSNumber {
+            if let type = AdjustmentType(rawValue: type.intValue) {
+                if type == .UserCreated {
+                    adjustment.type = .UserCreated
+                } else {
+                    // Skip adding this adjustment, it will be recreated at the
+                    // end of the import process.
+                    context.delete(adjustment)
+                    return (nil, true)
+                }
+            } else {
+                Logger.debug("invalid adjustment type in Adjustment")
+                return (nil, false)
+            }
+        }
         
         if let amountPerDay = json["amountPerDay"] as? NSNumber {
             let decimal = Decimal(amountPerDay.doubleValue)
             if decimal == 0 {
                 Logger.debug("amountPerDay equal to 0 in Adjustment")
-                return nil
+                return (nil, false)
             }
             adjustment.amountPerDay = decimal
         } else {
             Logger.debug("couldn't unwrap amountPerDay in Adjustment")
-            return nil
+            return (nil, false)
         }
         
         if let dateNumber = json["firstDateEffective"] as? NSNumber {
@@ -102,12 +114,12 @@ class Adjustment: NSManagedObject {
             if calDay.start.gmtDate != date {
                 // The date isn't a beginning of day
                 Logger.debug("The firstDateEffective isn't a beginning of day in Adjustment")
-                return nil
+                return (nil, false)
             }
             adjustment.firstDayEffective = calDay
         } else {
             Logger.debug("couldn't unwrap firstDateEffective in Adjustment")
-            return nil
+            return (nil, false)
         }
         
         if let dateNumber = json["lastDateEffective"] as? NSNumber {
@@ -117,41 +129,40 @@ class Adjustment: NSManagedObject {
                 calDay < adjustment.firstDayEffective! {
                 // The date isn't a beginning of day
                 Logger.debug("The lastDateEffective isn't a beginning of day or is earlier than firstDateEffective in Adjustment")
-                return nil
+                return (nil, false)
             }
             adjustment.lastDayEffective = calDay
         } else {
             Logger.debug("couldn't unwrap lastDateEffective in Adjustment")
-            return nil
+            return (nil, false)
         }
         
         if let shortDescription = json["shortDescription"] as? String {
             if shortDescription.count == 0 {
                 Logger.debug("shortDescription empty in Adjustment")
-                return nil
+                return (nil, false)
             }
             adjustment.shortDescription = shortDescription
         } else {
-            Logger.debug("couldn't unwrap shortDescription in Adjustment")
-            return nil
+            adjustment.shortDescription = nil
         }
         
         if let dateCreated = json["dateCreated"] as? NSNumber {
             let date = Date(timeIntervalSince1970: dateCreated.doubleValue)
             if date > Date() {
                 Logger.debug("dateCreated after today in Adjustment")
-                return nil
+                return (nil, false)
             }
             adjustment.dateCreated = date
         } else {
             Logger.debug("couldn't unwrap dateCreated in Adjustment")
-            return nil
+            return (nil, false)
         }
         
         if let goalJsonIds = json["goals"] as? Array<Int> {
             if goalJsonIds.count > 1 {
                 Logger.debug("there were multiple goals associated with an Adjustment")
-                return nil
+                return (nil, false)
             }
             for goalJsonId in goalJsonIds {
                 if let objectID = jsonIds[goalJsonId],
@@ -159,15 +170,15 @@ class Adjustment: NSManagedObject {
                     adjustment.goal = goal
                 } else {
                     Logger.debug("a goal didn't have an associated objectID in Adjustment")
-                    return nil
+                    return (nil, false)
                 }
             }
         } else {
             Logger.debug("couldn't unwrap goals in Adjustment")
-            return nil
+            return (nil, false)
         }
         
-        return adjustment
+        return (adjustment, true)
     }
     
     class func get(context: NSManagedObjectContext,

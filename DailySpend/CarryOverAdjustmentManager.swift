@@ -38,18 +38,49 @@ class CarryOverAdjustmentManager {
         for goal: Goal,
         completion: @escaping CarryOverAdjustmentCompletion
     ) {
-        if !goal.isRecurring {
-            completionOnMain(completion, amountUpdated: nil, deleted: nil, inserted: nil)
-            return
-        }
         let queueLabel = "com.joshsherick.DailySpend.GetCarryOverAdjustments"
         let queue = DispatchQueue(label: queueLabel, qos: .userInitiated, attributes: .concurrent)
         queue.async {
             self.persistentContainer.performBackgroundTask({ (context) in
                 let goal = context.object(with: goal.objectID) as! Goal
-                self.updateAdjustments(context: context, for: goal, completion: completion)
+
+                if !goal.isRecurring || !goal.alwaysCarryOver {
+                    self.removeAllCarryOver(context: context, for: goal, completion: completion)
+                } else {
+                    self.updateAdjustments(context: context, for: goal, completion: completion)
+                }
             })
         }
+    }
+
+    private func removeAllCarryOver(
+        context: NSManagedObjectContext,
+        for goal: Goal,
+        completion: @escaping CarryOverAdjustmentCompletion
+    ) {
+        CarryOverAdjustmentManager.carryOverWrite.wait()
+        let currentAdjustments = getCarryOverAdjustments(context: context, goal: goal)
+
+        var deleted = Set<Adjustment>()
+
+        for adjustment in currentAdjustments {
+            context.delete(adjustment)
+            deleted.insert(adjustment)
+        }
+
+        do {
+            if context.hasChanges {
+                try context.save()
+            }
+        } catch {
+            context.rollback()
+            completionOnMain(completion, amountUpdated: nil, deleted: nil, inserted: nil)
+            CarryOverAdjustmentManager.carryOverWrite.signal()
+            return
+        }
+
+        completionOnMain(completion, amountUpdated: Set<Adjustment>(), deleted: deleted, inserted: Set<Adjustment>())
+        CarryOverAdjustmentManager.carryOverWrite.signal()
     }
     
     private func updateAdjustments(
@@ -57,8 +88,6 @@ class CarryOverAdjustmentManager {
         for goal: Goal,
         completion: @escaping CarryOverAdjustmentCompletion
     ) {
-        let tag = Int.random(in: 0..<500)
-
         let queueLabel = "com.joshsherick.DailySpend.UpdateAdjustments"
         let queue = DispatchQueue(label: queueLabel, qos: .userInitiated, attributes: .concurrent)
         let group = DispatchGroup()

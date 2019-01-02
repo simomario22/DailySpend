@@ -50,7 +50,7 @@ class Logger {
         let context = appDelegate.persistentContainer.viewContext
         
         let sortDesc = NSSortDescriptor(key: "dateCreated_", ascending: true)
-        let expenses = Expense.get(context: context,sortDescriptors: [sortDesc])!
+        let expenses = Expense.get(context: context, sortDescriptors: [sortDesc])!
         let goals = Goal.get(context: context, sortDescriptors: [sortDesc])!
 
         func date(_ d: Date?) -> String {
@@ -71,7 +71,7 @@ class Logger {
             print("goal.adjustMonthAmountAutomatically: \(goal.adjustMonthAmountAutomatically)")
             print("goal.alwaysCarryOver: \(goal.alwaysCarryOver)")
             print("goal.amount: \(String(describing: goal.amount))")
-            print("goal.start: \(String(describing: goal.start?.string(formatter: dateFormatter)))")
+            print("goal.start: \(String(describing: goal.start!.string(formatter: dateFormatter)))")
             print("goal.end: \(String(describing: goal.end?.string(formatter: dateFormatter)))")
             print("goal.hasIncrementalPayment: \(goal.hasIncrementalPayment)")
             print("goal.isRecurring: \(goal.isRecurring)")
@@ -80,7 +80,7 @@ class Logger {
             print("goal.shortDescription: \(String(describing: goal.shortDescription))")
             print("goal.isArchived: \(goal.isArchived)")
             print("goal.hasFutureStart: \(goal.hasFutureStart)")
-            print("goal.parentGoal: \(goal.parentGoal?.shortDescription ?? "None")")
+            print("goal.parentGoal: \(String(describing: goal.parentGoal?.shortDescription))")
             print("")
         }
         
@@ -93,10 +93,10 @@ class Logger {
             let created = dateFormatter.string(from: expense.dateCreated!)
             print("expense.amount: \(expense.amount!)")
             print("expense.dateCreated: \(created)")
-            print("expense.transactionDay: \(String(describing: expense.transactionDay?.string(formatter: dateFormatter)))")
-            print("expense.notes: \(expense.notes ?? "None")")
+            print("expense.transactionDay: \(String(describing: expense.transactionDay!.string(formatter: dateFormatter)))")
+            print("expense.notes: \(String(describing: expense.notes))")
             print("expense.shortDescription: \(String(describing: expense.shortDescription))")
-            print("expense.goal: \(String(describing: expense.goal?.shortDescription))")
+            print("expense.goal: \(String(describing: expense.goal!.shortDescription))")
             
             if (expense.images!.count > 0) {
                 print("\tImages:")
@@ -147,6 +147,11 @@ class Logger {
         print("\(allAdjustments.count) adjustments")
         
         for adjustment in allAdjustments {
+            if adjustment.firstDayEffective == nil {
+                context.delete(adjustment)
+                try? context.save()
+                continue
+            }
             printAdjustment(adjustment)
         }
     }
@@ -167,6 +172,7 @@ class Logger {
         print("adjustment.firstDayEffective: \(first)")
         print("adjustment.lastDayEffective: \(last)")
         print("adjustment.type: \(adjustment.type)")
-        print("adjustment.goal: \(String(describing: adjustment.goal?.shortDescription))")
+        print("adjustment.goal: \(String(describing: adjustment.goal!.shortDescription))")
+
     }
 }

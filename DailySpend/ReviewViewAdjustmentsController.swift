@@ -109,11 +109,32 @@ class ReviewViewAdjustmentsController: NSObject, AddAdjustmentDelegate, ReviewEn
             guard updated != nil else {
                 return
             }
-            let union = updated!.union(deleted!).union(inserted!)
             for (i, adjustment) in self.adjustments.enumerated() {
-                if union.contains(adjustment) {
+                if updated!.contains(adjustment) {
                     self.adjustmentCellData[i] = self.makeAdjustmentCellDatum(adjustment)
                     self.tableView.reloadRows(at: [IndexPath(row: i, section: self.section)], with: .automatic)
+                } else if deleted!.contains(adjustment) {
+                    self.adjustmentCellData.remove(at: i)
+                    self.adjustments.remove(at: i)
+                    if !self.adjustmentCellData.isEmpty {
+                        self.tableView.deleteRows(at: [IndexPath(row: i, section: self.section)], with: .automatic)
+                    } else {
+                        self.tableView.reloadRows(at: [IndexPath(row: 0, section: self.section)], with: .automatic)
+                    }
+                }
+            }
+            for adjustment in inserted! {
+                if !interval.contains(date: adjustment.firstDayEffective!.start) {
+                    continue
+                }
+                let datum = self.makeAdjustmentCellDatum(adjustment)
+                self.adjustmentCellData.append(datum)
+                self.adjustments.append(adjustment)
+
+                if self.adjustmentCellData.count != 1 {
+                    self.tableView.insertRows(at: [IndexPath(row: self.adjustmentCellData.count - 1, section: self.section)], with: .automatic)
+                } else {
+                    self.tableView.reloadRows(at: [IndexPath(row: 0, section: self.section)], with: .automatic)
                 }
             }
         }

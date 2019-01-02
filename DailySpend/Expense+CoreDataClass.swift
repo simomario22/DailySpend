@@ -13,19 +13,14 @@ import CoreData
 class Expense: NSManagedObject {
     func json(jsonIds: [NSManagedObjectID: Int]) -> [String: Any]? {
         var jsonObj = [String: Any]()
+
+        jsonObj["shortDescription"] = shortDescription
         
         if let amount = amount {
             let num = amount as NSNumber
             jsonObj["amount"] = num
         } else {
             Logger.debug("couldn't unwrap amount in Expense")
-            return nil
-        }
-        
-        if let shortDescription = shortDescription {
-            jsonObj["shortDescription"] = shortDescription
-        } else {
-            Logger.debug("couldn't unwrap shortDescription in Expense")
             return nil
         }
         
@@ -70,7 +65,7 @@ class Expense: NSManagedObject {
                 Logger.debug("a goal didn't have an associated jsonId in Expense")
                 return nil
             }
-            jsonObj["goal"] = goalJsonIds
+            jsonObj["goals"] = goalJsonIds
         } else {
             Logger.debug("couldn't unwrap goal in Expense")
             return nil
@@ -112,8 +107,7 @@ class Expense: NSManagedObject {
             }
             expense.shortDescription = shortDescription
         } else {
-            Logger.debug("couldn't unwrap shortDescription in Expense")
-            return nil
+            expense.shortDescription = nil
         }
         
         if let notes = json["notes"] as? String {

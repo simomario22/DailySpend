@@ -87,8 +87,7 @@ class Exporter {
         
         var defaults = [String: Any]()
         defaults["photoNumber"] = UserDefaults.standard.integer(forKey: "photoNumber")
-        defaults["dailyTargetSpend"] = UserDefaults.standard.integer(forKey: "dailyTargetSpend")
-        
+
         if let defaultsData = try? JSONSerialization.data(withJSONObject: defaults) {
             os.write(defaultsData)
         } else {
@@ -246,7 +245,7 @@ class Importer {
         // Move any images to a temporary directory.
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd-MM-yy-HHmmss"
-        let name = dateFormatter.string(from: Date())
+        let name = dateFormatter.string(from: Date()) + "-images"
         let documentsDirectory = fm.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let imagesDirectory = documentsDirectory.appendingPathComponent("images")
         let backupImagesDirectory = imagesDirectory.deletingLastPathComponent()
@@ -275,15 +274,15 @@ class Importer {
         }
 
         let cacheDirectory = fm.urls(for: .cachesDirectory, in: .userDomainMask)[0]
-        let unzippedName = url.deletingPathExtension().lastPathComponent
-        let unzippedUrl = cacheDirectory.appendingPathComponent(unzippedName,
-                                                                isDirectory: true)
+        // The url to unzip into, since we don't know what the unzipped folder
+        // will be called.
+        let unzipDirectory = cacheDirectory.appendingPathComponent(dateFormatter.string(from: Date()) + "-unzip")
 
         // Define a function to move the backed up images back if we need to revert
         func revert() throws {
             do {
                 try fm.removeItem(at: url)
-                try fm.removeItem(at: unzippedUrl)
+                try fm.removeItem(at: unzipDirectory)
             } catch {
                 // We don't actually care, just log the error.
                 Logger.debug("Could not remove zipped or unzipped URL.")
@@ -308,15 +307,36 @@ class Importer {
 
         // Unzip archive.
         if !SSZipArchive.unzipFile(atPath: url.path,
-                                  toDestination: cacheDirectory.path) {
+                                  toDestination: unzipDirectory.path) {
             try revert()
             Logger.debug("Could not unzip archive.")
             throw ExportError.recoveredFromBadFormat
         }
-        
-        if let contents = try? fm.contentsOfDirectory(at: unzippedUrl,
+
+        // The URL of the actual directory that was unzipped in the previous
+        // process.
+        var unzippedUrl: URL
+        if let contents = try? fm.contentsOfDirectory(at: unzipDirectory,
                                                      includingPropertiesForKeys: nil,
                                                      options: []) {
+            if contents.count == 1 {
+                unzippedUrl = contents.first!
+            } else {
+                try revert()
+                Logger.debug("Unexpected number of items in unzip directory.")
+                throw ExportError.recoveredFromFilesystemError
+            }
+        } else {
+            try revert()
+            Logger.debug("Could not get contents of unzip directory.")
+            throw ExportError.recoveredFromFilesystemError
+        }
+
+        if let contents = try? fm.contentsOfDirectory(
+            at: unzippedUrl,
+            includingPropertiesForKeys: nil,
+            options: []
+        ) {
             for fileUrl in contents {
                 if fileUrl.lastPathComponent.contains(".dailyspend") {
                     // This is a data file, let's import that
@@ -325,8 +345,8 @@ class Importer {
                     // This is an image, move it to the images directory.
                     do {
                         let newUrl = imagesDirectory
-                                .appendingPathComponent(fileUrl.lastPathComponent,
-                                                        isDirectory: false)
+                            .appendingPathComponent(fileUrl.lastPathComponent,
+                                                    isDirectory: false)
                         try fm.moveItem(at: fileUrl, to: newUrl)
                     } catch {
                         try revert()
@@ -340,11 +360,11 @@ class Importer {
             Logger.debug("Could not get contents of unzipped directory.")
             throw ExportError.recoveredFromFilesystemError
         }
-        
+
         // All done, clean up
         do {
             try fm.removeItem(at: url)
-            try fm.removeItem(at: unzippedUrl)
+            try fm.removeItem(at: unzipDirectory)
             try fm.removeItem(at: backupImagesDirectory)
         } catch {
             // We don't really care.
@@ -456,7 +476,7 @@ class Importer {
         
         var goalsQueue: Array<[String: Any]> = Array<[String: Any]>(goals)
         
-        while currentIteration <= maxIterations && !goals.isEmpty {
+        while currentIteration <= maxIterations && !goalsQueue.isEmpty {
             currentIteration += 1
             let jsonGoal = goalsQueue.popLast()!
             
@@ -519,9 +539,9 @@ class Importer {
         
         if let adjustments = jsonObj["adjustments"] as? [[String: Any]] {
             for jsonAdjustment in adjustments {
-                if Adjustment.create(context: context,
+                if !Adjustment.create(context: context,
                                      json: jsonAdjustment,
-                                     jsonIds: goalJsonIdMap) == nil {
+                                     jsonIds: goalJsonIdMap).1 {
                     // This import failed. Reset to normal.
                     try revert()
                     Logger.debug("Could not import Adjustment.")
@@ -543,13 +563,6 @@ class Importer {
                         throw ExportError.recoveredFromBadFormatWithContextChange
                     }
                     UserDefaults.standard.set(photoNumber.intValue, forKey: key)
-                case "dailyTargetSpend":
-                    guard let dailyTargetSpend = defaults[key] as? NSNumber else {
-                        try revert()
-                        Logger.debug("Could not convert daily target spend to a number.")
-                        throw ExportError.recoveredFromBadFormatWithContextChange
-                    }
-                    UserDefaults.standard.set(dailyTargetSpend.doubleValue, forKey: key)
                 default:
                     // Ignore bad keys.
                     Logger.debug("There was an unrecognized key '\(key)' in defaults.")
@@ -567,6 +580,18 @@ class Importer {
         } catch {
             // We don't really care.
             Logger.warning("Could not delete backup store or import file.")
+        }
+    }
+
+    /**
+     * Performs processing to ensure correct balances after a successfully
+     * imported data set on a background thread.
+     */
+    private class func performPostImportDataProcessing() {
+        let goals = Goal.get(context: context)
+        for goal in goals ?? [] {
+            let adjustmentManager = CarryOverAdjustmentManager(persistentContainer: appDelegate.persistentContainer)
+            adjustmentManager.updateCarryOverAdjustments(for: goal, completion: {_, _, _ in })
         }
     }
 }
