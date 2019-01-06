@@ -10,10 +10,6 @@ import Foundation
 import CoreData
 
 fileprivate let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
-fileprivate var context: NSManagedObjectContext {
-    return appDelegate.persistentContainer.viewContext
-}
-
 fileprivate let encoding = String.Encoding.utf8
 
 class Exporter {
@@ -58,7 +54,7 @@ class Exporter {
         let name = dateFormatter.string(from: Date())
         let directoryUrl = cacheDirectory.appendingPathComponent(name)
         let fileUrl = directoryUrl.appendingPathComponent("/\(name).dailyspend")
-        
+        let context = appDelegate.persistentContainer.viewContext
         
         // Create directory and file.
         if !fm.fileExists(atPath: directoryUrl.path, isDirectory: nil) {
@@ -459,7 +455,8 @@ class Importer {
                 throw ExportError.unrecoverableDatabaseInBadState
             }
         }
-        
+
+        let context = appDelegate.persistentContainer.newBackgroundContext()
         func saveContext() throws {
             do {
                 try context.save()
@@ -588,6 +585,7 @@ class Importer {
      * imported data set on a background thread.
      */
     private class func performPostImportDataProcessing() {
+        let context = appDelegate.persistentContainer.viewContext
         let goals = Goal.get(context: context)
         for goal in goals ?? [] {
             let adjustmentManager = CarryOverAdjustmentManager(persistentContainer: appDelegate.persistentContainer)
