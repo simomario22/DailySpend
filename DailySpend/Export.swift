@@ -193,20 +193,22 @@ class Exporter {
             os.closeFile()
             return nil
         }
-        
-        for (i, adjustment) in adjustments.enumerated() {
-            if let adjustmentData = adjustment.serialize(jsonIds: goalJsonIdMap) {
+
+        var first = true
+        for adjustment in adjustments {
+            let (adjustmentData, failure) = adjustment.serialize(jsonIds: goalJsonIdMap)
+            if let adjustmentData = adjustmentData {
+                if !first {
+                    os.write(",".data(using: encoding)!)
+                }
                 os.write(adjustmentData)
-            } else {
+                first = false
+            } else if failure {
                 Logger.debug("Could not serialize an Adjustment.")
                 os.closeFile()
                 return nil
             }
-            if i < adjustments.count - 1 {
-                // Write separating JSON character if there are more adjustments
-                // after this one.
-                os.write(",".data(using: encoding)!)
-            }
+
         }
         
         // Write closing JSON array and dictionary characters
@@ -581,6 +583,8 @@ class Importer {
             // We don't really care.
             Logger.warning("Could not delete backup store or import file.")
         }
+
+        self.performPostImportDataProcessing()
     }
 
     /**
@@ -592,7 +596,22 @@ class Importer {
         let goals = Goal.get(context: context)
         for goal in goals ?? [] {
             let adjustmentManager = CarryOverAdjustmentManager(persistentContainer: appDelegate.persistentContainer)
-            adjustmentManager.updateCarryOverAdjustments(for: goal, completion: {_, _, _ in })
+            adjustmentManager.performPostImportTasks(for: goal, completion: {updated, inserted, deleted in
+                Logger.debug("updated carry over adjustments:")
+                for adj in updated ?? [] {
+                    Logger.printAdjustment(adj)
+                }
+
+                Logger.debug("inserted carry over adjustments:")
+                for adj in inserted ?? [] {
+                    Logger.printAdjustment(adj)
+                }
+
+                Logger.debug("deleted carry over adjustments:")
+                for adj in deleted ?? [] {
+                    Logger.printAdjustment(adj)
+                }
+            })
         }
     }
 }

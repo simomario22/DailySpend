@@ -12,18 +12,22 @@ import CoreData
 
 @objc(Adjustment)
 class Adjustment: NSManagedObject {
-    func json(jsonIds: [NSManagedObjectID: Int]) -> [String: Any]? {
+    func json(jsonIds: [NSManagedObjectID: Int]) -> (value: [String: Any]?, failure: Bool) {
+        if type == .CarryOverDeleted {
+            return (nil, false)
+        }
         var jsonObj = [String: Any]()
 
         jsonObj["shortDescription"] = shortDescription
         jsonObj["adjustmentType"] = type.rawValue
-        
+        jsonObj["countedInBalance"] = (type != .CarryOverDeleted)
+
         if let amountPerDay = amountPerDay {
             let num = amountPerDay as NSNumber
             jsonObj["amountPerDay"] = num
         } else {
             Logger.debug("couldn't unwrap amountPerDay in Adjustment")
-            return nil
+            return (nil, true)
         }
         
         if let date = firstDayEffective?.start {
@@ -31,7 +35,7 @@ class Adjustment: NSManagedObject {
             jsonObj["firstDateEffective"] = num
         } else {
             Logger.debug("couldn't unwrap firstDateEffective in Adjustment")
-            return nil
+            return (nil, true)
         }
         
         if let date = lastDayEffective?.start {
@@ -39,7 +43,7 @@ class Adjustment: NSManagedObject {
             jsonObj["lastDateEffective"] = num
         } else {
             Logger.debug("couldn't unwrap lastDateEffective in Adjustment")
-            return nil
+            return (nil, true)
         }
         
         if let dateCreated = dateCreated {
@@ -47,7 +51,7 @@ class Adjustment: NSManagedObject {
             jsonObj["dateCreated"] = num
         } else {
             Logger.debug("couldn't unwrap dateCreated in Adjustment")
-            return nil
+            return (nil, true)
         }
 
         if let goal = goal {
@@ -56,23 +60,29 @@ class Adjustment: NSManagedObject {
                 goalJsonIds.append(jsonId)
             } else {
                 Logger.debug("a goal didn't have an associated jsonId in Adjustment")
-                return nil
+                return (nil, true)
             }
             jsonObj["goals"] = goalJsonIds
         } else {
             Logger.debug("couldn't unwrap goal in Adjustment")
-            return nil
+            return (nil, true)
         }
-        return jsonObj
+        return (jsonObj, false)
     }
     
-    func serialize(jsonIds: [NSManagedObjectID: Int]) -> Data? {
-        if let jsonObj = self.json(jsonIds: jsonIds) {
-            let serialization = try? JSONSerialization.data(withJSONObject: jsonObj)
-            return serialization
+    func serialize(jsonIds: [NSManagedObjectID: Int]) -> (data: Data?, failure: Bool) {
+        let (jsonObj, failure) = self.json(jsonIds: jsonIds)
+
+        if !failure {
+            if let jsonObj = jsonObj {
+                let serialization = try? JSONSerialization.data(withJSONObject: jsonObj)
+                return (serialization, false)
+            } else {
+                return (nil, false)
+            }
         }
         
-        return nil
+        return (nil, true)
     }
     
     class func create(context: NSManagedObjectContext,
@@ -82,14 +92,7 @@ class Adjustment: NSManagedObject {
 
         if let type = json["adjustmentType"] as? NSNumber {
             if let type = AdjustmentType(rawValue: type.intValue) {
-                if type == .UserCreated {
-                    adjustment.type = .UserCreated
-                } else {
-                    // Skip adding this adjustment, it will be recreated at the
-                    // end of the import process.
-                    context.delete(adjustment)
-                    return (nil, true)
-                }
+                adjustment.type = type
             } else {
                 Logger.debug("invalid adjustment type in Adjustment")
                 return (nil, false)
