@@ -57,7 +57,6 @@ class GoalBalanceCalculator {
         }
     }
 
-
     /**
      * Calculates the balance for a particular goal on a given day, calling
      * `completion` when finished with the result, or `nil` as the first
@@ -94,6 +93,11 @@ class GoalBalanceCalculator {
             completionOnMain(completion, balance: nil, day: day, goal: goal)
             return
         }
+        let df = DateFormatter()
+        df.timeStyle = .none
+        df.dateStyle = .short
+        Logger.debug("started balance calculation for \(goal.shortDescription!) \(day.string(formatter: df))")
+
         let id = goal.objectID.uriRepresentation()
         let queueLabel = "com.joshsherick.DailySpend.CalculateBalance_\(id)"
         let queue = DispatchQueue(label: queueLabel, qos: .userInitiated, attributes: .concurrent)
@@ -104,39 +108,52 @@ class GoalBalanceCalculator {
         var totalAdjustmentAmount: Decimal = 0
 
         group.enter()
+        Logger.debug("balance \(goal.shortDescription!) \(day.string(formatter: df)) paid amount entered")
         queue.async {
-            self.persistentContainer.performBackgroundTask({ (context) in
-                let goal = context.object(with: goal.objectID) as! Goal
-                totalPaidAmount = self.getTotalPaidAmount(goal, day, interval)
-                group.leave()
-            })
+            Logger.debug("balance \(goal.shortDescription!) \(day.string(formatter: df)) paid amount async'd")
+            let context = self.persistentContainer.newBackgroundContext()
+            Logger.debug("balance \(goal.shortDescription!) \(day.string(formatter: df)) paid amount started")
+            let goal = context.object(with: goal.objectID) as! Goal
+            totalPaidAmount = self.getTotalPaidAmount(goal, day, interval)
+            Logger.debug("balance \(goal.shortDescription!) \(day.string(formatter: df)) paid amount left")
+            group.leave()
         }
 
         group.enter()
+        Logger.debug("balance \(goal.shortDescription!) \(day.string(formatter: df)) total expenses entered")
         queue.async {
-            self.persistentContainer.performBackgroundTask({ (context) in
-                let goal = context.object(with: goal.objectID) as! Goal
-                totalExpenseAmount = self.getTotalExpenses(context, goal, interval)
-                group.leave()
-            })
+            Logger.debug("balance \(goal.shortDescription!) \(day.string(formatter: df)) total expenses async'd")
+            let context = self.persistentContainer.newBackgroundContext()
+            Logger.debug("balance \(goal.shortDescription!) \(day.string(formatter: df)) total expenses started")
+            let goal = context.object(with: goal.objectID) as! Goal
+            totalExpenseAmount = self.getTotalExpenses(context, goal, interval)
+            group.leave()
+            Logger.debug("balance \(goal.shortDescription!) \(day.string(formatter: df)) total expenses left")
         }
 
         group.enter()
+        Logger.debug("balance \(goal.shortDescription!) \(day.string(formatter: df)) total adjustments entered")
         queue.async {
-            self.persistentContainer.performBackgroundTask({ (context) in
-                let goal = context.object(with: goal.objectID) as! Goal
-                totalAdjustmentAmount = self.getTotalAdjustments(context, goal, interval)
-                group.leave()
-            })
+            Logger.debug("balance \(goal.shortDescription!) \(day.string(formatter: df)) total adjustments async'd")
+            let context = self.persistentContainer.newBackgroundContext()
+            Logger.debug("balance \(goal.shortDescription!) \(day.string(formatter: df)) total adjustments started")
+            let goal = context.object(with: goal.objectID) as! Goal
+            totalAdjustmentAmount = self.getTotalAdjustments(context, goal, interval)
+            Logger.debug("balance \(goal.shortDescription!) \(day.string(formatter: df)) total adjustments left")
+            group.leave()
         }
-        
-        group.notify(queue: .main) {
-            var balance: Decimal? = nil
-            if let totalPaidAmount = totalPaidAmount {
-                balance = totalPaidAmount + totalAdjustmentAmount - totalExpenseAmount
-            }
-            self.completionOnMain(completion, balance: balance, day: day, goal: goal)
+
+        Logger.debug("balance \(goal.shortDescription!) \(day.string(formatter: df)) waiting on group")
+        print("\r⚡️: \(Thread.current)\r" + "🏭: \(OperationQueue.current?.underlyingQueue?.label ?? "None")\r")
+        group.wait()
+        Logger.debug("balance \(goal.shortDescription!) \(day.string(formatter: df)) finished waiting on group")
+        var balance: Decimal? = nil
+        if let totalPaidAmount = totalPaidAmount {
+            balance = totalPaidAmount + totalAdjustmentAmount - totalExpenseAmount
         }
+        Logger.debug("about to finish balance calculation for \(goal.shortDescription!) \(day.string(formatter: df))")
+        self.completionOnMain(completion, balance: balance, day: day, goal: goal)
+        Logger.debug("finished balance calculation for \(goal.shortDescription!) \(day.string(formatter: df))")
     }
 
     /**
@@ -148,15 +165,9 @@ class GoalBalanceCalculator {
         day: CalendarDay,
         goal: Goal
     ) {
-        if let goalOnMain = persistentContainer.viewContext.object(with: goal.objectID) as? Goal {
-            DispatchQueue.main.async {
-                completion(balance, day, goalOnMain)
-            }
-        } else {
-            DispatchQueue.main.async {
-                completion(nil, day, nil)
-            }
-
+        let goalOnViewContext = Goal.inContext(goal, context: persistentContainer.viewContext, refresh: false)
+        DispatchQueue.main.async {
+            completion(balance, day, goalOnViewContext)
         }
     }
     

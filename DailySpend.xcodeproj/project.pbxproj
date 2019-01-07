@@ -46,6 +46,7 @@
 		C55AF80B21B37240008476F2 /* INSPhotoGallery.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C55AF80A21B37240008476F2 /* INSPhotoGallery.framework */; };
 		C55B336220A9318B00304680 /* ExpenseTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5117DB01FB94A410032F854 /* ExpenseTableViewCell.swift */; };
 		C55CCFD11F9D44E4001EF0B4 /* UIColor+255.swift in Sources */ = {isa = PBXBuildFile; fileRef = C55CCFD01F9D44E4001EF0B4 /* UIColor+255.swift */; };
+		C562841B21E32F3500A88615 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C562841A21E32F3500A88615 /* CoreDataManager.swift */; };
 		C5631E8521CF64B800561CE3 /* DSButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5631E8421CF64B800561CE3 /* DSButton.swift */; };
 		C5631E8621CF64FD00561CE3 /* DSButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5631E8421CF64B800561CE3 /* DSButton.swift */; };
 		C5631E8821CF683400561CE3 /* ExpenseCellDescriptionTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5631E8721CF683400561CE3 /* ExpenseCellDescriptionTextView.swift */; };
@@ -297,6 +298,7 @@
 		C556D2531F247C6B008CA20E /* UIControl+Closures.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIControl+Closures.swift"; sourceTree = "<group>"; };
 		C55AF80A21B37240008476F2 /* INSPhotoGallery.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = INSPhotoGallery.framework; path = Carthage/Build/iOS/INSPhotoGallery.framework; sourceTree = "<group>"; };
 		C55CCFD01F9D44E4001EF0B4 /* UIColor+255.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+255.swift"; sourceTree = "<group>"; };
+		C562841A21E32F3500A88615 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
 		C5631E8421CF64B800561CE3 /* DSButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DSButton.swift; sourceTree = "<group>"; };
 		C5631E8721CF683400561CE3 /* ExpenseCellDescriptionTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseCellDescriptionTextView.swift; sourceTree = "<group>"; };
 		C5631E8A21D0B21E00561CE3 /* ExpenseSuggestionDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseSuggestionDataProvider.swift; sourceTree = "<group>"; };
@@ -566,6 +568,7 @@
 			children = (
 				C538FAB71E85696200295062 /* Main.storyboard */,
 				C5781D9A1E6E2060006BBC03 /* AppDelegate.swift */,
+				C562841A21E32F3500A88615 /* CoreDataManager.swift */,
 				C5E51E51209EC44B005C674B /* Today View */,
 				C53DFD13210C1991001F070A /* Expense View */,
 				C5E51E54209EC481005C674B /* Adjustment View */,
@@ -1149,6 +1152,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C562841B21E32F3500A88615 /* CoreDataManager.swift in Sources */,
 				C5BD27D82198E80D000C85F8 /* ExpenseTableViewCell.swift in Sources */,
 				C5BD27D92198E80D000C85F8 /* UICountingLabel.m in Sources */,
 				C5BD27DA2198E80D000C85F8 /* Goal+CoreDataProperties.swift in Sources */,

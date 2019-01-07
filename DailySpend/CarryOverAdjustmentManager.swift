@@ -68,7 +68,9 @@ class CarryOverAdjustmentManager {
         for goal: Goal,
         completion: @escaping CarryOverAdjustmentUpdateCompletion
     ) {
+        Logger.debug("\(goal.shortDescription!) waiting for carryOverWrite in remove")
         CarryOverAdjustmentManager.carryOverWrite.wait()
+        Logger.debug("\(goal.shortDescription!) acquired carryOverWrite in remove")
         let currentAdjustments = getCarryOverAdjustments(context: context, goal: goal)
 
         var deleted = Set<Adjustment>()
@@ -86,11 +88,13 @@ class CarryOverAdjustmentManager {
             context.rollback()
             completionOnMain(completion, amountUpdated: nil, deleted: nil, inserted: nil)
             CarryOverAdjustmentManager.carryOverWrite.signal()
+            Logger.debug("\(goal.shortDescription!) acquired carryOverWrite in remove with failure")
             return
         }
 
         completionOnMain(completion, amountUpdated: Set<Adjustment>(), deleted: deleted, inserted: Set<Adjustment>())
         CarryOverAdjustmentManager.carryOverWrite.signal()
+        Logger.debug("\(goal.shortDescription!) released carryOverWrite in remove")
     }
 
     /**
@@ -129,22 +133,39 @@ class CarryOverAdjustmentManager {
         // carry over adjustments.
         let balanceCalculator = GoalBalanceCalculator(persistentContainer: persistentContainer)
 
+        let df = DateFormatter()
+        df.timeStyle = .none
+        df.dateStyle = .short
         // Store balances when calculated, ensuring data consistency with a
         // mutex.
         let balanceOnDayReadWrite = DispatchSemaphore(value: 1)
         let failedReadWrite = DispatchSemaphore(value: 1)
         func completedBalance(_ balance: Decimal?, _ day: CalendarDay, _ goal: Goal?) {
-            guard let balance = balance else {
-                failedReadWrite.wait()
-                failed = true
-                failedReadWrite.signal()
-                group.leave()
-                return
+            queue.async {
+                self.persistentContainer.performBackgroundTask({ (context) in
+                    let goal = Goal.inContext(goal, context: context)
+                    Logger.debug("\(goal!.shortDescription!) \(day.string(formatter: df)) completed begin")
+                    guard let balance = balance else {
+                        Logger.debug("\(goal!.shortDescription!) \(day.string(formatter: df)) waiting for failedReadWrite")
+                        failedReadWrite.wait()
+                        Logger.debug("\(goal!.shortDescription!) \(day.string(formatter: df)) aquired failedReadWrite")
+                        failed = true
+                        failedReadWrite.signal()
+                        Logger.debug("\(goal!.shortDescription!) \(day.string(formatter: df)) released failedReadWrite")
+                        group.leave()
+                        Logger.debug("\(goal!.shortDescription!) \(day.string(formatter: df)) left group")
+                        return
+                    }
+                    Logger.debug("\(goal!.shortDescription!) \(day.string(formatter: df)) waiting for balanceOnDayReadWrite")
+                    balanceOnDayReadWrite.wait()
+                    Logger.debug("\(goal!.shortDescription!) \(day.string(formatter: df)) aquired balanceOnDayReadWrite")
+                    balanceOnDay[day] = balance
+                    balanceOnDayReadWrite.signal()
+                    Logger.debug("\(goal!.shortDescription!) \(day.string(formatter: df)) released balanceOnDayReadWrite")
+                    group.leave()
+                    Logger.debug("\(goal!.shortDescription!) \(day.string(formatter: df)) left group")
+                })
             }
-            balanceOnDayReadWrite.wait()
-            balanceOnDay[day] = balance
-            balanceOnDayReadWrite.signal()
-            group.leave()
         }
         
         // Stop at the period before the most recent one.
@@ -157,6 +178,7 @@ class CarryOverAdjustmentManager {
             let lastDayOfPeriod = CalendarDay(dateInDay: period.end!).subtract(days: 1)
             period = period.nextCalendarPeriod()!
             group.enter()
+            Logger.debug("\(goal.shortDescription!) \(lastDayOfPeriod.string(formatter: df)) entered group")
             queue.async {
                 self.persistentContainer.performBackgroundTask({ (context) in
                     let goal = context.object(with: goal.objectID) as! Goal
@@ -165,14 +187,18 @@ class CarryOverAdjustmentManager {
             }
         }
 
+        Logger.debug("\(goal.shortDescription!) waiting on group")
         group.wait()
+        Logger.debug("\(goal.shortDescription!) whole group finished")
 
         if failed {
             completionOnMain(completion, amountUpdated: nil, deleted: nil, inserted: nil)
             return
         }
 
+        Logger.debug("\(goal.shortDescription!) waiting for carryOverWrite")
         CarryOverAdjustmentManager.carryOverWrite.wait()
+        Logger.debug("\(goal.shortDescription!) aquired carryOverWrite")
 
         let sortedBalances = balanceOnDay.sorted { $0.key < $1.key }
         var currentAdjustments = getCarryOverAdjustments(context: context, goal: goal)
@@ -198,6 +224,7 @@ class CarryOverAdjustmentManager {
                         context.rollback()
                         completionOnMain(completion, amountUpdated: nil, deleted: nil, inserted: nil)
                         CarryOverAdjustmentManager.carryOverWrite.signal()
+                        Logger.debug("\(goal.shortDescription!) released carryOverWrite with failure")
                         return
                     }
                     updated.insert(adjustment)
@@ -219,6 +246,7 @@ class CarryOverAdjustmentManager {
                     context.rollback()
                     completionOnMain(completion, amountUpdated: nil, deleted: nil, inserted: nil)
                     CarryOverAdjustmentManager.carryOverWrite.signal()
+                    Logger.debug("\(goal.shortDescription!) released carryOverWrite with failure")
                     return
                 }
                 inserted.insert(adjustment)
@@ -238,10 +266,12 @@ class CarryOverAdjustmentManager {
         } catch {
             completionOnMain(completion, amountUpdated: nil, deleted: nil, inserted: nil)
             CarryOverAdjustmentManager.carryOverWrite.signal()
+            Logger.debug("\(goal.shortDescription!) released carryOverWrite with failure")
             return
         }
         completionOnMain(completion, amountUpdated: updated, deleted: deleted, inserted: inserted)
         CarryOverAdjustmentManager.carryOverWrite.signal()
+        Logger.debug("\(goal.shortDescription!) released carryOverWrite with success")
 
         Logger.debug("Ended for \(goal.shortDescription!)")
     }
@@ -335,7 +365,7 @@ class CarryOverAdjustmentManager {
             mainSets.append(mainSet)
         }
 
-        DispatchQueue.main.sync {
+        DispatchQueue.main.async {
             completion(mainSets[0], mainSets[1], mainSets[2])
         }
     }
@@ -391,7 +421,7 @@ class CarryOverAdjustmentManager {
                             return
                         }
                         let adjustmentOnViewContext = Adjustment.inContext(carryOver.first!, context: self.persistentContainer.viewContext, refresh: true)
-                        DispatchQueue.main.sync {
+                        DispatchQueue.main.async {
                             completion(adjustmentOnViewContext)
                         }
                         CarryOverAdjustmentManager.carryOverWrite.signal()

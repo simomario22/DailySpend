@@ -597,20 +597,20 @@ class Importer {
         for goal in goals ?? [] {
             let adjustmentManager = CarryOverAdjustmentManager(persistentContainer: appDelegate.persistentContainer)
             adjustmentManager.performPostImportTasks(for: goal, completion: {updated, inserted, deleted in
-                Logger.debug("updated carry over adjustments:")
-                for adj in updated ?? [] {
-                    Logger.printAdjustment(adj)
-                }
-
-                Logger.debug("inserted carry over adjustments:")
-                for adj in inserted ?? [] {
-                    Logger.printAdjustment(adj)
-                }
-
-                Logger.debug("deleted carry over adjustments:")
-                for adj in deleted ?? [] {
-                    Logger.printAdjustment(adj)
-                }
+//                Logger.debug("updated carry over adjustments:")
+//                for adj in updated ?? [] {
+//                    Logger.printAdjustment(adj)
+//                }
+//
+//                Logger.debug("inserted carry over adjustments:")
+//                for adj in inserted ?? [] {
+//                    Logger.printAdjustment(adj)
+//                }
+//
+//                Logger.debug("deleted carry over adjustments:")
+//                for adj in deleted ?? [] {
+//                    Logger.printAdjustment(adj)
+//                }
             })
         }
     }

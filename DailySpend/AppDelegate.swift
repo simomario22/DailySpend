@@ -45,7 +45,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         deleteAllOrphans()
-        Logger.printAllCoreData()
+//        Logger.printAllCoreData()
+        let balanceCalculator = CarryOverAdjustmentManager(persistentContainer: persistentContainer)
+        let goals = Goal.get(context: persistentContainer.viewContext)
+        for goal in goals ?? [] {
+            balanceCalculator.updateCarryOverAdjustments(for: goal, completion: { (_, _, _) in })
+        }
 
         return true
     }
@@ -267,6 +272,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             _persistentContainer = newValue
         }
     }
+
+
 
     // MARK: - Core Data Saving support
 
