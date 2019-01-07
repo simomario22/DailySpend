@@ -51,7 +51,17 @@ class ReviewViewExpensesController: NSObject, AddExpenseDelegate, ReviewEntityDa
             String.formatAsCurrency(amount: expense.amount ?? 0) ?? ""
         )
     }
-    
+
+    func getLabelMessage() -> String {
+        return "Expenses"
+    }
+
+    func getCreateActions() -> [UIAlertAction] {
+        return [
+            UIAlertAction(title: "New Expense", style: .default, handler: { _ in self.presentCreateModal() })
+        ]
+    }
+
     func presentCreateModal() {
         guard let goal = goal else {
             return

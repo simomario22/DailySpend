@@ -69,7 +69,7 @@ class Logger {
         for goal in goals {
             print("goal.dateCreated: \(date(goal.dateCreated))")
             print("goal.adjustMonthAmountAutomatically: \(goal.adjustMonthAmountAutomatically)")
-            print("goal.alwaysCarryOver: \(goal.alwaysCarryOver)")
+            print("goal.carryOverBalance: \(goal.carryOverBalance)")
             print("goal.amount: \(String(describing: goal.amount))")
             print("goal.start: \(String(describing: goal.start!.string(formatter: dateFormatter)))")
             print("goal.end: \(String(describing: goal.end?.string(formatter: dateFormatter)))")

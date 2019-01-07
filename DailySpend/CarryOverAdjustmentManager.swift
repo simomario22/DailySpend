@@ -21,7 +21,70 @@ class CarryOverAdjustmentManager {
      */
     private static let carryOverWrite = DispatchSemaphore(value: 1)
 
-    typealias CarryOverAdjustmentCompletion = (_ amountUpdated: Set<Adjustment>?, _ deleted: Set<Adjustment>?, _ inserted: Set<Adjustment>?) -> ()
+    typealias CarryOverAdjustmentUpdateCompletion = (_ amountUpdated: Set<Adjustment>?, _ deleted: Set<Adjustment>?, _ inserted: Set<Adjustment>?) -> ()
+
+    typealias CarryOverAdjustmentEnableCompletion = (_ enabled: Adjustment?) -> ()
+
+    /**
+     * Enables a carry over adjustment on a given day if one exists, otherwise
+     *
+     */
+    func enableCarryOverAdjustmentForDay(
+        for goal: Goal,
+        on day: CalendarDay,
+        completion: @escaping CarryOverAdjustmentEnableCompletion
+    ) {
+        if !goal.isRecurring {
+            completion(nil)
+            return
+        }
+
+        self.updateCarryOverAdjustments(for: goal) { (updated, _, _) in
+            if updated == nil {
+                completion(nil)
+                return
+            }
+            let queueLabel = "com.joshsherick.DailySpend.EnableCarryOverAdjustments"
+            let queue = DispatchQueue(label: queueLabel, qos: .userInitiated, attributes: .concurrent)
+            queue.async {
+                self.persistentContainer.performBackgroundTask({ (context) in
+                    let goal = context.object(with: goal.objectID) as! Goal
+
+                    CarryOverAdjustmentManager.carryOverWrite.wait()
+                    let carryOverDeleted = self.getCarryOverAdjustments(context: context, goal: goal, day: day).filter({ $0.type == .CarryOverDeleted })
+
+                    if carryOverDeleted.count != 1 {
+                        completion(nil)
+                        return
+                    }
+
+                    carryOverDeleted.first!.type = .CarryOver
+                    try! context.save()
+                    CarryOverAdjustmentManager.carryOverWrite.signal()
+                })
+
+                self.updateCarryOverAdjustments(for: goal, completion: { (updated, _, _) in
+                    if updated == nil {
+                        completion(nil)
+                        return
+                    }
+                    self.persistentContainer.performBackgroundTask({ (context) in
+                        CarryOverAdjustmentManager.carryOverWrite.wait()
+                        let carryOver = self.getCarryOverAdjustments(context: context, goal: goal, day: day)
+                        if carryOver.count != 1 {
+                            completion(nil)
+                            return
+                        }
+                        let adjustmentOnViewContext = Adjustment.inContext(carryOver.first!, context: self.persistentContainer.viewContext, refresh: true)
+                        DispatchQueue.main.sync {
+                            completion(adjustmentOnViewContext)
+                        }
+                        CarryOverAdjustmentManager.carryOverWrite.signal()
+                    })
+                })
+            }
+        }
+    }
 
     /**
      * For a given recurring goal:
@@ -30,13 +93,16 @@ class CarryOverAdjustmentManager {
      * on the wrong day. Adds carry over adjustments on days where they should
      * exist but don't.
      *
+     * If `goal` is not recurring, removes all carry over adjustments for that
+     * goal, since it doesn't need any.
+     *
      * On completion, calls `completion` with the set of adjustments where the
      * value was updated, deleted, and inserted, in that order. If the operation
      * failed, all three values will be `nil`.
      */
     func updateCarryOverAdjustments(
         for goal: Goal,
-        completion: @escaping CarryOverAdjustmentCompletion
+        completion: @escaping CarryOverAdjustmentUpdateCompletion
     ) {
         let queueLabel = "com.joshsherick.DailySpend.GetCarryOverAdjustments"
         let queue = DispatchQueue(label: queueLabel, qos: .userInitiated, attributes: .concurrent)
@@ -44,7 +110,7 @@ class CarryOverAdjustmentManager {
             self.persistentContainer.performBackgroundTask({ (context) in
                 let goal = context.object(with: goal.objectID) as! Goal
 
-                if !goal.isRecurring || !goal.alwaysCarryOver {
+                if !goal.isRecurring {
                     self.removeAllCarryOver(context: context, for: goal, completion: completion)
                 } else {
                     self.updateAdjustments(context: context, for: goal, completion: completion)
@@ -56,7 +122,7 @@ class CarryOverAdjustmentManager {
     private func removeAllCarryOver(
         context: NSManagedObjectContext,
         for goal: Goal,
-        completion: @escaping CarryOverAdjustmentCompletion
+        completion: @escaping CarryOverAdjustmentUpdateCompletion
     ) {
         CarryOverAdjustmentManager.carryOverWrite.wait()
         let currentAdjustments = getCarryOverAdjustments(context: context, goal: goal)
@@ -86,7 +152,7 @@ class CarryOverAdjustmentManager {
     private func updateAdjustments(
         context: NSManagedObjectContext,
         for goal: Goal,
-        completion: @escaping CarryOverAdjustmentCompletion
+        completion: @escaping CarryOverAdjustmentUpdateCompletion
     ) {
         let queueLabel = "com.joshsherick.DailySpend.UpdateAdjustments"
         let queue = DispatchQueue(label: queueLabel, qos: .userInitiated, attributes: .concurrent)
@@ -109,15 +175,7 @@ class CarryOverAdjustmentManager {
         // Customize this balance calculator to calculate balances without
         // carry over adjustments.
         let balanceCalculator = GoalBalanceCalculator(persistentContainer: persistentContainer)
-        balanceCalculator.customTotalAdjustmentAmount {
-            (context: NSManagedObjectContext, goal: Goal, interval: CalendarIntervalProvider) -> Decimal in
 
-            return self.getNonCarryOverAdjustments(context: context, goal: goal, interval: interval)
-                .reduce(0, {(amount, adjustment) -> Decimal in
-                    return amount + adjustment.overlappingAmount(with: interval)
-                })
-        }
-        
         // Store balances when calculated, ensuring data consistency with a
         // mutex.
         let balanceOnDayReadWrite = DispatchSemaphore(value: 1)
@@ -168,10 +226,9 @@ class CarryOverAdjustmentManager {
         var updated = Set<Adjustment>()
         var deleted = Set<Adjustment>()
         var inserted = Set<Adjustment>()
-        var runningBalance: Decimal = 0
         for pair in sortedBalances {
             let day = pair.key.add(days: 1)
-            runningBalance = runningBalance + pair.value
+            let balance = pair.value
 
             // Add a carry over adjustment the day after each balance date,
             // with the amount from that balance, or update the balance if it
@@ -179,9 +236,9 @@ class CarryOverAdjustmentManager {
             if let index = currentAdjustments.firstIndex(where: { $0.firstDayEffective == day }) {
                 // An adjustment already exists on this day. Update it if necessary.
                 let adjustment = currentAdjustments[index]
-                if adjustment.amountPerDay != runningBalance {
+                if adjustment.amountPerDay != balance {
                     let validation = adjustment.propose(
-                        amountPerDay: runningBalance
+                        amountPerDay: balance
                     )
 
                     if !validation.valid {
@@ -198,10 +255,10 @@ class CarryOverAdjustmentManager {
                 let adjustment = Adjustment(context: context)
                 let validation = adjustment.propose(
                     shortDescription: nil,
-                    amountPerDay: runningBalance,
+                    amountPerDay: balance,
                     firstDayEffective: day,
                     lastDayEffective: day,
-                    type: .CarryOver,
+                    type: goal.carryOverBalance ? .CarryOver : .CarryOverDeleted,
                     dateCreated: Date(),
                     goal: goal
                 )
@@ -277,14 +334,22 @@ class CarryOverAdjustmentManager {
      * Note that this only returns this goal's carry over adjustments, and not
      * its children's.
      */
-    private func getCarryOverAdjustments(context: NSManagedObjectContext, goal: Goal) -> [Adjustment] {
-        var predicate: NSPredicate
+    private func getCarryOverAdjustments(
+        context: NSManagedObjectContext,
+        goal: Goal,
+        day: CalendarDay? = nil
+    ) -> [Adjustment] {
 
-        let fs = "goal_ = %@ AND " + Adjustment.AdjustmentType.isCarryOverAdjustmentPredicateString()
-        predicate = NSPredicate(
-            format: fs,
-            goal
-        )
+        var fs = "goal_ = $goal AND " + Adjustment.AdjustmentType.isCarryOverAdjustmentPredicateString()
+        if day != nil {
+            fs += " AND firstDateEffective_ = $date"
+        }
+
+        let predicateTemplate = NSPredicate(format: fs)
+        let predicate = predicateTemplate.withSubstitutionVariables([
+            "goal": goal,
+            "date": day?.start.gmtDate ?? Date(),
+        ])
 
         return Adjustment.get(context: context, predicate: predicate) ?? []
     }
@@ -292,7 +357,7 @@ class CarryOverAdjustmentManager {
      * Calls `completion` on the main thread with the given arguments.
      */
     private func completionOnMain(
-        _ completion: @escaping CarryOverAdjustmentCompletion,
+        _ completion: @escaping CarryOverAdjustmentUpdateCompletion,
         amountUpdated: Set<Adjustment>?,
         deleted: Set<Adjustment>?,
         inserted: Set<Adjustment>?
@@ -317,7 +382,7 @@ class CarryOverAdjustmentManager {
             mainSets.append(mainSet)
         }
 
-        DispatchQueue.main.async {
+        DispatchQueue.main.sync {
             completion(mainSets[0], mainSets[1], mainSets[2])
         }
     }

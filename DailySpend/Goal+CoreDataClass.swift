@@ -30,7 +30,7 @@ class Goal: NSManagedObject {
             return nil
         }
 
-        jsonObj["alwaysCarryOver"] = alwaysCarryOver
+        jsonObj["carryOverBalance"] = carryOverBalance
 
         jsonObj["adjustMonthAmountAutomatically"] = adjustMonthAmountAutomatically
 
@@ -103,10 +103,10 @@ class Goal: NSManagedObject {
             return .Failure
         }
         
-        if let alwaysCarryOver = json["alwaysCarryOver"] as? NSNumber {
-            goal.alwaysCarryOver = alwaysCarryOver.boolValue
+        if let carryOverBalance = json["carryOverBalance"] as? NSNumber {
+            goal.carryOverBalance = carryOverBalance.boolValue
         } else {
-            Logger.debug("couldn't unwrap alwaysCarryOver in Goal")
+            Logger.debug("couldn't unwrap carryOverBalance in Goal")
             return .Failure
         }
         
@@ -335,7 +335,7 @@ class Goal: NSManagedObject {
         period: Period? = nil,
         payFrequency: Period? = nil,
         parentGoal: Goal?? = nil,
-        alwaysCarryOver: Bool? = nil,
+        carryOverBalance: Bool? = nil,
         adjustMonthAmountAutomatically: Bool? = nil,
         dateCreated: Date?? = nil
     ) -> (valid: Bool, problem: String?) {
@@ -346,7 +346,7 @@ class Goal: NSManagedObject {
         let _period = period ?? self.period
         let _payFrequency = payFrequency ?? self.payFrequency
         let _parentGoal = parentGoal ?? self.parentGoal
-        let _alwaysCarryOver = alwaysCarryOver ?? self.alwaysCarryOver
+        let _carryOverBalance = carryOverBalance ?? self.carryOverBalance
         let _adjustMonthAmountAutomatically = adjustMonthAmountAutomatically ?? self.adjustMonthAmountAutomatically
         let _dateCreated = dateCreated ?? self.dateCreated
 
@@ -410,7 +410,7 @@ class Goal: NSManagedObject {
         self.period = _period
         self.payFrequency = _payFrequency
         self.parentGoal = _parentGoal
-        self.alwaysCarryOver = _alwaysCarryOver
+        self.carryOverBalance = _carryOverBalance
         self.adjustMonthAmountAutomatically = _adjustMonthAmountAutomatically
         self.dateCreated = _dateCreated
         
@@ -538,14 +538,14 @@ class Goal: NSManagedObject {
     func getAdjustments(context: NSManagedObjectContext, interval: CalendarIntervalProvider) -> [Adjustment] {
         let descendants = allChildDescendants()
 
-        let isCarryOver = Adjustment.AdjustmentType.isValidCarryOverAdjustmentPredicateString()
-        let isNotCarryOver = "(NOT " + isCarryOver + ")"
+        let isValidCarryOver = Adjustment.AdjustmentType.isValidCarryOverAdjustmentPredicateString()
+        let isNotCarryOver = "(NOT " + Adjustment.AdjustmentType.isCarryOverAdjustmentPredicateString() + ")"
 
         let isGoalOrDecendant = "(goal_ = $goal OR goal_ IN $goalDescendants)"
         let isGoal = "(goal_ = $goal)"
         let isInInterval = "(lastDateEffective_ >= $intervalStart" + (interval.end == nil ? ")" : " AND firstDateEffective_ < $intervalEnd)")
         let formatString = "(\(isNotCarryOver) AND \(isGoalOrDecendant) AND \(isInInterval)) OR" +
-                           "(\(isCarryOver) AND \(isGoal) AND \(isInInterval))"
+                           "(\(isValidCarryOver) AND \(isGoal) AND \(isInInterval))"
 
         let predicateTemplate = NSPredicate(format: formatString)
         let predicate = predicateTemplate.withSubstitutionVariables([
@@ -709,12 +709,12 @@ class Goal: NSManagedObject {
         return start == nil || CalendarDay(dateInDay: start!) > CalendarDay()
     }
     
-    var alwaysCarryOver: Bool {
+    var carryOverBalance: Bool {
         get {
-            return alwaysCarryOver_
+            return carryOverBalance_
         }
         set {
-            alwaysCarryOver_ = newValue
+            carryOverBalance_ = newValue
         }
     }
     

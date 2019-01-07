@@ -19,10 +19,10 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
             "number of days in a month (the amount above will be used for a 30 " +
             "day month)."
     
-    let carryOverExplanatoryText = "Automatically create a carry-over " +
-            "adjustment with the balance at the end of each period. If this " +
-            "setting is off, you can do this manually in the review section " +
-            "for a period."
+    let carryOverExplanatoryText = "For new periods, automatically create a " +
+            "carry over adjustment with the balance at the end of the previous " +
+            "period. Regardless of this setting, you can always create or " +
+            "remove carry over adjustments manually for a particular period."
     
     let incrementalPaymentExplanatoryText = "Pay equally portioned amounts at " +
             "intervals throughout the goal period to help you stay on track " +
@@ -61,7 +61,7 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
     // Goal Data
     var amount: Decimal?
     var shortDescription: String?
-    var alwaysCarryOver: Bool!
+    var carryOverBalance: Bool!
     var adjustMonthAmountAutomatically: Bool!
     var period: Period!
     var payFrequency: Period!
@@ -136,7 +136,7 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
 
             amount = goal.amount
             shortDescription = goal.shortDescription
-            alwaysCarryOver = goal.alwaysCarryOver
+            carryOverBalance = goal.carryOverBalance
             adjustMonthAmountAutomatically = goal.adjustMonthAmountAutomatically
             period = goal.period
             payFrequency = goal.payFrequency
@@ -151,7 +151,7 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
             if !recurring {
                 period = Period(scope: .Day, multiplier: 1)
                 payFrequency = Period(scope: .Day, multiplier: 1)
-                alwaysCarryOver = false
+                carryOverBalance = false
                 adjustMonthAmountAutomatically = true
                 segmentedControl.selectedSegmentIndex = 1
             }
@@ -166,7 +166,7 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
             self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Add", style: .done, save)
             self.navigationItem.title = "New Goal"
             
-            alwaysCarryOver = false
+            carryOverBalance = false
             adjustMonthAmountAutomatically = true
             period = Period(scope: .Day, multiplier: 1)
             payFrequency = Period(scope: .Day, multiplier: 1)
@@ -204,7 +204,7 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
             period: recurring ? period : Period.none,
             payFrequency: recurring && incrementalPayment ? payFrequency : Period.none,
             parentGoal: Goal.inContext(parentGoal, context: context),
-            alwaysCarryOver: recurring ? alwaysCarryOver : nil,
+            carryOverBalance: recurring ? carryOverBalance : nil,
             adjustMonthAmountAutomatically: recurring && period.scope == .Month ? adjustMonthAmountAutomatically : nil
         )
 
@@ -254,7 +254,7 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
         case PeriodLengthCell
         case PeriodLengthPickerCell
         case AutoAdjustMonthAmountCell
-        case AlwaysCarryOverCell
+        case carryOverBalanceCell
         case IncrementalPaymentCell
         case PayIntervalCell
         case PayIntervalPickerCell
@@ -357,13 +357,13 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
                 valueChanged: { (newValue) in
                     self.adjustMonthAmountAutomatically = newValue
             })
-        case .AlwaysCarryOverCell:
+        case .carryOverBalanceCell:
             return cellCreator.switchCell(
-                initialValue: self.alwaysCarryOver,
-                title: "Always Carry Over",
+                initialValue: self.carryOverBalance,
+                title: "Carry Over Balance",
                 explanatoryText: carryOverExplanatoryText,
                 valueChanged: { (newValue) in
-                    self.alwaysCarryOver = newValue
+                    self.carryOverBalance = newValue
             })
         case .IncrementalPaymentCell:
             return cellCreator.switchCell(
@@ -531,8 +531,8 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
             return height(.PeriodLengthCell, ValueTableViewCell.self, periodLengthExplanatoryText)
         case .AutoAdjustMonthAmountCell:
             return height(.AutoAdjustMonthAmountCell, SwitchTableViewCell.self, autoAdjustExplanatoryText)
-        case .AlwaysCarryOverCell:
-            return height(.AlwaysCarryOverCell, SwitchTableViewCell.self, carryOverExplanatoryText)
+        case .carryOverBalanceCell:
+            return height(.carryOverBalanceCell, SwitchTableViewCell.self, carryOverExplanatoryText)
         case .IncrementalPaymentCell:
             return height(.IncrementalPaymentCell, SwitchTableViewCell.self, incrementalPaymentExplanatoryText)
         case .PeriodLengthPickerCell,
@@ -769,16 +769,16 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
                 } else if period.scope == .Month {
                     return .AutoAdjustMonthAmountCell
                 } else {
-                    return .AlwaysCarryOverCell
+                    return .carryOverBalanceCell
                 }
             case 2:
                 if expandedSection == .PeriodLengthPicker && period.scope == .Month {
                     return .AutoAdjustMonthAmountCell
                 } else {
-                    return .AlwaysCarryOverCell
+                    return .carryOverBalanceCell
                 }
             case 3:
-                return .AlwaysCarryOverCell
+                return .carryOverBalanceCell
             default:
                 return nil
             }

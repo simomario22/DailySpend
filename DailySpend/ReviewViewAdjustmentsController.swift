@@ -30,12 +30,10 @@ class ReviewViewAdjustmentsController: NSObject, AddAdjustmentDelegate, ReviewEn
     private var section: Int
     private var cellCreator: TableViewCellHelper
     private var present: (UIViewController, Bool, (() -> Void)?) -> ()
-    private var tableView: UITableView
-    
+
     init(
         section: Int,
         cellCreator: TableViewCellHelper,
-        tableView: UITableView,
         delegate: ReviewEntityControllerDelegate,
         present: @escaping (UIViewController, Bool, (() -> Void)?) -> ()
     ) {
@@ -44,7 +42,6 @@ class ReviewViewAdjustmentsController: NSObject, AddAdjustmentDelegate, ReviewEn
         self.adjustmentCellData = []
         self.section = section
         self.cellCreator = cellCreator
-        self.tableView = tableView
         self.delegate = delegate
         self.present = present
     }
@@ -63,6 +60,43 @@ class ReviewViewAdjustmentsController: NSObject, AddAdjustmentDelegate, ReviewEn
             String.formatAsCurrency(amount: adjustment.amountPerDay ?? 0)!,
             adjustment.humanReadableInterval()!
         )
+    }
+
+    func getLabelMessage() -> String {
+        return "Adjustments"
+    }
+
+    func getCreateActions() -> [UIAlertAction] {
+        var actions = [
+            UIAlertAction(title: "New Adjustment", style: .default, handler: { _ in self.presentCreateModal() })
+        ]
+        if (goal?.isRecurring ?? false) && !self.adjustments.contains(where: { $0.type == .CarryOver }) {
+            let carryOverAction = UIAlertAction(title: "Carry Over Balance", style: .default) { _ in
+                guard let goal = self.goal,
+                      let interval = self.interval else {
+                    return
+                }
+                let manager = CarryOverAdjustmentManager(persistentContainer: self.appDelegate.persistentContainer)
+                manager.enableCarryOverAdjustmentForDay(for: goal, on: CalendarDay(dateInDay: interval.start))  { (adjustment) in
+                    guard let adjustment = adjustment else {
+                        return
+                    }
+                    let datum = self.makeAdjustmentCellDatum(adjustment)
+                    self.adjustmentCellData.append(datum)
+                    self.adjustments.append(adjustment)
+
+                    self.delegate.addedEntity(
+                        with: adjustment.effectiveInterval!,
+                        within: adjustment.goal!,
+                        at: IndexPath(row: self.adjustmentCellData.count - 1, section: self.section),
+                        use: .automatic,
+                        isOnlyEntity: self.adjustmentCellData.count == 1
+                    )
+                }
+            }
+            actions.append(carryOverAction)
+        }
+        return actions
     }
     
     func presentCreateModal() {
@@ -108,30 +142,40 @@ class ReviewViewAdjustmentsController: NSObject, AddAdjustmentDelegate, ReviewEn
             for (i, adjustment) in self.adjustments.enumerated() {
                 if updated!.contains(adjustment) {
                     self.adjustmentCellData[i] = self.makeAdjustmentCellDatum(adjustment)
-                    self.tableView.reloadRows(at: [IndexPath(row: i, section: self.section)], with: .automatic)
+
+                    self.delegate.editedEntity(
+                        with: adjustment.effectiveInterval!,
+                        within: adjustment.goal!,
+                        at: IndexPath(row: i, section: self.section),
+                        movedTo: nil,
+                        use: .automatic
+                    )
                 } else if deleted!.contains(adjustment) {
                     self.adjustmentCellData.remove(at: i)
                     self.adjustments.remove(at: i)
-                    if !self.adjustmentCellData.isEmpty {
-                        self.tableView.deleteRows(at: [IndexPath(row: i, section: self.section)], with: .automatic)
-                    } else {
-                        self.tableView.reloadRows(at: [IndexPath(row: 0, section: self.section)], with: .automatic)
-                    }
+                    self.delegate.deletedEntity(
+                        at: IndexPath(row: i, section: self.section),
+                        use: .automatic,
+                        isOnlyEntity: self.adjustmentCellData.isEmpty
+                    )
                 }
             }
             for adjustment in inserted! {
-                if !interval.contains(date: adjustment.firstDayEffective!.start) {
+                if adjustment.type == .CarryOverDeleted ||
+                   !interval.contains(date: adjustment.firstDayEffective!.start) {
                     continue
                 }
                 let datum = self.makeAdjustmentCellDatum(adjustment)
                 self.adjustmentCellData.append(datum)
                 self.adjustments.append(adjustment)
 
-                if self.adjustmentCellData.count != 1 {
-                    self.tableView.insertRows(at: [IndexPath(row: self.adjustmentCellData.count - 1, section: self.section)], with: .automatic)
-                } else {
-                    self.tableView.reloadRows(at: [IndexPath(row: 0, section: self.section)], with: .automatic)
-                }
+                self.delegate.addedEntity(
+                    with: adjustment.effectiveInterval!,
+                    within: adjustment.goal!,
+                    at: IndexPath(row: self.adjustmentCellData.count - 1, section: self.section),
+                    use: .automatic,
+                    isOnlyEntity: self.adjustmentCellData.count == 1
+                )
             }
         }
     }
@@ -158,7 +202,7 @@ class ReviewViewAdjustmentsController: NSObject, AddAdjustmentDelegate, ReviewEn
             description: description,
             undescribed: adjustmentCellData[row].shortDescription == nil,
             value: value,
-            detailButton: true
+            detailButton: !adjustments[row].isValidCarryOverAdjustmentType
         )
     }
     
@@ -181,7 +225,7 @@ class ReviewViewAdjustmentsController: NSObject, AddAdjustmentDelegate, ReviewEn
     }
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        return adjustmentCellData.count > 0 && !adjustments[indexPath.row].isValidCarryOverAdjustmentType
+        return adjustmentCellData.count > 0
     }
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
@@ -191,7 +235,12 @@ class ReviewViewAdjustmentsController: NSObject, AddAdjustmentDelegate, ReviewEn
         let row = indexPath.row
         let context = appDelegate.persistentContainer.newBackgroundContext()
         let adjustment = Adjustment.inContext(adjustments[row], context: context)!
-        context.delete(adjustment)
+
+        if adjustment.isValidCarryOverAdjustmentType {
+            adjustment.type = .CarryOverDeleted
+        } else {
+            context.delete(adjustment)
+        }
         try! context.save()
         
         adjustments.remove(at: row)

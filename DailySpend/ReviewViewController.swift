@@ -18,11 +18,7 @@ class ReviewViewController: UIViewController {
     private var tableView: UITableView!
     private var cellCreator: TableViewCellHelper!
     
-    private var entityProviders = [(
-        provider: ReviewEntityDataProvider,
-        labelMessage: String,
-        createMessage: String
-    )]()
+    private var entityProviders = [ReviewEntityDataProvider]()
 
     /**
      * The current period that is being shown to the user, or `nil` if `goal`
@@ -111,27 +107,18 @@ class ReviewViewController: UIViewController {
         )
         
         entityProviders = [
-            (
-                provider: ReviewViewExpensesController(
-                    section: 0,
-                    cellCreator: cellCreator,
-                    delegate: self,
-                    present: self.present
-                ),
-                labelMessage: "Expenses",
-                createMessage: "New Expense"
+            ReviewViewExpensesController(
+                section: 0,
+                cellCreator: cellCreator,
+                delegate: self,
+                present: self.present
             ),
-            (
-                provider: ReviewViewAdjustmentsController(
-                    section: 1,
-                    cellCreator: cellCreator,
-                    tableView: tableView,
-                    delegate: self,
-                    present: self.present
-                ),
-                labelMessage: "Adjustments",
-                createMessage: "New Adjustment"
-            )
+            ReviewViewAdjustmentsController(
+                section: 1,
+                cellCreator: cellCreator,
+                delegate: self,
+                present: self.present
+            ),
         ]
         self.goalChanged(newGoal: goalPicker.currentGoal)
     }
@@ -147,14 +134,10 @@ class ReviewViewController: UIViewController {
     func tappedAdd() {
         let addSelectorAlert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         
-        var actions = [UIAlertAction]()
-        for providerTuple in entityProviders {
-            let title = providerTuple.createMessage
-            actions.append(
-                UIAlertAction(title: title, style: .default, handler: { _ in providerTuple.provider.presentCreateModal()
-                })
-            )
+        var actions = entityProviders.reduce([UIAlertAction]()) { (actions, provider) -> [UIAlertAction] in
+            return actions + provider.getCreateActions()
         }
+
         actions.append(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         addSelectorAlert.addActions(actions)
         self.present(addSelectorAlert, animated: true, completion: nil)
@@ -190,8 +173,8 @@ class ReviewViewController: UIViewController {
 
         bbc.updateWithBalanceFor(goal: goal, day: balanceDay)
         
-        for providerTuple in entityProviders {
-            providerTuple.provider.setGoal(goal, interval: interval)
+        for provider in entityProviders {
+            provider.setGoal(goal, interval: interval)
         }
     }
     
@@ -280,41 +263,41 @@ extension ReviewViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return entityProviders[section].labelMessage
+        return entityProviders[section].getLabelMessage()
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return entityProviders[section].provider.tableView(tableView, numberOfRowsInSection: section) 
+        return entityProviders[section].tableView(tableView, numberOfRowsInSection: section)
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let section = indexPath.section
-        return entityProviders[section].provider.tableView(tableView, cellForRowAt: indexPath)
+        return entityProviders[section].tableView(tableView, cellForRowAt: indexPath)
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let section = indexPath.section
-        entityProviders[section].provider.tableView?(tableView, didSelectRowAt: indexPath)
+        entityProviders[section].tableView?(tableView, didSelectRowAt: indexPath)
     }
     
     func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
         let section = indexPath.section
-        entityProviders[section].provider.tableView?(tableView, accessoryButtonTappedForRowWith: indexPath)
+        entityProviders[section].tableView?(tableView, accessoryButtonTappedForRowWith: indexPath)
     }
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         let section = indexPath.section
-        return entityProviders[section].provider.tableView?(tableView, canEditRowAt: indexPath) ?? false
+        return entityProviders[section].tableView?(tableView, canEditRowAt: indexPath) ?? false
     }
 
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         let section = indexPath.section
-        entityProviders[section].provider.tableView?(tableView, commit: editingStyle, forRowAt: indexPath)
+        entityProviders[section].tableView?(tableView, commit: editingStyle, forRowAt: indexPath)
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let section = indexPath.section
-        return entityProviders[section].provider.tableView?(tableView, heightForRowAt: indexPath) ?? 0
+        return entityProviders[section].tableView?(tableView, heightForRowAt: indexPath) ?? 0
     }
 }
 
@@ -440,9 +423,15 @@ protocol ReviewEntityControllerDelegate {
 
 protocol ReviewEntityDataProvider : UITableViewDataSource, UITableViewDelegate {
     /**
-     * Present a modal that allows the user to create this type of entity.
+     * Returns the human readable name to be used for the section title.
      */
-    func presentCreateModal()
+    func getLabelMessage() -> String
+
+    /**
+     * Returns options to be displayed in an alert view when the user signals
+     * they'd like to create a new entity.
+     */
+    func getCreateActions() -> [UIAlertAction]
     
     /**
      * Reload data store with entities from the given interval that are

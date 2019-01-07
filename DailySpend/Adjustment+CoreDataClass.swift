@@ -221,7 +221,7 @@ class Adjustment: NSManagedObject {
         let _dateCreated = dateCreated ?? self.dateCreated
         let _goal = goal ?? self.goal
         
-        if _amountPerDay == nil || _amountPerDay! == 0 {
+        if _amountPerDay == nil || (_amountPerDay! == 0 && _type != .CarryOver && _type != .CarryOverDeleted) {
             return (false, "This adjustment must have an amount specified.")
         }
         
@@ -481,6 +481,13 @@ class Adjustment: NSManagedObject {
      */
     var isValidCarryOverAdjustmentType: Bool {
         return type == .CarryOver
+    }
+
+    /**
+     * `true` if this adjustment is a carry over adjustment, deleted or not.
+     */
+    var isCarryOverAdjustmentType: Bool {
+        return type == .CarryOver || type == .CarryOverDeleted
     }
 
     /**
