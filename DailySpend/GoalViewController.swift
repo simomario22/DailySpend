@@ -169,38 +169,57 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            // No need to reload rows not in current goals section since they're not indented.
-            let context = appDelegate.persistentContainer.newBackgroundContext()
-            var children = 0
-            switch sectionForSectionIndex(indexPath.section) {
-            case .CurrentGoalsSection:
-                let goal = Goal.inContext(currentGoals.remove(at: indexPath.row).goal, context: context)!
-                children = goal.childGoals?.count ?? 0
-                context.delete(goal)
-            case .FutureStartGoalsSection:
-                let goal = Goal.inContext(futureStartGoals.remove(at: indexPath.row).goal, context: context)!
-                context.delete(goal)
-            case .ArchivedGoalsSection:
-                let goal = Goal.inContext(archivedGoals.remove(at: indexPath.row).goal, context: context)!
-                context.delete(goal)
+            let goal = goalsForSection(indexPath.section)[indexPath.row].goal
+
+            let title = "Delete \(goal.shortDescription!)?"
+            var message = "Are you sure you want to delete \(goal.shortDescription!)? All associated expenses and other attatched data will be deleted."
+            if !(goal.childGoals?.isEmpty ?? true) {
+                 message += " Child goals will become top level goals and retain their data."
             }
-            changes = true
-            try! context.save()
-            
-            var childPaths = [IndexPath]()
-            
-            let row = indexPath.row
-            for i in row + 1..<row + 1 + children {
-                // This will only run if children > 0
-                currentGoals[i - 1].indentation -= 1
-                childPaths.append(IndexPath(row: i, section: indexPath.section))
-            }
-            
-            tableView.beginUpdates()
-            tableView.deleteRows(at: [indexPath], with: .fade)
-            tableView.reloadRows(at: childPaths, with: .fade)
-            tableView.endUpdates()
+            let deleteConfirmation = UIAlertController(title: title, message: message, preferredStyle: .actionSheet)
+            deleteConfirmation.addActions([
+                UIAlertAction(title: "Delete", style: .destructive, handler: { (_) in
+                    self.deleteGoal(indexPath: indexPath)
+                }),
+                UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+            ])
+            self.present(deleteConfirmation, animated: true, completion: nil)
         }
+    }
+
+    private func deleteGoal(indexPath: IndexPath) {
+        let context = appDelegate.persistentContainer.newBackgroundContext()
+
+        var goal: Goal
+        var children = 0
+        switch sectionForSectionIndex(indexPath.section) {
+        case .CurrentGoalsSection:
+            goal = Goal.inContext(currentGoals.remove(at: indexPath.row).goal, context: context)!
+            children = goal.childGoals?.count ?? 0
+        case .FutureStartGoalsSection:
+            goal = Goal.inContext(futureStartGoals.remove(at: indexPath.row).goal, context: context)!
+        case .ArchivedGoalsSection:
+            goal = Goal.inContext(archivedGoals.remove(at: indexPath.row).goal, context: context)!
+        }
+
+        context.delete(goal)
+        self.changes = true
+        try! context.save()
+
+        var childPaths = [IndexPath]()
+
+        let row = indexPath.row
+        for i in row + 1..<row + 1 + children {
+            // This will only run if children > 0
+            currentGoals[i - 1].indentation -= 1
+            childPaths.append(IndexPath(row: i, section: indexPath.section))
+            appDelegate.persistentContainer.viewContext.refresh(currentGoals[i - 1].goal, mergeChanges: true)
+        }
+
+        tableView.beginUpdates()
+        tableView.deleteRows(at: [indexPath], with: .fade)
+        tableView.reloadRows(at: childPaths, with: .fade)
+        tableView.endUpdates()
     }
     
     func addedOrChangedGoal(_ goal: Goal) {

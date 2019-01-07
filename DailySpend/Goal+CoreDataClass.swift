@@ -375,7 +375,11 @@ class Goal: NSManagedObject {
             if parent == self {
                 return (false, "This goal cannot be a parent of itself.")
             }
-            
+
+            if self.childGoals?.contains(parent) ?? false {
+                return (false, "This goal's parent cannot be its child.")
+            }
+
             let interval = CalendarInterval(start: _start!, end: _end)!
             let parentInterval = CalendarInterval(start: parent.start!, end: parent.exclusiveEnd)!
             

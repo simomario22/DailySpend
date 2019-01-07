@@ -214,6 +214,9 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
             }
             self.view.endEditing(false)
             let goalOnViewContext = Goal.inContext(goal)!
+            if let parentGoal = goalOnViewContext.parentGoal {
+                appDelegate.persistentContainer.viewContext.refresh(parentGoal, mergeChanges: true)
+            }
             delegate?.addedOrChangedGoal(goalOnViewContext)
             if self.navigationController!.viewControllers[0] == self {
                 self.navigationController!.dismiss(animated: true, completion: nil)
@@ -499,7 +502,7 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
             }
             if let goalId = goalId {
                 let goal = (Goal.inContext(goalId) as! Goal)
-                goalSelectorVC.excludedGoals = Set<Goal>([goal])
+                goalSelectorVC.excludedGoals = Set<Goal>([goal]).union(goal.childGoals ?? Set<Goal>())
             }
             goalSelectorVC.showParentSelection = false
             goalSelectorVC.delegate = self

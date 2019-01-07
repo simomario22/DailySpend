@@ -135,6 +135,7 @@ class Exporter {
         // Fetch all pauses
         let expenseSortDesc = NSSortDescriptor(key: "dateCreated_", ascending: true)
         guard let expenses = Expense.get(context: context, sortDescriptors: [expenseSortDesc]) else {
+            Logger.debug("Could not get expenses.")
             os.closeFile()
             return nil
         }
@@ -161,6 +162,7 @@ class Exporter {
         // Fetch all pauses
         let pauseSortDesc = NSSortDescriptor(key: "dateCreated_", ascending: true)
         guard let pauses = Pause.get(context: context, sortDescriptors: [pauseSortDesc]) else {
+            Logger.debug("Could not get pauses.")
             os.closeFile()
             return nil
         }
@@ -187,6 +189,7 @@ class Exporter {
         // Fetch all months
         let adjustmentsSortDesc = NSSortDescriptor(key: "dateCreated_", ascending: true)
         guard let adjustments = Adjustment.get(context: context, sortDescriptors: [adjustmentsSortDesc]) else {
+            Logger.debug("Could not get adjustments.")
             os.closeFile()
             return nil
         }

@@ -22,7 +22,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
+    /**
+     * Deletes all Adjustments and Expenses that don't have a parent
+     * goal.
+     * This should be removed eventually, now that we cascade delete.
+     */
+    func deleteAllOrphans() {
+        var withoutParentGoal = [NSManagedObject]()
+
+        withoutParentGoal += Expense.get(context: persistentContainer.viewContext)!.filter({ return $0.goal == nil }) as [NSManagedObject]
+        withoutParentGoal += Adjustment.get(context: persistentContainer.viewContext)!.filter({ return $0.goal == nil }) as [NSManagedObject]
+
+        let context = persistentContainer.newBackgroundContext()
+        for obj in withoutParentGoal {
+            let objInContext = context.object(with: obj.objectID)
+            context.delete(objInContext)
+        }
+        if context.hasChanges {
+            try! context.save()
+        }
+    }
+
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        deleteAllOrphans()
         Logger.printAllCoreData()
 
         return true
