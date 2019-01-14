@@ -11,49 +11,59 @@ import CoreData
 
 class GoalBalanceCalculator {
     private var persistentContainer: NSPersistentContainer
+    private var queue: DispatchQueue
 
     init(persistentContainer: NSPersistentContainer) {
         self.persistentContainer = persistentContainer
+        let queueLabel = "com.joshsherick.DailySpend.CalculateBalance"
+        self.queue = DispatchQueue(label: queueLabel, qos: .userInitiated, attributes: .concurrent)
     }
     
-    typealias BalanceCompletion = (_ balance: Decimal?, _ day: CalendarDay, _ goal: Goal?) -> ()
-    
-    /**
-     * Calculates the balance for particular goals on a given day, calling
-     * `completion` when finished with the result, or `nil` as the first
-     * argument if a result could not be computed.
-     */
-    func calculateBalance(for goals: [Goal], on day: CalendarDay, completion: @escaping BalanceCompletion) {
-        for goal in goals {
-            let queueLabel = "com.joshsherick.DailySpend.CalculateBalance"
-            let queue = DispatchQueue(label: queueLabel, qos: .userInitiated, attributes: .concurrent)
-            queue.async {
-                self.persistentContainer.performBackgroundTask({ (context) in
-                    let goal = context.object(with: goal.objectID) as! Goal
-                    self.balance(context: context, for: goal, on: day, completion: completion)
-                })
-            }
-        }
-    }
+    typealias BalanceCompletion = (_ balance: Decimal?, _ day: CalendarDay, _ goal: NSManagedObjectID?) -> ()
 
     /**
      * Calculates the balance with carry over adjustments for a particular goal
      * on a given day, calling `completion` when finished with the result, or
      * `nil` as the first argument if a result could not be computed.
+     *
+     * `completion` will be executed on `completionQueue`, if provided
+     * otherwise `DispatchQueue.main`.
+     *
      */
     func calculateBalanceAfterBatchJobs(for goal: Goal, on day: CalendarDay, completion: @escaping BalanceCompletion) {
 
         let adjustmentManager = CarryOverAdjustmentManager(persistentContainer: persistentContainer)
         adjustmentManager.updateCarryOverAdjustments(for: goal) { (_, _, _) in
-            let queueLabel = "com.joshsherick.DailySpend.CalculateBalance"
-            let queue = DispatchQueue(label: queueLabel, qos: .userInitiated, attributes: .concurrent)
-            queue.async {
-                self.persistentContainer.performBackgroundTask({ (context) in
-                    let goal = context.object(with: goal.objectID) as! Goal
-                    self.balance(context: context, for: goal, on: day, completion: completion)
-                })
+            self.queue.async {
+                self.balance(for: goal, on: day, completion: completion)
             }
+        }
+    }
 
+    /**
+     * Calculates the balance for a particular goal for a given set of days,
+     * calling `completion` when finished with the result, or `nil` as the first
+     * argument if a result could not be computed.
+     *
+     * `completion` will be executed on `completionQueue`, if provided
+     * otherwise `DispatchQueue.main`.
+     */
+    func calculateBalances(
+        for goals: [Goal],
+        on days: [CalendarDay],
+        completionQueue: DispatchQueue = .main,
+        completion: @escaping BalanceCompletion
+    ) {
+        for goal in goals {
+            for day in days {
+                queue.async {
+                    self.balance(for: goal, on: day) { (balance, day, goal) in
+                        completionQueue.async {
+                            completion(balance, day, goal)
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -62,115 +72,61 @@ class GoalBalanceCalculator {
      * `completion` when finished with the result, or `nil` as the first
      * argument if a result could not be computed.
      */
-    func calculateBalance(for goal: Goal, on day: CalendarDay, completion: @escaping BalanceCompletion) {
-        let queueLabel = "com.joshsherick.DailySpend.CalculateBalance"
-        let queue = DispatchQueue(label: queueLabel, qos: .userInitiated, attributes: .concurrent)
+    func calculateBalance(for goal: Goal, on day: CalendarDay, completionQueue: DispatchQueue = .main, completion: @escaping BalanceCompletion) {
         queue.async {
-            self.persistentContainer.performBackgroundTask({ (context) in
-                let goal = context.object(with: goal.objectID) as! Goal
-                self.balance(context: context, for: goal, on: day, completion: completion)
-            })
+            self.balance(for: goal, on: day) { (balance, day, goal) in
+                completionQueue.async {
+                    completion(balance, day, goal)
+                }
+            }
         }
     }
-    
-    /**
-     * Compute the balance amount in this goal on a particular day.
-     *
-     * - Parameters:
-     *    - goal: The goal to compute the balance for.
-     *    - day: The day to compute the balance for.
-     *
-     * - Returns: The balance for `goal` on `day`, taking into account periods,
-     *            interval pay, and expenses.
-     */
+
     private func balance(
-        context: NSManagedObjectContext,
         for goal: Goal,
         on day: CalendarDay,
         completion: @escaping BalanceCompletion
     ) {
+        let context = self.persistentContainer.newBackgroundContext()
+        let goal: Goal! = Goal.inContext(goal, context: context) as Goal?
+
         guard let interval = goal.periodInterval(for: day.start) else {
-            completionOnMain(completion, balance: nil, day: day, goal: goal)
+            completion(nil, day, goal.objectID)
             return
         }
-        let df = DateFormatter()
-        df.timeStyle = .none
-        df.dateStyle = .short
-        Logger.debug("started balance calculation for \(goal.shortDescription!) \(day.string(formatter: df))")
 
-        let id = goal.objectID.uriRepresentation()
-        let queueLabel = "com.joshsherick.DailySpend.CalculateBalance_\(id)"
-        let queue = DispatchQueue(label: queueLabel, qos: .userInitiated, attributes: .concurrent)
         let group = DispatchGroup()
-        
+
         var totalPaidAmount: Decimal? = nil
         var totalExpenseAmount: Decimal = 0
         var totalAdjustmentAmount: Decimal = 0
 
         group.enter()
-        Logger.debug("balance \(goal.shortDescription!) \(day.string(formatter: df)) paid amount entered")
-        queue.async {
-            Logger.debug("balance \(goal.shortDescription!) \(day.string(formatter: df)) paid amount async'd")
-            let context = self.persistentContainer.newBackgroundContext()
-            Logger.debug("balance \(goal.shortDescription!) \(day.string(formatter: df)) paid amount started")
-            let goal = context.object(with: goal.objectID) as! Goal
+        context.perform {
             totalPaidAmount = self.getTotalPaidAmount(goal, day, interval)
-            Logger.debug("balance \(goal.shortDescription!) \(day.string(formatter: df)) paid amount left")
             group.leave()
         }
 
         group.enter()
-        Logger.debug("balance \(goal.shortDescription!) \(day.string(formatter: df)) total expenses entered")
-        queue.async {
-            Logger.debug("balance \(goal.shortDescription!) \(day.string(formatter: df)) total expenses async'd")
-            let context = self.persistentContainer.newBackgroundContext()
-            Logger.debug("balance \(goal.shortDescription!) \(day.string(formatter: df)) total expenses started")
-            let goal = context.object(with: goal.objectID) as! Goal
+        context.perform {
             totalExpenseAmount = self.getTotalExpenses(context, goal, interval)
             group.leave()
-            Logger.debug("balance \(goal.shortDescription!) \(day.string(formatter: df)) total expenses left")
         }
 
         group.enter()
-        Logger.debug("balance \(goal.shortDescription!) \(day.string(formatter: df)) total adjustments entered")
-        queue.async {
-            Logger.debug("balance \(goal.shortDescription!) \(day.string(formatter: df)) total adjustments async'd")
-            let context = self.persistentContainer.newBackgroundContext()
-            Logger.debug("balance \(goal.shortDescription!) \(day.string(formatter: df)) total adjustments started")
-            let goal = context.object(with: goal.objectID) as! Goal
+        context.perform {
             totalAdjustmentAmount = self.getTotalAdjustments(context, goal, interval)
-            Logger.debug("balance \(goal.shortDescription!) \(day.string(formatter: df)) total adjustments left")
             group.leave()
         }
 
-        Logger.debug("balance \(goal.shortDescription!) \(day.string(formatter: df)) waiting on group")
-        print("\r⚡️: \(Thread.current)\r" + "🏭: \(OperationQueue.current?.underlyingQueue?.label ?? "None")\r")
         group.wait()
-        Logger.debug("balance \(goal.shortDescription!) \(day.string(formatter: df)) finished waiting on group")
         var balance: Decimal? = nil
         if let totalPaidAmount = totalPaidAmount {
             balance = totalPaidAmount + totalAdjustmentAmount - totalExpenseAmount
         }
-        Logger.debug("about to finish balance calculation for \(goal.shortDescription!) \(day.string(formatter: df))")
-        self.completionOnMain(completion, balance: balance, day: day, goal: goal)
-        Logger.debug("finished balance calculation for \(goal.shortDescription!) \(day.string(formatter: df))")
+        completion(balance, day, goal.objectID)
     }
 
-    /**
-     * Calls `completion` on the main thread with the given arguments.
-     */
-    private func completionOnMain(
-        _ completion: @escaping BalanceCompletion,
-        balance: Decimal?,
-        day: CalendarDay,
-        goal: Goal
-    ) {
-        let goalOnViewContext = Goal.inContext(goal, context: persistentContainer.viewContext, refresh: false)
-        DispatchQueue.main.async {
-            completion(balance, day, goalOnViewContext)
-        }
-    }
-    
     /**
      * A function which, given a goal, an interval within that goal, and
      * a day within that interval, calculates the total amount paid in that goal

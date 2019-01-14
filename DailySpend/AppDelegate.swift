@@ -44,12 +44,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        deleteAllOrphans()
+        //deleteAllOrphans()
 //        Logger.printAllCoreData()
-        let balanceCalculator = CarryOverAdjustmentManager(persistentContainer: persistentContainer)
+        //let balanceCalculator = GoalBalanceCalculator(persistentContainer: persistentContainer)
+        let carryOverManager = CarryOverAdjustmentManager(persistentContainer: persistentContainer)
         let goals = Goal.get(context: persistentContainer.viewContext)
-        for goal in goals ?? [] {
-            balanceCalculator.updateCarryOverAdjustments(for: goal, completion: { (_, _, _) in })
+        let group = DispatchGroup()
+        for goal in goals! {
+            group.enter()
+            carryOverManager.updateCarryOverAdjustments(for: goal) { (_, _, _) in
+                group.leave()
+            }
+        }
+
+        group.notify(queue: .main) {
+            Logger.debug("Totally finished!")
         }
 
         return true

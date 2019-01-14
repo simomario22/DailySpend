@@ -134,14 +134,18 @@ class CalendarDay: CustomStringConvertible {
         return TimeZone(secondsFromGMT: 0)!
     }
 
+    private static var _gmtCalWrite = DispatchSemaphore(value: 1)
     private static var _gmtCal: Calendar?
     private static var gmtCal: Calendar {
+        _gmtCalWrite.wait()
         if let cal = CalendarDay._gmtCal {
+            _gmtCalWrite.signal()
             return cal
         }
         var cal = Calendar(identifier: .gregorian)
         cal.timeZone = CalendarDay.gmtTimeZone
         CalendarDay._gmtCal = cal
+        _gmtCalWrite.signal()
         return cal
     }
     
