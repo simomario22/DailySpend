@@ -77,8 +77,8 @@ class ReviewViewAdjustmentsController: NSObject, AddAdjustmentDelegate, ReviewEn
                     return
                 }
                 let manager = CarryOverAdjustmentManager(persistentContainer: self.appDelegate.persistentContainer)
-                manager.enableCarryOverAdjustmentForDay(for: goal, on: CalendarDay(dateInDay: interval.start))  { (adjustment) in
-                    guard let adjustment = adjustment else {
+                manager.enableCarryOverAdjustmentForDay(for: goal, on: CalendarDay(dateInDay: interval.start))  { (adjustmentId) in
+                    guard let adjustment = Adjustment.inContext(adjustmentId) as? Adjustment else {
                         return
                     }
                     let datum = self.makeAdjustmentCellDatum(adjustment)
@@ -139,8 +139,11 @@ class ReviewViewAdjustmentsController: NSObject, AddAdjustmentDelegate, ReviewEn
             guard updated != nil else {
                 return
             }
+            let viewContext = self.appDelegate.persistentContainer.viewContext
             for (i, adjustment) in self.adjustments.enumerated() {
-                if updated!.contains(adjustment) {
+                let adjustmentId = adjustment.objectID
+                if updated!.contains(adjustmentId) {
+                    viewContext.refresh(adjustment, mergeChanges: true)
                     self.adjustmentCellData[i] = self.makeAdjustmentCellDatum(adjustment)
 
                     self.delegate.editedEntity(
@@ -150,7 +153,7 @@ class ReviewViewAdjustmentsController: NSObject, AddAdjustmentDelegate, ReviewEn
                         movedTo: nil,
                         use: .automatic
                     )
-                } else if deleted!.contains(adjustment) {
+                } else if deleted!.contains(adjustmentId) {
                     self.adjustmentCellData.remove(at: i)
                     self.adjustments.remove(at: i)
                     self.delegate.deletedEntity(
@@ -160,7 +163,8 @@ class ReviewViewAdjustmentsController: NSObject, AddAdjustmentDelegate, ReviewEn
                     )
                 }
             }
-            for adjustment in inserted! {
+            for adjustmentId in inserted! {
+                let adjustment = Adjustment.inContext(adjustmentId) as! Adjustment
                 if adjustment.type == .CarryOverDeleted ||
                    !interval.contains(date: adjustment.firstDayEffective!.start) {
                     continue

@@ -30,12 +30,21 @@ class GoalBalanceCalculator {
      * otherwise `DispatchQueue.main`.
      *
      */
-    func calculateBalanceAfterBatchJobs(for goal: Goal, on day: CalendarDay, completion: @escaping BalanceCompletion) {
+    func calculateBalanceAfterBatchJobs(
+        for goal: Goal,
+        on day: CalendarDay,
+        completionQueue: DispatchQueue = .main,
+        completion: @escaping BalanceCompletion
+    ) {
 
         let adjustmentManager = CarryOverAdjustmentManager(persistentContainer: persistentContainer)
         adjustmentManager.updateCarryOverAdjustments(for: goal) { (_, _, _) in
             self.queue.async {
-                self.balance(for: goal, on: day, completion: completion)
+                self.balance(for: goal, on: day) { (balance, day, goal) in
+                    completionQueue.async {
+                        completion(balance, day, goal)
+                    }
+                }
             }
         }
     }

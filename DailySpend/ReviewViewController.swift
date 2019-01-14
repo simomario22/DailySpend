@@ -198,23 +198,26 @@ extension ReviewViewController: BalanceBarControllerDelegate {
         }
         let carryOverManager = CarryOverAdjustmentManager(persistentContainer: appDelegate.persistentContainer)
         carryOverManager.updateCarryOverAdjustments(for: goal) {
-            (updatedAmount: Set<Adjustment>?, deleted: Set<Adjustment>?, inserted: Set<Adjustment>?) in
+            (updatedAmount: Set<NSManagedObjectID>?, deleted: Set<NSManagedObjectID>?, inserted: Set<NSManagedObjectID>?) in
             if updatedAmount == nil {
                 Logger.debug("Failed to create carry over adjustments.")
             } else {
                 Logger.debug("Successfully updated carry over adjustments!")
                 Logger.debug("Updated: ")
-                for adjustment in updatedAmount! {
+                for adjustmentId in updatedAmount! {
+                    let adjustment = Adjustment.inContext(adjustmentId) as! Adjustment
                     Logger.printAdjustment(adjustment)
                 }
 
                 Logger.debug("Deleted: ")
-                for adjustment in deleted! {
+                for adjustmentId in deleted! {
+                    let adjustment = Adjustment.inContext(adjustmentId) as! Adjustment
                     Logger.printAdjustment(adjustment)
                 }
 
                 Logger.debug("Inserted: ")
-                for adjustment in inserted! {
+                for adjustmentId in inserted! {
+                    let adjustment = Adjustment.inContext(adjustmentId) as! Adjustment
                     Logger.printAdjustment(adjustment)
                 }
             }
