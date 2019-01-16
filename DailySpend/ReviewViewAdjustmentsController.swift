@@ -77,8 +77,9 @@ class ReviewViewAdjustmentsController: NSObject, AddAdjustmentDelegate, ReviewEn
                     return
                 }
                 let manager = CarryOverAdjustmentManager(persistentContainer: self.appDelegate.persistentContainer)
-                manager.enableCarryOverAdjustmentForDay(for: goal, on: CalendarDay(dateInDay: interval.start))  { (adjustmentId) in
-                    guard let adjustment = Adjustment.inContext(adjustmentId) as? Adjustment else {
+                manager.enableCarryOverAdjustment(for: goal, on: CalendarDay(dateInDay: interval.start))  { (updatedAmount, deleted, inserted) in
+                    guard let inserted = inserted,
+                        let adjustment = Adjustment.inContext(inserted.first) as? Adjustment else {
                         return
                     }
                     let datum = self.makeAdjustmentCellDatum(adjustment)
@@ -134,33 +135,35 @@ class ReviewViewAdjustmentsController: NSObject, AddAdjustmentDelegate, ReviewEn
         }
 
         let manager = CarryOverAdjustmentManager(persistentContainer: appDelegate.persistentContainer)
-        manager.updateCarryOverAdjustments(for: goal) {
+        manager.ensureProperAdjustmentsCreated(for: goal) {
             (updated, deleted, inserted) in
             guard updated != nil else {
                 return
             }
             let viewContext = self.appDelegate.persistentContainer.viewContext
+            var numDeleted = 0
             for (i, adjustment) in self.adjustments.enumerated() {
                 let adjustmentId = adjustment.objectID
                 if updated!.contains(adjustmentId) {
                     viewContext.refresh(adjustment, mergeChanges: true)
-                    self.adjustmentCellData[i] = self.makeAdjustmentCellDatum(adjustment)
+                    self.adjustmentCellData[i - numDeleted] = self.makeAdjustmentCellDatum(adjustment)
 
                     self.delegate.editedEntity(
                         with: adjustment.effectiveInterval!,
                         within: adjustment.goal!,
-                        at: IndexPath(row: i, section: self.section),
+                        at: IndexPath(row: i - numDeleted, section: self.section),
                         movedTo: nil,
                         use: .automatic
                     )
                 } else if deleted!.contains(adjustmentId) {
-                    self.adjustmentCellData.remove(at: i)
-                    self.adjustments.remove(at: i)
+                    self.adjustmentCellData.remove(at: i - numDeleted)
+                    self.adjustments.remove(at: i - numDeleted)
                     self.delegate.deletedEntity(
-                        at: IndexPath(row: i, section: self.section),
+                        at: IndexPath(row: i - numDeleted, section: self.section),
                         use: .automatic,
                         isOnlyEntity: self.adjustmentCellData.isEmpty
                     )
+                    numDeleted += 1
                 }
             }
             for adjustmentId in inserted! {

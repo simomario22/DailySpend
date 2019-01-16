@@ -535,7 +535,7 @@ class Goal: NSManagedObject {
      *    - interval: The `CalendarInterval` for which to fetch overlapping
      *              adjustments.
      */
-    func getAdjustments(context: NSManagedObjectContext, interval: CalendarIntervalProvider) -> [Adjustment] {
+    func getAdjustments(context: NSManagedObjectContext, interval: CalendarIntervalProvider, includeCarryOver: Bool = true) -> [Adjustment] {
         let descendants = allChildDescendants()
 
         let isValidCarryOver = Adjustment.AdjustmentType.isValidCarryOverAdjustmentPredicateString()
@@ -544,8 +544,10 @@ class Goal: NSManagedObject {
         let isGoalOrDecendant = "(goal_ = $goal OR goal_ IN $goalDescendants)"
         let isGoal = "(goal_ = $goal)"
         let isInInterval = "(lastDateEffective_ >= $intervalStart" + (interval.end == nil ? ")" : " AND firstDateEffective_ < $intervalEnd)")
-        let formatString = "(\(isNotCarryOver) AND \(isGoalOrDecendant) AND \(isInInterval)) OR" +
-                           "(\(isValidCarryOver) AND \(isGoal) AND \(isInInterval))"
+        var formatString = "(\(isNotCarryOver) AND \(isGoalOrDecendant) AND \(isInInterval))"
+        if includeCarryOver {
+            formatString += " OR (\(isValidCarryOver) AND \(isGoal) AND \(isInInterval))"
+        }
 
         let predicateTemplate = NSPredicate(format: formatString)
         let predicate = predicateTemplate.withSubstitutionVariables([

@@ -22,34 +22,6 @@ class GoalBalanceCalculator {
     typealias BalanceCompletion = (_ balance: Decimal?, _ day: CalendarDay, _ goal: NSManagedObjectID?) -> ()
 
     /**
-     * Calculates the balance with carry over adjustments for a particular goal
-     * on a given day, calling `completion` when finished with the result, or
-     * `nil` as the first argument if a result could not be computed.
-     *
-     * `completion` will be executed on `completionQueue`, if provided
-     * otherwise `DispatchQueue.main`.
-     *
-     */
-    func calculateBalanceAfterBatchJobs(
-        for goal: Goal,
-        on day: CalendarDay,
-        completionQueue: DispatchQueue = .main,
-        completion: @escaping BalanceCompletion
-    ) {
-
-        let adjustmentManager = CarryOverAdjustmentManager(persistentContainer: persistentContainer)
-        adjustmentManager.updateCarryOverAdjustments(for: goal) { (_, _, _) in
-            self.queue.async {
-                self.balance(for: goal, on: day) { (balance, day, goal) in
-                    completionQueue.async {
-                        completion(balance, day, goal)
-                    }
-                }
-            }
-        }
-    }
-
-    /**
      * Calculates the balance for a particular goal for a given set of days,
      * calling `completion` when finished with the result, or `nil` as the first
      * argument if a result could not be computed.
@@ -66,7 +38,7 @@ class GoalBalanceCalculator {
         for goal in goals {
             for day in days {
                 queue.async {
-                    self.balance(for: goal, on: day) { (balance, day, goal) in
+                    self.balance(for: goal.objectID, on: day) { (balance, day, goal) in
                         completionQueue.async {
                             completion(balance, day, goal)
                         }
@@ -83,7 +55,7 @@ class GoalBalanceCalculator {
      */
     func calculateBalance(for goal: Goal, on day: CalendarDay, completionQueue: DispatchQueue = .main, completion: @escaping BalanceCompletion) {
         queue.async {
-            self.balance(for: goal, on: day) { (balance, day, goal) in
+            self.balance(for: goal.objectID, on: day) { (balance, day, goal) in
                 completionQueue.async {
                     completion(balance, day, goal)
                 }
@@ -92,14 +64,19 @@ class GoalBalanceCalculator {
     }
 
     private func balance(
-        for goal: Goal,
+        for goalId: NSManagedObjectID,
         on day: CalendarDay,
         completion: @escaping BalanceCompletion
     ) {
         let context = self.persistentContainer.newBackgroundContext()
-        let goal: Goal! = Goal.inContext(goal, context: context) as Goal?
+        var goal: Goal!
+        var interval: CalendarIntervalProvider!
+        context.performAndWait {
+            goal = Goal.inContext(goalId, context: context) as! Goal?
+            interval = goal.periodInterval(for: day.start)
+        }
 
-        guard let interval = goal.periodInterval(for: day.start) else {
+        if interval == nil {
             completion(nil, day, goal.objectID)
             return
         }

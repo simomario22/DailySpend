@@ -15,7 +15,7 @@ class BalanceBarController {
     private let todayAmountLabel = "Today's Balance:"
     private let otherAmountLabel = "Ending Balance:"
     
-    init(delegate: BalanceBarControllerDelegate, view: UIView, topY: NSLayoutYAxisAnchor) {
+    init(view: UIView, topY: NSLayoutYAxisAnchor) {
         self.balanceBar = BalanceBarView(frame: CGRect.zero)
 
         NotificationCenter.default.addObserver(
@@ -79,8 +79,4 @@ class BalanceBarController {
             }
         }
     }
-}
-
-protocol BalanceBarControllerDelegate {
-    func requestedReloadOfCarryOverAdjustments()
 }

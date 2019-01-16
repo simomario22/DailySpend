@@ -34,12 +34,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         withoutParentGoal += Adjustment.get(context: persistentContainer.viewContext)!.filter({ return $0.goal == nil }) as [NSManagedObject]
 
         let context = persistentContainer.newBackgroundContext()
-        for obj in withoutParentGoal {
-            let objInContext = context.object(with: obj.objectID)
-            context.delete(objInContext)
-        }
-        if context.hasChanges {
-            try! context.save()
+        context.performAndWait {
+            for obj in withoutParentGoal {
+                let objInContext = context.object(with: obj.objectID)
+                context.delete(objInContext)
+            }
+            if context.hasChanges {
+                try! context.save()
+            }
         }
     }
 

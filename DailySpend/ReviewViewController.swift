@@ -76,7 +76,7 @@ class ReviewViewController: UIViewController {
         
         self.navigationController?.navigationBar.hideBorderLine()
         pbc = PeriodBrowserController(delegate: self, view: self.view)
-        bbc = BalanceBarController(delegate: self, view: self.view, topY: pbc.periodBrowser.bottomAnchor)
+        bbc = BalanceBarController(view: self.view, topY: pbc.periodBrowser.bottomAnchor)
         
         tableView = UITableView(frame: CGRect(), style: .grouped)
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -188,40 +188,6 @@ class ReviewViewController: UIViewController {
         tableView.deleteSections(providersSections, with: forward ? .left : .right)
         tableView.insertSections(providersSections, with: forward ? .right : .left)
         tableView.endUpdates()
-    }
-}
-
-extension ReviewViewController: BalanceBarControllerDelegate {
-    func requestedReloadOfCarryOverAdjustments() {
-        guard let goal = goal else {
-            return
-        }
-        let carryOverManager = CarryOverAdjustmentManager(persistentContainer: appDelegate.persistentContainer)
-        carryOverManager.updateCarryOverAdjustments(for: goal) {
-            (updatedAmount: Set<NSManagedObjectID>?, deleted: Set<NSManagedObjectID>?, inserted: Set<NSManagedObjectID>?) in
-            if updatedAmount == nil {
-                Logger.debug("Failed to create carry over adjustments.")
-            } else {
-                Logger.debug("Successfully updated carry over adjustments!")
-                Logger.debug("Updated: ")
-                for adjustmentId in updatedAmount! {
-                    let adjustment = Adjustment.inContext(adjustmentId) as! Adjustment
-                    Logger.printAdjustment(adjustment)
-                }
-
-                Logger.debug("Deleted: ")
-                for adjustmentId in deleted! {
-                    let adjustment = Adjustment.inContext(adjustmentId) as! Adjustment
-                    Logger.printAdjustment(adjustment)
-                }
-
-                Logger.debug("Inserted: ")
-                for adjustmentId in inserted! {
-                    let adjustment = Adjustment.inContext(adjustmentId) as! Adjustment
-                    Logger.printAdjustment(adjustment)
-                }
-            }
-        }
     }
 }
 
