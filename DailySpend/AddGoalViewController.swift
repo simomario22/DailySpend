@@ -185,35 +185,43 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
     }
     
     func save() {
+        var validation: (valid: Bool, problem: String?)!
+        let isNew = (goalId == nil)
         let context = appDelegate.persistentContainer.newBackgroundContext()
-        var goal: Goal
-        var justCreated = false
-        if goalId == nil {
-            justCreated = true
-            goal = Goal(context: context)
-            goal.dateCreated = Date()
-        } else {
-            goal = (context.object(with: goalId!) as! Goal)
-        }
-        
-        let validation = goal.propose(
-            shortDescription: shortDescription,
-            amount: amount,
-            start: start,
-            end: neverEnd ? nil : end,
-            period: recurring ? period : Period.none,
-            payFrequency: recurring && incrementalPayment ? payFrequency : Period.none,
-            parentGoal: Goal.inContext(parentGoal, context: context),
-            carryOverBalance: recurring ? carryOverBalance : nil,
-            adjustMonthAmountAutomatically: recurring && period.scope == .Month ? adjustMonthAmountAutomatically : nil
-        )
-
-        if validation.valid {
-            if context.hasChanges {
-                try! context.save()
+        context.performAndWait {
+            var goal: Goal!
+            if isNew {
+                goal = Goal(context: context)
+                goal.dateCreated = Date()
+            } else {
+                goal = Adjustment.inContext(goalId!, context: context)
             }
-            self.view.endEditing(false)
-            let goalOnViewContext = Goal.inContext(goal)!
+
+            validation = goal.propose(
+                shortDescription: shortDescription,
+                amount: amount,
+                start: start,
+                end: neverEnd ? nil : end,
+                period: recurring ? period : Period.none,
+                payFrequency: recurring && incrementalPayment ? payFrequency : Period.none,
+                parentGoal: Goal.inContext(parentGoal, context: context),
+                carryOverBalance: recurring ? carryOverBalance : nil,
+                adjustMonthAmountAutomatically: recurring && period.scope == .Month ? adjustMonthAmountAutomatically : nil
+            )
+
+            if !validation.valid && isNew {
+                context.rollback()
+            } else {
+                if context.hasChanges {
+                    try! context.save()
+                }
+                self.view.endEditing(false)
+                goalId = goal.objectID
+            }
+        }
+
+        if let goalId = goalId {
+            let goalOnViewContext: Goal = Goal.inContext(goalId)!
             if let parentGoal = goalOnViewContext.parentGoal {
                 appDelegate.persistentContainer.viewContext.refresh(parentGoal, mergeChanges: true)
             }
@@ -224,17 +232,17 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
                 self.navigationController!.popViewController(animated: true)
             }
         } else {
-            if justCreated {
-                context.rollback()
-                try! context.save()
-            }
-            let alert = UIAlertController(title: "Couldn't Save",
-                                          message: validation.problem!,
-                                          preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "Okay",
-                                          style: .default,
-                                          handler: nil))
-            self.present(alert, animated: true, completion: nil)
+            let alert = UIAlertController(
+                title: "Couldn't Save",
+                message: validation.problem!,
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(
+                title: "Okay",
+                style: .default,
+                handler: nil
+            ))
+            present(alert, animated: true, completion: nil)
         }
     }
 

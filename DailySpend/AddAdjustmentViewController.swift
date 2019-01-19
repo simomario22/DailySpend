@@ -137,36 +137,42 @@ class AddAdjustmentViewController: UIViewController, UITableViewDelegate, UITabl
     }
     
     func save() {
+        var validation: (valid: Bool, problem: String?)!
+        let isNew = (adjustmentId == nil)
         let context = appDelegate.persistentContainer.newBackgroundContext()
-        var adjustment: Adjustment
-        
-        var justCreated = false
-        if adjustmentId == nil {
-            justCreated = true
-            adjustment = Adjustment(context: context)
-            adjustment.dateCreated = Date()
-        } else {
-            adjustment = (context.object(with: adjustmentId!) as! Adjustment)
-        }
-
-        let multipliedAmountPerDay = self.amountPerDay * (deduct ? -1 : 1)
-        let validation = adjustment.propose(
-            shortDescription: shortDescription,
-            amountPerDay: multipliedAmountPerDay,
-            firstDayEffective: firstDayEffective,
-            lastDayEffective: lastDayEffective,
-            goal: Goal.inContext(goal, context: context)
-        )
-        
-        if validation.valid {
-            if context.hasChanges {
-                try! context.save()
+        context.performAndWait {
+            var adjustment: Adjustment!
+            if isNew {
+                adjustment = Adjustment(context: context)
+                adjustment.dateCreated = Date()
+            } else {
+                adjustment = Adjustment.inContext(adjustmentId!, context: context)
             }
 
-            self.view.endEditing(false)
+            let goal = Goal.inContext(self.goal, context: context)
+            let multipliedAmountPerDay = self.amountPerDay * (deduct ? -1 : 1)
+            validation = adjustment.propose(
+                shortDescription: shortDescription,
+                amountPerDay: multipliedAmountPerDay,
+                firstDayEffective: firstDayEffective,
+                lastDayEffective: lastDayEffective,
+                goal: goal
+            )
 
-            let adjustmentOnViewContext = Adjustment.inContext(adjustment)!
-            if justCreated {
+            if !validation.valid && isNew {
+                context.rollback()
+            } else {
+                if context.hasChanges {
+                    try! context.save()
+                }
+                self.view.endEditing(false)
+                adjustmentId = adjustment.objectID
+            }
+        }
+
+        if let adjustmentId = adjustmentId {
+            let adjustmentOnViewContext: Adjustment = Adjustment.inContext(adjustmentId)!
+            if isNew {
                 delegate?.createdAdjustmentFromModal(adjustmentOnViewContext)
             } else {
                 delegate?.editedAdjustmentFromModal(adjustmentOnViewContext)
@@ -177,17 +183,17 @@ class AddAdjustmentViewController: UIViewController, UITableViewDelegate, UITabl
                 self.navigationController!.popViewController(animated: true)
             }
         } else {
-            if justCreated {
-                context.rollback()
-                try! context.save()
-            }
-            let alert = UIAlertController(title: "Couldn't Save",
-                                          message: validation.problem!,
-                                          preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "Okay",
-                                          style: .default,
-                                          handler: nil))
-            self.present(alert, animated: true, completion: nil)
+            let alert = UIAlertController(
+                title: "Couldn't Save",
+                message: validation.problem!,
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(
+                title: "Okay",
+                style: .default,
+                handler: nil
+            ))
+            present(alert, animated: true, completion: nil)
         }
     }
     

@@ -65,28 +65,38 @@ class AddPauseViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func save() {
+        var validation: (valid: Bool, problem: String?)!
+        let isNew = (pauseId == nil)
         let context = appDelegate.persistentContainer.newBackgroundContext()
-        var pause: Pause
-        var justCreated = false
-        if pauseId == nil {
-            justCreated = true
-            pause = Pause(context: context)
-            pause.dateCreated = Date()
-        } else {
-            pause = (context.object(with: pauseId!) as! Pause)
-        }
-        
-        let validation = pause.propose(
-            context: context,
-            shortDescription: shortDescription,
-            firstDayEffective: firstDayEffective,
-            lastDayEffective: lastDayEffective
-        )
+        context.performAndWait {
+            var pause: Pause!
+            if isNew {
+                pause = Pause(context: context)
+                pause.dateCreated = Date()
+            } else {
+                pause = Pause.inContext(pauseId!, context: context)
+            }
 
-        if validation.valid {
-            try! context.save()
-            self.view.endEditing(false)
-            let pauseOnViewContext = Pause.inContext(pause)!
+            validation = pause.propose(
+                context: context,
+                shortDescription: shortDescription,
+                firstDayEffective: firstDayEffective,
+                lastDayEffective: lastDayEffective
+            )
+
+            if !validation.valid && isNew {
+                context.rollback()
+            } else {
+                if context.hasChanges {
+                    try! context.save()
+                }
+                self.view.endEditing(false)
+                pauseId = pause.objectID
+            }
+        }
+
+        if let pauseId = pauseId {
+            let pauseOnViewContext: Pause = Pause.inContext(pauseId)!
             delegate?.addedOrChangedPause(pauseOnViewContext)
             if self.navigationController!.viewControllers[0] == self {
                 self.navigationController!.dismiss(animated: true, completion: nil)
@@ -94,17 +104,17 @@ class AddPauseViewController: UIViewController, UITableViewDelegate, UITableView
                 self.navigationController!.popViewController(animated: true)
             }
         } else {
-            if justCreated {
-                context.rollback()
-                try! context.save()
-            }
-            let alert = UIAlertController(title: "Couldn't Save",
-                                          message: validation.problem!,
-                                          preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "Okay",
-                                          style: .default,
-                                          handler: nil))
-            self.present(alert, animated: true, completion: nil)
+            let alert = UIAlertController(
+                title: "Couldn't Save",
+                message: validation.problem!,
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(
+                title: "Okay",
+                style: .default,
+                handler: nil
+            ))
+            present(alert, animated: true, completion: nil)
         }
     }
     

@@ -72,7 +72,7 @@ class GoalBalanceCalculator {
         var goal: Goal!
         var interval: CalendarIntervalProvider!
         context.performAndWait {
-            goal = Goal.inContext(goalId, context: context) as! Goal?
+            goal = Goal.inContext(goalId, context: context)
             interval = goal.periodInterval(for: day.start)
         }
 

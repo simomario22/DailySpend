@@ -386,10 +386,9 @@ class Importer {
             throw ExportError.recoveredFromBadFormat
         }
         
-        guard let jsonObj = ambiguousObj as? [String: Any],
-                let goals = jsonObj["goals"] as? [[String: Any]] else {
+        guard let jsonObj = ambiguousObj as? [String: Any] else {
             // We didn't understand the format
-            Logger.debug("Could not extract goals, or JSON was not an object.")
+            Logger.debug("JSON was not an object.")
             throw ExportError.recoveredFromBadFormat
         }
 
@@ -462,97 +461,38 @@ class Importer {
         }
 
         let context = appDelegate.persistentContainer.newBackgroundContext()
-        func saveContext() throws {
+        var contextError: ExportError?
+        context.performAndWait {
+            func saveContext() throws {
+                do {
+                    try context.save()
+                } catch {
+                    // This import failed. Reset to normal.
+                    try revert()
+                    throw ExportError.recoveredFromBadFormatWithContextChange
+                }
+            }
+
             do {
-                try context.save()
+                try self.importJsonObjects(
+                    context: context,
+                    jsonObj: jsonObj,
+                    revert: revert,
+                    saveContext: saveContext
+                )
+                try saveContext()
             } catch {
-                // This import failed. Reset to normal.
-                try revert()
-                throw ExportError.recoveredFromBadFormatWithContextChange
+                if let error = error as? ExportError {
+                    contextError = error
+                } else {
+                    Logger.debug("\(error)")
+                }
             }
         }
 
-        var goalJsonIdMap = [Int: NSManagedObjectID]()
-        var maxIterations = goals.count
-        var currentIteration = 0
-        
-        var goalsQueue: Array<[String: Any]> = Array<[String: Any]>(goals)
-        
-        while currentIteration <= maxIterations && !goalsQueue.isEmpty {
-            currentIteration += 1
-            let jsonGoal = goalsQueue.popLast()!
-            
-            switch Goal.create(context: context, json: jsonGoal, jsonIds: goalJsonIdMap) {
-            case .Failure:
-                // This import failed. Reset to normal.
-                try revert()
-                Logger.debug("Could not import Goal.")
-                throw ExportError.recoveredFromBadFormatWithContextChange
-            case .NeedsOtherGoalsToBeCreatedFirst:
-                goalsQueue.insert(jsonGoal, at: 0)
-            case .Success(let goal):
-                 // Save so that the goal gets a permanent objectID.
-                try saveContext()
-                let id = goal.objectID
-                if let jsonId = jsonGoal["jsonId"] as? NSNumber {
-                    goalJsonIdMap[jsonId.intValue] = id
-                }
-                
-                // Since we popped a goal, we potentially have to iterate
-                // through the whole queue again to get a goal we can insert.
-                maxIterations = goalsQueue.count
-                currentIteration = 0
-            }
+        if let error = contextError {
+            throw error
         }
-        
-        if currentIteration > maxIterations {
-            // Circular parents or one goal's parent doesn't exist.
-            try revert()
-            Logger.debug("Goals had invalid parent goals (e.g. circular) or a " +
-                "specified parent goal doesn't exist.")
-            throw ExportError.recoveredFromBadFormatWithContextChange
-        }
-        
-        if let expenses = jsonObj["expenses"] as? [[String: Any]] {
-            for jsonExpense in expenses {
-                if Expense.create(context: context,
-                                  json: jsonExpense,
-                                  jsonIds: goalJsonIdMap) == nil {
-                    // This import failed. Reset to normal.
-                    try revert()
-                    Logger.debug("Could not import Expense.")
-                    throw ExportError.recoveredFromBadFormatWithContextChange
-                }
-            }
-        }
-        
-        if let pauses = jsonObj["pauses"] as? [[String: Any]] {
-            for jsonPause in pauses {
-                if Pause.create(context: context,
-                                json: jsonPause,
-                                jsonIds: goalJsonIdMap) == nil {
-                    // This import failed. Reset to normal.
-                    try revert()
-                    Logger.debug("Could not import Pause.")
-                    throw ExportError.recoveredFromBadFormatWithContextChange
-                }
-            }
-        }
-        
-        if let adjustments = jsonObj["adjustments"] as? [[String: Any]] {
-            for jsonAdjustment in adjustments {
-                if !Adjustment.create(context: context,
-                                     json: jsonAdjustment,
-                                     jsonIds: goalJsonIdMap).1 {
-                    // This import failed. Reset to normal.
-                    try revert()
-                    Logger.debug("Could not import Adjustment.")
-                    throw ExportError.recoveredFromBadFormatWithContextChange
-                }
-            }
-        }
-        
-        try saveContext()
 
         // If there is a defaults array, set some defaults.
         if let defaults = jsonObj["defaults"] as? [String: Any] {
@@ -585,6 +525,98 @@ class Importer {
         }
 
         self.performPostImportDataProcessing()
+    }
+
+    private class func importJsonObjects(
+        context: NSManagedObjectContext,
+        jsonObj: [String: Any],
+        revert: () throws -> (),
+        saveContext: () throws -> ()
+    ) throws {
+        guard let goals = jsonObj["goals"] as? [[String: Any]] else {
+            return
+        }
+
+        var goalJsonIdMap = [Int: NSManagedObjectID]()
+        var maxIterations = goals.count
+        var currentIteration = 0
+
+        var goalsQueue = Array<[String: Any]>(goals)
+
+        while currentIteration <= maxIterations && !goalsQueue.isEmpty {
+            currentIteration += 1
+            let jsonGoal = goalsQueue.popLast()!
+
+            switch Goal.create(context: context, json: jsonGoal, jsonIds: goalJsonIdMap) {
+            case .Failure:
+                // This import failed. Reset to normal.
+                try revert()
+                Logger.debug("Could not import Goal.")
+                throw ExportError.recoveredFromBadFormatWithContextChange
+            case .NeedsOtherGoalsToBeCreatedFirst:
+                goalsQueue.insert(jsonGoal, at: 0)
+            case .Success(let goal):
+                // Save so that the goal gets a permanent objectID.
+                try saveContext()
+                let id = goal.objectID
+                if let jsonId = jsonGoal["jsonId"] as? NSNumber {
+                    goalJsonIdMap[jsonId.intValue] = id
+                }
+
+                // Since we popped a goal, we potentially have to iterate
+                // through the whole queue again to get a goal we can insert.
+                maxIterations = goalsQueue.count
+                currentIteration = 0
+            }
+        }
+
+        if currentIteration > maxIterations {
+            // Circular parents or one goal's parent doesn't exist.
+            try revert()
+            Logger.debug("Goals had invalid parent goals (e.g. circular) or a " +
+                "specified parent goal doesn't exist.")
+            throw ExportError.recoveredFromBadFormatWithContextChange
+        }
+
+        if let expenses = jsonObj["expenses"] as? [[String: Any]] {
+            for jsonExpense in expenses {
+                if Expense.create(context: context,
+                                  json: jsonExpense,
+                                  jsonIds: goalJsonIdMap) == nil {
+                    // This import failed. Reset to normal.
+                    try revert()
+                    Logger.debug("Could not import Expense.")
+                    throw ExportError.recoveredFromBadFormatWithContextChange
+                }
+            }
+        }
+
+        if let pauses = jsonObj["pauses"] as? [[String: Any]] {
+            for jsonPause in pauses {
+                if Pause.create(context: context,
+                                json: jsonPause,
+                                jsonIds: goalJsonIdMap) == nil {
+                    // This import failed. Reset to normal.
+                    try revert()
+                    Logger.debug("Could not import Pause.")
+                    throw ExportError.recoveredFromBadFormatWithContextChange
+                }
+            }
+        }
+
+        if let adjustments = jsonObj["adjustments"] as? [[String: Any]] {
+            for jsonAdjustment in adjustments {
+                if !Adjustment.create(context: context,
+                                      json: jsonAdjustment,
+                                      jsonIds: goalJsonIdMap).1 {
+                    // This import failed. Reset to normal.
+                    try revert()
+                    Logger.debug("Could not import Adjustment.")
+                    throw ExportError.recoveredFromBadFormatWithContextChange
+                }
+            }
+        }
+
     }
 
     /**

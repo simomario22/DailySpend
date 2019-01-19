@@ -144,11 +144,11 @@ class ReviewViewExpensesController: NSObject, AddExpenseDelegate, ReviewEntityDa
         if editingStyle != .delete {
             return
         }
-        let context = appDelegate.persistentContainer.newBackgroundContext()
         let row = indexPath.row
-        let expense = context.object(with: expenses[row].objectID)
-        context.delete(expense)
-        if context.hasChanges {
+        let context = appDelegate.persistentContainer.newBackgroundContext()
+        context.performAndWait {
+            let expense: Expense = Expense.inContext(expenses[row], context: context)!
+            context.delete(expense)
             try! context.save()
         }
         expenses.remove(at: row)

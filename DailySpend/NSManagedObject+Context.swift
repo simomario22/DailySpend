@@ -24,13 +24,8 @@ extension NSManagedObject {
      */
     class func inContext<T:NSManagedObject>(_ obj: T?, context: NSManagedObjectContext? = nil, refresh: Bool? = nil) -> T? {
         if let obj = obj {
-            let refresh = refresh ?? (context == nil)
-            let context = context ?? getViewContext()
-            let objOnContext = (T.inContext(obj.objectID, context: context) as! T)
-            if refresh {
-                context.refresh(objOnContext, mergeChanges: true)
-            }
-            return objOnContext
+            let objectOnContext = (T.inContext(obj.objectID, context: context, refresh: refresh) as! T)
+            return objectOnContext
         } else {
             return nil
         }
@@ -39,10 +34,14 @@ extension NSManagedObject {
     /**
      * Returns `objId` in `context`, if it exists, otherwise nil.
      */
-    class func inContext(_ objId: NSManagedObjectID?, context: NSManagedObjectContext? = nil) -> NSManagedObject? {
+    class func inContext<T:NSManagedObject>(_ objId: NSManagedObjectID?, context: NSManagedObjectContext? = nil, refresh: Bool? = nil) -> T? {
         if let objId = objId {
-            let context = context ?? getViewContext()
-            return context.object(with: objId)
+            let contextToUse = context ?? getViewContext()
+            let objectOnContext = contextToUse.object(with: objId) as! T
+            if context == nil || refresh == true {
+                contextToUse.refresh(objectOnContext, mergeChanges: true)
+            }
+            return objectOnContext
         } else {
             return nil
         }

@@ -148,37 +148,46 @@ class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     func save() {
-        var justCreated = false
+        var validation: (valid: Bool, problem: String?)!
+        let isNew = (expenseId == nil)
         let context = appDelegate.persistentContainer.newBackgroundContext()
-        var expense: Expense
-        if expenseId == nil {
-            justCreated = true
-            expense = Expense(context: context)
-            expense.dateCreated = Date()
-        } else {
-            expense = (context.object(with: expenseId!) as! Expense)
+        context.performAndWait {
+            var expense: Expense!
+            if isNew {
+                expense = Expense(context: context)
+                expense.dateCreated = Date()
+            } else {
+                expense = Expense.inContext(expenseId!, context: context)
+            }
+
+            let goal = Goal.inContext(self.goal, context: context)
+            validation = expense.propose(
+                amount: amount,
+                shortDescription: shortDescription,
+                transactionDay: transactionDay,
+                notes: notes,
+                goal: goal
+            )
+
+            if validation.valid && !imageSelectorDataSource.saveImages(expense: expense, context: context) {
+                validation.valid = false
+                validation.problem = "Could not save images associated with the expense."
+            }
+
+            if !validation.valid && isNew {
+                context.rollback()
+            } else {
+                if context.hasChanges {
+                    try! context.save()
+                }
+                self.view.endEditing(false)
+                expenseId = expense.objectID
+            }
         }
 
-        var validation = expense.propose(
-            amount: amount,
-            shortDescription: shortDescription,
-            transactionDay: transactionDay,
-            notes: notes,
-            goal: Goal.inContext(goal, context: context)
-        )
-        
-        if validation.valid && !imageSelectorDataSource.saveImages(expense: expense, context: context) {
-            validation.valid = false
-            validation.problem = "Could not save images associated with the expense."
-        }
-        
-        if validation.valid {
-            if context.hasChanges {
-                try! context.save()
-            }
-            self.view.endEditing(false)
-            let expenseOnViewContext = Expense.inContext(expense)!
-            if justCreated {
+        if let expenseId = expenseId {
+            let expenseOnViewContext: Expense = Expense.inContext(expenseId)!
+            if isNew {
                 delegate?.createdExpenseFromModal(expenseOnViewContext)
             } else {
                 delegate?.editedExpenseFromModal(expenseOnViewContext)
@@ -189,18 +198,17 @@ class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableVi
                 self.navigationController!.popViewController(animated: true)
             }
         } else {
-            if justCreated {
-                context.rollback()
-                try! context.save()
-            }
-
-            let alert = UIAlertController(title: "Couldn't Save",
-                                          message: validation.problem!,
-                                          preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "Okay",
-                                          style: .default,
-                                          handler: nil))
-            self.present(alert, animated: true, completion: nil)
+            let alert = UIAlertController(
+                title: "Couldn't Save",
+                message: validation.problem!,
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(
+                title: "Okay",
+                style: .default,
+                handler: nil
+            ))
+            present(alert, animated: true, completion: nil)
         }
     }
 

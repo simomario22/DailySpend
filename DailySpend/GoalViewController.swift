@@ -190,21 +190,23 @@ class GoalViewController: UIViewController, UITableViewDelegate, UITableViewData
     private func deleteGoal(indexPath: IndexPath) {
         let context = appDelegate.persistentContainer.newBackgroundContext()
 
-        var goal: Goal
         var children = 0
-        switch sectionForSectionIndex(indexPath.section) {
-        case .CurrentGoalsSection:
-            goal = Goal.inContext(currentGoals.remove(at: indexPath.row).goal, context: context)!
-            children = goal.childGoals?.count ?? 0
-        case .FutureStartGoalsSection:
-            goal = Goal.inContext(futureStartGoals.remove(at: indexPath.row).goal, context: context)!
-        case .ArchivedGoalsSection:
-            goal = Goal.inContext(archivedGoals.remove(at: indexPath.row).goal, context: context)!
-        }
+        context.performAndWait {
+            var goal: Goal
+            switch sectionForSectionIndex(indexPath.section) {
+            case .CurrentGoalsSection:
+                goal = Goal.inContext(currentGoals.remove(at: indexPath.row).goal, context: context)!
+                children = goal.childGoals?.count ?? 0
+            case .FutureStartGoalsSection:
+                goal = Goal.inContext(futureStartGoals.remove(at: indexPath.row).goal, context: context)!
+            case .ArchivedGoalsSection:
+                goal = Goal.inContext(archivedGoals.remove(at: indexPath.row).goal, context: context)!
+            }
 
-        context.delete(goal)
-        self.changes = true
-        try! context.save()
+            context.delete(goal)
+            self.changes = true
+            try! context.save()
+        }
 
         var childPaths = [IndexPath]()
 

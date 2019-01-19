@@ -39,7 +39,7 @@ class CarryOverAdjustmentManager {
         queue.async {
             let context = self.persistentContainer.newBackgroundContext()
             context.perform {
-                let goal = Goal.inContext(goal.objectID, context: context) as! Goal
+                let goal: Goal = Goal.inContext(goal.objectID, context: context)!
                 self.enableCarryOverAdjustment(context: context, for: goal, on: day) {
                     (updatedAmount, inserted, deleted) in
                     completionQueue.async {
@@ -61,7 +61,7 @@ class CarryOverAdjustmentManager {
         queue.async {
             let context = self.persistentContainer.newBackgroundContext()
             context.perform {
-                let adjustment = Adjustment.inContext(adjustment.objectID, context: context) as! Adjustment
+                let adjustment: Adjustment = Adjustment.inContext(adjustment.objectID, context: context)!
                 self.refreshCarryOverAdjustment(context: context, adjustment: adjustment) {
                     (updatedAmount, inserted, deleted) in
                     completionQueue.async {
@@ -83,7 +83,7 @@ class CarryOverAdjustmentManager {
         queue.async {
             let context = self.persistentContainer.newBackgroundContext()
             context.perform {
-                let goal = Goal.inContext(goal.objectID, context: context) as! Goal
+                let goal: Goal = Goal.inContext(goal.objectID, context: context)!
                 self.refreshAllCarryOverAdjustments(context: context, goal: goal) {
                     (updatedAmount, deleted, inserted) in
                     completionQueue.async {
@@ -105,7 +105,7 @@ class CarryOverAdjustmentManager {
         queue.async {
             let context = self.persistentContainer.newBackgroundContext()
             context.perform {
-                let adjustment = Adjustment.inContext(adjustment.objectID, context: context) as! Adjustment
+                let adjustment: Adjustment = Adjustment.inContext(adjustment.objectID, context: context)!
                 self.removeCarryOverAdjustment(context: context, adjustment: adjustment) {
                     (updatedAmount, inserted, deleted) in
                     completionQueue.async {
@@ -306,7 +306,7 @@ class CarryOverAdjustmentManager {
         queue.async {
             let context = self.persistentContainer.newBackgroundContext()
             context.perform {
-                let goal = Goal.inContext(goal.objectID, context: context) as! Goal
+                let goal: Goal = Goal.inContext(goal.objectID, context: context)!
                 self.ensureProperAdjustmentsCreated(
                     context: context,
                     for: goal,

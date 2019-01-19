@@ -250,9 +250,11 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
         }
         let index = indexPath.row - 1
         let context = appDelegate.persistentContainer.newBackgroundContext()
-        let expense = Expense.inContext(expenses[index], context: context)!
-        context.delete(expense)
-        try! context.save()
+        context.performAndWait {
+            let expense = Expense.inContext(expenses[index], context: context)!
+            context.delete(expense)
+            try! context.save()
+        }
         expenses.remove(at: index)
         expenseCellData.remove(at: indexPath.row)
         removeUpdatingRow(at: indexPath.row)
@@ -279,50 +281,59 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
     }
     
     private func saveExpense(at index: Int, with datum: ExpenseCellDatum) -> Bool {
-        var justCreated = false
+        var expenseId: NSManagedObjectID?
+        var validation: (valid: Bool, problem: String?)!
+        let isNew = (index < 0)
         let context = appDelegate.persistentContainer.newBackgroundContext()
-        var expense: Expense! = index >= 0 ? (context.object(with: expenses[index].objectID) as! Expense) : nil
-        if expense == nil {
-            justCreated = true
-            expense = Expense(context: context)
-            expense.dateCreated = Date()
+        context.performAndWait {
+            var expense: Expense!
+            if isNew {
+                expense = Expense(context: context)
+                expense.dateCreated = Date()
+            } else {
+                expense = Expense.inContext(expenses[index].objectID, context: context)
+            }
+            
+            let goal = Goal.inContext(self.goal, context: context)
+            validation = expense.propose(
+                amount: datum.amount,
+                shortDescription: datum.shortDescription,
+                transactionDay: datum.day,
+                notes: expense!.notes,
+                goal: goal
+            )
+            
+            if !validation.valid && isNew {
+                context.rollback()
+            } else {
+                if context.hasChanges {
+                    try! context.save()
+                }
+                expenseId = expense.objectID
+            }
         }
 
-        let goal = Goal.inContext(self.goal, context: context)
-        let validation = expense.propose(
-            amount: datum.amount,
-            shortDescription: datum.shortDescription,
-            transactionDay: datum.day,
-            notes: expense!.notes,
-            dateCreated: expense!.dateCreated,
-            goal: goal
-        )
-        
-        if validation.valid {
-            if context.hasChanges {
-                try! context.save()
-            }
-
-            let expenseOnViewContext = Expense.inContext(expense)!
-            if justCreated {
+        if let expenseId = expenseId {
+            let expenseOnViewContext: Expense = Expense.inContext(expenseId)!
+            if isNew {
                 expenses.insert(expenseOnViewContext, at: 0)
             } else {
                 expenses[index] = expenseOnViewContext
             }
             delegate?.expensesChanged(goal: expenseOnViewContext.goal!)
             return true
-        } else {
-            if justCreated {
-                context.rollback()
-                try! context.save()
-            }
 
-            let alert = UIAlertController(title: "Couldn't Save",
-                                          message: validation.problem!,
-                                          preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "Okay",
-                                          style: .default,
-                                          handler: nil))
+        } else {
+            let alert = UIAlertController(
+                title: "Couldn't Save",
+                message: validation.problem!,
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(
+                title: "Okay",
+                style: .default,
+                handler: nil
+            ))
             present(alert, true, nil)
             return false
         }

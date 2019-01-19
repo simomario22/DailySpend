@@ -167,7 +167,7 @@ class ReviewViewAdjustmentsController: NSObject, AddAdjustmentDelegate, ReviewEn
                 }
             }
             for adjustmentId in inserted! {
-                let adjustment = Adjustment.inContext(adjustmentId) as! Adjustment
+                let adjustment: Adjustment = Adjustment.inContext(adjustmentId)!
                 if adjustment.type == .CarryOverDeleted ||
                    !interval.contains(date: adjustment.firstDayEffective!.start) {
                     continue
@@ -241,15 +241,16 @@ class ReviewViewAdjustmentsController: NSObject, AddAdjustmentDelegate, ReviewEn
         }
         let row = indexPath.row
         let context = appDelegate.persistentContainer.newBackgroundContext()
-        let adjustment = Adjustment.inContext(adjustments[row], context: context)!
-
-        if adjustment.isValidCarryOverAdjustmentType {
-            adjustment.type = .CarryOverDeleted
-        } else {
-            context.delete(adjustment)
+        context.performAndWait {
+            let adjustment = Adjustment.inContext(adjustments[row], context: context)!
+            if adjustment.isValidCarryOverAdjustmentType {
+                adjustment.type = .CarryOverDeleted
+            } else {
+                context.delete(adjustment)
+            }
+            try! context.save()
         }
-        try! context.save()
-        
+
         adjustments.remove(at: row)
         adjustmentCellData.remove(at: row)
         delegate.deletedEntity(at: indexPath, use: .automatic, isOnlyEntity: adjustments.count == 0)
