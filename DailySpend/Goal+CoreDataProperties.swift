@@ -16,22 +16,15 @@ extension Goal {
         return NSFetchRequest<Goal>(entityName: "Goal")
     }
 
-    @NSManaged var amount_: NSDecimalNumber?
     @NSManaged var carryOverBalance_: Bool
-    @NSManaged var adjustMonthAmountAutomatically_: Bool
     @NSManaged var dateCreated_: NSDate?
-    @NSManaged var end_: NSDate?
-    @NSManaged var period_: Int64
-    @NSManaged var payFrequency_: Int64
-    @NSManaged var payFrequencyMultiplier_: Int64
     @NSManaged var shortDescription_: String?
-    @NSManaged var start_: NSDate?
-    @NSManaged var periodMultiplier_: Int64
     @NSManaged var adjustments_: NSSet?
     @NSManaged var expenses_: NSSet?
     @NSManaged var pauses_: NSSet?
     @NSManaged var parentGoal_: Goal?
     @NSManaged var childGoals_: NSSet?
+    @NSManaged var paySchedules_: NSSet?
 
 }
 

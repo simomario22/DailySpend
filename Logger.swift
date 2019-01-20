@@ -68,20 +68,30 @@ class Logger {
         }
         for goal in goals {
             print("goal.dateCreated: \(date(goal.dateCreated))")
-            print("goal.adjustMonthAmountAutomatically: \(goal.adjustMonthAmountAutomatically)")
             print("goal.carryOverBalance: \(goal.carryOverBalance)")
-            print("goal.amount: \(String(describing: goal.amount))")
-            print("goal.start: \(String(describing: goal.start!.string(formatter: dateFormatter)))")
-            print("goal.end: \(String(describing: goal.end?.string(formatter: dateFormatter)))")
-            print("goal.hasIncrementalPayment: \(goal.hasIncrementalPayment)")
-            print("goal.isRecurring: \(goal.isRecurring)")
-            print("goal.payFrequency: \(goal.payFrequency)")
-            print("goal.period: \(goal.period)")
             print("goal.shortDescription: \(String(describing: goal.shortDescription))")
             print("goal.isArchived: \(goal.isArchived)")
             print("goal.hasFutureStart: \(goal.hasFutureStart)")
             print("goal.parentGoal: \(String(describing: goal.parentGoal?.shortDescription))")
             print("")
+
+            if (goal.paySchedules!.count > 0) {
+                print("\tPaySchedules:")
+            } else {
+                print("\tNo PaySchedules.")
+            }
+            for schedule in goal.sortedPaySchedules! {
+                print("\tschedule.dateCreated: \(date(schedule.dateCreated))")
+                print("\tschedule.adjustMonthAmountAutomatically: \(schedule.adjustMonthAmountAutomatically)")
+                print("\tschedule.amount: \(String(describing: schedule.amount))")
+                print("\tschedule.start: \(String(describing: schedule.start!.string(formatter: dateFormatter)))")
+                print("\tschedule.end: \(String(describing: schedule.end?.string(formatter: dateFormatter)))")
+                print("\tschedule.hasIncrementalPayment: \(schedule.hasIncrementalPayment)")
+                print("\tschedule.isRecurring: \(schedule.isRecurring)")
+                print("\tschedule.payFrequency: \(schedule.payFrequency)")
+                print("\tschedule.period: \(schedule.period)")
+                print("")
+            }
         }
         
         if (expenses.count > 0) {
@@ -110,11 +120,6 @@ class Logger {
                 print("")
             }
             
-            if (expense.goal != nil) {
-                print("\tGoal: \(expense.goal!.shortDescription!)")
-            } else {
-                print("\tNo Goals.")
-            }
             print("")
         }
         print("")

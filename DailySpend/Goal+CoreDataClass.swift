@@ -10,29 +10,18 @@
 import Foundation
 import CoreData
 
-enum CreateGoalFromJsonStatus {
-    case Success(Goal)
-    case Failure
-    case NeedsOtherGoalsToBeCreatedFirst
-}
-
 @objc(Goal)
 class Goal: NSManagedObject {
+    enum CreateFromJsonStatus {
+        case Success(Goal)
+        case Failure
+        case NeedsOtherGoalsToBeCreatedFirst
+    }
     
     func json(jsonIds: [NSManagedObjectID: Int]) -> [String: Any]? {
         var jsonObj = [String: Any]()
         
-        if let amount = amount {
-            let num = amount as NSNumber
-            jsonObj["amount"] = num
-        } else {
-            Logger.debug("couldn't unwrap amount in Goal")
-            return nil
-        }
-
         jsonObj["carryOverBalance"] = carryOverBalance
-
-        jsonObj["adjustMonthAmountAutomatically"] = adjustMonthAmountAutomatically
 
         if let dateCreated = dateCreated {
             let num = dateCreated.timeIntervalSince1970 as NSNumber
@@ -42,19 +31,6 @@ class Goal: NSManagedObject {
             return nil
         }
         
-        if let date = start {
-            let num = date.gmtDate.timeIntervalSince1970 as NSNumber
-            jsonObj["start"] = num
-        } else {
-            Logger.debug("couldn't unwrap start in Goal")
-            return nil
-        }
-        
-        if let date = end {
-            let num = date.gmtDate.timeIntervalSince1970 as NSNumber
-            jsonObj["end"] = num
-        }
-        
         if let shortDescription = shortDescription {
             jsonObj["shortDescription"] = shortDescription
         } else {
@@ -62,12 +38,6 @@ class Goal: NSManagedObject {
             return nil
         }
         
-        jsonObj["period"] = period.scope.rawValue as NSNumber
-        jsonObj["periodMultiplier"] = period.multiplier as NSNumber
-        
-        jsonObj["payFrequency"] = payFrequency.scope.rawValue as NSNumber
-        jsonObj["payFrequencyMultiplier"] = payFrequency.multiplier as NSNumber
-
         if let parentGoal = parentGoal {
             jsonObj["parentGoal"] = jsonIds[parentGoal.objectID]
         }
@@ -86,34 +56,17 @@ class Goal: NSManagedObject {
         return nil
     }
     
-    class func create(context: NSManagedObjectContext,
-                      json: [String: Any],
-                      jsonIds: [Int: NSManagedObjectID]) -> CreateGoalFromJsonStatus {
+    class func create(
+        context: NSManagedObjectContext,
+        json: [String: Any],
+        jsonIds: [Int: NSManagedObjectID]
+    ) -> CreateFromJsonStatus {
         let goal = Goal(context: context)
-        
-        if let amount = json["amount"] as? NSNumber {
-            let decimal = Decimal(amount.doubleValue)
-            if decimal == 0 {
-                Logger.debug("amount equal to 0 in Goal")
-                return .Failure
-            }
-            goal.amount = decimal
-        } else {
-            Logger.debug("couldn't unwrap amount in Goal")
-            return .Failure
-        }
-        
+
         if let carryOverBalance = json["carryOverBalance"] as? NSNumber {
             goal.carryOverBalance = carryOverBalance.boolValue
         } else {
             Logger.debug("couldn't unwrap carryOverBalance in Goal")
-            return .Failure
-        }
-        
-        if let adjustMonthAmountAutomatically = json["adjustMonthAmountAutomatically"] as? NSNumber {
-            goal.adjustMonthAmountAutomatically = adjustMonthAmountAutomatically.boolValue
-        } else {
-            Logger.debug("couldn't unwrap adjustMonthAmountAutomatically in Goal")
             return .Failure
         }
         
@@ -128,48 +81,7 @@ class Goal: NSManagedObject {
             Logger.debug("couldn't unwrap dateCreated in Goal")
             return .Failure
         }
-        
-        if let periodNumber = json["period"] as? NSNumber,
-            let periodMultiplierNumber = json["periodMultiplier"] as? NSNumber {
-            let p = PeriodScope(rawValue: periodNumber.intValue)
-            let m = periodMultiplierNumber.intValue
-            if p != nil && m >= 0 {
-                goal.period = Period(scope: p!, multiplier: m)
-            } else {
-                Logger.debug("period or its multiplier wasn't a valid number in Goal")
-                return .Failure
-            }
-        } else {
-            Logger.debug("couldn't unwrap period or its multiplier in Goal")
-            return .Failure
-        }
-        
-        if let dateNumber = json["start"] as? NSNumber {
-            let date = Date(timeIntervalSince1970: dateNumber.doubleValue)
-            if !Goal.scopeConformsToDate(date, scope: goal.period.scope) {
-                // The date isn't a beginning of a period
-                Logger.debug("The start date isn't at the beginning of the period")
-                return .Failure
-            }
-            goal.start = GMTDate(date)
-        } else {
-            Logger.debug("couldn't unwrap start in Goal")
-            return .Failure
-        }
-        
-        if let dateNumber = json["end"] as? NSNumber {
-            let date = Date(timeIntervalSince1970: dateNumber.doubleValue)
-            if !Goal.scopeConformsToDate(date, scope: goal.period.scope) ||
-                date < goal.start!.gmtDate {
-                // The date isn't a beginning of day
-                Logger.debug("The start date isn't at the beginning of the period or is earlier than start in Goal")
-                return .Failure
-            }
-            goal.end = GMTDate(date)
-        } else {
-            goal.end = nil
-        }
-        
+
         if let shortDescription = json["shortDescription"] as? String {
             if shortDescription.count == 0 {
                 Logger.debug("shortDescription empty in Goal")
@@ -178,21 +90,6 @@ class Goal: NSManagedObject {
             goal.shortDescription = shortDescription
         } else {
             Logger.debug("couldn't unwrap shortDescription in Goal")
-            return .Failure
-        }
-        
-        if let payFrequencyNumber = json["payFrequency"] as? NSNumber,
-           let payFrequencyMultiplierNumber = json["payFrequencyMultiplier"] as? NSNumber {
-            let p = PeriodScope(rawValue: payFrequencyNumber.intValue)
-            let m = payFrequencyMultiplierNumber.intValue
-            if p != nil && m >= 0 {
-                goal.payFrequency = Period(scope: p!, multiplier: m)
-            } else {
-                Logger.debug("payFrequency or its multiplier wasn't a valid number in Goal")
-                return .Failure
-            }
-        } else {
-            Logger.debug("couldn't unwrap payFrequency or its multiplier in Goal")
             return .Failure
         }
         
@@ -339,36 +236,13 @@ class Goal: NSManagedObject {
         adjustMonthAmountAutomatically: Bool? = nil,
         dateCreated: Date?? = nil
     ) -> (valid: Bool, problem: String?) {
-        let _amount = amount ?? self.amount
         let _shortDescription = shortDescription ?? self.shortDescription
-        let _start = start ?? self.start
-        let _end = end ?? self.end
-        let _period = period ?? self.period
-        let _payFrequency = payFrequency ?? self.payFrequency
         let _parentGoal = parentGoal ?? self.parentGoal
         let _carryOverBalance = carryOverBalance ?? self.carryOverBalance
-        let _adjustMonthAmountAutomatically = adjustMonthAmountAutomatically ?? self.adjustMonthAmountAutomatically
         let _dateCreated = dateCreated ?? self.dateCreated
 
         if _shortDescription == nil || _shortDescription!.count == 0 {
             return (false, "This goal must have a description.")
-        }
-        
-        if _amount == nil || _amount! == 0 {
-            return (false, "This goal must have an amount specified.")
-        }
-        
-        if _start == nil || !Goal.scopeConformsToDate(_start!.gmtDate, scope: _period.scope) {
-            return (false, "This goal must have a start date at the beginning of it's period.")
-        }
-        
-        
-        if _end != nil && _end!.gmtDate < _start!.gmtDate {
-            return (false, "If this goal has an end date, it must be on or after the start date.")
-        }
-        
-        if _period.scope != .None && _payFrequency > _period {
-            return (false, "The pay freqency for this goal must have a lesser or equal interval than that of the period.")
         }
 
         if let parent = _parentGoal {
@@ -380,119 +254,25 @@ class Goal: NSManagedObject {
                 return (false, "This goal's parent cannot be its child.")
             }
 
-            let interval = CalendarInterval(start: _start!, end: _end)!
-            let parentInterval = CalendarInterval(start: parent.start!, end: parent.exclusiveEnd)!
-            
-            if !parentInterval.contains(interval: interval) {
-                return (false, "This goal's start and end date must be within it's parent's start and end date.")
-            }
+            #warning("Add checks for being contained by parent.")
         }
         
         if let children = self.childGoals {
-            let interval = CalendarInterval(start: _start!, end: _end)!
-            for child in children {
-                let childInterval = CalendarInterval(start: child.start!, end: child.exclusiveEnd)!
-                
-                if !interval.contains(interval: childInterval) {
-                    return (false, "All of the start and end dates for this goal's children must be within this goal's start and end date.")
-                }
-            }
+            #warning("Add checks for being contained by parent.")
         }
+
+        #warning("Add checks to make sure no overlap for pay schedules.")
         
         if _dateCreated == nil {
             return (false, "The goal must have a date created.")
         }
         
-        self.amount = _amount
         self.shortDescription = _shortDescription
-        self.start = _start
-        self.end = _end
-        self.period = _period
-        self.payFrequency = _payFrequency
         self.parentGoal = _parentGoal
         self.carryOverBalance = _carryOverBalance
-        self.adjustMonthAmountAutomatically = _adjustMonthAmountAutomatically
         self.dateCreated = _dateCreated
         
         return (true, nil)
-    }
-    
-    /**
-     * Returns the total paid amount on a given day, taking into account
-     * intervals, period scope length differences and a pay schedule, if there
-     * is one.
-     *
-     * - Parameters:
-     *    - day: The day to compute the total paid amount on.
-     *    - interval: The `CalendarPeriod` in which the day is a part of.
-     */
-    func calculateTotalPaidAmount(
-        for day: CalendarDay,
-        in interval: CalendarIntervalProvider
-    ) -> Decimal? {
-        guard let amount = adjustedAmountForDateInPeriod(day.start) else {
-            return nil
-        }
-        
-        if !hasIncrementalPayment {
-            return amount
-        }
-        
-        // Try to get a period from the passed interval, or try to create
-        // one from the day.
-        guard let period = interval as? CalendarPeriod ?? periodInterval(for: day.start) as? CalendarPeriod else {
-            return nil
-        }
-        
-        let paymentsPerPeriod = period.numberOfSubPeriodsOfLength(period: self.payFrequency)
-        if paymentsPerPeriod == 0 {
-            return nil
-        }
-        
-        let incrementalAmount = amount / Decimal(paymentsPerPeriod)
-        guard
-            let incrementInterval = incrementalPaymentInterval(for: day.start),
-            let incrementCalendarPeriod = CalendarPeriod(
-                calendarDate: incrementInterval.start,
-                period: payFrequency,
-                beginningDateOfPeriod: incrementInterval.start,
-                boundingEndDate: self.exclusiveEnd
-            ),
-            let index = incrementCalendarPeriod.periodIndexWithin(superPeriod: period)
-            else {
-                return nil
-        }
-        
-        let incrementalPayment = incrementalAmount * Decimal(index + 1)
-        return incrementalPayment.roundToNearest(th: 100)
-    }
-    
-    /**
-     * The amount per period, adjusted for the days in the current month or
-     * months for this period, if necessary.
-     */
-    func adjustedAmountForDateInPeriod(_ date: CalendarDateProvider) -> Decimal? {
-        guard let amount = amount else {
-            return nil
-        }
-        if adjustMonthAmountAutomatically && period.scope == .Month {
-            var totalDays = 0
-            guard let interval = periodInterval(for: date) else {
-                return nil
-            }
-            // Start with the first month in the interval.
-            var month = CalendarMonth(interval: interval)
-            for _ in 0..<period.multiplier {
-                totalDays += month.daysInMonth
-                month = month.add(months: 1)
-            }
-            
-            let perDayAmount = amount / Decimal(30 * period.multiplier)
-            let adjustedAmount = Decimal(totalDays) * perDayAmount
-            return adjustedAmount.roundToNearest(th: 100)
-        } else {
-            return amount
-        }
     }
     
     /**
@@ -568,7 +348,6 @@ class Goal: NSManagedObject {
 
         return adjustmentResults
     }
-
     
     /**
      * Returns a set containg all of this goal's decendents:
@@ -598,20 +377,10 @@ class Goal: NSManagedObject {
      * interval is returned instead.
      */
     func incrementalPaymentInterval(for date: CalendarDateProvider) -> CalendarIntervalProvider? {
-        guard let period = periodInterval(for: date) else {
+        guard let schedule = activePaySchedule(on: date) else {
             return nil
         }
-
-        if !hasIncrementalPayment {
-            return period
-        }
-
-        return CalendarPeriod(
-            calendarDate: date,
-            period: payFrequency,
-            beginningDateOfPeriod: period.start,
-            boundingEndDate: self.exclusiveEnd
-        )!
+        return schedule.incrementalPaymentInterval(for: date)
     }
 
     /**
@@ -619,25 +388,25 @@ class Goal: NSManagedObject {
      * not set or date is not in any of this goal's periods.
      */
     func periodInterval(for date: CalendarDateProvider) -> CalendarIntervalProvider? {
-        guard let start = self.start else {
+        guard let schedule = activePaySchedule(on: date) else {
             return nil
         }
-        
-        if date.gmtDate < start.gmtDate ||
-           (self.exclusiveEnd != nil && date.gmtDate >= self.exclusiveEnd!.gmtDate) {
+        return schedule.periodInterval(for: date)
+    }
+
+    /**
+     * Returns the total paid amount on a given day, taking into account
+     * intervals, period scope length differences and a pay schedule, if there
+     * is one.
+     *
+     * - Parameters:
+     *    - day: The day to compute the total paid amount on.
+     */
+    func calculateTotalPaidAmount(for day: CalendarDay) -> Decimal? {
+        guard let schedule = activePaySchedule(on: day.start) else {
             return nil
         }
-
-        if !isRecurring {
-            return CalendarInterval(start: start, end: self.exclusiveEnd)
-        }
-
-        return CalendarPeriod(
-            calendarDate: date,
-            period: period,
-            beginningDateOfPeriod: self.start!,
-            boundingEndDate: self.exclusiveEnd
-        )!
+        return schedule.calculateTotalPaidAmount(for: day)
     }
     
     /**
@@ -646,68 +415,139 @@ class Goal: NSManagedObject {
      * If this goal does not have a start date, or has a start date after
      * today and is a recurring goal, this function returns `nil`.
      */
-    func mostRecentInterval() -> CalendarIntervalProvider? {
-        guard let start = start else {
+//    func mostRecentInterval() -> CalendarIntervalProvider? {
+//        guard let start = start else {
+//            return nil
+//        }
+//
+//        if isRecurring {
+//            return self.mostRecentPeriod()
+//        } else {
+//            return self.periodInterval(for: start)
+//        }
+//    }
+
+    /**
+     * Returns the most recent period interval in a goal as a `CalendarPeriod`.
+     *
+     * If this goal does not have a start date, or has a start date after today,
+     * this function returns `nil`.
+     */
+//    func mostRecentPeriod() -> CalendarPeriod? {
+//        // Try to get an interval for the current day.
+//        var interval = self.periodInterval(for: CalendarDay().start)
+//        if interval == nil && end != nil {
+//            // No valid interval for current day.
+//            // Try to get an interval for last period of the goal.
+//            interval = self.periodInterval(for: self.end!)
+//        }
+//        
+//        if let interval = interval
+//        {
+//            // Get the interval with length of the goal period starting from
+//            // the interval start, bounded by the exclusive end of the goal.
+//            return CalendarPeriod(
+//                calendarDate: interval.start,
+//                period: self.period,
+//                beginningDateOfPeriod: interval.start,
+//                boundingEndDate: self.exclusiveEnd
+//            )
+//        } else {
+//            // Can't get an interval (likely due to the goal having a start
+//            // date after today, or the goal not having a start date)
+//            return nil
+//        }
+//    }
+
+    /**
+     * Returns the active pay schedule for a goal on a given day, or `nil` if
+     * none exists or the goal is not associated with a valid managed object
+     * context.
+     *
+     * - Parameters:
+     *    - date: The `GMTDate` on which to search for active pay schedules.
+     */
+    func activePaySchedule(on date: CalendarDateProvider) -> PaySchedule? {
+        guard let context = self.managedObjectContext else {
+            Logger.debug("Goal not associated with a managed object context.")
             return nil
         }
-        
-        if isRecurring {
-            return self.mostRecentPeriod()
-        } else {
-            return self.periodInterval(for: start)
+
+        var schedule: PaySchedule?
+        context.performAndWait {
+            let formatString = "$goal = goal_ AND $date >= start_ AND $date < end_"
+            let predicateTemplate = NSPredicate(format: formatString)
+            let predicate = predicateTemplate.withSubstitutionVariables([
+                "goal": self,
+                "date": date.gmtDate
+            ])
+            let results = PaySchedule.get(context: context, predicate: predicate)
+            if results?.count != 1 {
+                return
+            }
+            schedule = results!.first
         }
+
+        return schedule
     }
 
     /**
-     * Returns the most recent period interval in a recurring goal as a
-     * `CalendarPeriod`.
-     *
-     * If this goal is non-recurring goal, does not have a start date, or has
-     * a start date after today, this function returns `nil`.
+     * Returns the first pay schedule result after applying the sort descriptor
+     * passed.
      */
-    func mostRecentPeriod() -> CalendarPeriod? {
-        if !isRecurring {
+    private func getOnePaySchedule(key: String, ascending: Bool) -> PaySchedule? {
+        guard let context = self.managedObjectContext else {
+            Logger.debug("Goal not associated with a managed object context.")
             return nil
         }
-        // Try to get an interval for the current day.
-        var interval = self.periodInterval(for: CalendarDay().start)
-        if interval == nil && end != nil {
-            // No valid interval for current day.
-            // Try to get an interval for last period of the goal.
-            interval = self.periodInterval(for: self.end!)
-        }
-        
-        if let interval = interval
-        {
-            // Get the interval with length of the goal period starting from
-            // the interval start, bounded by the exclusive end of the goal.
-            return CalendarPeriod(
-                calendarDate: interval.start,
-                period: self.period,
-                beginningDateOfPeriod: interval.start,
-                boundingEndDate: self.exclusiveEnd
+
+        var schedule: PaySchedule?
+        context.performAndWait {
+            let formatString = "$goal = goal_"
+            let predicateTemplate = NSPredicate(format: formatString)
+            let predicate = predicateTemplate.withSubstitutionVariables([
+                "goal": self,
+                ])
+            let sortDescriptors = [NSSortDescriptor(key: key, ascending: ascending)]
+            let results = PaySchedule.get(
+                context: context,
+                predicate: predicate,
+                sortDescriptors: sortDescriptors,
+                fetchLimit: 1
             )
-        } else {
-            // Can't get an interval (likely due to the goal having a start
-            // date after today, or the goal not having a start date)
+
+            schedule = results?.first
+        }
+        return schedule
+    }
+
+    /**
+     * Returns the start of the first pay schedule for this goal, if one exists.
+     */
+    func startOfFirstPaySchedule() -> CalendarDateProvider? {
+        return getOnePaySchedule(key: "start_", ascending: true)?.start
+    }
+
+    /**
+     * Returns the end of the last pay schedule for this goal, if one exists.
+     * - Parameters:
+     *    - exclusive:  if `true`, the date returned will be exclusive of the
+     *      interval.
+     */
+    func endOfLastPaySchedule(exclusive: Bool) -> CalendarDateProvider? {
+        guard let schedule = getOnePaySchedule(key: "start_", ascending: false) else {
             return nil
         }
+        return exclusive ? schedule.exclusiveEnd : schedule.end
     }
 
-
-    var hasIncrementalPayment: Bool {
-        return self.payFrequency.scope != .None
-    }
-    
-    var isRecurring: Bool {
-        return self.period.scope != .None
-    }
-    
     var isArchived: Bool {
+        let end = endOfLastPaySchedule(exclusive: false)
         return end != nil && CalendarDay(dateInDay: end!) < CalendarDay() || (parentGoal?.isArchived ?? false)
     }
     
     var hasFutureStart: Bool {
+        let start = startOfFirstPaySchedule()
         return start == nil || CalendarDay(dateInDay: start!) > CalendarDay()
     }
     
@@ -719,103 +559,7 @@ class Goal: NSManagedObject {
             carryOverBalance_ = newValue
         }
     }
-    
-    var adjustMonthAmountAutomatically: Bool {
-        get {
-            return adjustMonthAmountAutomatically_
-        }
-        set {
-            adjustMonthAmountAutomatically_ = newValue
-        }
-    }
-    
-    var period: Period {
-        get {
-            let p = PeriodScope(rawValue: Int(period_))!
-            let m = Int(periodMultiplier_)
-            return Period(scope: p, multiplier: m)
-        }
-        set {
-            period_ = Int64(newValue.scope.rawValue)
-            periodMultiplier_ = Int64(newValue.multiplier)
-        }
-    }
-
-    var payFrequency: Period {
-        get {
-            let p = PeriodScope(rawValue: Int(payFrequency_))!
-            let m = Int(payFrequencyMultiplier_)
-            return Period(scope: p, multiplier: m)
-        }
-        set {
-            payFrequency_ = Int64(newValue.scope.rawValue)
-            payFrequencyMultiplier_ = Int64(newValue.multiplier)
-        }
-    }
-    
-    var start: CalendarDateProvider? {
-        get {
-            if let day = start_ as Date? {
-                return GMTDate(day)
-            } else {
-                return nil
-            }
-        }
-        set {
-            if newValue != nil {
-                start_ = newValue!.gmtDate as NSDate
-            } else {
-                start_ = nil
-            }
-        }
-    }
-    
-    /**
-     * The first day of the last period included in the goal, or none if nil.
-     * Note that this should only be used in user facing situations. For
-     * calculations and ranges, use `exclusiveEnd`.
-     */
-    var end: CalendarDateProvider? {
-        get {
-            if let day = end_ as Date? {
-                return GMTDate(day)
-            } else {
-                return nil
-            }
-        }
-        set {
-            if newValue != nil {
-                // Get relevant days.
-                end_ = newValue!.gmtDate as NSDate
-            } else {
-                end_ = nil
-            }
-        }
-    }
-    
-    /**
-     * Returns the first date after this period has ended.
-     */
-    var exclusiveEnd: CalendarDateProvider? {
-        guard let end = end else {
-            return nil
-        }
-        return CalendarDay(dateInDay: end).end
-    }
-    
-    var amount: Decimal? {
-        get {
-            return amount_ as Decimal?
-        }
-        set {
-            if newValue != nil {
-                amount_ = NSDecimalNumber(decimal: newValue!.roundToNearest(th: 100))
-            } else {
-                amount_ = nil
-            }
-        }
-    }
-    
+        
     var shortDescription: String? {
         get {
             return shortDescription_
@@ -903,6 +647,28 @@ class Goal: NSManagedObject {
             }
         }
     }
+
+    var sortedPaySchedules: [PaySchedule]? {
+        if let s = paySchedules {
+            return s.sorted(by: { $0.start!.gmtDate < $1.start!.gmtDate })
+        } else {
+            return nil
+        }
+    }
+
+    var paySchedules: Set<PaySchedule>? {
+        get {
+            return paySchedules_ as! Set?
+        }
+        set {
+            if newValue != nil {
+                paySchedules_ = NSSet(set: newValue!)
+            } else {
+                paySchedules_ = nil
+            }
+        }
+    }
+
     
     var parentGoal: Goal? {
         get {
@@ -916,7 +682,7 @@ class Goal: NSManagedObject {
             }
         }
     }
-    
+
     var sortedChildGoals: [Goal]? {
         if let g = childGoals {
             return g.sorted(by: { $0.shortDescription! < $1.shortDescription! })

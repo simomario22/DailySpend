@@ -189,6 +189,116 @@ class CalendarInterval : CalendarIntervalProvider {
 }
 
 /**
+ * An interval in time that represents a period associated with a particular
+ * goal.
+ */
+class GoalPeriod : CalendarIntervalProvider {
+    enum PeriodStyle {
+        /**
+         * Instructs the `GoalPeriod` to represent and iterate between a goal's
+         * periods.
+         */
+        case period
+        /**
+         * Instructs the `GoalPeriod` to represent and iterate between a goal's
+         * pay intervals.
+         */
+        case payInterval
+    }
+
+    var start: CalendarDateProvider
+    var end: CalendarDateProvider?
+    let goal: Goal
+    let style: PeriodStyle
+
+    init?(goal: Goal, date: CalendarDateProvider, style: PeriodStyle) {
+        guard let schedule = goal.activePaySchedule(on: date) else {
+            return nil
+        }
+        let scheduleFunction = (style == .period ? schedule.periodInterval : schedule.incrementalPaymentInterval)
+
+        guard let period = scheduleFunction(date) else {
+            return nil
+        }
+
+        self.goal = goal
+        self.style = style
+        self.start = period.start
+        self.end = period.end
+    }
+
+    /**
+     * Returns the period following this one in `goal`, depending on `style`.
+     * If no such period exists, returns `nil`.
+     */
+    func nextGoalPeriod() -> GoalPeriod? {
+        let exclusiveEndDate = CalendarDay(dateInDay: end!).start
+        return GoalPeriod(goal: goal, date: exclusiveEndDate, style: style)
+    }
+
+    /**
+     * Returns the period preceeding this one in `goal`, depending on `style`.
+     * If no such period exists, returns `nil`.
+     */
+    func previousGoalPeriod() -> GoalPeriod? {
+        let exclusiveStartDate = CalendarDay(dateInDay: start).subtract(days: 1).start
+        return GoalPeriod(goal: goal, date: exclusiveStartDate, style: style)
+    }
+
+    /**
+     * Returns true if this interval contains the date, false otherwise.
+     */
+    func contains(date: CalendarDateProvider) -> Bool {
+        return date.gmtDate >= start.gmtDate && date.gmtDate < end!.gmtDate
+    }
+
+    /**
+     * Returns true if this interval contains the entire interval, false
+     * otherwise.
+     */
+    func contains(interval: CalendarIntervalProvider) -> Bool {
+        return self.contains(date: interval.start) &&
+            interval.end != nil &&
+            self.contains(date: interval.end!)
+    }
+
+    /**
+     * Returns true if any portion of this interval overlaps with any portion
+     * of the passed interval.
+     */
+    func overlaps(with interval: CalendarIntervalProvider) -> Bool {
+        if interval.end != nil && self.start.gmtDate > interval.end!.gmtDate {
+            return false
+        }
+
+        if self.end!.gmtDate < interval.start.gmtDate {
+            return false
+        }
+
+        return true
+    }
+
+    /**
+     * Returns the interval of maximum size contained by both intervals, or
+     * `nil` if no such intervals exists.
+     */
+    func overlappingInterval(with interval: CalendarIntervalProvider) -> CalendarIntervalProvider? {
+        if self.contains(interval: interval) {
+            return interval
+        } else if interval.contains(interval: self) {
+            return self
+        } else if interval.end == nil || self.start.gmtDate < interval.end!.gmtDate {
+            return CalendarInterval(start: self.start, end: interval.end)
+        } else if self.end == nil || interval.start.gmtDate < self.end!.gmtDate {
+            return CalendarInterval(start: interval.start, end: self.end)
+        } else {
+            return nil
+        }
+    }
+
+}
+
+/**
  * An interval in time based on a `CalendarDay`, `CalendarWeek`, or
  * `CalendarMonth`, of maximum length `period`.
  */

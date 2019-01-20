@@ -120,7 +120,7 @@ class GoalBalanceCalculator {
      */
     private var getTotalPaidAmount: (Goal, CalendarDay, CalendarIntervalProvider) -> Decimal? = {
         (goal: Goal, day: CalendarDay, interval: CalendarIntervalProvider) in
-        return goal.calculateTotalPaidAmount(for: day, in: interval)
+        return goal.calculateTotalPaidAmount(for: day)
     }
     
     /**

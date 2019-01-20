@@ -210,22 +210,19 @@ class Expense: NSManagedObject {
         if _goal == nil {
             return (false, "This expense must be associated with a goal.")
         }
+
+        let goalStart = _goal?.startOfFirstPaySchedule()
+        let goalExclusiveEnd = _goal?.endOfLastPaySchedule(exclusive: true)
         
-        if _goal!.start != nil && _transactionDay!.start.gmtDate < _goal!.start!.gmtDate {
+        if goalStart != nil && _transactionDay!.start.gmtDate < goalStart!.gmtDate {
             return (false, "This expense must be after it's associated goal's start date.")
         }
         
-        if _goal!.exclusiveEnd != nil && _transactionDay!.start.gmtDate > _goal!.exclusiveEnd!.gmtDate {
+        if goalExclusiveEnd != nil && _transactionDay!.start.gmtDate > goalExclusiveEnd!.gmtDate {
             return (false, "This expense must be before it's associated goal's end date.")
         }
-        
-        if _goal!.isRecurring {
-            let mostRecentPeriodEnd = _goal!.mostRecentPeriod()?.end?.gmtDate
-            if mostRecentPeriodEnd == nil ||
-               _transactionDay!.start.gmtDate > mostRecentPeriodEnd! {
-                return (false, "This expense must be created no later than end the most recent period for this goal.")
-            }
-        }
+
+        #warning("No longer checking if expense is no later than the most recent period")
 
         self.amount = _amount
         self.shortDescription = _shortDescription
