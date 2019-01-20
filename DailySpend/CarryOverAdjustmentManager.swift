@@ -40,10 +40,12 @@ class CarryOverAdjustmentManager {
             let context = self.persistentContainer.newBackgroundContext()
             context.perform {
                 let goal: Goal = Goal.inContext(goal.objectID, context: context)!
+                CarryOverAdjustmentManager.carryOverWrite.wait()
                 self.enableCarryOverAdjustment(context: context, for: goal, on: day) {
                     (updatedAmount, inserted, deleted) in
                     completionQueue.async {
                         completion(updatedAmount, inserted, deleted)
+                        CarryOverAdjustmentManager.carryOverWrite.signal()
                     }
                 }
             }
@@ -62,10 +64,12 @@ class CarryOverAdjustmentManager {
             let context = self.persistentContainer.newBackgroundContext()
             context.perform {
                 let adjustment: Adjustment = Adjustment.inContext(adjustment.objectID, context: context)!
+                CarryOverAdjustmentManager.carryOverWrite.wait()
                 self.refreshCarryOverAdjustment(context: context, adjustment: adjustment) {
                     (updatedAmount, inserted, deleted) in
                     completionQueue.async {
                         completion(updatedAmount, inserted, deleted)
+                        CarryOverAdjustmentManager.carryOverWrite.signal()
                     }
                 }
             }
@@ -84,10 +88,12 @@ class CarryOverAdjustmentManager {
             let context = self.persistentContainer.newBackgroundContext()
             context.perform {
                 let goal: Goal = Goal.inContext(goal.objectID, context: context)!
+                CarryOverAdjustmentManager.carryOverWrite.wait()
                 self.refreshAllCarryOverAdjustments(context: context, goal: goal) {
                     (updatedAmount, deleted, inserted) in
                     completionQueue.async {
                         completion(updatedAmount, deleted, inserted)
+                        CarryOverAdjustmentManager.carryOverWrite.signal()
                     }
                 }
             }
@@ -106,10 +112,12 @@ class CarryOverAdjustmentManager {
             let context = self.persistentContainer.newBackgroundContext()
             context.perform {
                 let adjustment: Adjustment = Adjustment.inContext(adjustment.objectID, context: context)!
+                CarryOverAdjustmentManager.carryOverWrite.wait()
                 self.removeCarryOverAdjustment(context: context, adjustment: adjustment) {
                     (updatedAmount, inserted, deleted) in
                     completionQueue.async {
                         completion(updatedAmount, inserted, deleted)
+                        CarryOverAdjustmentManager.carryOverWrite.signal()
                     }
                 }
             }
@@ -126,12 +134,12 @@ class CarryOverAdjustmentManager {
         on day: CalendarDay,
         completion: @escaping CarryOverAdjustmentUpdateCompletion
     ) {
-        CarryOverAdjustmentManager.carryOverWrite.wait()
         let adjustments = self.getCarryOverAdjustments(context: context, goal: goal, day: day)
+        var createdNewAdjustment = false
         var adjustment: Adjustment
         if adjustments.isEmpty {
-            Logger.debug("Adjustment wasn't created when calling enableCarryOverAdjustment!")
             adjustment = Adjustment(context: context)
+            createdNewAdjustment = true
         } else {
             adjustment = adjustments.first!
         }
@@ -142,7 +150,6 @@ class CarryOverAdjustmentManager {
             (amount, balanceDay, goalId) in
             guard let amount = amount else {
                 completion(nil, nil, nil)
-                CarryOverAdjustmentManager.carryOverWrite.signal()
                 return
             }
 
@@ -160,12 +167,35 @@ class CarryOverAdjustmentManager {
                     if context.hasChanges {
                         try! context.save()
                     }
-                    completion(Set<NSManagedObjectID>(), Set<NSManagedObjectID>(), Set<NSManagedObjectID>([adjustment.objectID]))
+                    if !createdNewAdjustment {
+                        completion(Set<NSManagedObjectID>(), Set<NSManagedObjectID>(), Set<NSManagedObjectID>([adjustment.objectID]))
+                    } else {
+                        // Since this was newly created, we need to make sure
+                        // that any intermediary adjustments between this and
+                        // the latest adjustment before we created this one are
+                        // created, then we can update our amount to get the
+                        // proper amount.
+                        let type: Adjustment.AdjustmentType = goal.carryOverBalance ? .CarryOver : .CarryOverDeleted
+                        self.ensureProperAdjustmentsCreated(context: context, for: goal, creationType: type) { (updated, _, _) in
+                            if updated == nil {
+                                context.rollback()
+                                completion(nil, nil, nil)
+                                return
+                            }
+                            self.refreshCarryOverAdjustment(context: context, adjustment: adjustment) { (updated, _, _) in
+                                if updated == nil {
+                                    context.rollback()
+                                    completion(nil, nil, nil)
+                                    return
+                                }
+                                completion(Set<NSManagedObjectID>(), Set<NSManagedObjectID>(), Set<NSManagedObjectID>([adjustment.objectID]))
+                            }
+                        };
+                    }
                 } else {
                     context.rollback()
                     completion(nil, nil, nil)
                 }
-                CarryOverAdjustmentManager.carryOverWrite.signal()
             }
         }
     }
@@ -178,14 +208,12 @@ class CarryOverAdjustmentManager {
         adjustment: Adjustment,
         completion: @escaping CarryOverAdjustmentUpdateCompletion
     ) {
-        CarryOverAdjustmentManager.carryOverWrite.wait()
         let previousDay = adjustment.firstDayEffective!.subtract(days: 1)
         let balanceCalc = GoalBalanceCalculator(persistentContainer: self.persistentContainer)
         balanceCalc.calculateBalance(for: adjustment.goal!, on: previousDay, completionQueue: self.queue) {
             (amount, balanceDay, goalId) in
             guard let amount = amount else {
                 completion(nil, nil, nil)
-                CarryOverAdjustmentManager.carryOverWrite.signal()
                 return
             }
             context.perform {
@@ -202,7 +230,6 @@ class CarryOverAdjustmentManager {
                     context.rollback()
                     completion(nil, nil, nil)
                 }
-                CarryOverAdjustmentManager.carryOverWrite.signal()
             }
         }
     }
@@ -212,7 +239,6 @@ class CarryOverAdjustmentManager {
         goal: Goal,
         completion: @escaping CarryOverAdjustmentUpdateCompletion
     ) {
-        CarryOverAdjustmentManager.carryOverWrite.wait()
         let adjustments = self.getCarryOverAdjustments(context: context, goal: goal)
         var adjustmentDays = [CalendarDay: Adjustment]()
         let group = DispatchGroup()
@@ -251,7 +277,6 @@ class CarryOverAdjustmentManager {
                 if failed {
                     context.rollback()
                     completion(nil, nil, nil)
-                    CarryOverAdjustmentManager.carryOverWrite.signal()
                     return
                 }
 
@@ -261,7 +286,6 @@ class CarryOverAdjustmentManager {
 
                 let updatedAmount = Set<NSManagedObjectID>(adjustments.map{ $0.objectID })
                 completion(updatedAmount, Set<NSManagedObjectID>(), Set<NSManagedObjectID>())
-                CarryOverAdjustmentManager.carryOverWrite.signal()
             }
         }
     }
@@ -274,7 +298,6 @@ class CarryOverAdjustmentManager {
         adjustment: Adjustment,
         completion: @escaping CarryOverAdjustmentUpdateCompletion
     ) {
-        CarryOverAdjustmentManager.carryOverWrite.wait()
         let validation = adjustment.propose(type: .CarryOverDeleted)
         if validation.valid {
             if context.hasChanges {
@@ -285,7 +308,6 @@ class CarryOverAdjustmentManager {
             context.rollback()
             completion(nil, nil, nil)
         }
-        CarryOverAdjustmentManager.carryOverWrite.signal()
     }
 
 
@@ -307,6 +329,7 @@ class CarryOverAdjustmentManager {
             let context = self.persistentContainer.newBackgroundContext()
             context.perform {
                 let goal: Goal = Goal.inContext(goal.objectID, context: context)!
+                CarryOverAdjustmentManager.carryOverWrite.wait()
                 self.ensureProperAdjustmentsCreated(
                     context: context,
                     for: goal,
@@ -315,6 +338,7 @@ class CarryOverAdjustmentManager {
                     (amountUpdated, deleted, inserted) in
                     completionQueue.async {
                         completion(amountUpdated, deleted, inserted)
+                        CarryOverAdjustmentManager.carryOverWrite.signal()
                     }
                 }
             }
@@ -339,16 +363,20 @@ class CarryOverAdjustmentManager {
         creationType: Adjustment.AdjustmentType,
         completion: @escaping CarryOverAdjustmentUpdateCompletion
     ) {
-        // A map from calendar days to
+        // A map from calendar days to amounts
         var carryOverOnDay = [CalendarDay: Decimal]()
         let carryOverOnDayWrite = DispatchSemaphore(value: 1)
         
         // Start from the first period.
-        var period = CalendarPeriod(
-            calendarDate: goal.start!,
-            period: goal.period,
-            beginningDateOfPeriod: goal.start!,
-            boundingEndDate: nil
+        guard let firstDate = goal.startOfFirstPaySchedule() else {
+            Logger.debug("Could not find start of first pay schedule for goal \(goal.shortDescription ?? "").")
+            completion(nil, nil, nil)
+            return
+        }
+        var period = GoalPeriod(
+            goal: goal,
+            date: firstDate,
+            style: .period
         )
 
         let balanceCalculator = GoalBalanceCalculator(persistentContainer: persistentContainer)
@@ -356,12 +384,19 @@ class CarryOverAdjustmentManager {
         // Get current adjustments.
         var currentAdjustments = getCarryOverAdjustments(context: context, goal: goal)
 
+        // Create adjustments to the current period, or the latest valid carry
+        // over adjustment, whichever is later.
+        // It doesn't make sense to create carry over adjustment past today in
+        // most cases, since they won't be up to date. However, this will allow
+        // us to support that case if they have explicitly added an expense.
+        let today = CalendarDay()
+        let latestAdjustment = currentAdjustments.max { $0.firstDayEffective! < $1.firstDayEffective! }
+        let latestDay = latestAdjustment != nil ? max(today, latestAdjustment!.firstDayEffective!) : today
+        let mostRecentPeriod = goal.periodInterval(for: latestDay.start)
+
         let group = DispatchGroup()
         var failed = false
         let failedWrite = DispatchSemaphore(value: 1)
-
-        // Stop at the period before the most recent one.
-        let mostRecentPeriod = goal.mostRecentPeriod()
         while period != nil && mostRecentPeriod != nil &&
             (period!.end!.gmtDate <= mostRecentPeriod!.start.gmtDate) {
             let adjustmentDay = CalendarDay(dateInDay: period!.end!)
@@ -388,7 +423,7 @@ class CarryOverAdjustmentManager {
                     group.leave()
                 }
             }
-            period = period!.nextCalendarPeriod()
+            period = period!.nextGoalPeriod()
         }
 
         group.wait()
@@ -398,7 +433,6 @@ class CarryOverAdjustmentManager {
             return
         }
 
-        CarryOverAdjustmentManager.carryOverWrite.wait()
         var insertedAdjustments = Set<Adjustment>()
 
         let sortedBalances = carryOverOnDay.sorted { $0.key < $1.key }
@@ -437,7 +471,6 @@ class CarryOverAdjustmentManager {
 
         let inserted = Set<NSManagedObjectID>(insertedAdjustments.map({ $0.objectID }))
         completion(Set<NSManagedObjectID>(), deleted, inserted)
-        CarryOverAdjustmentManager.carryOverWrite.signal()
     }
 
     /**
