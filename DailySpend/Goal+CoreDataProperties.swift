@@ -11,7 +11,6 @@ import Foundation
 import CoreData
 
 extension Goal {
-
     @nonobjc class func fetchRequest() -> NSFetchRequest<Goal> {
         return NSFetchRequest<Goal>(entityName: "Goal")
     }
@@ -25,7 +24,115 @@ extension Goal {
     @NSManaged var parentGoal_: Goal?
     @NSManaged var childGoals_: NSSet?
     @NSManaged var paySchedules_: NSSet?
+}
 
+/**
+ * To be deleted once migration to pay schedules is complete.
+ */
+extension Goal {
+    @NSManaged var amount_: NSDecimalNumber?
+    @NSManaged var adjustMonthAmountAutomatically_: Bool
+    @NSManaged var end_: NSDate?
+    @NSManaged var period_: Int64
+    @NSManaged var payFrequency_: Int64
+    @NSManaged var payFrequencyMultiplier_: Int64
+    @NSManaged var start_: NSDate?
+    @NSManaged var periodMultiplier_: Int64
+
+    var adjustMonthAmountAutomatically: Bool {
+        get {
+            return adjustMonthAmountAutomatically_
+        }
+        set {
+            adjustMonthAmountAutomatically_ = newValue
+        }
+    }
+
+    var period: Period {
+        get {
+            let p = PeriodScope(rawValue: Int(period_))!
+            let m = Int(periodMultiplier_)
+            return Period(scope: p, multiplier: m)
+        }
+        set {
+            period_ = Int64(newValue.scope.rawValue)
+            periodMultiplier_ = Int64(newValue.multiplier)
+        }
+    }
+
+    var payFrequency: Period {
+        get {
+            let p = PeriodScope(rawValue: Int(payFrequency_))!
+            let m = Int(payFrequencyMultiplier_)
+            return Period(scope: p, multiplier: m)
+        }
+        set {
+            payFrequency_ = Int64(newValue.scope.rawValue)
+            payFrequencyMultiplier_ = Int64(newValue.multiplier)
+        }
+    }
+    var start: CalendarDateProvider? {
+        get {
+            if let day = start_ as Date? {
+                return GMTDate(day)
+            } else {
+                return nil
+            }
+        }
+        set {
+            if newValue != nil {
+                start_ = newValue!.gmtDate as NSDate
+            } else {
+                start_ = nil
+            }
+        }
+    }
+
+    /**
+     * The first day of the last period included in the goal, or none if nil.
+     * Note that this should only be used in user facing situations. For
+     * calculations and ranges, use `exclusiveEnd`.
+     */
+    var end: CalendarDateProvider? {
+        get {
+            if let day = end_ as Date? {
+                return GMTDate(day)
+            } else {
+                return nil
+            }
+        }
+        set {
+            if newValue != nil {
+                // Get relevant days.
+                end_ = newValue!.gmtDate as NSDate
+            } else {
+                end_ = nil
+            }
+        }
+    }
+
+    /**
+     * Returns the first date after this period has ended.
+     */
+    var exclusiveEnd: CalendarDateProvider? {
+        guard let end = end else {
+            return nil
+        }
+        return CalendarDay(dateInDay: end).end
+    }
+
+    var amount: Decimal? {
+        get {
+            return amount_ as Decimal?
+        }
+        set {
+            if newValue != nil {
+                amount_ = NSDecimalNumber(decimal: newValue!.roundToNearest(th: 100))
+            } else {
+                amount_ = nil
+            }
+        }
+    }
 }
 
 // MARK: Generated accessors for adjustments_

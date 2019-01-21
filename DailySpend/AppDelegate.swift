@@ -45,8 +45,45 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
+    func migrateGoalSchedules() {
+        let context = persistentContainer.newBackgroundContext()
+        context.performAndWait {
+            let needsSchedule = Goal.get(context: context)?.filter{ $0.paySchedules?.isEmpty ?? true }
+
+            for goal in needsSchedule ?? [] {
+                let schedule = PaySchedule(context: context)
+                let validation = schedule.propose(
+                    amount: goal.amount,
+                    start: goal.start,
+                    end: goal.end,
+                    period: goal.period,
+                    payFrequency: goal.payFrequency,
+                    adjustMonthAmountAutomatically: goal.adjustMonthAmountAutomatically,
+                    dateCreated: Date()
+                )
+
+                if !validation.valid {
+                    Logger.debug("Error creating pay schedule: \(validation.problem ?? "")")
+                    context.rollback()
+                    fatalError() // can't continue without a pay schedule.
+                }
+                goal.amount = nil
+                goal.start = nil
+                goal.end = nil
+                goal.period = .none
+                goal.payFrequency = .none
+                goal.adjustMonthAmountAutomatically = false
+            }
+            if context.hasChanges {
+                try! context.save()
+            }
+        }
+
+    }
+
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         deleteAllOrphans()
+        migrateGoalSchedules()
         Logger.printAllCoreData()
 
         return true
