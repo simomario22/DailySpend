@@ -92,7 +92,7 @@ class ReviewViewExpensesController: NSObject, AddExpenseDelegate, ReviewEntityDa
         }
     }
     
-    func setGoal(_ newGoal: Goal?, interval: CalendarIntervalProvider) {
+    func setGoal(_ newGoal: Goal?, interval: CalendarIntervalProvider?) {
         self.goal = newGoal
         self.interval = interval
         remakeExpenses()

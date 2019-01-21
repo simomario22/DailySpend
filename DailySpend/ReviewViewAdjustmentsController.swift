@@ -70,7 +70,7 @@ class ReviewViewAdjustmentsController: NSObject, AddAdjustmentDelegate, ReviewEn
         var actions = [
             UIAlertAction(title: "New Adjustment", style: .default, handler: { _ in self.presentCreateModal() })
         ]
-        if (goal?.isRecurring ?? false) && !self.adjustments.contains(where: { $0.type == .CarryOver }) {
+        if !self.adjustments.contains(where: { $0.type == .CarryOver }) {
             let carryOverAction = UIAlertAction(title: "Carry Over Balance", style: .default) { _ in
                 guard let goal = self.goal,
                       let interval = self.interval else {
@@ -187,7 +187,7 @@ class ReviewViewAdjustmentsController: NSObject, AddAdjustmentDelegate, ReviewEn
         }
     }
     
-    func setGoal(_ newGoal: Goal?, interval: CalendarIntervalProvider) {
+    func setGoal(_ newGoal: Goal?, interval: CalendarIntervalProvider?) {
         self.goal = newGoal
         self.interval = interval
         remakeAdjustments()

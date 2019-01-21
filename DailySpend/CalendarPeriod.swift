@@ -426,6 +426,8 @@ class CalendarPeriod : CalendarIntervalProvider {
         beginningDateOfPeriod intervalStart: CalendarDateProvider,
         boundingEndDate endBound: CalendarDateProvider?
     ) {
+
+        #warning("Account for periods that don't start at the beginning of a Period. One way to do this might be getting rid of this class entirely in favor of GoalPeriod - i'm not sure it's relevant anymore.")
         switch period.scope {
         case .Day:
             // Ensure day is at the beginning of a period.

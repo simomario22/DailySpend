@@ -178,16 +178,8 @@ class TodayViewController: UIViewController, GoalPickerDelegate, TodayViewExpens
         }
         
         // Determine what should be in the summary view hint and set it.
-        var endDay: CalendarDay?
-        if goal.isRecurring {
-            guard let currentGoalPeriod = goal.periodInterval(for: CalendarDay().start) else {
-                return
-            }
-            endDay = CalendarDay(dateInDay: currentGoalPeriod.end!).subtract(days: 1)
-        } else if goal.end != nil {
-            endDay = CalendarDay(dateInDay: goal.end!)
-        }
-        if let endDay = endDay {
+        let period = GoalPeriod(goal: goal, date: CalendarDay().start, style: .period)
+        if let endDay = CalendarDay(dateInDay: period?.end) {
             let dateFormatter = DateFormatter()
             if endDay.year == CalendarDay().year {
                 dateFormatter.dateFormat = "M/d"

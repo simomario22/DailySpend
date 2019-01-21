@@ -368,7 +368,7 @@ class CarryOverAdjustmentManager {
         let carryOverOnDayWrite = DispatchSemaphore(value: 1)
         
         // Start from the first period.
-        guard let firstDate = goal.startOfFirstPaySchedule() else {
+        guard let firstDate = goal.firstPaySchedule()?.start else {
             Logger.debug("Could not find start of first pay schedule for goal \(goal.shortDescription ?? "").")
             completion(nil, nil, nil)
             return

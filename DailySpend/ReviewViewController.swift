@@ -21,12 +21,6 @@ class ReviewViewController: UIViewController {
     private var entityProviders = [ReviewEntityDataProvider]()
 
     /**
-     * The current period that is being shown to the user, or `nil` if `goal`
-     * not a recurring period.
-     */
-    private var recurringGoalPeriod: CalendarPeriod?
-    
-    /**
      * Goal picker must be set prior to view loading with a
      * NavigationGoalPicker associated with this controller's navigation
      * controller.
@@ -35,26 +29,20 @@ class ReviewViewController: UIViewController {
     
     /**
      * The current interval that is being shown to the user, which may be an
-     * open ended period if this goal is not recurring and does not have an end
-     * date.
+     * open ended period.
      */
-    var interval: CalendarIntervalProvider! {
-        return recurringGoalPeriod ?? self.goal?.periodInterval(for: self.goal.start!)
-    }
+    var period: GoalPeriod?
 
     /**
      * Returns the day for which balance should be calculated.
      */
     var balanceDay: CalendarDay! {
-        guard let goal = goal else {
+        guard let period = period else {
             return nil
         }
-        let intervalEnd = CalendarDay(dateInDay: interval.end)?.subtract(days: 1)
+        let periodEnd = CalendarDay(dateInDay: period.end)?.subtract(days: 1)
         let today = CalendarDay()
-        if !goal.isRecurring {
-            return intervalEnd ?? today
-        }
-        return intervalEnd! > today ? today : intervalEnd!
+        return period.contains(date: today.start) ? today : periodEnd
     }
     
     /**
@@ -124,7 +112,7 @@ class ReviewViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        pbc.updatePeriodBrowser(goal: goal, recurringGoalPeriod: recurringGoalPeriod)
+        pbc.updatePeriodBrowser(period: period)
     }
 
     /**
@@ -169,12 +157,12 @@ class ReviewViewController: UIViewController {
      * from this class's member variables.
      */
     private func notifyControllersDataChanged() {
-        pbc.updatePeriodBrowser(goal: goal, recurringGoalPeriod: recurringGoalPeriod)
+        pbc.updatePeriodBrowser(period: period)
 
         bbc.updateWithBalanceFor(goal: goal, day: balanceDay)
         
         for provider in entityProviders {
-            provider.setGoal(goal, interval: interval)
+            provider.setGoal(goal, interval: period)
         }
     }
     
@@ -197,9 +185,31 @@ extension ReviewViewController: GoalPickerDelegate {
      */
     func goalChanged(newGoal: Goal?) {
         self.goal = newGoal
-        recurringGoalPeriod = self.goal.mostRecentPeriod()
+        self.period = getInitialPeriod(goal: newGoal)
         notifyControllersDataChanged()
         self.tableView.reloadData()
+    }
+
+    private func getInitialPeriod(goal: Goal?) -> GoalPeriod? {
+        guard let goal = goal else {
+            return nil
+        }
+
+        if goal.isArchived {
+            guard let schedule = goal.lastPaySchedule() else {
+                return nil
+            }
+            // Safe to unwrap `schedule.end` because if a goal is archived it
+            // must have an end.
+            return GoalPeriod(goal: goal, date: schedule.end!, style: .period)
+        } else if goal.hasFutureStart {
+            guard let schedule = goal.firstPaySchedule() else {
+                return nil
+            }
+            return GoalPeriod(goal: goal, date: schedule.start!, style: .period)
+        } else {
+            return GoalPeriod(goal: goal, date: CalendarDay().start, style: .period)
+        }
     }
 }
 
@@ -208,10 +218,10 @@ extension ReviewViewController: PeriodSelectorViewDelegate {
      * Called when the next button was tapped in the period browser.
      */
     func tappedNext() {
-        guard let nextPeriod = recurringGoalPeriod?.nextCalendarPeriod() else {
+        guard let nextPeriod = period?.nextGoalPeriod() else {
             return
         }
-        recurringGoalPeriod = nextPeriod
+        period = nextPeriod
         notifyControllersDataChanged()
         animateIntervalChange(forward: true)
     }
@@ -220,7 +230,10 @@ extension ReviewViewController: PeriodSelectorViewDelegate {
      * Called when the previous button was tapped in the period browser.
      */
     func tappedPrevious() {
-        recurringGoalPeriod = recurringGoalPeriod?.previousCalendarPeriod()
+        guard let previousPeriod = period?.previousGoalPeriod() else {
+            return
+        }
+        period = previousPeriod
         notifyControllersDataChanged()
         animateIntervalChange(forward: false)
     }
@@ -284,8 +297,9 @@ extension ReviewViewController: ReviewEntityControllerDelegate {
             self.goalPicker.setGoal(newGoal: goal)
         }
         
-        if let newInterval = goal.periodInterval(for: date) {
-            recurringGoalPeriod = newInterval as? CalendarPeriod
+        if let newPeriod = GoalPeriod(goal: goal, date: date, style: .period) {
+            let forward = period != nil ? (newPeriod.start.gmtDate > period!.start.gmtDate) : true
+            period = newPeriod
             notifyControllersDataChanged()
             
             if goalChanged {
@@ -293,7 +307,7 @@ extension ReviewViewController: ReviewEntityControllerDelegate {
                 // intervals within a goal.
                 tableView.reloadData()
             } else {
-                animateIntervalChange(forward: newInterval.start.gmtDate > interval.start.gmtDate)
+                animateIntervalChange(forward: forward)
             }
         } else {
             Logger.warning("The added entity was not within any of this goal's periods.")
@@ -306,7 +320,7 @@ extension ReviewViewController: ReviewEntityControllerDelegate {
      * and goal.
      */
     private func entityIsInCurrentView(interval: CalendarIntervalProvider, goal: Goal) -> Bool {
-        return self.interval.overlaps(with: interval) && (goal == self.goal || self.goal.isParentOf(goal: goal))
+        return self.period != nil && self.period!.overlaps(with: interval) && (goal == self.goal || self.goal.isParentOf(goal: goal))
     }
     
     func addedEntity(with interval: CalendarIntervalProvider, within goal: Goal, at path: IndexPath, use animation: UITableView.RowAnimation, isOnlyEntity: Bool) {
@@ -406,5 +420,5 @@ protocol ReviewEntityDataProvider : UITableViewDataSource, UITableViewDelegate {
      * Reload data store with entities from the given interval that are
      * associated with the given goal.
      */
-    func setGoal(_ newGoal: Goal?, interval: CalendarIntervalProvider)
+    func setGoal(_ newGoal: Goal?, interval: CalendarIntervalProvider?)
 }

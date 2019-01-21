@@ -58,49 +58,18 @@ class PeriodBrowserController {
      *      - recurringGoalPeriod: The period whose range should be displayed on
      *        the period browser, or `nil` if the goal is not a recurring goal.
      */
-    func updatePeriodBrowser(goal: Goal!, recurringGoalPeriod: CalendarPeriod?) {
-        if goal == nil {
+    func updatePeriodBrowser(period: GoalPeriod?) {
+        guard let period = period else {
             periodBrowser.previousButtonEnabled = false
             periodBrowser.nextButtonEnabled = false
             periodBrowser.labelText = "None"
             return
         }
-        let df = DateFormatter()
-        df.dateFormat = "M/d/yy"
         
-        var start, end: String
-        periodBrowser.previousButtonEnabled = false
-        periodBrowser.nextButtonEnabled = false
-        
-        if let period = recurringGoalPeriod {
-            // This is a recurring goal.
-            periodBrowser.previousButtonEnabled = true
-            periodBrowser.nextButtonEnabled = true
-            start = period.start.string(formatter: df)
-            let inclusiveDay = CalendarDay(dateInDay: period.end!).subtract(days: 1)
-            end = inclusiveDay.string(formatter: df, relative: true)
-            
-            // Check for no previous period.
-            if period.previousCalendarPeriod().start.gmtDate < goal.start!.gmtDate {
-                periodBrowser.previousButtonEnabled = false
-            }
+        periodBrowser.previousButtonEnabled = period.previousGoalPeriod() != nil
+        periodBrowser.nextButtonEnabled = period.nextGoalPeriod() != nil
 
-            // Check for no next period.
-            let nextPeriodDate = period.nextCalendarPeriod()
-            if nextPeriodDate == nil || nextPeriodDate!.start.gmtDate > CalendarDay().start.gmtDate {
-                periodBrowser.nextButtonEnabled = false
-            }
-        } else {
-            let interval = goal.periodInterval(for: goal.start!)!
-            start = interval.start.string(formatter: df)
-            if let intervalEnd = interval.end {
-                end = intervalEnd.string(formatter: df, friendly: true)
-            } else {
-                end = "Today"
-            }
-        }
-
-        periodBrowser.labelText = "\(start) - \(end)"
+        periodBrowser.labelText = period.string(friendly: true, relative: true)
     }
     
     /**

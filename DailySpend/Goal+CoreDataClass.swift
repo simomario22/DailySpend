@@ -261,7 +261,7 @@ class Goal: NSManagedObject {
             #warning("Add checks for being contained by parent.")
         }
 
-        #warning("Add checks to make sure no overlap for pay schedules.")
+        #warning("Add checks to make sure no overlap for pay schedules and at least one schedule.")
         
         if _dateCreated == nil {
             return (false, "The goal must have a date created.")
@@ -408,56 +408,6 @@ class Goal: NSManagedObject {
         }
         return schedule.calculateTotalPaidAmount(for: day)
     }
-    
-    /**
-     * Returns the most recent calendar interval for this goal.
-     *
-     * If this goal does not have a start date, or has a start date after
-     * today and is a recurring goal, this function returns `nil`.
-     */
-//    func mostRecentInterval() -> CalendarIntervalProvider? {
-//        guard let start = start else {
-//            return nil
-//        }
-//
-//        if isRecurring {
-//            return self.mostRecentPeriod()
-//        } else {
-//            return self.periodInterval(for: start)
-//        }
-//    }
-
-    /**
-     * Returns the most recent period interval in a goal as a `CalendarPeriod`.
-     *
-     * If this goal does not have a start date, or has a start date after today,
-     * this function returns `nil`.
-     */
-//    func mostRecentPeriod() -> CalendarPeriod? {
-//        // Try to get an interval for the current day.
-//        var interval = self.periodInterval(for: CalendarDay().start)
-//        if interval == nil && end != nil {
-//            // No valid interval for current day.
-//            // Try to get an interval for last period of the goal.
-//            interval = self.periodInterval(for: self.end!)
-//        }
-//        
-//        if let interval = interval
-//        {
-//            // Get the interval with length of the goal period starting from
-//            // the interval start, bounded by the exclusive end of the goal.
-//            return CalendarPeriod(
-//                calendarDate: interval.start,
-//                period: self.period,
-//                beginningDateOfPeriod: interval.start,
-//                boundingEndDate: self.exclusiveEnd
-//            )
-//        } else {
-//            // Can't get an interval (likely due to the goal having a start
-//            // date after today, or the goal not having a start date)
-//            return nil
-//        }
-//    }
 
     /**
      * Returns the active pay schedule for a goal on a given day, or `nil` if
@@ -522,32 +472,26 @@ class Goal: NSManagedObject {
     }
 
     /**
-     * Returns the start of the first pay schedule for this goal, if one exists.
+     * Returns the first pay schedule for this goal, if one exists.
      */
-    func startOfFirstPaySchedule() -> CalendarDateProvider? {
-        return getOnePaySchedule(key: "start_", ascending: true)?.start
+    func firstPaySchedule() -> PaySchedule? {
+        return getOnePaySchedule(key: "start_", ascending: true)
     }
 
     /**
-     * Returns the end of the last pay schedule for this goal, if one exists.
-     * - Parameters:
-     *    - exclusive:  if `true`, the date returned will be exclusive of the
-     *      interval.
+     * Returns the last pay schedule for this goal, if one exists.
      */
-    func endOfLastPaySchedule(exclusive: Bool) -> CalendarDateProvider? {
-        guard let schedule = getOnePaySchedule(key: "start_", ascending: false) else {
-            return nil
-        }
-        return exclusive ? schedule.exclusiveEnd : schedule.end
+    func lastPaySchedule() -> PaySchedule? {
+        return getOnePaySchedule(key: "start_", ascending: false)
     }
 
     var isArchived: Bool {
-        let end = endOfLastPaySchedule(exclusive: false)
+        let end = lastPaySchedule()?.exclusiveEnd
         return end != nil && CalendarDay(dateInDay: end!) < CalendarDay() || (parentGoal?.isArchived ?? false)
     }
     
     var hasFutureStart: Bool {
-        let start = startOfFirstPaySchedule()
+        let start = firstPaySchedule()?.start
         return start == nil || CalendarDay(dateInDay: start!) > CalendarDay()
     }
     

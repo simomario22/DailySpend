@@ -211,8 +211,8 @@ class Expense: NSManagedObject {
             return (false, "This expense must be associated with a goal.")
         }
 
-        let goalStart = _goal?.startOfFirstPaySchedule()
-        let goalExclusiveEnd = _goal?.endOfLastPaySchedule(exclusive: true)
+        let goalStart = _goal?.firstPaySchedule()?.start
+        let goalExclusiveEnd = _goal?.lastPaySchedule()?.exclusiveEnd
         
         if goalStart != nil && _transactionDay!.start.gmtDate < goalStart!.gmtDate {
             return (false, "This expense must be after it's associated goal's start date.")
