@@ -93,8 +93,8 @@ class CalendarDay: CustomStringConvertible {
         )
     }
 
-    func string(formatter: DateFormatter, friendly: Bool = false) -> String {
-        if friendly {
+    func string(formatter: DateFormatter, relative: Bool = false) -> String {
+        if relative {
             let today = CalendarDay()
             if self == today {
                 return "Today"
@@ -223,6 +223,10 @@ extension CalendarDay: CalendarIntervalProvider {
         } else {
             return nil
         }
+    }
+
+    func equals(interval: CalendarIntervalProvider) -> Bool {
+        return self.start.gmtDate == interval.start.gmtDate && self.end?.gmtDate == interval.end?.gmtDate
     }
 }
 

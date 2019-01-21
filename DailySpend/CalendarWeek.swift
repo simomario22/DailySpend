@@ -97,7 +97,18 @@ class CalendarWeek {
         return (components.weekOfMonth!, components.day!)
     }
 
-    func string(formatter: DateFormatter) -> String {
+    func string(formatter: DateFormatter, relative: Bool = false) -> String {
+        if relative {
+            let thisWeek = CalendarWeek()
+            if self == thisWeek {
+                return "This Week"
+            } else if self == thisWeek.add(weeks: 1) {
+                return "Next Week"
+            } else if self == thisWeek.subtract(weeks: 1) {
+                return "Last Week"
+            }
+        }
+
         let origTZ = formatter.timeZone
         formatter.timeZone = CalendarWeek.gmtTimeZone
 
@@ -211,6 +222,10 @@ extension CalendarWeek: CalendarIntervalProvider {
         } else {
             return nil
         }
+    }
+
+    func equals(interval: CalendarIntervalProvider) -> Bool {
+        return self.start.gmtDate == interval.start.gmtDate && self.end?.gmtDate == interval.end?.gmtDate
     }
 }
 

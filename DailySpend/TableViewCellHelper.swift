@@ -37,7 +37,7 @@ class TableViewCellHelper {
             cell = UITableViewCell(style: .value1, reuseIdentifier: "dateDisplay")
         }
 
-        let dateText = day?.string(formatter: dateFormatter, friendly: true) ?? alternateText ?? "None"
+        let dateText = day?.string(formatter: dateFormatter, relative: true) ?? alternateText ?? "None"
         
         return valueDisplayCell(labelText: label,
                                 valueText: dateText,

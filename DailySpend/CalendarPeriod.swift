@@ -32,6 +32,12 @@ protocol CalendarIntervalProvider {
      * otherwise.
      */
     func contains(interval: CalendarIntervalProvider) -> Bool
+
+    /**
+     * Returns true if this interval is exactly the same as the passed interval,
+     * false otherwise.
+     */
+    func equals(interval: CalendarIntervalProvider) -> Bool
     
     /**
      * Returns true if any portion of this interval overlaps with any portion
@@ -186,6 +192,10 @@ class CalendarInterval : CalendarIntervalProvider {
             return nil
         }
     }
+
+    func equals(interval: CalendarIntervalProvider) -> Bool {
+        return self.start.gmtDate == interval.start.gmtDate && self.end?.gmtDate == interval.end?.gmtDate
+    }
 }
 
 /**
@@ -232,7 +242,10 @@ class GoalPeriod : CalendarIntervalProvider {
      * If no such period exists, returns `nil`.
      */
     func nextGoalPeriod() -> GoalPeriod? {
-        let exclusiveEndDate = CalendarDay(dateInDay: end!).start
+        guard let exclusiveEndDate = CalendarDay(dateInDay: end)?.start else {
+            return nil
+        }
+
         return GoalPeriod(goal: goal, date: exclusiveEndDate, style: style)
     }
 
@@ -246,20 +259,94 @@ class GoalPeriod : CalendarIntervalProvider {
     }
 
     /**
-     * Returns true if this interval contains the date, false otherwise.
+     * Returns a string representing the interval. If this is representing a
+     * recurring pay schedule period, there are options to print friendly or
+     * relative intervals.
+     *
+     * - Parameters:
+     *    - friendly: This will use month names and years if not in this year
+     *      instead of dates.
+     *    - relative: This will use language for relative days, weeks, and
+     *      months for the current, previous, and next period.
      */
-    func contains(date: CalendarDateProvider) -> Bool {
-        return date.gmtDate >= start.gmtDate && date.gmtDate < end!.gmtDate
+    func string(friendly: Bool, relative: Bool) -> String {
+        let schedule = goal.activePaySchedule(on: self.start)!
+        let period = style == .period ? schedule.period : schedule.payFrequency
+        let scope = friendly && schedule.isRecurring ? period.scope : .None
+        let multiplier = friendly && schedule.isRecurring ? period.multiplier : (self.start.gmtDate == self.end?.gmtDate ? 1 : 2)
+
+        let firstComponent = stringComponent(date: self.start, scope: scope, relative: relative)
+        if multiplier == 1 {
+            if period.scope == .Week {
+                let thisWeek = CalendarWeek()
+                let week = CalendarWeek(dateInWeek: self.start)
+                if !relative || (week != thisWeek && week != thisWeek.add(weeks: 1) && week != thisWeek.subtract(weeks: 1)) {
+                    // This is a representation of a week in a .short date
+                    // format. Special case here, we'd like to represent one
+                    // week differently than multiple in this case.
+                    return "Week of " + firstComponent
+                }
+            }
+            return firstComponent
+        }
+
+        if let end = self.end {
+            let secondComponent = stringComponent(date: end, scope: period.scope, relative: relative)
+            return "\(firstComponent) - \(secondComponent)"
+        } else {
+            return "Ongoing from \(firstComponent)"
+        }
+    }
+
+    private func stringComponent(date: CalendarDateProvider, scope: PeriodScope, relative: Bool) -> String {
+        let df = DateFormatter()
+
+        switch scope {
+        case .Day, .None:
+            df.timeStyle = .none
+            df.dateStyle = .short
+            return CalendarDay(dateInDay: date).string(formatter: df, relative: relative)
+        case .Week:
+            df.timeStyle = .none
+            df.dateStyle = .short
+            return CalendarWeek(dateInWeek: date).string(formatter: df, relative: relative)
+        case .Month:
+            let month = CalendarMonth(dateInMonth: date)
+            if month.year == CalendarDay().year {
+                df.dateFormat = "MMMM"
+            } else {
+                df.dateFormat = "MMMM yyyy"
+            }
+            return month.string(formatter: df, relative: relative)
+        }
     }
 
     /**
-     * Returns true if this interval contains the entire interval, false
+     * Returns true if this interval contains the date, false otherwise.
+     */
+    func contains(date: CalendarDateProvider) -> Bool {
+        return date.gmtDate >= start.gmtDate &&
+            end == nil || date.gmtDate < end!.gmtDate
+    }
+
+    /**
+     * Returns true if this interval wholly contains the entire interval, false
      * otherwise.
      */
     func contains(interval: CalendarIntervalProvider) -> Bool {
-        return self.contains(date: interval.start) &&
-            interval.end != nil &&
-            self.contains(date: interval.end!)
+        if !self.contains(date: interval.start) {
+            return false
+        }
+
+        if interval.end == nil && self.end != nil {
+            return false
+        }
+
+        if interval.end != nil {
+            return self.contains(date: interval.end!)
+        }
+
+        return true
     }
 
     /**
@@ -271,7 +358,7 @@ class GoalPeriod : CalendarIntervalProvider {
             return false
         }
 
-        if self.end!.gmtDate < interval.start.gmtDate {
+        if self.end != nil && self.end!.gmtDate < interval.start.gmtDate {
             return false
         }
 
@@ -289,13 +376,16 @@ class GoalPeriod : CalendarIntervalProvider {
             return self
         } else if interval.end == nil || self.start.gmtDate < interval.end!.gmtDate {
             return CalendarInterval(start: self.start, end: interval.end)
-        } else if self.end == nil || interval.start.gmtDate < self.end!.gmtDate {
+        } else if interval.start.gmtDate < self.end!.gmtDate {
             return CalendarInterval(start: interval.start, end: self.end)
         } else {
             return nil
         }
     }
 
+    func equals(interval: CalendarIntervalProvider) -> Bool {
+        return self.start.gmtDate == interval.start.gmtDate && self.end?.gmtDate == interval.end?.gmtDate
+    }
 }
 
 /**
@@ -531,6 +621,10 @@ class CalendarPeriod : CalendarIntervalProvider {
         } else {
             return nil
         }
+    }
+
+    func equals(interval: CalendarIntervalProvider) -> Bool {
+        return self.start.gmtDate == interval.start.gmtDate && self.end?.gmtDate == interval.end?.gmtDate
     }
 }
 

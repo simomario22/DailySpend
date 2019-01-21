@@ -78,7 +78,7 @@ class PeriodBrowserController {
             periodBrowser.nextButtonEnabled = true
             start = period.start.string(formatter: df)
             let inclusiveDay = CalendarDay(dateInDay: period.end!).subtract(days: 1)
-            end = inclusiveDay.string(formatter: df, friendly: true)
+            end = inclusiveDay.string(formatter: df, relative: true)
             
             // Check for no previous period.
             if period.previousCalendarPeriod().start.gmtDate < goal.start!.gmtDate {

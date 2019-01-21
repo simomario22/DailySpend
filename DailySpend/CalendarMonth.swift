@@ -91,7 +91,18 @@ class CalendarMonth {
         return (components.month!, components.day!)
     }
 
-    func string(formatter: DateFormatter) -> String {
+    func string(formatter: DateFormatter, relative: Bool = false) -> String {
+        if relative {
+            let thisMonth = CalendarMonth()
+            if self == thisMonth {
+                return "This Month"
+            } else if self == thisMonth.add(months: 1) {
+                return "Next Month"
+            } else if self == thisMonth.subtract(months: 1) {
+                return "Last Month"
+            }
+        }
+
         let origTZ = formatter.timeZone
         formatter.timeZone = CalendarMonth.gmtTimeZone
 
@@ -246,6 +257,10 @@ extension CalendarMonth: CalendarIntervalProvider {
         } else {
             return nil
         }
+    }
+
+    func equals(interval: CalendarIntervalProvider) -> Bool {
+        return self.start.gmtDate == interval.start.gmtDate && self.end?.gmtDate == interval.end?.gmtDate
     }
 }
 
