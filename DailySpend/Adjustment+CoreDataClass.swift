@@ -236,23 +236,19 @@ class Adjustment: NSManagedObject {
         if _dateCreated == nil {
             return (false, "The adjustment must have a date created.")
         }
+
+        let goalStart = _goal?.firstPaySchedule()?.start
+        let goalExclusiveEnd = _goal?.lastPaySchedule()?.exclusiveEnd
         
-        if _goal!.start == nil || _firstDayEffective!.start.gmtDate < _goal!.start!.gmtDate {
+        if goalStart == nil || _firstDayEffective!.start.gmtDate < goalStart!.gmtDate {
             return (false, "This adjustment must begin after its associated goal's start date.")
         }
         
-        if _goal!.exclusiveEnd != nil && _lastDayEffective!.start.gmtDate > _goal!.exclusiveEnd!.gmtDate {
+        if goalExclusiveEnd != nil && _lastDayEffective!.start.gmtDate > goalExclusiveEnd!.gmtDate {
             return (false, "This adjustment must end before its associated goal's end date.")
         }
-        
-        if _goal!.isRecurring {
-            let mostRecentPeriodEnd = _goal!.mostRecentPeriod()?.end?.gmtDate
-            if mostRecentPeriodEnd == nil ||
-                _firstDayEffective!.start.gmtDate > mostRecentPeriodEnd! {
-                return (false, "This adjustment must begin no later than end the most recent period for its goal.")
-            }
-        }
 
+        #warning("No longer checking if adjustment is no later than the most recent period")
         
         self.shortDescription = _shortDescription
         self.amountPerDay = _amountPerDay
