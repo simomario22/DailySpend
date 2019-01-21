@@ -226,14 +226,8 @@ class Goal: NSManagedObject {
      */
     func propose(
         shortDescription: String?? = nil,
-        amount: Decimal?? = nil,
-        start: CalendarDateProvider?? = nil,
-        end: CalendarDateProvider?? = nil,
-        period: Period? = nil,
-        payFrequency: Period? = nil,
         parentGoal: Goal?? = nil,
         carryOverBalance: Bool? = nil,
-        adjustMonthAmountAutomatically: Bool? = nil,
         dateCreated: Date?? = nil
     ) -> (valid: Bool, problem: String?) {
         let _shortDescription = shortDescription ?? self.shortDescription
