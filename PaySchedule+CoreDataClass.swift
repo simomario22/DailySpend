@@ -231,16 +231,45 @@ class PaySchedule: NSManagedObject {
      *    - day: The day to compute the total paid amount on.
      */
     func calculateTotalPaidAmount(for day: CalendarDay) -> Decimal? {
-        guard let amount = adjustedAmountForDateInPeriod(day.start) else {
+        guard let interval = periodInterval(for: day.start),
+              let amount = unboundedPayAmountForPeriod(interval) else {
+            return nil
+        }
+
+        if !isRecurring {
+            return amount
+        }
+
+        // Coerce a CalendarPeriod, since this is recurring.
+        guard let period = interval as? CalendarPeriod else {
             return nil
         }
 
         if !hasIncrementalPayment {
-            return amount
+            // The period may have bounds, so calculate the bounds adjusted
+            // amount for the period.
+            let boundsAdjustedPeriodAmount = getBoundsAdjustedPay(period: period, unboundedAmount: amount)
+            return boundsAdjustedPeriodAmount
         }
 
-        // Get the period occurring during the passed day
-        guard let period = self.periodInterval(for: day.start) as? CalendarPeriod else {
+        // Sum the incremental payments that have been paid out by this date.
+        guard
+            let firstPaymentPeriod = CalendarPeriod(
+                calendarDate: period.start,
+                period: payFrequency,
+                beginningDateOfPeriod: period.start,
+                boundingStartDate: period.start,
+                boundingEndDate: period.end
+            ),
+            let lastPaymentPeriod = CalendarPeriod(
+                calendarDate: day.start,
+                period: payFrequency,
+                beginningDateOfPeriod: period.start,
+                boundingStartDate: period.start,
+                boundingEndDate: period.end
+            ),
+            let lastPaymentIndex = lastPaymentPeriod.periodIndexWithin(superPeriod: period)
+        else {
             return nil
         }
 
@@ -250,36 +279,51 @@ class PaySchedule: NSManagedObject {
         }
 
         let incrementalAmount = amount / Decimal(paymentsPerPeriod)
-        guard
-            let incrementInterval = incrementalPaymentInterval(for: day.start),
-            let incrementCalendarPeriod = CalendarPeriod(
-                calendarDate: incrementInterval.start,
-                period: payFrequency,
-                beginningDateOfPeriod: incrementInterval.start,
-                boundingEndDate: self.exclusiveEnd
-            ),
-            let index = incrementCalendarPeriod.periodIndexWithin(superPeriod: period)
-            else {
-                return nil
+
+        // The first and last payments are the only ones that can potentially
+        // be bounds adjusted, so calculate those separately.
+        let firstPaymentAmount = getBoundsAdjustedPay(period: firstPaymentPeriod, unboundedAmount: incrementalAmount)
+        if firstPaymentPeriod.equals(interval: lastPaymentPeriod) {
+            // There's only one pay period.
+            return firstPaymentAmount
         }
 
-        let incrementalPayment = incrementalAmount * Decimal(index + 1)
-        return incrementalPayment.roundToNearest(th: 100)
+        let lastPaymentAmount = getBoundsAdjustedPay(period: lastPaymentPeriod, unboundedAmount: incrementalAmount)
+        let sumOfOtherPayments = incrementalAmount * Decimal(lastPaymentIndex - 1)
+
+        return firstPaymentAmount + lastPaymentAmount + sumOfOtherPayments
+    }
+
+    /**
+     * Given a CalendarPeriod `period`, bounded or not, and an amount paid for
+     * an unbounded period, give the amount to be paid for this period, reducing
+     * it proportionally to the reduction in length due to bounding.
+     */
+    private func getBoundsAdjustedPay(period: CalendarPeriod, unboundedAmount: Decimal) -> Decimal {
+        if period.partialPeriodLengthReductionInDays == 0 {
+            // This is not a partial period, so don't bother with calculations.
+            return unboundedAmount
+        }
+
+        let lengthInDays = period.lengthInDays()
+        let unboundedLengthInDays = lengthInDays + period.partialPeriodLengthReductionInDays
+
+        let amountPerDay = unboundedAmount / Decimal(unboundedLengthInDays)
+
+        let totalAmount = amountPerDay * Decimal(lengthInDays)
+        return totalAmount.roundToNearest(th: 100)
     }
 
     /**
      * The amount per period, adjusted based on the number of days in the
      * month(s) if necessary based on `adjustMonthAmountAutomatically`.
      */
-    func adjustedAmountForDateInPeriod(_ date: CalendarDateProvider) -> Decimal? {
+    private func unboundedPayAmountForPeriod(_ interval: CalendarIntervalProvider) -> Decimal? {
         guard let amount = amount else {
             return nil
         }
         if adjustMonthAmountAutomatically && period.scope == .Month {
             var totalDays = 0
-            guard let interval = periodInterval(for: date) else {
-                return nil
-            }
             // Start with the first month in the interval.
             var month = CalendarMonth(interval: interval)
             for _ in 0..<period.multiplier {
@@ -316,6 +360,7 @@ class PaySchedule: NSManagedObject {
             calendarDate: date,
             period: payFrequency,
             beginningDateOfPeriod: period.start,
+            boundingStartDate: self.start,
             boundingEndDate: self.exclusiveEnd
         )!
     }
@@ -342,6 +387,7 @@ class PaySchedule: NSManagedObject {
             calendarDate: date,
             period: period,
             beginningDateOfPeriod: self.start!,
+            boundingStartDate: self.start,
             boundingEndDate: self.exclusiveEnd
         )!
     }

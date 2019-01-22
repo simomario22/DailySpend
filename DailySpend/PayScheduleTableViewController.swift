@@ -501,7 +501,7 @@ extension PayScheduleTableViewController : UITableViewDataSource, UITableViewDel
         case .StartPickerCell:
             return cellCreator.periodPickerCell(
                 date: start,
-                scope: isRecurring ? period.scope : .Day,
+                scope: .Day,
                 changedToDate: { (date: CalendarDateProvider, scope: PeriodScope) in
                     self.start = date
 

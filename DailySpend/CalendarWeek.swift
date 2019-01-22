@@ -67,6 +67,8 @@ class CalendarWeek {
      * Returns the number of weeks that this week is after `startWeek`.
      * If this week is before start week, this function will return a negative
      * number.
+     *
+     * Note that this returns the number of weeks
      */
     func weeksAfter(startWeek: CalendarWeek) -> Int {
         // `weekOfMonth` in this case gives the number we are looking for:

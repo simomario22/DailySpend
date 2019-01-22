@@ -404,8 +404,21 @@ class CalendarPeriod : CalendarIntervalProvider {
      */
     private(set) var period: Period
     
-    private var previousStart: CalendarDateProvider // Memoize this for quick subtraction.
+    private var previousStart: CalendarDateProvider? // Memoize this for quick subtraction.
+
+    /**
+     * The beginning date of any CalendarPeriod in this sequence.
+     *
+     * If this is a partial period, this may be different than the start date.
+     */
+    private var beginningDateOfPeriod: CalendarDateProvider
     private var isPartialPeriod: Bool = false
+
+    /**
+     * The number of days the length of this period was reduced by in order to
+     * bound it with the passed bounds.
+     */
+    private(set) var partialPeriodLengthReductionInDays = 0
 
     /**
      * Initializes a concrete interval in time.
@@ -413,21 +426,24 @@ class CalendarPeriod : CalendarIntervalProvider {
      * - Parameters:
      *    - calendarDate: A date in the period interval you'd like created.
      *    - period: The interval you'd like to represent.
-     *    - intervalStart: The start of any period of this interval.
-     *    - endBound: If not `nil`, the end of the period will be bounded by
-     *                this value. That is, the end date will be no later than
-     *                this value. If this date is in the period interval, this
-     *                period will be considered a partial period and the
-     *                following period will be `nil`.
+     *    - beginningDateOfPeriod: The start of any full period of this interval.
+     *    - boundingStartDate: If not `nil`, the start date of the period will
+     *      be bounded by this valid. That is, the start date will be no later
+     *      than this value. If this date is in the period interval, this
+     *      period will be considered a partial period and the preceeding period
+     *      will be `nil`.
+     *    - boundingEndDate: If not `nil`, the end of the period will be bounded
+     *      by this value. That is, the end date will be no later than this
+     *      value. If this date is in the period interval, this period will be
+     *      considered a partial period and the following period will be `nil`.
      */
     init?(
         calendarDate date: CalendarDateProvider,
         period: Period,
         beginningDateOfPeriod intervalStart: CalendarDateProvider,
+        boundingStartDate startBound: CalendarDateProvider?,
         boundingEndDate endBound: CalendarDateProvider?
     ) {
-
-        #warning("Account for periods that don't start at the beginning of a Period. One way to do this might be getting rid of this class entirely in favor of GoalPeriod - i'm not sure it's relevant anymore.")
         switch period.scope {
         case .Day:
             // Ensure day is at the beginning of a period.
@@ -468,18 +484,47 @@ class CalendarPeriod : CalendarIntervalProvider {
         default:
             return nil
         }
-        
-        if endBound != nil {
-            if endBound!.gmtDate < self.start.gmtDate {
+
+        self.beginningDateOfPeriod = self.start
+
+        if let endBound = endBound {
+            if endBound.gmtDate < self.start.gmtDate {
                 // This is an invalid end bound.
                 return nil
-            } else if endBound!.gmtDate < self.end!.gmtDate {
+            } else if endBound.gmtDate < self.end!.gmtDate {
                 // This end bound is in the interval. Shorten the interval.
-                self.end = endBound!
+
+                // Calculate the number of days subtracted. This is used to
+                // calculate pay on this day.
+                let oldEnd = CalendarDay(dateInDay: self.end!)
+                let newEnd = CalendarDay(dateInDay: endBound)
+                self.partialPeriodLengthReductionInDays += oldEnd.daysAfter(startDay: newEnd)
+
+                self.end = endBound
                 self.isPartialPeriod = true
             }
         }
-        
+
+        if let startBound = startBound {
+            if startBound.gmtDate > self.end!.gmtDate {
+                // This is an invalid start bound.
+                return nil
+            } else if startBound.gmtDate > self.start.gmtDate {
+                // This start bound is in the interval. Shorten the interval.
+
+                // Calculate the number of days added. This is used to
+                // calculate pay on this day.
+                let oldStart = CalendarDay(dateInDay: self.start)
+                let newStart = CalendarDay(dateInDay: startBound)
+                self.partialPeriodLengthReductionInDays += newStart.daysAfter(startDay: oldStart)
+
+                self.start = startBound
+                self.beginningDateOfPeriod = intervalStart
+                self.previousStart = nil
+                self.isPartialPeriod = true
+            }
+        }
+
         self.period = period
     }
     
@@ -496,11 +541,12 @@ class CalendarPeriod : CalendarIntervalProvider {
         if self.start.gmtDate == lastDayInThisCalendarPeriod.start.gmtDate {
             return 0
         }
-        
+
         let lastSubPeriod = CalendarPeriod(
             calendarDate: lastDayInThisCalendarPeriod.start,
             period: period,
-            beginningDateOfPeriod: self.start,
+            beginningDateOfPeriod: self.beginningDateOfPeriod,
+            boundingStartDate: nil,
             boundingEndDate: self.end
         )!
         
@@ -515,41 +561,37 @@ class CalendarPeriod : CalendarIntervalProvider {
      * interval begins on the fourth day of the month, and the passed
      * `superPeriod` is the month that this interval is in, this function will
      * return `1`, the second index.
+     * Partial periods are counted the same as full periods.
      *
-     * If this period is not an even multiple away from, or is not contained by
-     * the larger period, or if the passed `superPeriod` is smaller, then this
-     * function will return nil.
+     * If this period is not is not contained by the larger period,
+     * or if the passed `superPeriod` is smaller, then this function will
+     * return nil.
      */
     func periodIndexWithin(superPeriod: CalendarPeriod) -> Int? {
         if superPeriod.period < period ||
-            start.gmtDate >= superPeriod.end!.gmtDate ||
-            start.gmtDate < superPeriod.start.gmtDate {
+           !superPeriod.contains(interval: self) {
             return nil
         }
 
-        let beginningPeriod = CalendarDay(dateInDay: superPeriod.start)
         var difference: Int
-        var remainder: Int
         switch period.scope {
         case .Day:
             let day = CalendarDay(dateInDay: self.start)
-            difference = day.daysAfter(startDay: beginningPeriod)
-            remainder = 0
+            let beginningDay = CalendarDay(dateInDay: superPeriod.start)
+            difference = day.daysAfter(startDay: beginningDay)
         case .Week:
             let week = CalendarWeek(dateInWeek: self.start)
-            (difference, remainder) = week.weeksAfter(start: beginningPeriod)
+            let beginningWeek = CalendarWeek(dateInWeek: superPeriod.start)
+            difference = week.weeksAfter(startWeek: beginningWeek)
         case .Month:
             let month = CalendarMonth(dateInMonth: self.start)
-            (difference, remainder) = month.monthsAfter(start: beginningPeriod)
+            let beginningMonth = CalendarMonth(dateInMonth: superPeriod.start)
+            difference = month.monthsAfter(startMonth: beginningMonth)
         default:
             return nil
         }
-        
-        if remainder == 0 && difference % self.period.multiplier == 0 {
-            return difference / self.period.multiplier
-        } else {
-            return nil
-        }
+
+        return difference / self.period.multiplier
     }
     
     func nextCalendarPeriod() -> CalendarPeriod? {
@@ -561,17 +603,30 @@ class CalendarPeriod : CalendarIntervalProvider {
             calendarDate: end!,
             period: period,
             beginningDateOfPeriod: start,
+            boundingStartDate: nil,
             boundingEndDate: nil
         )!
     }
     
-    func previousCalendarPeriod() -> CalendarPeriod {
+    func previousCalendarPeriod() -> CalendarPeriod? {
+        if isPartialPeriod {
+            return nil
+        }
+
         return CalendarPeriod(
-            calendarDate: previousStart,
+            calendarDate: previousStart!,
             period: period,
             beginningDateOfPeriod: start,
+            boundingStartDate: nil,
             boundingEndDate: nil
         )!
+    }
+
+    func lengthInDays() -> Int {
+        let firstDay = CalendarDay(dateInDay: start)
+        let lastDay = CalendarDay(dateInDay: end!)
+
+        return lastDay.daysAfter(startDay: firstDay)
     }
     
     /**
