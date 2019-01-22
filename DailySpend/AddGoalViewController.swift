@@ -28,6 +28,7 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
     // Goal Data
     var shortDescription: String?
     var carryOverBalance: Bool!
+    var paySchedules: [StagedPaySchedule]!
     var parentGoal: Goal?
 
     let carryOverExplanatoryText = "For new periods, automatically create a " +
@@ -87,11 +88,17 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
             shortDescription = goal.shortDescription
             carryOverBalance = goal.carryOverBalance
             parentGoal = goal.parentGoal
+            paySchedules = goal.sortedPaySchedules!.map(StagedPaySchedule.from)
+
+            let initialPeriod = goal.getInitialPeriod()!
+            let initialSchedule = goal.activePaySchedule(on: initialPeriod.start)!
+            scheduleController.setupPaySchedule(schedule: StagedPaySchedule.from(initialSchedule))
         } else {
             self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Add", style: .done, save)
             self.navigationItem.title = "New Goal"
             
             carryOverBalance = false
+            paySchedules = [scheduleController.currentValues()]
         }
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel) {
             self.view.endEditing(false)
@@ -117,13 +124,37 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
                 goal = Adjustment.inContext(goalId!, context: context)
             }
 
+            // Delete all old schedules and replace them with new ones.
+            let oldSchedules = goal.paySchedules
+            for schedule in oldSchedules ?? [] {
+                context.delete(schedule)
+            }
+
+            for stagedSchedule in paySchedules {
+                let newSchedule = PaySchedule(context: context)
+                validation = newSchedule.propose(
+                    amount: stagedSchedule.amount,
+                    start: stagedSchedule.start,
+                    end: stagedSchedule.end,
+                    period: stagedSchedule.period,
+                    payFrequency: stagedSchedule.payFrequency,
+                    adjustMonthAmountAutomatically: stagedSchedule.adjustMonthAmountAutomatically,
+                    goal: goal,
+                    dateCreated: Date()
+                )
+                if !validation.valid {
+                    context.rollback()
+                    return
+                }
+            }
+
             validation = goal.propose(
                 shortDescription: shortDescription,
                 parentGoal: Goal.inContext(parentGoal, context: context),
                 carryOverBalance: carryOverBalance
             )
 
-            if !validation.valid && isNew {
+            if !validation.valid {
                 context.rollback()
             } else {
                 if context.hasChanges {

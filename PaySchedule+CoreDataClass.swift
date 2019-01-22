@@ -170,6 +170,7 @@ class PaySchedule: NSManagedObject {
         period: Period? = nil,
         payFrequency: Period? = nil,
         adjustMonthAmountAutomatically: Bool? = nil,
+        goal: Goal? = nil,
         dateCreated: Date?? = nil
     ) -> (valid: Bool, problem: String?) {
         let _amount = amount ?? self.amount
@@ -178,7 +179,12 @@ class PaySchedule: NSManagedObject {
         let _period = period ?? self.period
         let _payFrequency = payFrequency ?? self.payFrequency
         let _adjustMonthAmountAutomatically = adjustMonthAmountAutomatically ?? self.adjustMonthAmountAutomatically
+        let _goal = goal ?? self.goal
         let _dateCreated = dateCreated ?? self.dateCreated
+
+        if _goal == nil {
+            return (false, "This pay schedule must be associated with a goal.")
+        }
 
         if _amount == nil || _amount! == 0 {
             return (false, "This pay schedule must have an amount specified.")

@@ -34,24 +34,37 @@ class PayScheduleTableViewController : NSObject {
         start = CalendarDay().start
     }
 
-    func setupPaySchedule(
-        amount: Decimal,
-        adjustMonthAmountAutomatically: Bool,
-        period: Period,
-        payFrequency: Period?,
-        start: CalendarDateProvider,
-        end: CalendarDateProvider?
-    ) {
-        self.amount = amount
-        self.adjustMonthAmountAutomatically = adjustMonthAmountAutomatically
-        self.period = period
-        self.payFrequency = payFrequency
-        self.start = start
-        self.end = end
+    func setupPaySchedule(schedule: StagedPaySchedule) {
+        self.amount = schedule.amount!
+        self.adjustMonthAmountAutomatically = schedule.adjustMonthAmountAutomatically!
+        self.period = schedule.period!
+        self.payFrequency = schedule.payFrequency!
+        self.start = schedule.start!
+        self.end = schedule.end
 
-        isRecurring = period.scope != .None
-        hasIncrementalPayment = period.scope != .None
-        neverEnd = end == nil
+        isRecurring = schedule.period!.scope != .None
+        hasIncrementalPayment = schedule.period!.scope != .None
+        neverEnd = schedule.end == nil
+    }
+
+    func currentValues() -> StagedPaySchedule {
+        return StagedPaySchedule(
+            amount: amount,
+            start: start,
+            end: end,
+            period: period,
+            payFrequency: payFrequency,
+            adjustMonthAmountAutomatically: adjustMonthAmountAutomatically
+        )
+    }
+
+
+    /**
+     * Sets all sections to unexpanded.
+     */
+    func unexpandAllSections() {
+        // Public interface for setExpandedSection(.None)
+        setExpandedSection(.None)
     }
 
     private let tableView: UITableView!
@@ -131,14 +144,6 @@ class PayScheduleTableViewController : NSObject {
             }
             tableView.scrollToRow(at: path, at: .top, animated: true)
         }
-    }
-
-    /**
-     * Sets all sections to unexpanded.
-     */
-    func unexpandAllSections() {
-        // Public interface for setExpandedSection(.None)
-        setExpandedSection(.None)
     }
 
     private func toggleExpandedSection(_ section: PayScheduleExpandableSectionType) {
@@ -237,19 +242,19 @@ class PayScheduleTableViewController : NSObject {
         self.insertRecurringSectionsAndCells(delete: true)
     }
 
-    func insertEndDayPickerCell() {
+    private func insertEndDayPickerCell() {
         let section = offset(isRecurring ? 2 : 1)
         let path = IndexPath(row: 3, section: section)
         tableView.insertRows(at: [path], with: .fade)
         tableView.scrollToRow(at: path, at: .top, animated: true)
     }
 
-    func removeEndDayPickerCell() {
+    private func removeEndDayPickerCell() {
         let section = offset(isRecurring ? 2 : 1)
         tableView.deleteRows(at: [IndexPath(row: 3, section: section)], with: .fade)
     }
 
-    func insertPayIntervalCell() {
+    private func insertPayIntervalCell() {
         guard isRecurring else {
             return
         }
@@ -259,7 +264,7 @@ class PayScheduleTableViewController : NSObject {
         tableView.scrollToRow(at: path, at: .top, animated: true)
     }
 
-    func removePayIntervalCell() {
+    private func removePayIntervalCell() {
         guard isRecurring else {
             return
         }
@@ -267,7 +272,7 @@ class PayScheduleTableViewController : NSObject {
         tableView.deleteRows(at: [IndexPath(row: 1, section: section)], with: .fade)
     }
 
-    func insertAdjustMonthAmountAutomaticallyCell() {
+    private func insertAdjustMonthAmountAutomaticallyCell() {
         guard isRecurring else {
             return
         }
@@ -277,7 +282,7 @@ class PayScheduleTableViewController : NSObject {
         tableView.insertRows(at: [path], with: .fade)
     }
 
-    func removeAdjustMonthAmountAutomaticallyCell() {
+    private func removeAdjustMonthAmountAutomaticallyCell() {
         guard isRecurring else {
             return
         }
@@ -647,6 +652,24 @@ extension PayScheduleTableViewController : UITableViewDataSource, UITableViewDel
             }
         }
     }
+}
 
+struct StagedPaySchedule {
+    let amount: Decimal?
+    let start: CalendarDateProvider?
+    let end: CalendarDateProvider?
+    let period: Period?
+    let payFrequency: Period?
+    let adjustMonthAmountAutomatically: Bool?
 
+    static func from(_ schedule: PaySchedule) -> StagedPaySchedule {
+        return StagedPaySchedule(
+            amount: schedule.amount,
+            start: schedule.start,
+            end: schedule.end,
+            period: schedule.period,
+            payFrequency: schedule.payFrequency,
+            adjustMonthAmountAutomatically: schedule.adjustMonthAmountAutomatically
+        )
+    }
 }

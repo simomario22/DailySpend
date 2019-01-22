@@ -185,31 +185,9 @@ extension ReviewViewController: GoalPickerDelegate {
      */
     func goalChanged(newGoal: Goal?) {
         self.goal = newGoal
-        self.period = getInitialPeriod(goal: newGoal)
+        self.period = newGoal?.getInitialPeriod()
         notifyControllersDataChanged()
         self.tableView.reloadData()
-    }
-
-    private func getInitialPeriod(goal: Goal?) -> GoalPeriod? {
-        guard let goal = goal else {
-            return nil
-        }
-
-        if goal.isArchived {
-            guard let schedule = goal.lastPaySchedule() else {
-                return nil
-            }
-            // Safe to unwrap `schedule.end` because if a goal is archived it
-            // must have an end.
-            return GoalPeriod(goal: goal, date: schedule.end!, style: .period)
-        } else if goal.hasFutureStart {
-            guard let schedule = goal.firstPaySchedule() else {
-                return nil
-            }
-            return GoalPeriod(goal: goal, date: schedule.start!, style: .period)
-        } else {
-            return GoalPeriod(goal: goal, date: CalendarDay().start, style: .period)
-        }
     }
 }
 

@@ -461,7 +461,6 @@ class Importer {
         }
 
         let context = appDelegate.persistentContainer.newBackgroundContext()
-        #warning("Move perform and wait block to actual creation code in MO create functions.")
         var contextError: ExportError?
         context.performAndWait {
             func saveContext() throws {

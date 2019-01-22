@@ -222,8 +222,6 @@ class Expense: NSManagedObject {
             return (false, "This expense must be before it's associated goal's end date.")
         }
 
-        #warning("No longer checking if expense is no later than the most recent period")
-
         self.amount = _amount
         self.shortDescription = _shortDescription
         self.transactionDay = _transactionDay

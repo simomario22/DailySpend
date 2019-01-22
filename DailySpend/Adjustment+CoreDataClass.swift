@@ -247,8 +247,6 @@ class Adjustment: NSManagedObject {
         if goalExclusiveEnd != nil && _lastDayEffective!.start.gmtDate > goalExclusiveEnd!.gmtDate {
             return (false, "This adjustment must end before its associated goal's end date.")
         }
-
-        #warning("No longer checking if adjustment is no later than the most recent period")
         
         self.shortDescription = _shortDescription
         self.amountPerDay = _amountPerDay

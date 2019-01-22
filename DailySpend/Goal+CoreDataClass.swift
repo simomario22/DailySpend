@@ -215,7 +215,7 @@ class Goal: NSManagedObject {
         }
         return false
     }
-    
+
     /**
      * Accepts all members of Goal. If the passed variables, attached to
      * corresponding variables on an Goal object, will form a valid
@@ -239,6 +239,37 @@ class Goal: NSManagedObject {
             return (false, "This goal must have a description.")
         }
 
+        if paySchedules == nil || paySchedules!.isEmpty {
+            return (false, "This goal must have at least one pay schedule.")
+        }
+
+        var previousEnd: CalendarDateProvider? = sortedPaySchedules!.first!.exclusiveEnd
+        let count = sortedPaySchedules!.count
+        for (i, schedule) in sortedPaySchedules!.enumerated() {
+            if schedule.start != nil {
+                return (false, "This goal's schedules all must have a start date.")
+            }
+
+            if i == 0 {
+                continue
+            }
+
+            if previousEnd == nil {
+                if i != count - 1 {
+                    // This is not the last pay schedule but it doesn't have an end date.
+                    return (false, "This goal's pay schedules must not overlap.")
+                }
+            } else if previousEnd!.gmtDate < schedule.start!.gmtDate {
+                return (false, "This goal's must not have any gaps between pay schedules.")
+            } else if previousEnd!.gmtDate > schedule.start!.gmtDate {
+                return (false, "This goal's pay schedules must not overlap.")
+            }
+
+            previousEnd = schedule.exclusiveEnd
+        }
+
+        let interval = CalendarInterval(start: self.firstPaySchedule()!.start!, end: self.lastPaySchedule()!.end)!
+
         if let parent = _parentGoal {
             if parent == self {
                 return (false, "This goal cannot be a parent of itself.")
@@ -248,15 +279,23 @@ class Goal: NSManagedObject {
                 return (false, "This goal's parent cannot be its child.")
             }
 
-            #warning("Add checks for being contained by parent.")
+
+            let parentInterval = CalendarInterval(start: parent.firstPaySchedule()!.start!, end: parent.lastPaySchedule()!.end)!
+            if !parentInterval.contains(interval: interval) {
+                return (false, "This goal's start and end date must be within it's parent's start and end date.")
+            }
         }
         
         if let children = self.childGoals {
-            #warning("Add checks for being contained by parent.")
+            for child in children {
+                let childInterval = CalendarInterval(start: child.firstPaySchedule()!.start!, end: child.lastPaySchedule()!.end)!
+                if !interval.contains(interval: childInterval) {
+                    return (false, "All of the start and end dates for this goal's children must be within this goal's start and end date.")
+                }
+
+            }
         }
 
-        #warning("Add checks to make sure no overlap for pay schedules and at least one schedule.")
-        
         if _dateCreated == nil {
             return (false, "The goal must have a date created.")
         }
@@ -268,7 +307,7 @@ class Goal: NSManagedObject {
         
         return (true, nil)
     }
-    
+
     /**
      * Returns the expenses in a particular period, or all the expenses if this
      * is not a recurring goal, from most recent transaction to least recent
@@ -401,6 +440,35 @@ class Goal: NSManagedObject {
             return nil
         }
         return schedule.calculateTotalPaidAmount(for: day)
+    }
+
+
+    /**
+     * Returns an initial period for a goal based on when it starts relative to
+     * today.
+     *
+     * If the goal begins before today, it will return the final period.
+     * If the goal is active today, it will return the current period.
+     * If the goal begins after today, it will return the first period.
+     * If this goal has no pay schedules, it will return `nil`.
+     *
+     */
+    func getInitialPeriod() -> GoalPeriod? {
+        if self.isArchived {
+            guard let schedule = lastPaySchedule() else {
+                return nil
+            }
+            // Safe to unwrap `schedule.end` because if a goal is archived it
+            // must have an end.
+            return GoalPeriod(goal: self, date: schedule.end!, style: .period)
+        } else if self.hasFutureStart {
+            guard let schedule = firstPaySchedule() else {
+                return nil
+            }
+            return GoalPeriod(goal: self, date: schedule.start!, style: .period)
+        } else {
+            return GoalPeriod(goal: self, date: CalendarDay().start, style: .period)
+        }
     }
 
     /**
