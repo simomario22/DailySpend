@@ -169,7 +169,7 @@ class TableViewCellHelper {
         }
 
         cell.setCalculatorTextField(true)
-        cell.textField.placeholder = "$0"
+        cell.textField.placeholder = "$0.00"
         cell.textField.text = amount != nil ? String.formatAsCurrency(amount: amount!) : nil
         cell.textLabel?.text = title
         cell.setHasTitle(title != nil)

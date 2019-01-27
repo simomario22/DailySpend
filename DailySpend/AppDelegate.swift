@@ -59,6 +59,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     period: goal.period,
                     payFrequency: goal.payFrequency,
                     adjustMonthAmountAutomatically: goal.adjustMonthAmountAutomatically,
+                    goal: goal,
                     dateCreated: Date()
                 )
 
@@ -78,9 +79,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 try! context.save()
             }
         }
-
     }
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         deleteAllOrphans()
         migrateGoalSchedules()

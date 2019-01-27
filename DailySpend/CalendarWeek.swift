@@ -54,7 +54,7 @@ class CalendarWeek {
     func add(weeks: Int) -> CalendarWeek {
         let cal = CalendarWeek.gmtCal
         let newDate = cal.date(byAdding: .day,
-                               value: weeks * self.typicalDaysInWeek,
+                               value: weeks * CalendarWeek.typicalDaysInWeek,
                                to: self.date)!
         return CalendarWeek(trustedDate: newDate)
     }
@@ -125,7 +125,7 @@ class CalendarWeek {
         return day.weekOfMonth == self.weekOfMonth && day.month == self.month && day.year == self.year
     }
 
-    var typicalDaysInWeek: Int {
+    class var typicalDaysInWeek: Int {
         return 7
     }
 

@@ -75,10 +75,21 @@ class Logger {
             print("goal.parentGoal: \(String(describing: goal.parentGoal?.shortDescription))")
             print("")
 
+            print("Dummy goal data:")
+            print("\tgoal.adjustMonthAmountAutomatically: \(goal.adjustMonthAmountAutomatically_)")
+            print("\tgoal.amount: \(String(describing: goal.amount_))")
+            print("\tgoal.start: \(String(describing: date(goal.start_ as Date?)))")
+            print("\tgoal.end: \(String(describing: date(goal.end_ as Date?)))")
+            print("\tgoal.period: \(goal.period_), \(goal.periodMultiplier_)")
+            print("\tgoal.payFrequency: \(goal.payFrequency_), \(goal.payFrequencyMultiplier_)")
+            print("")
+
+
             if (goal.paySchedules!.count > 0) {
                 print("\tPaySchedules:")
             } else {
                 print("\tNo PaySchedules.")
+                print("")
             }
             for schedule in goal.sortedPaySchedules! {
                 print("\tschedule.dateCreated: \(date(schedule.dateCreated))")

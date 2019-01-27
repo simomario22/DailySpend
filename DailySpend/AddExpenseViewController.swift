@@ -185,7 +185,7 @@ class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableVi
             }
         }
 
-        if let expenseId = expenseId {
+        if validation.valid {
             let expenseOnViewContext: Expense = Expense.inContext(expenseId)!
             if isNew {
                 delegate?.createdExpenseFromModal(expenseOnViewContext)

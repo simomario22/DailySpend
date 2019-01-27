@@ -170,7 +170,7 @@ class AddAdjustmentViewController: UIViewController, UITableViewDelegate, UITabl
             }
         }
 
-        if let adjustmentId = adjustmentId {
+        if validation.valid {
             let adjustmentOnViewContext: Adjustment = Adjustment.inContext(adjustmentId)!
             if isNew {
                 delegate?.createdAdjustmentFromModal(adjustmentOnViewContext)

@@ -246,7 +246,7 @@ class Goal: NSManagedObject {
         var previousEnd: CalendarDateProvider? = sortedPaySchedules!.first!.exclusiveEnd
         let count = sortedPaySchedules!.count
         for (i, schedule) in sortedPaySchedules!.enumerated() {
-            if schedule.start != nil {
+            if schedule.start == nil {
                 return (false, "This goal's schedules all must have a start date.")
             }
 
@@ -487,7 +487,7 @@ class Goal: NSManagedObject {
 
         var schedule: PaySchedule?
         context.performAndWait {
-            let formatString = "$goal = goal_ AND $date >= start_ AND $date < end_"
+            let formatString = "$goal = goal_ AND $date >= start_ AND (end_ == nil OR $date < end_)"
             let predicateTemplate = NSPredicate(format: formatString)
             let predicate = predicateTemplate.withSubstitutionVariables([
                 "goal": self,

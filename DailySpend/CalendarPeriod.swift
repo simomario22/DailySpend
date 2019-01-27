@@ -107,6 +107,22 @@ struct GMTDate : CalendarDateProvider {
     }
 }
 
+fileprivate func intervalContains(container: CalendarIntervalProvider, containee: CalendarIntervalProvider) -> Bool {
+    if container.start.gmtDate > containee.start.gmtDate {
+        return false
+    }
+
+    if containee.end == nil && container.end != nil {
+        return false
+    }
+
+    if containee.end != nil && container.end != nil {
+        return containee.end!.gmtDate <= container.end!.gmtDate
+    }
+
+    return true
+}
+
 /**
  * An interval in time with start and end explicitly specified, but no period
  * attached.
@@ -144,19 +160,7 @@ class CalendarInterval : CalendarIntervalProvider {
      * otherwise.
      */
     func contains(interval: CalendarIntervalProvider) -> Bool {
-        if !self.contains(date: interval.start) {
-            return false
-        }
-        
-        if interval.end == nil && self.end != nil {
-            return false
-        }
-        
-        if interval.end != nil {
-            return self.contains(date: interval.end!)
-        }
-        
-        return true
+        return intervalContains(container: self, containee: interval)
     }
     
     /**
@@ -334,19 +338,7 @@ class GoalPeriod : CalendarIntervalProvider {
      * otherwise.
      */
     func contains(interval: CalendarIntervalProvider) -> Bool {
-        if !self.contains(date: interval.start) {
-            return false
-        }
-
-        if interval.end == nil && self.end != nil {
-            return false
-        }
-
-        if interval.end != nil {
-            return self.contains(date: interval.end!)
-        }
-
-        return true
+        return intervalContains(container: self, containee: interval)
     }
 
     /**
@@ -641,9 +633,7 @@ class CalendarPeriod : CalendarIntervalProvider {
      * otherwise.
      */
     func contains(interval: CalendarIntervalProvider) -> Bool {
-        return self.contains(date: interval.start) &&
-            interval.end != nil &&
-            self.contains(date: interval.end!)
+        return intervalContains(container: self, containee: interval)
     }
     
     /**

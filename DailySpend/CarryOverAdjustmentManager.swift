@@ -388,7 +388,7 @@ class CarryOverAdjustmentManager {
         // over adjustment, whichever is later.
         // It doesn't make sense to create carry over adjustment past today in
         // most cases, since they won't be up to date. However, this will allow
-        // us to support that case if they have explicitly added an expense.
+        // us to support that case if they have explicitly added an adjustment.
         let today = CalendarDay()
         let latestAdjustment = currentAdjustments.max { $0.firstDayEffective! < $1.firstDayEffective! }
         let latestDay = latestAdjustment != nil ? max(today, latestAdjustment!.firstDayEffective!) : today
@@ -397,7 +397,7 @@ class CarryOverAdjustmentManager {
         let group = DispatchGroup()
         var failed = false
         let failedWrite = DispatchSemaphore(value: 1)
-        while period != nil && mostRecentPeriod != nil &&
+        while period?.end != nil && mostRecentPeriod != nil &&
             (period!.end!.gmtDate <= mostRecentPeriod!.start.gmtDate) {
             let adjustmentDay = CalendarDay(dateInDay: period!.end!)
             if let index = currentAdjustments.firstIndex(where: { $0.firstDayEffective == adjustmentDay }) {

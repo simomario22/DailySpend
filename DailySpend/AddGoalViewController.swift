@@ -13,12 +13,13 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
     var cellCreator: TableViewCellHelper!
     var scheduleController: PayScheduleTableViewController!
+    var scheduleControllerIndex: Int = 0
+    var scheduleNumSections = 0
+    var initialScheduleHumanName = "Pay Schedule"
     
     var delegate: AddGoalDelegate?
     
     var tableView: UITableView!
-    var segmentedControl: UISegmentedControl!
-    var toolbar: BorderedToolbar!
     
     var goalId: NSManagedObjectID?
     
@@ -43,22 +44,21 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
         let navHeight = navigationController?.navigationBar.frame.size.height ?? 0
         let statusBarSize = UIApplication.shared.statusBarFrame.size
         let statusBarHeight = min(statusBarSize.width, statusBarSize.height)
-        let toolbarFrame = CGRect(x: 0, y: navHeight + statusBarHeight, width: view.frame.size.width, height: 44)
 
-        let barButtonControl = UIBarButtonItem(customView: segmentedControl)
-        toolbar.setItems([barButtonControl], animated: false)
-        view.addSubview(toolbar)
-
+        let topInset = navHeight + statusBarHeight
         let bottomInset = UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0
         // Set up table view.
         let tableViewFrame = CGRect(
             x: 0,
-            y: toolbarFrame.bottomEdge,
+            y: topInset,
             width: view.frame.size.width,
-            height: view.frame.size.height - toolbarFrame.bottomEdge
+            height: view.frame.size.height - topInset
         )
         
         tableView = UITableView(frame: tableViewFrame, style: .grouped)
+        tableView.estimatedRowHeight = 0
+        tableView.estimatedSectionHeaderHeight = 0
+        tableView.estimatedSectionFooterHeight = 0
         tableView.scrollIndicatorInsets = UIEdgeInsets(
             top: 0,
             left: 0,
@@ -89,10 +89,7 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
             carryOverBalance = goal.carryOverBalance
             parentGoal = goal.parentGoal
             paySchedules = goal.sortedPaySchedules!.map(StagedPaySchedule.from)
-
-            let initialPeriod = goal.getInitialPeriod()!
-            let initialSchedule = goal.activePaySchedule(on: initialPeriod.start)!
-            scheduleController.setupPaySchedule(schedule: StagedPaySchedule.from(initialSchedule))
+            setupScheduleControllerWithInitialPeriod(for: goal)
         } else {
             self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Add", style: .done, save)
             self.navigationItem.title = "New Goal"
@@ -104,6 +101,29 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
             self.view.endEditing(false)
             self.dismiss(animated: true, completion: nil)
         }
+    }
+
+    private func setupScheduleControllerWithInitialPeriod(for goal: Goal) {
+        // Get the initial schedule
+        let initialPeriod = goal.getInitialPeriod()!
+        let initialSchedule = goal.activePaySchedule(on: initialPeriod.start)!
+        let initialStagedSchedule = StagedPaySchedule.from(initialSchedule)
+        guard let index = paySchedules.firstIndex(where: {$0 == initialStagedSchedule }) else {
+            Logger.debug("Could not find schedule controller index.")
+            return
+        }
+        self.scheduleControllerIndex = index
+
+        let today = CalendarDay()
+        if initialPeriod.contains(date: today.start) {
+            self.initialScheduleHumanName = "Current Pay Schedule"
+        } else if today.start.gmtDate < initialPeriod.start.gmtDate {
+            self.initialScheduleHumanName = "Most Recent Pay Schedule"
+        } else {
+            self.initialScheduleHumanName = "First Pay Schedule"
+        }
+
+        scheduleController.setupPaySchedule(schedule: initialStagedSchedule)
     }
     
     override func didReceiveMemoryWarning() {
@@ -129,6 +149,8 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
             for schedule in oldSchedules ?? [] {
                 context.delete(schedule)
             }
+
+            paySchedules[scheduleControllerIndex] = scheduleController.currentValues()
 
             for stagedSchedule in paySchedules {
                 let newSchedule = PaySchedule(context: context)
@@ -165,12 +187,13 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
             }
         }
 
-        if let goalId = goalId {
+        if validation.valid {
             let goalOnViewContext: Goal = Goal.inContext(goalId)!
             if let parentGoal = goalOnViewContext.parentGoal {
                 appDelegate.persistentContainer.viewContext.refresh(parentGoal, mergeChanges: true)
             }
             delegate?.addedOrChangedGoal(goalOnViewContext)
+            self.view.endEditing(false)
             if self.navigationController!.viewControllers[0] == self {
                 self.navigationController!.dismiss(animated: true, completion: nil)
             } else {
@@ -193,11 +216,9 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        navigationController?.navigationBar.hideBorderLine()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
-        navigationController?.navigationBar.showBorderLine()
         super.viewWillDisappear(animated)
     }
     
@@ -208,11 +229,11 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
     }
 
     private func isScheduleCell(path: IndexPath) -> Bool {
-        return path.section > 0
+        return path.section > 0 && path.section < scheduleNumSections + 1
     }
 
     private func isScheduleSection(section: Int) -> Bool {
-        return section > 0
+        return section > 0 && section < scheduleNumSections + 1
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -221,7 +242,8 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
         }
 
         if isScheduleCell(path: indexPath) {
-            return scheduleController.tableView(tableView, cellForRowAt: indexPath)
+            let adjustedIndexPath = IndexPath(row: indexPath.row, section: indexPath.section - 1)
+            return scheduleController.tableView(tableView, cellForRowAt: adjustedIndexPath)
         }
         
         switch cellTypeForIndexPath(indexPath: indexPath) {
@@ -254,8 +276,24 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
             )
         }
     }
+
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        switch section {
+        case 1:
+            return initialScheduleHumanName
+        case scheduleNumSections + 1:
+            return "Additional Options"
+        default:
+            return nil
+        }
+    }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if isScheduleCell(path: indexPath) {
+            let adjustedIndexPath = IndexPath(row: indexPath.row, section: indexPath.section - 1)
+            return scheduleController.tableView(tableView, didSelectRowAt: adjustedIndexPath)
+        }
+
         switch cellTypeForIndexPath(indexPath: indexPath) {
         case .ParentGoalCell:
             self.scheduleController.unexpandAllSections()
@@ -277,6 +315,11 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if isScheduleCell(path: indexPath) {
+            let adjustedIndexPath = IndexPath(row: indexPath.row, section: indexPath.section - 1)
+            return scheduleController.tableView(tableView, heightForRowAt: adjustedIndexPath)
+        }
+
         func height(_ cellType: AddGoalViewCellType,
                     _ tableViewCellType: ExplanatoryTextTableViewCell.Type,
                     _ text: String) -> CGFloat {
@@ -289,6 +332,7 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
 
         }
         
+        
         switch cellTypeForIndexPath(indexPath: indexPath) {
         case .CarryOverBalanceCell:
             return height(.CarryOverBalanceCell, SwitchTableViewCell.self, carryOverExplanatoryText)
@@ -298,12 +342,12 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        let paySections = scheduleController.numberOfSections(in: self.tableView)
-        return 1 + paySections
+        scheduleNumSections = scheduleController.numberOfSections(in: self.tableView)
+        return 2 + scheduleNumSections
     }
 
     func reloadParentGoalCell() {
-        let section = 0
+        let section = scheduleNumSections + 1
         tableView.reloadRows(at: [IndexPath(row: 0, section: section)], with: .fade)
     }
     
@@ -313,24 +357,44 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
     }
     
     func cellTypeForIndexPath(indexPath: IndexPath) -> AddGoalViewCellType {
-        switch indexPath.row {
+        let defaultCellType = AddGoalViewCellType.DescriptionCell
+
+        switch indexPath.section {
         case 0:
-            return .DescriptionCell
-        case 1:
-            return .ParentGoalCell
-        case 2:
-            return .CarryOverBalanceCell
+            switch indexPath.row {
+            case 0:
+                return .DescriptionCell
+            default:
+                return defaultCellType
+            }
+        case scheduleNumSections + 1:
+            switch indexPath.row {
+            case 0:
+                return .ParentGoalCell
+            case 1:
+                return .CarryOverBalanceCell
+            default:
+                return defaultCellType
+            }
         default:
-            return .DescriptionCell
+            return defaultCellType
         }
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if isScheduleSection(section: section) {
-            return scheduleController.tableView(tableView, numberOfRowsInSection: section)
+            let rows = scheduleController.tableView(tableView, numberOfRowsInSection: section - 1)
+            return rows
         }
 
-        return 3
+        switch section {
+        case 0:
+            return 1
+        case scheduleNumSections + 1:
+            return 2
+        default:
+            return 0
+        }
     }
 }
 

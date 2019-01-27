@@ -95,7 +95,7 @@ class AddPauseViewController: UIViewController, UITableViewDelegate, UITableView
             }
         }
 
-        if let pauseId = pauseId {
+        if validation.valid {
             let pauseOnViewContext: Pause = Pause.inContext(pauseId)!
             delegate?.addedOrChangedPause(pauseOnViewContext)
             if self.navigationController!.viewControllers[0] == self {

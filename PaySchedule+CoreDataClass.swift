@@ -187,7 +187,7 @@ class PaySchedule: NSManagedObject {
         }
 
         if _amount == nil || _amount! == 0 {
-            return (false, "This pay schedule must have an amount specified.")
+            return (false, "This pay schedule must have an amount greater than 0 specified.")
         }
 
         if _start == nil || CalendarDay(dateInDay: _start)?.start.gmtDate != _start?.gmtDate {
@@ -217,6 +217,7 @@ class PaySchedule: NSManagedObject {
         self.period = _period
         self.payFrequency = _payFrequency
         self.adjustMonthAmountAutomatically = _adjustMonthAmountAutomatically
+        self.goal = _goal
         self.dateCreated = _dateCreated
 
         return (true, nil)
@@ -237,7 +238,7 @@ class PaySchedule: NSManagedObject {
         }
 
         if !isRecurring {
-            return amount
+            return amount.roundToNearest(th: 100)
         }
 
         // Coerce a CalendarPeriod, since this is recurring.
@@ -246,52 +247,43 @@ class PaySchedule: NSManagedObject {
         }
 
         if !hasIncrementalPayment {
+            let boundsAdjustedPeriodAmount = getBoundsAdjustedPay(period: period, unboundedAmount: amount)
             // The period may have bounds, so calculate the bounds adjusted
             // amount for the period.
-            let boundsAdjustedPeriodAmount = getBoundsAdjustedPay(period: period, unboundedAmount: amount)
-            return boundsAdjustedPeriodAmount
+            return boundsAdjustedPeriodAmount.roundToNearest(th: 100)
         }
 
-        // Sum the incremental payments that have been paid out by this date.
-        guard
-            let firstPaymentPeriod = CalendarPeriod(
-                calendarDate: period.start,
-                period: payFrequency,
-                beginningDateOfPeriod: period.start,
-                boundingStartDate: period.start,
-                boundingEndDate: period.end
-            ),
-            let lastPaymentPeriod = CalendarPeriod(
-                calendarDate: day.start,
-                period: payFrequency,
-                beginningDateOfPeriod: period.start,
-                boundingStartDate: period.start,
-                boundingEndDate: period.end
-            ),
-            let lastPaymentIndex = lastPaymentPeriod.periodIndexWithin(superPeriod: period)
-        else {
+
+        guard let incrementPeriod = self.incrementalPaymentInterval(for: day.start) else {
             return nil
         }
 
-        let paymentsPerPeriod = period.numberOfSubPeriodsOfLength(period: self.payFrequency)
-        if paymentsPerPeriod == 0 {
-            return nil
+        let periodFirstDay = CalendarDay(dateInDay: period.start)
+        let incrementLastDay = CalendarDay(dateInDay: incrementPeriod.end)!.subtract(days: 1)
+        let lengthInDays = Decimal(incrementLastDay.daysAfter(startDay: periodFirstDay)) + 1
+
+        // The amount to be paid per day.
+        let multiplier = Decimal(self.period.multiplier)
+        var dailyIncrementalAmount: Decimal = self.amount! / multiplier
+
+        switch self.period.scope {
+        case .Week:
+            let daysInWeek = Decimal(CalendarWeek.typicalDaysInWeek)
+            dailyIncrementalAmount = dailyIncrementalAmount / daysInWeek
+        case .Month:
+            if !self.adjustMonthAmountAutomatically {
+                // Same amount is paid out per day regardless of month length.
+                let daysInPeriod = Decimal(period.lengthInDays())
+                dailyIncrementalAmount = self.amount! / daysInPeriod
+            } else {
+                let daysInMonth = Decimal(CalendarMonth.typicalDaysInMonth)
+                dailyIncrementalAmount = dailyIncrementalAmount / daysInMonth
+            }
+        case .None, .Day: break
         }
 
-        let incrementalAmount = amount / Decimal(paymentsPerPeriod)
-
-        // The first and last payments are the only ones that can potentially
-        // be bounds adjusted, so calculate those separately.
-        let firstPaymentAmount = getBoundsAdjustedPay(period: firstPaymentPeriod, unboundedAmount: incrementalAmount)
-        if firstPaymentPeriod.equals(interval: lastPaymentPeriod) {
-            // There's only one pay period.
-            return firstPaymentAmount
-        }
-
-        let lastPaymentAmount = getBoundsAdjustedPay(period: lastPaymentPeriod, unboundedAmount: incrementalAmount)
-        let sumOfOtherPayments = incrementalAmount * Decimal(lastPaymentIndex - 1)
-
-        return firstPaymentAmount + lastPaymentAmount + sumOfOtherPayments
+        let incrementalAmountPaid = lengthInDays * dailyIncrementalAmount
+        return incrementalAmountPaid.roundToNearest(th: 100)
     }
 
     /**
@@ -311,7 +303,7 @@ class PaySchedule: NSManagedObject {
         let amountPerDay = unboundedAmount / Decimal(unboundedLengthInDays)
 
         let totalAmount = amountPerDay * Decimal(lengthInDays)
-        return totalAmount.roundToNearest(th: 100)
+        return totalAmount
     }
 
     /**
@@ -333,7 +325,7 @@ class PaySchedule: NSManagedObject {
 
             let perDayAmount = amount / Decimal(30 * period.multiplier)
             let adjustedAmount = Decimal(totalDays) * perDayAmount
-            return adjustedAmount.roundToNearest(th: 100)
+            return adjustedAmount
         } else {
             return amount
         }
@@ -361,7 +353,7 @@ class PaySchedule: NSManagedObject {
             period: payFrequency,
             beginningDateOfPeriod: period.start,
             boundingStartDate: self.start,
-            boundingEndDate: self.exclusiveEnd
+            boundingEndDate: period.end
         )!
     }
 

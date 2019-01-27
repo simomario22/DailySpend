@@ -51,10 +51,10 @@ class PayScheduleTableViewController : NSObject {
         return StagedPaySchedule(
             amount: amount,
             start: start,
-            end: end,
-            period: period,
-            payFrequency: payFrequency,
-            adjustMonthAmountAutomatically: adjustMonthAmountAutomatically
+            end: neverEnd ? nil : end,
+            period: isRecurring ? period : Period.none,
+            payFrequency: isRecurring && hasIncrementalPayment ? payFrequency : Period.none,
+            adjustMonthAmountAutomatically: isRecurring && period.scope == .Month ? adjustMonthAmountAutomatically : nil
         )
     }
 
@@ -127,7 +127,7 @@ class PayScheduleTableViewController : NSObject {
             let section = offset(0)
             path = IndexPath(row: 2, section: section)
         case .PayIntervalPicker:
-            let section = offset(0)
+            let section = offset(1)
             path = IndexPath(row: 1, section: section)
         case .StartDayPicker:
             path = IndexPath(row: 0, section: startEndSection)
@@ -142,7 +142,7 @@ class PayScheduleTableViewController : NSObject {
                 // Scroll low cell to top for end date picker.
                 path = IndexPath(row: neverEnd ? 2 : 3, section: startEndSection)
             }
-            tableView.scrollToRow(at: path, at: .top, animated: true)
+            tableView.scrollToRow(at: path, at: .middle, animated: true)
         }
     }
 
@@ -172,14 +172,14 @@ class PayScheduleTableViewController : NSObject {
             case .PeriodLengthPicker:
                 let section = offset(0)
                 reload(row: 2, section: section, delete: delete)
-                return IndexPath(row: 2, section: section)
+                return IndexPath(row: 3, section: section)
             case .PayIntervalPicker:
                 let section = offset(1)
                 reload(row: 1, section: section, delete: delete)
-                return IndexPath(row: 1, section: section)
+                return IndexPath(row: 2, section: section)
             case .StartDayPicker:
                 reload(row: 0, section: startEndSection, delete: delete, next: adjacentRows ? 0 : 1)
-                return IndexPath(row: 0, section: startEndSection)
+                return IndexPath(row: 1, section: startEndSection)
             case .EndNeverAndDayPicker:
                 if adjacentRows {
                     // Since the rows to be reloaded are adjacent and we are
@@ -218,24 +218,22 @@ class PayScheduleTableViewController : NSObject {
         tableView.endUpdates()
 
         if path != nil {
-            tableView.scrollToRow(at: path!, at: .top, animated: true)
+            tableView.scrollToRow(at: path!, at: .middle, animated: true)
         }
     }
 
     private func insertRecurringSectionsAndCells(delete: Bool = false) {
-        if hasIncrementalPayment {
-            let sections = IndexSet([offset(1)])
-            let f = (delete ? self.tableView.insertSections : self.tableView.deleteSections)
-            f(sections, .automatic)
-        }
+        let sections = IndexSet([offset(1)])
+        let sectionsAction = (delete ? self.tableView.deleteSections : self.tableView.insertSections)
+        sectionsAction(sections, .fade)
 
         let section0 = offset(0)
         var paths = [IndexPath(row: 2, section: section0)]
         if period.scope == .Month {
             paths.append(IndexPath(row: 3, section: section0))
         }
-        let f = (delete ? self.tableView.insertRows : self.tableView.deleteRows)
-        f(paths, .automatic)
+        let rowsAction = (delete ? self.tableView.deleteRows : self.tableView.insertRows)
+        rowsAction(paths, .fade)
     }
 
     private func removeRecurringSectionsAndCells() {
@@ -246,7 +244,7 @@ class PayScheduleTableViewController : NSObject {
         let section = offset(isRecurring ? 2 : 1)
         let path = IndexPath(row: 3, section: section)
         tableView.insertRows(at: [path], with: .fade)
-        tableView.scrollToRow(at: path, at: .top, animated: true)
+        tableView.scrollToRow(at: path, at: .middle, animated: true)
     }
 
     private func removeEndDayPickerCell() {
@@ -261,7 +259,7 @@ class PayScheduleTableViewController : NSObject {
         let section = offset(1)
         let path = IndexPath(row: 1, section: section)
         tableView.insertRows(at: [path], with: .fade)
-        tableView.scrollToRow(at: path, at: .top, animated: true)
+        tableView.scrollToRow(at: path, at: .middle, animated: true)
     }
 
     private func removePayIntervalCell() {
@@ -276,7 +274,7 @@ class PayScheduleTableViewController : NSObject {
         guard isRecurring else {
             return
         }
-        let row = expandedSection == .PeriodLengthPicker ? 3 : 4
+        let row = expandedSection == .PeriodLengthPicker ? 4 : 3
         let section = offset(0)
         let path = IndexPath(row: row, section: section)
         tableView.insertRows(at: [path], with: .fade)
@@ -286,13 +284,13 @@ class PayScheduleTableViewController : NSObject {
         guard isRecurring else {
             return
         }
-        let row = expandedSection == .PeriodLengthPicker ? 3 : 4
+        let row = expandedSection == .PeriodLengthPicker ? 4 : 3
         let section = offset(0)
         tableView.deleteRows(at: [IndexPath(row: row, section: section)], with: .fade)
     }
 
     private func cellTypeForIndexPath(indexPath: IndexPath) -> PayScheduleViewCellType {
-        let section = offset(indexPath.section)
+        let section = indexPath.section
         let row = indexPath.row
 
         let defaultCellType: PayScheduleViewCellType = .AmountPerPeriodCell
@@ -303,15 +301,15 @@ class PayScheduleTableViewController : NSObject {
                 return .AmountPerPeriodCell
             case 1:
                 return .RecurringCell
-            case 3:
+            case 2:
                 return .PeriodLengthCell
-            case 4:
+            case 3:
                 if expandedSection == .PeriodLengthPicker {
                     return .PeriodLengthPickerCell
                 } else {
                     return .AutoAdjustMonthAmountCell
                 }
-            case 5:
+            case 4:
                 return .AutoAdjustMonthAmountCell
 
             default:
@@ -379,8 +377,7 @@ extension PayScheduleTableViewController : UITableViewDataSource, UITableViewDel
                 amount: amount,
                 changedToAmount: { (newAmount) in
                     self.amount = newAmount
-            }
-            )
+            })
         case .RecurringCell:
             return cellCreator.switchCell(
                 initialValue: isRecurring,
@@ -392,6 +389,7 @@ extension PayScheduleTableViewController : UITableViewDataSource, UITableViewDel
                             self.setExpandedSection(.None)
                         }
 
+                        self.tableView.beginUpdates()
                         self.isRecurring = newValue
 
                         if self.isRecurring {
@@ -399,9 +397,9 @@ extension PayScheduleTableViewController : UITableViewDataSource, UITableViewDel
                         } else {
                             self.removeRecurringSectionsAndCells()
                         }
+                        self.tableView.endUpdates()
                     }
-            }
-            )
+            })
         case .PeriodLengthCell:
             return cellCreator.valueDisplayCell(
                 labelText: "Period Length",
@@ -561,7 +559,8 @@ extension PayScheduleTableViewController : UITableViewDataSource, UITableViewDel
         default: break
         }
 
-        tableView.deselectRow(at: indexPath, animated: true)
+        let adjustedIndexPath = IndexPath(row: indexPath.row, section: offset(indexPath.section))
+        tableView.deselectRow(at: adjustedIndexPath, animated: true)
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -600,12 +599,11 @@ extension PayScheduleTableViewController : UITableViewDataSource, UITableViewDel
 
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let section = offset(section)
         func rowsInAmountSection() -> Int {
             var rows = 2
             rows += isRecurring ? 1 : 0
-            rows += expandedSection == .PeriodLengthPicker ? 1 : 0
-            rows += period.scope == .Month ? 1 : 0
+            rows += isRecurring && expandedSection == .PeriodLengthPicker ? 1 : 0
+            rows += isRecurring && period.scope == .Month ? 1 : 0
             return rows
         }
 
@@ -624,10 +622,6 @@ extension PayScheduleTableViewController : UITableViewDataSource, UITableViewDel
             } else {
                 return 2
             }
-        }
-
-        func rowsInParentGoalSection() -> Int {
-            return 1
         }
 
         if isRecurring {
@@ -654,7 +648,7 @@ extension PayScheduleTableViewController : UITableViewDataSource, UITableViewDel
     }
 }
 
-struct StagedPaySchedule {
+struct StagedPaySchedule : Equatable {
     let amount: Decimal?
     let start: CalendarDateProvider?
     let end: CalendarDateProvider?
@@ -671,5 +665,14 @@ struct StagedPaySchedule {
             payFrequency: schedule.payFrequency,
             adjustMonthAmountAutomatically: schedule.adjustMonthAmountAutomatically
         )
+    }
+
+    static func == (lhs: StagedPaySchedule, rhs: StagedPaySchedule) -> Bool {
+        return lhs.amount == rhs.amount &&
+                lhs.start?.gmtDate == rhs.start?.gmtDate &&
+                lhs.end?.gmtDate == rhs.end?.gmtDate &&
+                lhs.period == rhs.period &&
+                lhs.payFrequency == rhs.payFrequency &&
+                lhs.adjustMonthAmountAutomatically == rhs.adjustMonthAmountAutomatically
     }
 }
