@@ -156,6 +156,43 @@ class PaySchedule: NSManagedObject {
     }
 
     /**
+     * Returns a human readable description of this pay interval.
+     *
+     * If this schedule doesn't have a valid amount, this function returns `nil`.
+     */
+    func string() -> String? {
+        guard let amount = amount else {
+                return nil
+        }
+
+        let formattedAmount = String.formatAsCurrency(amount: amount)!
+        var string = "\(formattedAmount) "
+
+        if !isRecurring {
+            string += "paid once"
+            return string
+        }
+
+        if period.multiplier == 1 {
+            string += period.scope.adverbString().lowercased()
+        } else {
+            string += "every " + "\(period.multiplier)" + period.scope.pluralString().lowercased()
+        }
+
+        if !hasIncrementalPayment {
+            return string
+        }
+
+        string += " paid "
+        if payFrequency.multiplier == 1 {
+            string += payFrequency.scope.adverbString().lowercased()
+        } else {
+            string += "every " + "\(payFrequency.multiplier)" + payFrequency.scope.pluralString().lowercased()
+        }
+        return string
+    }
+
+    /**
      * Accepts all members of PaySchedule. If the passed variables, attached to
      * corresponding variables on an PaySchedule object, will form a valid
      * object, this function will assign the passed variables to this object

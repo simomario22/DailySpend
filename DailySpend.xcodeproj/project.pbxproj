@@ -45,6 +45,8 @@
 		C556D2541F247C6B008CA20E /* UIControl+Closures.swift in Sources */ = {isa = PBXBuildFile; fileRef = C556D2531F247C6B008CA20E /* UIControl+Closures.swift */; };
 		C55AF80B21B37240008476F2 /* INSPhotoGallery.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C55AF80A21B37240008476F2 /* INSPhotoGallery.framework */; };
 		C55B336220A9318B00304680 /* ExpenseTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5117DB01FB94A410032F854 /* ExpenseTableViewCell.swift */; };
+		C55BA95921FE6C1800C768C2 /* ManagePaySchedulesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C55BA95821FE6C1800C768C2 /* ManagePaySchedulesController.swift */; };
+		C55BA95A21FE6C2A00C768C2 /* ManagePaySchedulesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C55BA95821FE6C1800C768C2 /* ManagePaySchedulesController.swift */; };
 		C55CCFD11F9D44E4001EF0B4 /* UIColor+255.swift in Sources */ = {isa = PBXBuildFile; fileRef = C55CCFD01F9D44E4001EF0B4 /* UIColor+255.swift */; };
 		C5631E8521CF64B800561CE3 /* DSButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5631E8421CF64B800561CE3 /* DSButton.swift */; };
 		C5631E8621CF64FD00561CE3 /* DSButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5631E8421CF64B800561CE3 /* DSButton.swift */; };
@@ -302,6 +304,7 @@
 		C556D2511F2466EB008CA20E /* ExpenseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpenseViewController.swift; sourceTree = "<group>"; };
 		C556D2531F247C6B008CA20E /* UIControl+Closures.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIControl+Closures.swift"; sourceTree = "<group>"; };
 		C55AF80A21B37240008476F2 /* INSPhotoGallery.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = INSPhotoGallery.framework; path = Carthage/Build/iOS/INSPhotoGallery.framework; sourceTree = "<group>"; };
+		C55BA95821FE6C1800C768C2 /* ManagePaySchedulesController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagePaySchedulesController.swift; sourceTree = "<group>"; };
 		C55CCFD01F9D44E4001EF0B4 /* UIColor+255.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+255.swift"; sourceTree = "<group>"; };
 		C5631E8421CF64B800561CE3 /* DSButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DSButton.swift; sourceTree = "<group>"; };
 		C5631E8721CF683400561CE3 /* ExpenseCellDescriptionTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseCellDescriptionTextView.swift; sourceTree = "<group>"; };
@@ -725,6 +728,7 @@
 			children = (
 				C546170C204A4AFF00689DED /* GoalViewController.swift */,
 				C5352728204B45CE0038E747 /* AddGoalViewController.swift */,
+				C55BA95821FE6C1800C768C2 /* ManagePaySchedulesController.swift */,
 				C5B60A4621F3C93600BE6F4C /* PayScheduleTableViewController.swift */,
 				C5CB4D882116678200BB1EB9 /* GoalSelectorViewController.swift */,
 			);
@@ -1053,6 +1057,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C55BA95A21FE6C2A00C768C2 /* ManagePaySchedulesController.swift in Sources */,
 				C5B60A5321F3D8BA00BE6F4C /* PayScheduleTableViewController.swift in Sources */,
 				C5B60A5121F3D8B500BE6F4C /* PaySchedule+CoreDataClass.swift in Sources */,
 				C5B60A5221F3D8B500BE6F4C /* PaySchedule+CoreDataProperties.swift in Sources */,
@@ -1245,6 +1250,7 @@
 				C5BD28122198E80D000C85F8 /* ImageSelectorTableViewCell.swift in Sources */,
 				C5BD28132198E80D000C85F8 /* CalendarPeriod.swift in Sources */,
 				C5BD28142198E80D000C85F8 /* CalendarPeriodPickerTableViewCell.swift in Sources */,
+				C55BA95921FE6C1800C768C2 /* ManagePaySchedulesController.swift in Sources */,
 				C5BD28152198E80D000C85F8 /* Image+CoreDataClass.swift in Sources */,
 				C5BD28162198E80D000C85F8 /* ReverseNavigationAnimator.swift in Sources */,
 				C5BD28172198E80D000C85F8 /* Export.swift in Sources */,

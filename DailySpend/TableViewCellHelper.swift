@@ -90,7 +90,7 @@ class TableViewCellHelper {
      */
     func valueDisplayCell(
         labelText: String,
-        valueText: String,
+        valueText: String? = nil,
         explanatoryText: String? = nil,
         tintColor: UIColor? = nil,
         strikeText: Bool = false,
@@ -104,18 +104,22 @@ class TableViewCellHelper {
         cell.textLabel!.text = labelText
         cell.accessoryType = detailIndicator ? .disclosureIndicator : .none
         cell.setExplanatoryText(explanatoryText)
-        
-        let attributedText = NSMutableAttributedString(string: valueText)
-        let attr: [NSAttributedString.Key: Any] = [
-            .foregroundColor: tintColor ?? UIColor.black,
-            .strikethroughColor: tintColor ?? UIColor.black,
-            // NSUnderlineStyle.styleNone and .styleSingle weren't working, so
-            // I am using literal number values. Should be changed if there is
-            // a better way.
-            .strikethroughStyle: strikeText ? NSNumber(integerLiteral: 1) : NSNumber(integerLiteral: 0)
-        ]
-        attributedText.addAttributes(attr, range: NSMakeRange(0, valueText.count))
-        cell.detailTextLabel!.attributedText = attributedText
+
+        if let valueText = valueText {
+            let attributedText = NSMutableAttributedString(string: valueText)
+            let attr: [NSAttributedString.Key: Any] = [
+                .foregroundColor: tintColor ?? UIColor.black,
+                .strikethroughColor: tintColor ?? UIColor.black,
+                // NSUnderlineStyle.styleNone and .styleSingle weren't working, so
+                // I am using literal number values. Should be changed if there is
+                // a better way.
+                .strikethroughStyle: strikeText ? NSNumber(integerLiteral: 1) : NSNumber(integerLiteral: 0)
+            ]
+            attributedText.addAttributes(attr, range: NSMakeRange(0, valueText.count))
+            cell.detailTextLabel!.attributedText = attributedText
+        } else {
+            cell.detailTextLabel?.text = nil
+        }
         
         cell.valueWasSet()
         

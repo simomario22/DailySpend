@@ -16,6 +16,7 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
     var scheduleControllerIndex: Int = 0
     var scheduleNumSections = 0
     var initialScheduleHumanName = "Pay Schedule"
+    var paySchedulesAreValid = true
     
     var delegate: AddGoalDelegate?
     
@@ -89,7 +90,7 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
             carryOverBalance = goal.carryOverBalance
             parentGoal = goal.parentGoal
             paySchedules = goal.sortedPaySchedules!.map(StagedPaySchedule.from)
-            setupScheduleControllerWithInitialPeriod(for: goal)
+            setupScheduleController(stagedSchedule: nil)
         } else {
             self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Add", style: .done, save)
             self.navigationItem.title = "New Goal"
@@ -103,21 +104,40 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
         }
     }
 
-    private func setupScheduleControllerWithInitialPeriod(for goal: Goal) {
-        // Get the initial schedule
-        let initialPeriod = goal.getInitialPeriod()!
-        let initialSchedule = goal.activePaySchedule(on: initialPeriod.start)!
-        let initialStagedSchedule = StagedPaySchedule.from(initialSchedule)
-        guard let index = paySchedules.firstIndex(where: {$0 == initialStagedSchedule }) else {
+    /**
+     * Sets up `scheduleController`, `scheduleControllerIndex`, and
+     * `initialScheduleHumanName` based on the passed stagedSchedule, or finds
+     * an initial staged schedule from `goalId` if the passed `stagedSchedule`
+     * is nil.
+     */
+    private func setupScheduleController(stagedSchedule: StagedPaySchedule?) {
+        var initialStagedSchedule: StagedPaySchedule! = stagedSchedule
+        if initialStagedSchedule == nil {
+            guard let goal = (Goal.inContext(goalId) as? Goal) else {
+                Logger.debug("Failed to setupScheduleControllerWithSchedule without stagedSchedule or goalId.")
+                return
+            }
+            // Get the initial schedule
+            let initialPeriod = goal.getInitialPeriod()!
+            let initialSchedule = goal.activePaySchedule(on: initialPeriod.start)!
+            initialStagedSchedule = StagedPaySchedule.from(initialSchedule)
+        }
+
+        guard let index = paySchedules.firstIndex(where: { $0 == initialStagedSchedule }) else {
             Logger.debug("Could not find schedule controller index.")
             return
         }
         self.scheduleControllerIndex = index
 
         let today = CalendarDay()
-        if initialPeriod.contains(date: today.start) {
+        let initialStagedInterval = CalendarInterval(
+            start: initialStagedSchedule.start!,
+            end: initialStagedSchedule.end
+        )!
+
+        if initialStagedInterval.contains(date: today.start) {
             self.initialScheduleHumanName = "Current Pay Schedule"
-        } else if today.start.gmtDate < initialPeriod.start.gmtDate {
+        } else if today.start.gmtDate < initialStagedInterval.start.gmtDate {
             self.initialScheduleHumanName = "Most Recent Pay Schedule"
         } else {
             self.initialScheduleHumanName = "First Pay Schedule"
@@ -226,6 +246,7 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
         case DescriptionCell
         case CarryOverBalanceCell
         case ParentGoalCell
+        case ManagePaySchedulesCell
     }
 
     private func isScheduleCell(path: IndexPath) -> Bool {
@@ -274,6 +295,13 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
                 valueText: parentGoal?.shortDescription ?? "None",
                 detailIndicator: true
             )
+        case .ManagePaySchedulesCell:
+            return cellCreator.valueDisplayCell(
+                labelText: "All Pay Schedules",
+                valueText: paySchedulesAreValid ? nil : "Invalid",
+                tintColor: .red,
+                detailIndicator: true
+            )
         }
     }
 
@@ -308,6 +336,12 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
             goalSelectorVC.showParentSelection = false
             goalSelectorVC.delegate = self
             navigationController?.pushViewController(goalSelectorVC, animated: true)
+        case .ManagePaySchedulesCell:
+            self.scheduleController.unexpandAllSections()
+            let managePaySchedulesVC = ManagePaySchedulesController()
+            managePaySchedulesVC.paySchedules = self.paySchedules
+            managePaySchedulesVC.delegate = self
+            navigationController?.pushViewController(managePaySchedulesVC, animated: true)
         default: break
         }
         
@@ -350,6 +384,11 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
         let section = scheduleNumSections + 1
         tableView.reloadRows(at: [IndexPath(row: 0, section: section)], with: .fade)
     }
+
+    func reloadManagePaySchedulesCell() {
+        let section = scheduleNumSections + 1
+        tableView.reloadRows(at: [IndexPath(row: 1, section: section)], with: .fade)
+    }
     
     func dismissedGoalSelectorWithSelectedGoal(_ goal: Goal?) {
         parentGoal = goal
@@ -372,6 +411,8 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
             case 0:
                 return .ParentGoalCell
             case 1:
+                return .ManagePaySchedulesCell
+            case 2:
                 return .CarryOverBalanceCell
             default:
                 return defaultCellType
@@ -391,10 +432,18 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
         case 0:
             return 1
         case scheduleNumSections + 1:
-            return 2
+            return 3
         default:
             return 0
         }
+    }
+}
+
+extension AddGoalViewController: ManagedPaySchedulesControllerDelegate {
+    func updatedPaySchedules(schedules: [StagedPaySchedule]!, initial: StagedPaySchedule, valid: Bool) {
+        self.paySchedules = schedules
+        self.setupScheduleController(stagedSchedule: initial)
+        self.paySchedulesAreValid = valid
     }
 }
 

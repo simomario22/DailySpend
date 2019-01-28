@@ -324,27 +324,27 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="qRb-xD-WFC">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="121" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="qRb-xD-WFC">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="818"/>
                                 <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="detail" textLabel="NNQ-GZ-PPw" detailTextLabel="vvT-EA-V6r" rowHeight="44" style="IBUITableViewCellStyleValue1" id="CpK-bI-oxN">
-                                        <rect key="frame" x="0.0" y="55.5" width="414" height="44"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="detail" rowHeight="121" id="CpK-bI-oxN">
+                                        <rect key="frame" x="0.0" y="55.5" width="414" height="121"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="CpK-bI-oxN" id="aax-zZ-NtG">
-                                            <rect key="frame" x="0.0" y="0.0" width="376" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="376" height="120.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Stopped Using App" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="NNQ-GZ-PPw">
-                                                    <rect key="frame" x="20" y="12" width="149" height="20.5"/>
-                                                    <autoresizingMask key="autoresizingMask"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="1/27/19 – Today" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yLv-0w-JdY">
+                                                    <rect key="frame" x="20" y="11" width="126" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="9/1-9/8" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="vvT-EA-V6r">
-                                                    <rect key="frame" x="318.5" y="12" width="57.5" height="20.5"/>
-                                                    <autoresizingMask key="autoresizingMask"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="$100 every 2 months, paid every 2 weeks" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KhX-nj-uc0">
+                                                    <rect key="frame" x="20" y="40" width="317" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
@@ -370,57 +370,36 @@
                                     <action selector="toggleShowingAll:" destination="CRn-xb-uUx" eventType="touchUpInside" id="D0s-aF-ciB"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="You don't have any current or future adjustments. View all your adjustments by tapping the button below." textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HKR-M5-mig">
-                                <rect key="frame" x="20" y="88" width="374" height="61"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Relevant Adjustments" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dNb-w1-ETw">
                                 <rect key="frame" x="20" y="60" width="374" height="20.5"/>
                                 <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                                 <color key="textColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gwm-lw-Sld">
-                                <rect key="frame" x="20" y="157" width="374" height="101.5"/>
-                                <string key="text">Use adjustments for events that change your spending goals for a particular time period. With adjustments, you can increase or decrease your balance for a particular time period without having to change your monthly spending goals.</string>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="gwm-lw-Sld" firstAttribute="leading" secondItem="OVS-ai-NYn" secondAttribute="leadingMargin" id="0fg-c6-sP0"/>
-                            <constraint firstItem="gwm-lw-Sld" firstAttribute="top" secondItem="HKR-M5-mig" secondAttribute="bottom" constant="8" id="4OJ-3s-cLy"/>
-                            <constraint firstItem="HKR-M5-mig" firstAttribute="leading" secondItem="OVS-ai-NYn" secondAttribute="leadingMargin" id="6bT-3y-mhn"/>
-                            <constraint firstItem="HKR-M5-mig" firstAttribute="trailing" secondItem="OVS-ai-NYn" secondAttribute="trailingMargin" id="Eax-5X-DLA"/>
                             <constraint firstAttribute="trailing" secondItem="qRb-xD-WFC" secondAttribute="trailing" id="Fjk-Wa-nN3"/>
                             <constraint firstItem="qRb-xD-WFC" firstAttribute="top" secondItem="OVS-ai-NYn" secondAttribute="top" id="HGl-9X-2sH"/>
                             <constraint firstItem="dNb-w1-ETw" firstAttribute="top" secondItem="X6p-vc-eDO" secondAttribute="bottom" constant="16" id="JVE-cB-gso"/>
                             <constraint firstItem="dNb-w1-ETw" firstAttribute="leading" secondItem="OVS-ai-NYn" secondAttribute="leadingMargin" id="MBo-EL-7GP"/>
                             <constraint firstItem="dNb-w1-ETw" firstAttribute="trailing" secondItem="OVS-ai-NYn" secondAttribute="trailingMargin" id="Mud-v4-L4d"/>
                             <constraint firstItem="Uz3-vx-Vfy" firstAttribute="top" secondItem="qRb-xD-WFC" secondAttribute="bottom" id="OUg-Qt-j7K"/>
-                            <constraint firstItem="gwm-lw-Sld" firstAttribute="trailing" secondItem="OVS-ai-NYn" secondAttribute="trailingMargin" id="Viy-01-W39"/>
                             <constraint firstAttribute="trailing" secondItem="Uz3-vx-Vfy" secondAttribute="trailing" id="mdp-ZX-k1j"/>
                             <constraint firstItem="qRb-xD-WFC" firstAttribute="leading" secondItem="OVS-ai-NYn" secondAttribute="leading" id="ms6-cN-XYh"/>
                             <constraint firstItem="Uz3-vx-Vfy" firstAttribute="leading" secondItem="OVS-ai-NYn" secondAttribute="leading" id="oAe-T8-7lx"/>
-                            <constraint firstItem="HKR-M5-mig" firstAttribute="top" secondItem="dNb-w1-ETw" secondAttribute="bottom" constant="7.5" id="xK3-r6-LhN"/>
                             <constraint firstItem="OUZ-pr-hym" firstAttribute="top" secondItem="qRb-xD-WFC" secondAttribute="bottom" constant="44" id="xTj-Hg-Kj4"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="infoLabel" destination="gwm-lw-Sld" id="iSP-Qs-c3V"/>
                         <outlet property="noAdjustmentsHeading" destination="dNb-w1-ETw" id="Chl-if-hiv"/>
-                        <outlet property="noAdjustmentsLabel" destination="HKR-M5-mig" id="1uP-hf-AVf"/>
                         <outlet property="tableView" destination="qRb-xD-WFC" id="Edj-Ap-Ctv"/>
                         <outlet property="toggleButton" destination="Uz3-vx-Vfy" id="Pdd-V4-DAi"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="KEo-uO-VCK" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3393" y="1111"/>
+            <point key="canvasLocation" x="3392.753623188406" y="1110.9375"/>
         </scene>
     </scenes>
     <resources>

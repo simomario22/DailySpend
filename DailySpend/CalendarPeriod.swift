@@ -70,7 +70,7 @@ protocol CalendarDateProvider {
      * Returns a formatted string for the date represented by this provider,
      * optionally with human friendly relative dates.
      */
-    func string(formatter: DateFormatter, friendly: Bool) -> String
+    func string(formatter: DateFormatter, relative: Bool) -> String
 }
 
 struct GMTDate : CalendarDateProvider {
@@ -80,11 +80,11 @@ struct GMTDate : CalendarDateProvider {
     }
     
     func string(formatter: DateFormatter) -> String {
-        return self.string(formatter: formatter, friendly: false)
+        return self.string(formatter: formatter, relative: false)
     }
     
-    func string(formatter: DateFormatter, friendly: Bool) -> String {
-        if friendly {
+    func string(formatter: DateFormatter, relative: Bool) -> String {
+        if relative {
             let today = CalendarDay()
             let date = self.gmtDate
             if date == today.start.gmtDate {
@@ -200,6 +200,16 @@ class CalendarInterval : CalendarIntervalProvider {
     func equals(interval: CalendarIntervalProvider) -> Bool {
         return self.start.gmtDate == interval.start.gmtDate && self.end?.gmtDate == interval.end?.gmtDate
     }
+
+    func string(formatter: DateFormatter, relative: Bool) -> String {
+        let startString = self.start.string(formatter: formatter, relative: relative)
+        if let end = end {
+            let endString = end.string(formatter: formatter, relative: relative)
+            return "\(startString) – \(endString)"
+        } else {
+            return "From \(startString) onward"
+        }
+    }
 }
 
 /**
@@ -298,7 +308,7 @@ class GoalPeriod : CalendarIntervalProvider {
             let secondComponent = stringComponent(date: end, scope: period.scope, relative: relative)
             return "\(firstComponent) - \(secondComponent)"
         } else {
-            return "Ongoing from \(firstComponent)"
+            return "From \(firstComponent) onward"
         }
     }
 
@@ -694,6 +704,32 @@ enum PeriodScope: Int {
             return "Week"
         case .Month:
             return "Month"
+        }
+    }
+
+    func adverbString() -> String {
+        switch self {
+        case .None:
+            return "None"
+        case .Day:
+            return "Daily"
+        case .Week:
+            return "Weekly"
+        case .Month:
+            return "Monthly"
+        }
+    }
+
+    func pluralString() -> String {
+        switch self {
+        case .None:
+            return "None"
+        case .Day:
+            return "Days"
+        case .Week:
+            return "Weeks"
+        case .Month:
+            return "Months"
         }
     }
     
