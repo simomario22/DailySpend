@@ -8,7 +8,7 @@
 
 import Foundation
 
-class ExpenseCellDescriptionTextView: UITextView {
+class PlaceholderTextView: UITextView {
 
     var placeholder: String? {
         didSet {
@@ -42,7 +42,15 @@ class ExpenseCellDescriptionTextView: UITextView {
         }
     }
 
-    enum DescriptionViewTextStyle {
+    /**
+     * True if user entered newlines should be allowed by pressing the return
+     * key in this text view.
+     *
+     * Has no effect on text that is pasted with newlines.
+     */
+    var allowsUserEnteredNewlines: Bool = false
+
+    private enum DescriptionViewTextStyle {
         case normal
         case placeholder
     }
@@ -81,9 +89,9 @@ class ExpenseCellDescriptionTextView: UITextView {
         }
     }
 
-    var textViewDelegate: ExpenseCellDescriptionTextViewDelegate?
+    var textViewDelegate: PlaceholderTextViewDelegate?
 
-    init(delegate: ExpenseCellDescriptionTextViewDelegate) {
+    init(delegate: PlaceholderTextViewDelegate) {
         super.init(frame: CGRect.zero, textContainer: nil)
         textViewDelegate = delegate
         self.delegate = self
@@ -95,7 +103,7 @@ class ExpenseCellDescriptionTextView: UITextView {
     }
 }
 
-extension ExpenseCellDescriptionTextView: UITextViewDelegate {
+extension PlaceholderTextView: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
         let beginningRange = textView.textRange(from: textView.beginningOfDocument, to: textView.beginningOfDocument)
         if style == .placeholder && textView.selectedTextRange != beginningRange {
@@ -115,7 +123,7 @@ extension ExpenseCellDescriptionTextView: UITextViewDelegate {
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         // Hack-ily determine if the user pressed the return key, since there
         // isn't a better way to do this that I could find.
-        if text == "\n" {
+        if !allowsUserEnteredNewlines && text == "\n" {
             textViewDelegate?.textViewDidReturn(textView)
             return false
         }
@@ -147,6 +155,11 @@ extension ExpenseCellDescriptionTextView: UITextViewDelegate {
 }
 
 
-protocol ExpenseCellDescriptionTextViewDelegate: UITextViewDelegate {
+protocol PlaceholderTextViewDelegate: UITextViewDelegate {
+    /**
+     * Called when the user presses return in a text field.
+     *
+     * If `allowNewlines` is `true`, this function will never be called.
+     */
     func textViewDidReturn(_ textView: UITextView)
 }

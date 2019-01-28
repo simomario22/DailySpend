@@ -9,7 +9,7 @@
 import UIKit
 import CoreData
 
-class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, ImageSelectorController, GoalSelectorDelegate {
+class AddExpenseViewController: UIViewController {
     private let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
     
     private var cellCreator: TableViewCellHelper!
@@ -30,12 +30,17 @@ class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableVi
     private var notes: String!
     private var goal: Goal?
     private var goalSetupFinished = false
+    private var notesCellHeight: CGFloat = 44
     var expenseId: NSManagedObjectID?
 
     var imageSelectorDataSource: ImageSelectorDataSource!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        let nc = NotificationCenter.default
+        nc.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+        nc.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
 
         // Set up table view.
         tableView = UITableView(frame: view.bounds, style: .grouped)
@@ -212,6 +217,30 @@ class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableVi
         }
     }
 
+    @objc func keyboardWillShow(_ notification: Notification) {
+        guard let userInfo = notification.userInfo else {
+            return
+        }
+
+        if let size = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size {
+            let bottom = size.height - (UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0)
+            let contentInsets = UIEdgeInsets(top: 0, left: 0, bottom: bottom, right: 0)
+            let duration = (userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0.3
+            UIView.animate(withDuration: duration) {
+                self.tableView.contentInset = contentInsets
+                self.tableView.scrollIndicatorInsets = contentInsets
+            }
+        }
+    }
+
+    @objc func keyboardWillHide(_ notification: Notification) {
+        let duration = (notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0.3
+        UIView.animate(withDuration: duration) {
+            self.tableView.contentInset = UIEdgeInsets.zero
+            self.tableView.scrollIndicatorInsets = UIEdgeInsets.zero
+        }
+    }
+
     enum ExpenseViewCellType {
         case DescriptionCell
         case AmountCell
@@ -250,16 +279,33 @@ class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableVi
         
         return .DescriptionCell
     }
-    
+
+    private func datePickerCellResignFirstResponder() {
+        if self.editingDate {
+            self.editingDate = false
+            tableView.beginUpdates()
+            tableView.reloadRows(at: [IndexPath(row: 0, section: 1)], with: .fade)
+            tableView.deleteRows(at: [IndexPath(row: 1, section: 1)], with: .fade)
+            tableView.endUpdates()
+        }
+    }
+
+    func openDateForEditing() {
+        editingDate = true
+    }
+
+}
+
+extension AddExpenseViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         return nil
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if cellCreator == nil {
             return UITableViewCell()
         }
-        
+
         switch cellTypeForIndexPath(indexPath: indexPath) {
         case .DescriptionCell:
             return cellCreator.textFieldDisplayCell(
@@ -271,7 +317,8 @@ class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableVi
                 },
                 didBeginEditing: { _ in
                     self.datePickerCellResignFirstResponder()
-            })
+                }
+            )
         case .AmountCell:
             return cellCreator.currencyDisplayCell(
                 title: "Amount",
@@ -301,12 +348,21 @@ class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableVi
             return cellCreator.imageSelectorCell(selector: imageSelector)
         case .NotesCell:
             return cellCreator.longFormTextInputCell(
-                text: self.notes,
-                didBeginEditing: { _ in
+                descriptionText: "Notes",
+                valueText: self.notes,
+                valuePlaceholder: "Notes",
+                isValueEditable: true,
+                didBeginEditing: { (_) in
                     self.datePickerCellResignFirstResponder()
+                    tableView.scrollToRow(at: IndexPath(row: 1, section: 2), at: .top, animated: true)
                 },
-                changedToText: { (text) in
-                    self.notes = text
+                changedToText: { (newValue) in
+                    self.notes = newValue
+                },
+                changedCellHeight: { (newHeight) in
+                    tableView.performBatchUpdates({
+                        self.notesCellHeight = newHeight
+                    })
                 }
             )
         case .GoalsCell:
@@ -317,21 +373,11 @@ class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableVi
             )
         }
     }
-    
-    private func datePickerCellResignFirstResponder() {
-        if self.editingDate {
-            self.editingDate = false
-            tableView.beginUpdates()
-            tableView.reloadRows(at: [IndexPath(row: 0, section: 1)], with: .fade)
-            tableView.deleteRows(at: [IndexPath(row: 1, section: 1)], with: .fade)
-            tableView.endUpdates()
-        }
-    }
-    
+
     func numberOfSections(in tableView: UITableView) -> Int {
         return 4
     }
-    
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case 0:
@@ -346,7 +392,7 @@ class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableVi
             return 0
         }
     }
-    
+
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         switch cellTypeForIndexPath(indexPath: indexPath) {
         case .TransactionDayDisplayCell:
@@ -358,10 +404,6 @@ class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableVi
         }
     }
 
-    func openDateForEditing() {
-        editingDate = true
-    }
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch cellTypeForIndexPath(indexPath: indexPath) {
         case .TransactionDayDisplayCell:
@@ -381,38 +423,45 @@ class AddExpenseViewController: UIViewController, UITableViewDelegate, UITableVi
             let goalSelectorVC = GoalSelectorViewController()
             goalSelectorVC.setSelectedGoal(goal: goal)
             let text = "Expenses attached to a child goal are also part of " +
-                       "its parents' expenses."
+            "its parents' expenses."
             goalSelectorVC.parentSelectionHelperText = text
             goalSelectorVC.showParentSelection = true
             goalSelectorVC.delegate = self
             navigationController?.pushViewController(goalSelectorVC, animated: true)
-            
+
         default: return // No feasable case
         }
     }
-    
+
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch cellTypeForIndexPath(indexPath: indexPath) {
         case .ImageSelectorCell:
             return 104
         case .TransactionDayDatePickerCell:
             return 216
+        case .NotesCell:
+            return notesCellHeight
         default:
             return 44
         }
     }
-    
-    func present(_ vc: UIViewController, animated: Bool, completion: (() -> Void)?, sender: Any?) {
-        self.present(vc, animated: animated, completion: completion)
-    }
-    
+
+}
+
+extension AddExpenseViewController: GoalSelectorDelegate {
     func dismissedGoalSelectorWithSelectedGoal(_ goal: Goal?) {
         self.goal = goal
         tableView.reloadRows(at: [IndexPath(row: 0, section: 3)], with: .fade)
     }
-    
+}
+
+extension AddExpenseViewController: ImageSelectorController {
     func interactedWithImageSelectorViewByTapping() {
         tableView.endEditing(false)
+    }
+
+    func present(_ vc: UIViewController, animated: Bool, completion: (() -> Void)?, sender: Any?) {
+        self.present(vc, animated: animated, completion: completion)
     }
 }
 

@@ -18,7 +18,7 @@ class ExpenseTableViewCell: UITableViewCell {
     private let amountHeight: CGFloat = 42
     private let buttonHeight: CGFloat = 60
 
-    private var descriptionView: ExpenseCellDescriptionTextView!
+    private var descriptionView: PlaceholderTextView!
     private var amountField: CalculatorTextField!
     private var quickSuggestView: ButtonPickerView!
     private var relativeDatePickerView: RelativeDatePicker!
@@ -238,7 +238,7 @@ class ExpenseTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        descriptionView = ExpenseCellDescriptionTextView(delegate: self)
+        descriptionView = PlaceholderTextView(delegate: self)
         amountField = CalculatorTextField()
         quickSuggestView = ButtonPickerView()
         relativeDatePickerView = RelativeDatePicker()
@@ -371,7 +371,7 @@ class ExpenseTableViewCell: UITableViewCell {
     }
 }
 
-extension ExpenseTableViewCell: ExpenseCellDescriptionTextViewDelegate, CalculatorTextFieldDelegate {
+extension ExpenseTableViewCell: PlaceholderTextViewDelegate, CalculatorTextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
         beganEditing?(self)
     }

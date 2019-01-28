@@ -367,7 +367,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIScrollViewDel
     }
 }
 
-protocol ImageSelectorController: class {
+protocol ImageSelectorController {
     /**
      * Called to present a view controller.
      */
@@ -379,7 +379,7 @@ protocol ImageSelectorController: class {
     func interactedWithImageSelectorViewByTapping()
 }
 
-protocol ImageSelectorDelegate: class {
+protocol ImageSelectorDelegate {
     /**
      * Called when an image has been successfully added to the image view.
      */

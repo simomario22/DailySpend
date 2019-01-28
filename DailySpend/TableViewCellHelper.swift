@@ -438,15 +438,54 @@ class TableViewCellHelper {
         return cell
     }
 
+    /**
+     * Returns a table view cell suitable for long form text editing.
+     *
+     * Parameters:
+     *    - descriptionText: The text to show for the description. If `nil`,
+     *      the description field will be hidden.
+     */
     func longFormTextInputCell(
-        text: String?,
-        didBeginEditing: @escaping ((ExpenseTableViewCell) -> ()),
-        changedToText: @escaping (String?) -> ()
+        descriptionText: String? = nil,
+        valueText: String? = nil,
+        valuePlaceholder: String? = nil,
+        isValueEditable: Bool = true,
+        isDescriptionBold: Bool = false,
+        didBeginEditing: @escaping ((LongFormEntryTableViewCell) -> ()),
+        changedToText: @escaping (String?) -> (),
+        changedCellHeight: @escaping (CGFloat) -> ()
     ) -> UITableViewCell {
-        var cell: UITableViewCell! = tableView.dequeueReusableCell(withIdentifier: "longFormText")
+        var cell: LongFormEntryTableViewCell! = tableView.dequeueReusableCell(withIdentifier: "longForm") as? LongFormEntryTableViewCell
         if cell == nil {
-            cell = UITableViewCell(style: .default, reuseIdentifier: "longFormText")
+            cell = LongFormEntryTableViewCell(style: .default, reuseIdentifier: "addExpense")
+            cell.clipsToBounds = true
+        } else {
+            cell.resetCellHeight()
         }
+
+        cell.beganEditing = { (cell: LongFormEntryTableViewCell) in
+            didBeginEditing(cell)
+        }
+
+        cell.changedValue = changedToText
+
+        // Send changed events since autocorrect can change the text on
+        // when editing ends.
+        cell.endedEditing = changedToText
+
+        cell.changedCellHeight = changedCellHeight
+
+        cell.descriptionText = descriptionText
+        cell.valueText = valueText
+        cell.valuePlaceholder = valuePlaceholder
+        cell.isValueFieldEditable = isValueEditable
+
+        cell.isDescriptionHidden = (descriptionText == nil)
+
+        cell.setDescriptionWeight(bold: isDescriptionBold)
+
+        cell.notifyHeightReceiver()
+        cell.setNeedsLayout()
         return cell
     }
 
