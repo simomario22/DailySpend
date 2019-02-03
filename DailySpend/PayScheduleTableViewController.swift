@@ -658,7 +658,12 @@ struct StagedPaySchedule : Equatable {
     var adjustMonthAmountAutomatically: Bool
 
     var exclusiveEnd: CalendarDateProvider? {
-        return CalendarDay(dateInDay: end)?.end
+        get {
+            return CalendarDay(dateInDay: end)?.end
+        }
+        set {
+            end = CalendarDay(dateInDay: newValue)?.subtract(days: 1).start
+        }
     }
 
     static func from(_ schedule: PaySchedule) -> StagedPaySchedule {

@@ -751,6 +751,45 @@ enum PeriodScope: Int {
             return "Months"
         }
     }
+
+    func previousString() -> String {
+        switch self {
+        case .None:
+            return "Last Period"
+        case .Day:
+            return "Yesterday"
+        case .Week:
+            return "Last Week"
+        case .Month:
+            return "Last Month"
+        }
+    }
+
+    func currentString() -> String {
+        switch self {
+        case .None:
+            return "This Period"
+        case .Day:
+            return "Today"
+        case .Week:
+            return "This Week"
+        case .Month:
+            return "This Month"
+        }
+    }
+
+    func nextString() -> String {
+        switch self {
+        case .None:
+            return "Next Period"
+        case .Day:
+            return "Tomorrow"
+        case .Week:
+            return "Next Week"
+        case .Month:
+            return "Next Month"
+        }
+    }
     
     init(_ value: String) {
         switch value {
