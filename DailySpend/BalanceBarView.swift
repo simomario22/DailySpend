@@ -84,9 +84,11 @@ class BalanceBarView: UIView {
         if animating {
             self.balanceActivityIndicator.startAnimating()
             self.balanceActivityIndicator.isHidden = false
+            self.balanceTextLabel.isHidden = true
         } else {
             self.balanceActivityIndicator.stopAnimating()
             self.balanceActivityIndicator.isHidden = true
+            self.balanceTextLabel.isHidden = false
         }
         self.setNeedsLayout()
     }

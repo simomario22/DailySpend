@@ -118,7 +118,7 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
                 return
             }
             // Get the initial schedule
-            let initialPeriod = goal.getInitialPeriod()!
+            let initialPeriod = goal.getInitialPeriod(style: .period)!
             let initialSchedule = goal.activePaySchedule(on: initialPeriod.start)!
             initialStagedSchedule = StagedPaySchedule.from(initialSchedule)
         }
@@ -341,6 +341,7 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
             navigationController?.pushViewController(goalSelectorVC, animated: true)
         case .ManagePaySchedulesCell:
             self.scheduleController.unexpandAllSections()
+            paySchedules[scheduleControllerIndex] = scheduleController.currentValues()
             let managePaySchedulesVC = ManagePaySchedulesController()
             managePaySchedulesVC.setPaySchedules(self.paySchedules)
             managePaySchedulesVC.delegate = self

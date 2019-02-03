@@ -459,6 +459,7 @@
 		C507D7C721B3BE3F000EB300 /* Convenience Classes */ = {
 			isa = PBXGroup;
 			children = (
+				C5631E8A21D0B21E00561CE3 /* ExpenseSuggestionDataProvider.swift */,
 				C59AA77321B3483400F40762 /* GoalBalanceCache.swift */,
 			);
 			name = "Convenience Classes";
@@ -467,7 +468,9 @@
 		C507D7CE21B3BF0D000EB300 /* Navigation Components */ = {
 			isa = PBXGroup;
 			children = (
+				C5A0DD5B20429CC2004C6411 /* NavigationGoalPickerController.swift */,
 				C507D7C821B3BE77000EB300 /* BorderedView.swift */,
+				C544E5E8217D2C700098AB17 /* ReverseNavigationAnimator.swift */,
 				C507D7CB21B3BE97000EB300 /* BorderedToolbar.swift */,
 				C5E51E59209FA8A8005C674B /* SpendIndicationNavigationController.swift */,
 			);
@@ -595,10 +598,7 @@
 				C5E51E55209EC49A005C674B /* Export View and Logic */,
 				C507D7C621B3BE31000EB300 /* Data Processing */,
 				C507D7C721B3BE3F000EB300 /* Convenience Classes */,
-				C5A0DD5B20429CC2004C6411 /* NavigationGoalPickerController.swift */,
-				C544E5E8217D2C700098AB17 /* ReverseNavigationAnimator.swift */,
 				C5A4AF8F1FA6B52900101809 /* TableViewCellHelper.swift */,
-				C5631E8A21D0B21E00561CE3 /* ExpenseSuggestionDataProvider.swift */,
 				C5E51E56209EC4C8005C674B /* Extensions */,
 				C535275F204CF5B50038E747 /* Custom UI Elements */,
 				C5316C2A1E7B241200BC2918 /* Calendar Classes */,

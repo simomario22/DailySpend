@@ -185,7 +185,7 @@ extension ReviewViewController: GoalPickerDelegate {
      */
     func goalChanged(newGoal: Goal?) {
         self.goal = newGoal
-        self.period = newGoal?.getInitialPeriod()
+        self.period = newGoal?.getInitialPeriod(style: .period)
         notifyControllersDataChanged()
         self.tableView.reloadData()
     }

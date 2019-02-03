@@ -170,7 +170,7 @@ class Goal: NSManagedObject {
      *    - excludedGoals: goals to exclude from the hierarchy, along with
      *                     their children.
      */
-    class func getIndentedGoals(context: NSManagedObjectContext, excludedGoals: Set<Goal>?) -> [IndentedGoal] {
+    class func getIndentedGoals(context: NSManagedObjectContext, excludedGoals: Set<Goal>? = nil) -> [IndentedGoal] {
         return getIndentedGoals(context: context, excludeGoal: { (goal) -> Bool in
             return excludedGoals?.contains(goal) ?? false
         })
@@ -452,21 +452,21 @@ class Goal: NSManagedObject {
      * If the goal begins after today, it will return the first period.
      * If this goal has no pay schedules, it will return `nil`.
      */
-    func getInitialPeriod() -> GoalPeriod? {
+    func getInitialPeriod(style: GoalPeriod.PeriodStyle) -> GoalPeriod? {
         if self.isArchived {
             guard let schedule = lastPaySchedule() else {
                 return nil
             }
             // Safe to unwrap `schedule.end` because if a goal is archived it
             // must have an end.
-            return GoalPeriod(goal: self, date: schedule.end!, style: .period)
+            return GoalPeriod(goal: self, date: schedule.end!, style: style)
         } else if self.hasFutureStart {
             guard let schedule = firstPaySchedule() else {
                 return nil
             }
-            return GoalPeriod(goal: self, date: schedule.start!, style: .period)
+            return GoalPeriod(goal: self, date: schedule.start!, style: style)
         } else {
-            return GoalPeriod(goal: self, date: CalendarDay().start, style: .period)
+            return GoalPeriod(goal: self, date: CalendarDay().start, style: style)
         }
     }
 

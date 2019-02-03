@@ -235,7 +235,9 @@ extension ManagePaySchedulesController: UITableViewDataSource, UITableViewDelega
             }
         } else {
             descriptionText = "Create new schedule..."
-            valueText = "Gap between schedules. Tap to add a schedule in the gap."
+            valueText = "Gap between schedules. Tap to add a schedule in the " +
+                        "gap, or adjust the start and end dates of other " +
+                        "schedules to remove the gap."
             isValid = false
         }
 
