@@ -451,9 +451,13 @@ class TableViewCellHelper {
         valuePlaceholder: String? = nil,
         isValueEditable: Bool = true,
         isDescriptionBold: Bool = false,
-        didBeginEditing: @escaping ((LongFormEntryTableViewCell) -> ()),
-        changedToText: @escaping (String?) -> (),
-        changedCellHeight: @escaping (CGFloat) -> ()
+        descriptionColor: UIColor = .black,
+        valueColor: UIColor = .black,
+        detailDisclosure: Bool = false,
+        expectedCellWidth: CGFloat? = nil,
+        didBeginEditing: ((LongFormEntryTableViewCell) -> ())? = nil,
+        changedToText: ((String?) -> ())? = nil,
+        changedCellHeight: ((CGFloat) -> ())? = nil
     ) -> UITableViewCell {
         var cell: LongFormEntryTableViewCell! = tableView.dequeueReusableCell(withIdentifier: "longForm") as? LongFormEntryTableViewCell
         if cell == nil {
@@ -463,8 +467,12 @@ class TableViewCellHelper {
             cell.resetCellHeight()
         }
 
+        if let width = expectedCellWidth {
+            cell.frame.size.width = width
+        }
+
         cell.beganEditing = { (cell: LongFormEntryTableViewCell) in
-            didBeginEditing(cell)
+            didBeginEditing?(cell)
         }
 
         cell.changedValue = changedToText
@@ -476,13 +484,17 @@ class TableViewCellHelper {
         cell.changedCellHeight = changedCellHeight
 
         cell.descriptionText = descriptionText
+        cell.descriptionColor = descriptionColor
+
         cell.valueText = valueText
+        cell.valueColor = valueColor
         cell.valuePlaceholder = valuePlaceholder
         cell.isValueFieldEditable = isValueEditable
 
         cell.isDescriptionHidden = (descriptionText == nil)
-
         cell.setDescriptionWeight(bold: isDescriptionBold)
+
+        cell.accessoryType = detailDisclosure ? .disclosureIndicator : .none
 
         cell.notifyHeightReceiver()
         cell.setNeedsLayout()

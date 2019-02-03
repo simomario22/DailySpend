@@ -44,7 +44,7 @@ class AddExpenseViewController: UIViewController {
 
         // Set up table view.
         tableView = UITableView(frame: view.bounds, style: .grouped)
-        tableView.keyboardDismissMode = .onDrag
+        tableView.keyboardDismissMode = .interactive
         tableView.delegate = self
         tableView.dataSource = self
         self.view.addSubview(tableView)

@@ -42,6 +42,14 @@ class PlaceholderTextView: UITextView {
         }
     }
 
+    var userTextColor: UIColor = .black {
+        didSet {
+            if userText != nil && !userText!.isEmpty {
+                self.textColor = userTextColor
+            }
+        }
+    }
+
     /**
      * True if user entered newlines should be allowed by pressing the return
      * key in this text view.
@@ -77,7 +85,7 @@ class PlaceholderTextView: UITextView {
         case .normal:
             let pointSize = self.font?.pointSize ?? UIFont.systemFontSize
             self.font = UIFont.systemFont(ofSize: pointSize)
-            self.textColor = .black
+            self.textColor = userTextColor
         case .placeholder:
             let pointSize = self.font?.pointSize ?? UIFont.systemFontSize
             if isPlaceholderItalic {

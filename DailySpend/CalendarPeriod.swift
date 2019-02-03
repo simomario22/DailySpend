@@ -152,7 +152,7 @@ class CalendarInterval : CalendarIntervalProvider {
      */
     func contains(date: CalendarDateProvider) -> Bool {
         return date.gmtDate >= start.gmtDate &&
-                end == nil || date.gmtDate < end!.gmtDate
+                (end == nil || date.gmtDate < end!.gmtDate)
     }
 
     /**

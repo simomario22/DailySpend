@@ -17,6 +17,7 @@ class LongFormEntryTableViewCell: UITableViewCell {
     private var textView: PlaceholderTextView!
 
     private var calculatedHeight: CGFloat = -1
+    private let maxTextViewHeight: CGFloat = 1000
 
     var descriptionText: String? {
         get {
@@ -33,6 +34,15 @@ class LongFormEntryTableViewCell: UITableViewCell {
         }
         set {
             descriptionLabel.isHidden = newValue
+        }
+    }
+
+    var descriptionColor: UIColor {
+        get {
+            return descriptionLabel.textColor
+        }
+        set {
+            descriptionLabel.textColor = newValue
         }
     }
 
@@ -55,6 +65,15 @@ class LongFormEntryTableViewCell: UITableViewCell {
         }
     }
 
+    var valueColor: UIColor {
+        get {
+            return textView.userTextColor
+        }
+        set {
+            textView.userTextColor = newValue
+        }
+    }
+
     var valuePlaceholder: String? {
         get {
             return textView.placeholder
@@ -71,6 +90,14 @@ class LongFormEntryTableViewCell: UITableViewCell {
         }
         set {
             textView.isEditable = newValue
+            textView.isSelectable = newValue
+            textView.isUserInteractionEnabled = newValue
+            if newValue && (self.gestureRecognizers?.isEmpty ?? true) {
+                let gr = UITapGestureRecognizer(target: self, action: #selector(textViewFirstResponder))
+                self.addGestureRecognizer(gr)
+            } else {
+                self.gestureRecognizers = []
+            }
         }
 
     }
@@ -103,14 +130,15 @@ class LongFormEntryTableViewCell: UITableViewCell {
             let leftSide = inset
             let rightSide = margin
             let width = self.bounds.size.width - leftSide - rightSide
-            let height = (textView.userText ?? textView.placeholder)?.calculatedHeightForWidth(width, font: textView.font)
+            let calculatedHeight = (textView.userText ?? textView.placeholder)?.calculatedHeightForWidth(width, font: textView.font)
+            let boundedMinHeight = isValueFieldEditable ? max(calculatedHeight ?? 0, defaultHeight * 2) : calculatedHeight ?? defaultHeight
+            let boundedMaxHeight = min(maxTextViewHeight, boundedMinHeight)
             textView.frame = CGRect(
                 x: leftSide,
                 y: top,
                 width: width,
-                height: max(height ?? 0, defaultHeight * 2)
+                height: boundedMaxHeight
             )
-
         }
 
         let newCalculatedHeight = textView.frame.bottomEdge + margin
@@ -163,6 +191,14 @@ class LongFormEntryTableViewCell: UITableViewCell {
      */
     func notifyHeightReceiver() {
         layoutOwnSubviews()
+    }
+
+    /**
+     * Synchronously gets the cell height.
+     */
+    func getCellHeight() -> CGFloat {
+        layoutOwnSubviews()
+        return calculatedHeight
     }
 }
 

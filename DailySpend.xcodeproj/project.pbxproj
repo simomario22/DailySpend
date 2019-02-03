@@ -732,9 +732,9 @@
 			children = (
 				C546170C204A4AFF00689DED /* GoalViewController.swift */,
 				C5352728204B45CE0038E747 /* AddGoalViewController.swift */,
+				C5CB4D882116678200BB1EB9 /* GoalSelectorViewController.swift */,
 				C55BA95821FE6C1800C768C2 /* ManagePaySchedulesController.swift */,
 				C5B60A4621F3C93600BE6F4C /* PayScheduleTableViewController.swift */,
-				C5CB4D882116678200BB1EB9 /* GoalSelectorViewController.swift */,
 			);
 			name = "Goal View";
 			sourceTree = "<group>";

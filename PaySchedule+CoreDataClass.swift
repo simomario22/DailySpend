@@ -155,31 +155,22 @@ class PaySchedule: NSManagedObject {
         return scheduleResults
     }
 
-    /**
-     * Returns a human readable description of this pay interval.
-     *
-     * If this schedule doesn't have a valid amount, this function returns `nil`.
-     */
-    func string() -> String? {
-        guard let amount = amount else {
-                return nil
-        }
-
+    class func string(amount: Decimal, period: Period, payFrequency: Period) -> String {
         let formattedAmount = String.formatAsCurrency(amount: amount)!
         var string = "\(formattedAmount) "
 
-        if !isRecurring {
+        if period.scope == .None {
             string += "paid once"
             return string
         }
 
         if period.multiplier == 1 {
-            string += period.scope.adverbString().lowercased()
+            string += "per " + period.scope.string().lowercased()
         } else {
-            string += "every " + "\(period.multiplier)" + period.scope.pluralString().lowercased()
+            string += "every " + "\(period.multiplier) " + period.scope.pluralString().lowercased()
         }
 
-        if !hasIncrementalPayment {
+        if payFrequency.scope == .None {
             return string
         }
 
@@ -190,6 +181,19 @@ class PaySchedule: NSManagedObject {
             string += "every " + "\(payFrequency.multiplier)" + payFrequency.scope.pluralString().lowercased()
         }
         return string
+    }
+
+    /**
+     * Returns a human readable description of this pay interval.
+     *
+     * If this schedule doesn't have a valid amount, this function returns `nil`.
+     */
+    func string() -> String? {
+        guard let amount = amount else {
+            return nil
+        }
+
+        return PaySchedule.string(amount: amount, period: period, payFrequency: payFrequency)
     }
 
     /**
@@ -223,29 +227,20 @@ class PaySchedule: NSManagedObject {
             return (false, "This pay schedule must be associated with a goal.")
         }
 
-        if _amount == nil || _amount! == 0 {
-            return (false, "This pay schedule must have an amount greater than 0 specified.")
-        }
-
-        if _start == nil || CalendarDay(dateInDay: _start)?.start.gmtDate != _start?.gmtDate {
-            return (false, "This pay schedule must have a valid start date.")
-        }
-
-        if _end != nil && (CalendarDay(dateInDay: _end)?.start.gmtDate != _end?.gmtDate || _end!.gmtDate < _start!.gmtDate) {
-            return (false, "If this pay schedule has an end date, it must be on or after the start date.")
-        }
-
-        if _period.scope != .None && _period.multiplier <= 0 ||
-            _payFrequency.scope != .None && _payFrequency.multiplier <= 0 {
-            return (false, "The period and pay frequency must have a multiplier greater than 0.")
-        }
-
-        if _period.scope != .None && _payFrequency > _period {
-            return (false, "The pay freqency for this pay schedule must have a lesser or equal interval than that of the period.")
-        }
-
         if _dateCreated == nil {
             return (false, "The pay schedule must have a date created.")
+        }
+
+        let validation = PaySchedule.partialValueValidation(
+            amount: _amount,
+            start: _start,
+            end: _end,
+            period: _period,
+            payFrequency: _payFrequency
+        )
+
+        if !validation.valid {
+            return validation
         }
 
         self.amount = _amount
@@ -256,6 +251,43 @@ class PaySchedule: NSManagedObject {
         self.adjustMonthAmountAutomatically = _adjustMonthAmountAutomatically
         self.goal = _goal
         self.dateCreated = _dateCreated
+
+        return (true, nil)
+    }
+
+    /**
+     * Validates `amount`, `start`, `end`, `period`, and `payFrequency`.
+     *
+     * Returns true if the values are valid, otherwise false with a human
+     * readable reason for the error.
+     */
+    class func partialValueValidation(
+        amount: Decimal?,
+        start: CalendarDateProvider?,
+        end: CalendarDateProvider?,
+        period: Period,
+        payFrequency: Period
+    ) -> (valid: Bool, problem: String?) {
+        if amount == nil || amount! == 0 {
+            return (false, "This pay schedule must have an amount greater than 0 specified.")
+        }
+
+        if start == nil || CalendarDay(dateInDay: start)?.start.gmtDate != start?.gmtDate {
+            return (false, "This pay schedule must have a valid start date.")
+        }
+
+        if end != nil && (CalendarDay(dateInDay: end)?.start.gmtDate != end?.gmtDate || end!.gmtDate < start!.gmtDate) {
+            return (false, "If this pay schedule has an end date, it must be on or after the start date.")
+        }
+
+        if period.scope != .None && period.multiplier <= 0 ||
+            payFrequency.scope != .None && payFrequency.multiplier <= 0 {
+            return (false, "The period and pay frequency must have a multiplier greater than 0.")
+        }
+
+        if period.scope != .None && payFrequency > period {
+            return (false, "The pay freqency for this pay schedule must have a lesser or equal interval than that of the period.")
+        }
 
         return (true, nil)
     }

@@ -447,11 +447,10 @@ class Goal: NSManagedObject {
      * Returns an initial period for a goal based on when it starts relative to
      * today.
      *
-     * If the goal begins before today, it will return the final period.
+     * If the goal ends before today, it will return the final period.
      * If the goal is active today, it will return the current period.
      * If the goal begins after today, it will return the first period.
      * If this goal has no pay schedules, it will return `nil`.
-     *
      */
     func getInitialPeriod() -> GoalPeriod? {
         if self.isArchived {
@@ -487,7 +486,7 @@ class Goal: NSManagedObject {
 
         var schedule: PaySchedule?
         context.performAndWait {
-            let formatString = "$goal = goal_ AND $date >= start_ AND (end_ == nil OR $date < end_)"
+            let formatString = "$goal = goal_ AND $date >= start_ AND (end_ == nil OR $date <= end_)"
             let predicateTemplate = NSPredicate(format: formatString)
             let predicate = predicateTemplate.withSubstitutionVariables([
                 "goal": self,
@@ -549,7 +548,7 @@ class Goal: NSManagedObject {
 
     var isArchived: Bool {
         let end = lastPaySchedule()?.exclusiveEnd
-        return end != nil && CalendarDay(dateInDay: end!) < CalendarDay() || (parentGoal?.isArchived ?? false)
+        return end != nil && CalendarDay(dateInDay: end!) <= CalendarDay() || (parentGoal?.isArchived ?? false)
     }
     
     var hasFutureStart: Bool {

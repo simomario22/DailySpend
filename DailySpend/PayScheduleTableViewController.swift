@@ -12,8 +12,8 @@ import Foundation
 class PayScheduleTableViewController : NSObject {
     private var amount: Decimal?
     private var adjustMonthAmountAutomatically: Bool!
-    private var period: Period!
-    private var payFrequency: Period!
+    private var period: Period
+    private var payFrequency: Period
     private var start: CalendarDateProvider!
     private var end: CalendarDateProvider?
 
@@ -29,21 +29,22 @@ class PayScheduleTableViewController : NSObject {
         self.sectionOffset = sectionOffset
 
         adjustMonthAmountAutomatically = true
-        period = Period(scope: .Day, multiplier: 1)
+        period = Period(scope: .Month, multiplier: 1)
+        adjustMonthAmountAutomatically = true
         payFrequency = Period(scope: .Day, multiplier: 1)
         start = CalendarDay().start
     }
 
     func setupPaySchedule(schedule: StagedPaySchedule) {
-        self.amount = schedule.amount!
-        self.adjustMonthAmountAutomatically = schedule.adjustMonthAmountAutomatically!
-        self.period = schedule.period!
-        self.payFrequency = schedule.payFrequency!
+        self.amount = schedule.amount
+        self.adjustMonthAmountAutomatically = schedule.adjustMonthAmountAutomatically
+        self.period = schedule.period
+        self.payFrequency = schedule.payFrequency
         self.start = schedule.start!
         self.end = schedule.end
 
-        isRecurring = schedule.period!.scope != .None
-        hasIncrementalPayment = schedule.period!.scope != .None
+        isRecurring = schedule.period.scope != .None
+        hasIncrementalPayment = schedule.payFrequency.scope != .None
         neverEnd = schedule.end == nil
     }
 
@@ -54,7 +55,7 @@ class PayScheduleTableViewController : NSObject {
             end: neverEnd ? nil : end,
             period: isRecurring ? period : Period.none,
             payFrequency: isRecurring && hasIncrementalPayment ? payFrequency : Period.none,
-            adjustMonthAmountAutomatically: isRecurring && period.scope == .Month ? adjustMonthAmountAutomatically : nil
+            adjustMonthAmountAutomatically: isRecurring && period.scope == .Month ? adjustMonthAmountAutomatically : false
         )
     }
 
@@ -649,12 +650,16 @@ extension PayScheduleTableViewController : UITableViewDataSource, UITableViewDel
 }
 
 struct StagedPaySchedule : Equatable {
-    let amount: Decimal?
-    let start: CalendarDateProvider?
-    let end: CalendarDateProvider?
-    let period: Period?
-    let payFrequency: Period?
-    let adjustMonthAmountAutomatically: Bool?
+    var amount: Decimal?
+    var start: CalendarDateProvider?
+    var end: CalendarDateProvider?
+    var period: Period
+    var payFrequency: Period
+    var adjustMonthAmountAutomatically: Bool
+
+    var exclusiveEnd: CalendarDateProvider? {
+        return CalendarDay(dateInDay: end)?.end
+    }
 
     static func from(_ schedule: PaySchedule) -> StagedPaySchedule {
         return StagedPaySchedule(
@@ -664,6 +669,20 @@ struct StagedPaySchedule : Equatable {
             period: schedule.period,
             payFrequency: schedule.payFrequency,
             adjustMonthAmountAutomatically: schedule.adjustMonthAmountAutomatically
+        )
+    }
+
+    static func defaultValues(
+        start: CalendarDateProvider? = nil,
+        end: CalendarDateProvider? = nil
+    ) -> StagedPaySchedule {
+        return StagedPaySchedule(
+            amount: nil,
+            start: start,
+            end: end,
+            period: Period(scope: .Month, multiplier: 1),
+            payFrequency: Period(scope: .Day, multiplier: 1),
+            adjustMonthAmountAutomatically: true
         )
     }
 

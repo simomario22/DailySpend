@@ -132,7 +132,7 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
         let today = CalendarDay()
         let initialStagedInterval = CalendarInterval(
             start: initialStagedSchedule.start!,
-            end: initialStagedSchedule.end
+            end: CalendarDay(dateInDay: initialStagedSchedule.end)?.end
         )!
 
         if initialStagedInterval.contains(date: today.start) {
@@ -167,6 +167,9 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
             // Delete all old schedules and replace them with new ones.
             let oldSchedules = goal.paySchedules
             for schedule in oldSchedules ?? [] {
+                // Need to explicity nullify relationship since delete rules
+                // won't be processed until context save.
+                schedule.goal = nil
                 context.delete(schedule)
             }
 
@@ -339,7 +342,7 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
         case .ManagePaySchedulesCell:
             self.scheduleController.unexpandAllSections()
             let managePaySchedulesVC = ManagePaySchedulesController()
-            managePaySchedulesVC.paySchedules = self.paySchedules
+            managePaySchedulesVC.setPaySchedules(self.paySchedules)
             managePaySchedulesVC.delegate = self
             navigationController?.pushViewController(managePaySchedulesVC, animated: true)
         default: break
@@ -440,10 +443,11 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
 }
 
 extension AddGoalViewController: ManagedPaySchedulesControllerDelegate {
-    func updatedPaySchedules(schedules: [StagedPaySchedule]!, initial: StagedPaySchedule, valid: Bool) {
+    func updatedPaySchedules(schedules: [StagedPaySchedule]!, initial: StagedPaySchedule?, valid: Bool) {
         self.paySchedules = schedules
-        self.setupScheduleController(stagedSchedule: initial)
+        self.setupScheduleController(stagedSchedule: initial ?? StagedPaySchedule.defaultValues())
         self.paySchedulesAreValid = valid
+        self.tableView.reloadData()
     }
 }
 
