@@ -239,8 +239,8 @@ class GoalPeriod : CalendarIntervalProvider {
         guard let schedule = goal.activePaySchedule(on: date) else {
             return nil
         }
-        let scheduleFunction = (style == .period ? schedule.periodInterval : schedule.incrementalPaymentInterval)
 
+        let scheduleFunction = (style == .period ? schedule.periodInterval : schedule.incrementalPaymentInterval)
         guard let period = scheduleFunction(date) else {
             return nil
         }
@@ -286,11 +286,17 @@ class GoalPeriod : CalendarIntervalProvider {
     func string(friendly: Bool, relative: Bool) -> String {
         let schedule = goal.activePaySchedule(on: self.start)!
         let period = style == .period ? schedule.period : schedule.payFrequency
-        let scope = friendly && schedule.isRecurring ? period.scope : .None
-        let multiplier = friendly && schedule.isRecurring ? period.multiplier : (self.start.gmtDate == self.end?.gmtDate ? 1 : 2)
+
+        let isPartialPeriod = !isDateAtBeginningOfContainingScope(date: self.start, scope: period.scope) ||
+            (self.end != nil && !isDateAtBeginningOfContainingScope(date: self.end!, scope: period.scope))
+
+        let scope = friendly && schedule.isRecurring && !isPartialPeriod ? period.scope : .None
+        let multiplier = friendly && schedule.isRecurring && !isPartialPeriod ? period.multiplier : (CalendarDay(dateInDay:self.start).end!.gmtDate ==  self.end?.gmtDate ? 1 : 2)
 
         let firstComponent = stringComponent(date: self.start, scope: scope, relative: relative)
         if multiplier == 1 {
+            // Just return the first component - this represents a single
+            // iteration of a scope: one day, week, or month.
             if period.scope == .Week {
                 let thisWeek = CalendarWeek()
                 let week = CalendarWeek(dateInWeek: self.start)
@@ -305,10 +311,23 @@ class GoalPeriod : CalendarIntervalProvider {
         }
 
         if let end = self.end {
-            let secondComponent = stringComponent(date: end, scope: period.scope, relative: relative)
+            // Get inclusive interval.
+            let inclusiveEnd = CalendarDay(dateInDay: end).subtract(days: 1)
+            let secondComponent = stringComponent(date: inclusiveEnd.start, scope: scope, relative: relative)
             return "\(firstComponent) - \(secondComponent)"
         } else {
             return "From \(firstComponent) onward"
+        }
+    }
+
+    private func isDateAtBeginningOfContainingScope(date: CalendarDateProvider, scope: PeriodScope) -> Bool {
+        switch scope {
+        case .Day, .None:
+            return CalendarDay(dateInDay: date).start.gmtDate == date.gmtDate
+        case .Week:
+            return CalendarWeek(dateInWeek: date).start.gmtDate == date.gmtDate
+        case .Month:
+            return CalendarMonth(dateInMonth: date).start.gmtDate == date.gmtDate
         }
     }
 
