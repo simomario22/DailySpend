@@ -471,8 +471,8 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
         case .ManagePaySchedulesCell:
             return cellCreator.valueDisplayCell(
                 labelText: "All Pay Schedules",
-                valueText: paySchedulesAreValid ? nil : "Invalid",
-                tintColor: .red,
+                valueText: paySchedulesAreValid ? "\(self.paySchedules.count)" : "Invalid",
+                tintColor: paySchedulesAreValid ? .black : .red,
                 detailIndicator: true
             )
         }
