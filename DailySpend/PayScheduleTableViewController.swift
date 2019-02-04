@@ -46,6 +46,14 @@ class PayScheduleTableViewController : NSObject {
         isRecurring = schedule.period.scope != .None
         hasIncrementalPayment = schedule.payFrequency.scope != .None
         neverEnd = schedule.end == nil
+
+        if !isRecurring {
+            self.period = Period(scope: .Month, multiplier: 1)
+        }
+
+        if !hasIncrementalPayment {
+            self.payFrequency = Period(scope: .Day, multiplier: 1)
+        }
     }
 
     func currentValues() -> StagedPaySchedule {
