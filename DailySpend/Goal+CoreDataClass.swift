@@ -98,6 +98,7 @@ class Goal: NSManagedObject {
                 let parentGoal = context.object(with: objectID) as? Goal {
                 goal.parentGoal = parentGoal
             } else {
+                context.delete(goal)
                 return .NeedsOtherGoalsToBeCreatedFirst
             }
         }

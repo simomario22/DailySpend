@@ -127,12 +127,39 @@ class Exporter {
                 os.write(",".data(using: encoding)!)
             }
         }
+
+        // Write closing JSON array character, separating JSON character,
+        // a key for "expenses" and an opening JSON array character.
+        os.write("],\"paySchedules\":[".data(using: encoding)!)
+
+        // Fetch all pay schedules
+        let scheduleSortDesc = NSSortDescriptor(key: "start_", ascending: true)
+        guard let schedules = PaySchedule.get(context: context, sortDescriptors: [scheduleSortDesc]) else {
+            Logger.debug("Could not get pay schedules.")
+            os.closeFile()
+            return nil
+        }
+
+        for (i, schedule) in schedules.enumerated() {
+            if let scheduleData = schedule.serialize(jsonIds: goalJsonIdMap) {
+                os.write(scheduleData)
+            } else {
+                Logger.debug("Could not serialize a PaySchedule.")
+                os.closeFile()
+                return nil
+            }
+            if i < schedules.count - 1 {
+                // Write separating JSON character if there are more pauses
+                // after this one.
+                os.write(",".data(using: encoding)!)
+            }
+        }
         
         // Write closing JSON array character, separating JSON character,
         // a key for "expenses" and an opening JSON array character.
         os.write("],\"expenses\":[".data(using: encoding)!)
         
-        // Fetch all pauses
+        // Fetch all expenses
         let expenseSortDesc = NSSortDescriptor(key: "dateCreated_", ascending: true)
         guard let expenses = Expense.get(context: context, sortDescriptors: [expenseSortDesc]) else {
             Logger.debug("Could not get expenses.")
@@ -576,6 +603,38 @@ class Importer {
             Logger.debug("Goals had invalid parent goals (e.g. circular) or a " +
                 "specified parent goal doesn't exist.")
             throw ExportError.recoveredFromBadFormatWithContextChange
+        }
+
+        if let paySchedules = jsonObj["paySchedules"] as? [[String: Any]] {
+            for jsonSchedule in paySchedules {
+                let (_, success) = PaySchedule.create(
+                    context: context,
+                    json: jsonSchedule,
+                    jsonIds: goalJsonIdMap
+                )
+                if !success {
+                    // This import failed. Reset to normal.
+                    try revert()
+                    Logger.debug("Could not import PaySchedule.")
+                    throw ExportError.recoveredFromBadFormatWithContextChange
+                }
+            }
+        }
+
+        // Ensure all goals are valid with pay schedules attached properly.
+        for goalId in goalJsonIdMap.values {
+            if let goal = Goal.inContext(goalId, context: context) as? Goal {
+                let validation = goal.propose()
+                if !validation.valid {
+                    try revert()
+                    Logger.debug("After creating pay schedules, goal validation failed with: \(validation.problem ?? "nil").")
+                    throw ExportError.recoveredFromBadFormatWithContextChange
+                }
+            } else {
+                try revert()
+                Logger.debug("Found ManagedObjectID in goalJsonIdMap which did not represent a goal.")
+                throw ExportError.recoveredFromBadFormatWithContextChange
+            }
         }
 
         if let expenses = jsonObj["expenses"] as? [[String: Any]] {

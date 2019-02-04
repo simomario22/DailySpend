@@ -53,7 +53,19 @@ class PaySchedule: NSManagedObject {
         jsonObj["payFrequency"] = payFrequency.scope.rawValue as NSNumber
         jsonObj["payFrequencyMultiplier"] = payFrequency.multiplier as NSNumber
 
-        jsonObj["jsonId"] = jsonIds[objectID]
+        if let goal = goal {
+            var goalJsonIds = [Int]()
+            if let jsonId = jsonIds[goal.objectID] {
+                goalJsonIds.append(jsonId)
+            } else {
+                Logger.debug("a goal didn't have an associated jsonId in PaySchedule")
+                return nil
+            }
+            jsonObj["goals"] = goalJsonIds
+        } else {
+            Logger.debug("couldn't unwrap goal in PaySchedule")
+            return nil
+        }
 
         return jsonObj
     }
@@ -71,7 +83,10 @@ class PaySchedule: NSManagedObject {
         context: NSManagedObjectContext,
         json: [String: Any],
         jsonIds: [Int: NSManagedObjectID]
-    ) -> (PaySchedule?, Bool) {
+    ) -> (
+        schedule: PaySchedule?,
+        success: Bool
+    ) {
         var _amount: Decimal?
         var _adjustMonthAmountAutomatically: Bool?
         var _dateCreated: Date?
@@ -79,6 +94,7 @@ class PaySchedule: NSManagedObject {
         var _payFrequency: Period?
         var _start: GMTDate?
         var _end: GMTDate?
+        var _goal: Goal?
 
         if let amount = json["amount"] as? NSNumber {
             _amount = Decimal(amount.doubleValue)
@@ -117,6 +133,19 @@ class PaySchedule: NSManagedObject {
             _payFrequency = p != nil ? Period(scope: p!, multiplier: m) : nil
         }
 
+        if let goalJsonIds = json["goals"] as? Array<Int> {
+            if goalJsonIds.count > 1 {
+                Logger.debug("There were multiple goals associated with an Expense")
+                return (nil, false)
+            }
+            for goalJsonId in goalJsonIds {
+                if let objectID = jsonIds[goalJsonId],
+                    let goal = context.object(with: objectID) as? Goal {
+                    _goal = goal
+                }
+            }
+        }
+
         var schedule: PaySchedule!
         context.performAndWait {
             schedule = PaySchedule(context: context)
@@ -127,6 +156,7 @@ class PaySchedule: NSManagedObject {
                 period: _period,
                 payFrequency: _payFrequency,
                 adjustMonthAmountAutomatically: _adjustMonthAmountAutomatically,
+                goal: _goal,
                 dateCreated: _dateCreated
             )
 
