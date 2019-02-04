@@ -125,12 +125,28 @@ class LongFormEntryTableViewCell: UITableViewCell {
             )
         }
 
+        if accessoryType == .disclosureIndicator {
+            let accessoryViewFrame = subviews.compactMap { $0 as? UIButton }.first?.frame
+            if accessoryViewFrame != nil && textView != nil {
+                // No text to the right of the horizontal origin of the frame.
+                let frame = CGRect(
+                    x: accessoryViewFrame!.origin.x,
+                    y: 0,
+                    width: self.bounds.size.width - accessoryViewFrame!.origin.x,
+                    height: self.bounds.size.height
+                )
+
+                let convertedFrame = self.convert(frame, to: textView)
+                textView?.textContainer.exclusionPaths = [UIBezierPath(rect: convertedFrame)]
+            }
+        }
+
         if textView != nil {
             let top = descriptionLabel.isHidden ? margin : descriptionLabel.frame.bottomEdge
             let leftSide = inset
             let rightSide = margin
             let width = self.bounds.size.width - leftSide - rightSide
-            let calculatedHeight = (textView.userText ?? textView.placeholder)?.calculatedHeightForWidth(width, font: textView.font)
+            let calculatedHeight = (textView.userText ?? textView.placeholder)?.calculatedHeightForWidth(width, font: textView.font, exclusionPaths: textView.textContainer.exclusionPaths)
             let boundedMinHeight = isValueFieldEditable ? max(calculatedHeight ?? 0, defaultHeight * 2) : calculatedHeight ?? defaultHeight
             let boundedMaxHeight = min(maxTextViewHeight, boundedMinHeight)
             textView.frame = CGRect(
@@ -197,7 +213,7 @@ class LongFormEntryTableViewCell: UITableViewCell {
      * Synchronously gets the cell height.
      */
     func getCellHeight() -> CGFloat {
-        layoutOwnSubviews()
+        self.layoutSubviews()
         return calculatedHeight
     }
 }
