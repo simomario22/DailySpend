@@ -342,7 +342,11 @@ class PaySchedule: NSManagedObject {
         case .Month:
             if !self.adjustMonthAmountAutomatically {
                 // Same amount is paid out per day regardless of month length.
-                let daysInPeriod = Decimal(period.lengthInDays())
+                // Add back in partial period length in case it is reduced,
+                // since we want to divide by the non reduced period length
+                // here - it will be reduced when we multiply by `lengthInDays
+                // below, which is adjusted by bounds.
+                let daysInPeriod = Decimal(period.lengthInDays() + period.partialPeriodLengthReductionInDays)
                 dailyIncrementalAmount = self.amount! / daysInPeriod
             } else {
                 let daysInMonth = Decimal(CalendarMonth.typicalDaysInMonth)

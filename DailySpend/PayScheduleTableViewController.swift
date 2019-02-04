@@ -449,7 +449,7 @@ extension PayScheduleTableViewController : UITableViewDataSource, UITableViewDel
         case .AutoAdjustMonthAmountCell:
             return cellCreator.switchCell(
                 initialValue: self.adjustMonthAmountAutomatically,
-                title: "Auto-Adjust Month Amount",
+                title: "Auto-Adjust Amount",
                 explanatoryText: autoAdjustExplanatoryText,
                 valueChanged: { (newValue) in
                     self.adjustMonthAmountAutomatically = newValue
