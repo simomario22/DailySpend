@@ -151,262 +151,6 @@ class AddGoalViewController: UIViewController, GoalSelectorDelegate, UITableView
         // Dispose of any resources that can be recreated.
     }
 
-    /**
-     * This function returns `true` if changes to the initial pay schedule were
-     * minor, the initial pay schedule is recurring, today is not in the
-     * first period for this pay schedule, but is in the initial period, and
-     * there exists another period after the current one.
-     *
-     * A pay schedule change is minor if the initial pay schedule still has
-     * the same period, start, and end.
-     */
-    func shouldPromptForMinorInitialScheduleUpdateIntent() -> Bool {
-        guard let goal = (Goal.inContext(goalId) as? Goal),
-              let initialPeriod = goal.getInitialPeriod(style: .period),
-              let cleanInitialSchedule = goal.activePaySchedule(on: initialPeriod.start),
-              let firstPeriodInSchedule = GoalPeriod(goal: goal, date: cleanInitialSchedule.start!, style: .period)
-            else {
-            return false
-        }
-
-        let today = CalendarDay().start
-        let cleanStagedInitialSchedule = StagedPaySchedule.from(cleanInitialSchedule)
-        let currentInitialSchedule = scheduleController.currentValues()
-        return cleanStagedInitialSchedule.period.scope != .None &&
-                initialPeriod.contains(date: today) &&
-                !firstPeriodInSchedule.contains(date: today) &&
-                (
-                    cleanStagedInitialSchedule.exclusiveEnd == nil ||
-                    cleanStagedInitialSchedule.exclusiveEnd!.gmtDate > initialPeriod.end!.gmtDate
-                ) &&
-                currentInitialSchedule.period == cleanStagedInitialSchedule.period &&
-                currentInitialSchedule.start?.gmtDate == cleanStagedInitialSchedule.start?.gmtDate &&
-                currentInitialSchedule.end?.gmtDate == cleanStagedInitialSchedule.end?.gmtDate &&
-                currentInitialSchedule != cleanStagedInitialSchedule
-
-    }
-
-    /**
-     * Prompts the user to ensure they want the settings they saved their
-     * schedule with, makes any necessary changes, validates those changes,
-     * saves, and performs post save actions.
-     *
-     * Should only be called if shouldPromptForMinorInitialScheduleUpdateIntent
-     * evaluates to true.
-     */
-    func promptForMinorInitialScheduleUpdateIntent(context: NSManagedObjectContext) {
-        guard let goal = (Goal.inContext(goalId) as? Goal),
-              let initialPeriod = goal.getInitialPeriod(style: .period)
-            else {
-                Logger.debug("Failed to set up cleanInitialSchedule to check for minor change.")
-                return
-        }
-        let initialSchedule = scheduleController.currentValues()
-        let df = DateFormatter()
-        df.timeStyle = .none
-        df.dateStyle = .short
-        let initialStartString = initialSchedule.start!.string(formatter: df)
-        let actionSheetMessage = "Making this change will affect all periods " +
-            "since the start of this pay schedule, \(initialStartString). " +
-            "Are you sure this is when you'd like your changes to take effect?"
-
-        let actionSheet = UIAlertController(
-            title: "Effective Date",
-            message: actionSheetMessage,
-            preferredStyle: .actionSheet
-        )
-
-        let scope = initialSchedule.period.scope
-        var currentString = "No, take effect "
-        var nextString = "No, take effect "
-        if initialSchedule.period.multiplier == 1 {
-            currentString += scope.currentString().lowercased()
-            nextString += scope.nextString().lowercased()
-        } else {
-            let currentPeriodStartString = initialPeriod.start.string(formatter: df)
-            let nextPeriodStartString = initialPeriod.end!.string(formatter: df)
-            currentString += "this period (\(currentPeriodStartString))"
-            nextString += "this period (\(nextPeriodStartString))"
-        }
-        let actions = [
-            UIAlertAction(
-                title: currentString,
-                style: .default,
-                handler: { _ in
-                    createCopiedScheduleWithStart(initialPeriod.start)
-                }
-            ),
-            UIAlertAction(
-                title: nextString,
-                style: .default,
-                handler: { _ in
-                    createCopiedScheduleWithStart(initialPeriod.end!)
-                }
-            ),
-            UIAlertAction(
-                title: "Yes, take effect \(initialStartString)",
-                style: .default,
-                handler: { _ in
-                    context.performAndWait {
-                        if context.hasChanges {
-                            try! context.save()
-                        }
-                        self.goalId = goal.objectID
-                        self.performPostSaveActions(validation: (true, nil))
-                    }
-                }
-            ),
-            UIAlertAction(
-                title: "Cancel",
-                style: .cancel,
-                handler: { _ in
-                    context.performAndWait {
-                        context.rollback()
-                    }
-                }
-            ),
-        ]
-
-        actionSheet.addActions(actions)
-        self.present(actionSheet, animated: true)
-
-        func createCopiedScheduleWithStart(_ start: CalendarDateProvider) {
-            context.performAndWait {
-                context.rollback()
-            }
-            guard let cleanInitialSchedule = goal.activePaySchedule(on: initialPeriod.start) else {
-                Logger.debug("Could not get clean initial schedule in promptForMinorInitialScheduleUpdateIntent")
-                return
-            }
-
-            let newSchedule = StagedPaySchedule(
-                amount: initialSchedule.amount,
-                start: start,
-                end: initialSchedule.end,
-                period: initialSchedule.period,
-                payFrequency: initialSchedule.payFrequency,
-                adjustMonthAmountAutomatically: initialSchedule.adjustMonthAmountAutomatically
-            )
-
-            paySchedules[scheduleControllerIndex] = StagedPaySchedule(
-                amount: cleanInitialSchedule.amount,
-                start: cleanInitialSchedule.start,
-                end: CalendarDay(dateInDay: start)?.subtract(days: 1).start,
-                period: cleanInitialSchedule.period,
-                payFrequency: cleanInitialSchedule.payFrequency,
-                adjustMonthAmountAutomatically: cleanInitialSchedule.adjustMonthAmountAutomatically
-            )
-
-            paySchedules.insert(newSchedule, at: scheduleControllerIndex + 1)
-            self.setupScheduleController(stagedSchedule: newSchedule)
-            self.save()
-        }
-    }
-
-    func save() {
-        var validation: (valid: Bool, problem: String?)!
-        var shouldPerformPostSaveActions = true
-        let isNew = (goalId == nil)
-        let context = appDelegate.persistentContainer.newBackgroundContext()
-        context.performAndWait {
-            var goal: Goal!
-            if isNew {
-                goal = Goal(context: context)
-                goal.dateCreated = Date()
-            } else {
-                goal = Adjustment.inContext(goalId!, context: context)
-            }
-
-            // Delete all old schedules and replace them with new ones.
-            let oldSchedules = goal.paySchedules
-            for schedule in oldSchedules ?? [] {
-                // Need to explicity nullify relationship since delete rules
-                // won't be processed until context save.
-                schedule.goal = nil
-                context.delete(schedule)
-            }
-
-            paySchedules[scheduleControllerIndex] = scheduleController.currentValues()
-
-            for stagedSchedule in paySchedules {
-                let newSchedule = PaySchedule(context: context)
-                validation = newSchedule.propose(
-                    amount: stagedSchedule.amount,
-                    start: stagedSchedule.start,
-                    end: stagedSchedule.end,
-                    period: stagedSchedule.period,
-                    payFrequency: stagedSchedule.payFrequency,
-                    adjustMonthAmountAutomatically: stagedSchedule.adjustMonthAmountAutomatically,
-                    goal: goal,
-                    dateCreated: Date()
-                )
-                if !validation.valid {
-                    context.rollback()
-                    return
-                }
-            }
-
-            validation = goal.propose(
-                shortDescription: shortDescription,
-                parentGoal: Goal.inContext(parentGoal, context: context),
-                carryOverBalance: carryOverBalance
-            )
-
-            if validation.valid && shouldPromptForMinorInitialScheduleUpdateIntent() {
-                // The following function is responsible for validating any
-                // changes it makes, saving those changes, and performing post
-                // save actions.
-                DispatchQueue.main.async {
-                    self.promptForMinorInitialScheduleUpdateIntent(context: context)
-                }
-                shouldPerformPostSaveActions = false
-                return
-            }
-
-            if !validation.valid {
-                context.rollback()
-            } else {
-                if context.hasChanges {
-                    try! context.save()
-                }
-                goalId = goal.objectID
-            }
-        }
-        if shouldPerformPostSaveActions {
-            performPostSaveActions(validation: validation)
-        }
-    }
-
-    func performPostSaveActions(validation: (valid: Bool, problem: String?)) {
-        self.view.endEditing(false)
-
-        if validation.valid {
-            let goalOnViewContext: Goal = Goal.inContext(goalId)!
-            if let parentGoal = goalOnViewContext.parentGoal {
-                appDelegate.persistentContainer.viewContext.refresh(parentGoal, mergeChanges: true)
-            }
-            delegate?.addedOrChangedGoal(goalOnViewContext)
-            self.view.endEditing(false)
-            if self.navigationController!.viewControllers[0] == self {
-                self.navigationController!.dismiss(animated: true, completion: nil)
-            } else {
-                self.navigationController!.popViewController(animated: true)
-            }
-        } else {
-            let alert = UIAlertController(
-                title: "Couldn't Save",
-                message: validation.problem!,
-                preferredStyle: .alert
-            )
-            alert.addAction(UIAlertAction(
-                title: "Okay",
-                style: .default,
-                handler: nil
-            ))
-            present(alert, animated: true, completion: nil)
-        }
-    }
-
     override func viewWillAppear(_ animated: Bool) {
         super.viewDidDisappear(animated)
     }
@@ -621,6 +365,178 @@ extension AddGoalViewController: ManagedPaySchedulesControllerDelegate {
         self.tableView.reloadData()
     }
 }
+
+extension AddGoalViewController : ScheduleUpdateIntentManagerDelegate {
+    func cancel(context: NSManagedObjectContext) {
+        context.performAndWait {
+            context.rollback()
+        }
+    }
+
+    func saveWithoutChanges(context: NSManagedObjectContext, goal: Goal) {
+        context.performAndWait {
+            if context.hasChanges {
+                try! context.save()
+            }
+            self.goalId = goal.objectID
+            self.performPostSaveActions(validation: (true, nil))
+        }
+    }
+
+    func saveAfterCreatingCopiedScheduleWithStart(
+        _ start: CalendarDateProvider,
+        context: NSManagedObjectContext,
+        goal: Goal,
+        initialPeriod: GoalPeriod
+    ) {
+        context.performAndWait {
+            context.rollback()
+        }
+        guard let cleanInitialSchedule = goal.activePaySchedule(on: initialPeriod.start) else {
+            Logger.debug("Could not get clean initial schedule in promptForMinorInitialScheduleUpdateIntent")
+            return
+        }
+
+        let current = scheduleController.currentValues()
+
+        let newSchedule = StagedPaySchedule(
+            amount: current.amount,
+            start: start,
+            end: current.end,
+            period: current.period,
+            payFrequency: current.payFrequency,
+            adjustMonthAmountAutomatically: current.adjustMonthAmountAutomatically
+        )
+
+        paySchedules[scheduleControllerIndex] = StagedPaySchedule(
+            amount: cleanInitialSchedule.amount,
+            start: cleanInitialSchedule.start,
+            end: CalendarDay(dateInDay: start)?.subtract(days: 1).start,
+            period: cleanInitialSchedule.period,
+            payFrequency: cleanInitialSchedule.payFrequency,
+            adjustMonthAmountAutomatically: cleanInitialSchedule.adjustMonthAmountAutomatically
+        )
+
+        paySchedules.insert(newSchedule, at: scheduleControllerIndex + 1)
+        self.setupScheduleController(stagedSchedule: newSchedule)
+        self.save()
+    }
+
+    func save() {
+        var validation: (valid: Bool, problem: String?)!
+        var shouldPerformPostSaveActions = true
+        let isNew = (goalId == nil)
+        let context = appDelegate.persistentContainer.newBackgroundContext()
+        context.performAndWait {
+            var goal: Goal!
+            if isNew {
+                goal = Goal(context: context)
+                goal.dateCreated = Date()
+            } else {
+                goal = Adjustment.inContext(goalId!, context: context)
+            }
+
+            // Delete all old schedules and replace them with new ones.
+            let oldSchedules = goal.paySchedules
+            for schedule in oldSchedules ?? [] {
+                // Need to explicity nullify relationship since delete rules
+                // won't be processed until context save.
+                schedule.goal = nil
+                context.delete(schedule)
+            }
+
+            paySchedules[scheduleControllerIndex] = scheduleController.currentValues()
+
+            for stagedSchedule in paySchedules {
+                let newSchedule = PaySchedule(context: context)
+                validation = newSchedule.propose(
+                    amount: stagedSchedule.amount,
+                    start: stagedSchedule.start,
+                    end: stagedSchedule.end,
+                    period: stagedSchedule.period,
+                    payFrequency: stagedSchedule.payFrequency,
+                    adjustMonthAmountAutomatically: stagedSchedule.adjustMonthAmountAutomatically,
+                    goal: goal,
+                    dateCreated: Date()
+                )
+                if !validation.valid {
+                    context.rollback()
+                    return
+                }
+            }
+
+            validation = goal.propose(
+                shortDescription: shortDescription,
+                parentGoal: Goal.inContext(parentGoal, context: context),
+                carryOverBalance: carryOverBalance
+            )
+
+            if validation.valid && goalId != nil {
+                let manager = ScheduleUpdateIntentManager(
+                    context: context,
+                    goalId: goalId!,
+                    current: scheduleController.currentValues(),
+                    delegate: self,
+                    present: self.present
+                )
+
+                if manager.shouldPromptForMinorInitialScheduleUpdateIntent() {
+                    // The following function is responsible for validating any
+                    // changes it makes, saving those changes, and performing post
+                    // save actions.
+                    DispatchQueue.main.async {
+                        manager.promptForMinorInitialScheduleUpdateIntent(context: context)
+                    }
+                    shouldPerformPostSaveActions = false
+                    return
+                }
+            }
+
+            if !validation.valid {
+                context.rollback()
+            } else {
+                if context.hasChanges {
+                    try! context.save()
+                }
+                goalId = goal.objectID
+            }
+        }
+        if shouldPerformPostSaveActions {
+            performPostSaveActions(validation: validation)
+        }
+    }
+
+    func performPostSaveActions(validation: (valid: Bool, problem: String?)) {
+        self.view.endEditing(false)
+
+        if validation.valid {
+            let goalOnViewContext: Goal = Goal.inContext(goalId)!
+            if let parentGoal = goalOnViewContext.parentGoal {
+                appDelegate.persistentContainer.viewContext.refresh(parentGoal, mergeChanges: true)
+            }
+            delegate?.addedOrChangedGoal(goalOnViewContext)
+            self.view.endEditing(false)
+            if self.navigationController!.viewControllers[0] == self {
+                self.navigationController!.dismiss(animated: true, completion: nil)
+            } else {
+                self.navigationController!.popViewController(animated: true)
+            }
+        } else {
+            let alert = UIAlertController(
+                title: "Couldn't Save",
+                message: validation.problem!,
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(
+                title: "Okay",
+                style: .default,
+                handler: nil
+            ))
+            present(alert, animated: true, completion: nil)
+        }
+    }
+}
+
 
 protocol AddGoalDelegate {
     func addedOrChangedGoal(_ goal: Goal)

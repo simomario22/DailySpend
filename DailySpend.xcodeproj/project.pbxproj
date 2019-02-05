@@ -43,6 +43,10 @@
 		C54E4F491EFD3984006A1CA3 /* ImageSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54E4F481EFD3984006A1CA3 /* ImageSelectorView.swift */; };
 		C5568B5E2186C3B9000F0301 /* PeriodBrowserController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5568B5D2186C3B9000F0301 /* PeriodBrowserController.swift */; };
 		C556D2541F247C6B008CA20E /* UIControl+Closures.swift in Sources */ = {isa = PBXBuildFile; fileRef = C556D2531F247C6B008CA20E /* UIControl+Closures.swift */; };
+		C55A279322081E24006CDEF4 /* DateFormatter+Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = C55A279222081E24006CDEF4 /* DateFormatter+Defaults.swift */; };
+		C55A279422081E94006CDEF4 /* DateFormatter+Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = C55A279222081E24006CDEF4 /* DateFormatter+Defaults.swift */; };
+		C55A279622082038006CDEF4 /* ScheduleUpdateIntentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C55A279522082038006CDEF4 /* ScheduleUpdateIntentManager.swift */; };
+		C55A27972208208E006CDEF4 /* ScheduleUpdateIntentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C55A279522082038006CDEF4 /* ScheduleUpdateIntentManager.swift */; };
 		C55AF80B21B37240008476F2 /* INSPhotoGallery.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C55AF80A21B37240008476F2 /* INSPhotoGallery.framework */; };
 		C55B336220A9318B00304680 /* ExpenseTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5117DB01FB94A410032F854 /* ExpenseTableViewCell.swift */; };
 		C55BA95921FE6C1800C768C2 /* ManagePaySchedulesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C55BA95821FE6C1800C768C2 /* ManagePaySchedulesController.swift */; };
@@ -305,6 +309,8 @@
 		C5568B5D2186C3B9000F0301 /* PeriodBrowserController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeriodBrowserController.swift; sourceTree = "<group>"; };
 		C556D2511F2466EB008CA20E /* ExpenseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpenseViewController.swift; sourceTree = "<group>"; };
 		C556D2531F247C6B008CA20E /* UIControl+Closures.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIControl+Closures.swift"; sourceTree = "<group>"; };
+		C55A279222081E24006CDEF4 /* DateFormatter+Defaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DateFormatter+Defaults.swift"; sourceTree = "<group>"; };
+		C55A279522082038006CDEF4 /* ScheduleUpdateIntentManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleUpdateIntentManager.swift; sourceTree = "<group>"; };
 		C55AF80A21B37240008476F2 /* INSPhotoGallery.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = INSPhotoGallery.framework; path = Carthage/Build/iOS/INSPhotoGallery.framework; sourceTree = "<group>"; };
 		C55BA95821FE6C1800C768C2 /* ManagePaySchedulesController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagePaySchedulesController.swift; sourceTree = "<group>"; };
 		C55CCFD01F9D44E4001EF0B4 /* UIColor+255.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+255.swift"; sourceTree = "<group>"; };
@@ -732,6 +738,7 @@
 			children = (
 				C546170C204A4AFF00689DED /* GoalViewController.swift */,
 				C5352728204B45CE0038E747 /* AddGoalViewController.swift */,
+				C55A279522082038006CDEF4 /* ScheduleUpdateIntentManager.swift */,
 				C5CB4D882116678200BB1EB9 /* GoalSelectorViewController.swift */,
 				C55BA95821FE6C1800C768C2 /* ManagePaySchedulesController.swift */,
 				C5B60A4621F3C93600BE6F4C /* PayScheduleTableViewController.swift */,
@@ -768,6 +775,7 @@
 			isa = PBXGroup;
 			children = (
 				C5D3124E21DD637A00BD0995 /* NSManagedObject+Context.swift */,
+				C55A279222081E24006CDEF4 /* DateFormatter+Defaults.swift */,
 				C5270BF2219690D50080878A /* UIAlertController+Actions.swift */,
 				C5E51E5B209FAF71005C674B /* UIImage+Color.swift */,
 				C5EE62A21E85769700CAEEE7 /* String+CharacterSet.swift */,
@@ -1061,6 +1069,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C55A27972208208E006CDEF4 /* ScheduleUpdateIntentManager.swift in Sources */,
+				C55A279422081E94006CDEF4 /* DateFormatter+Defaults.swift in Sources */,
 				C5956C2421FE9909009167A2 /* LongFormEntryTableViewCell.swift in Sources */,
 				C55BA95A21FE6C2A00C768C2 /* ManagePaySchedulesController.swift in Sources */,
 				C5B60A5321F3D8BA00BE6F4C /* PayScheduleTableViewController.swift in Sources */,
@@ -1223,6 +1233,7 @@
 				C5BD27FB2198E80D000C85F8 /* PeriodBrowserView.swift in Sources */,
 				C59AA77421B3483400F40762 /* GoalBalanceCache.swift in Sources */,
 				C5BD27FC2198E80D000C85F8 /* PeriodBrowserController.swift in Sources */,
+				C55A279622082038006CDEF4 /* ScheduleUpdateIntentManager.swift in Sources */,
 				C5BD27FD2198E80D000C85F8 /* ImageSelectorController.swift in Sources */,
 				C5BD27FE2198E80D000C85F8 /* TodayViewExpensesController.swift in Sources */,
 				C507D7CC21B3BE97000EB300 /* BorderedToolbar.swift in Sources */,
@@ -1244,6 +1255,7 @@
 				C5BD280A2198E80D000C85F8 /* CalendarPeriodPickerView.swift in Sources */,
 				C5BD280B2198E80D000C85F8 /* NavigationGoalPickerController.swift in Sources */,
 				C5B60A4721F3C93600BE6F4C /* PayScheduleTableViewController.swift in Sources */,
+				C55A279322081E24006CDEF4 /* DateFormatter+Defaults.swift in Sources */,
 				C5956C2321FE938C009167A2 /* LongFormEntryTableViewCell.swift in Sources */,
 				C5BD280C2198E80D000C85F8 /* TodayViewController.swift in Sources */,
 				C5BD280D2198E80D000C85F8 /* UIColor+255.swift in Sources */,

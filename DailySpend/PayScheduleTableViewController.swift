@@ -54,6 +54,10 @@ class PayScheduleTableViewController : NSObject {
         if !hasIncrementalPayment {
             self.payFrequency = Period(scope: .Day, multiplier: 1)
         }
+
+        if self.period.scope != .Month {
+            self.adjustMonthAmountAutomatically = true
+        }
     }
 
     func currentValues() -> StagedPaySchedule {

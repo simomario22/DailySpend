@@ -129,10 +129,11 @@ class LongFormEntryTableViewCell: UITableViewCell {
             let accessoryViewFrame = subviews.compactMap { $0 as? UIButton }.first?.frame
             if accessoryViewFrame != nil && textView != nil {
                 // No text to the right of the horizontal origin of the frame.
+                let horizontalOrigin = accessoryViewFrame!.origin.x - margin
                 let frame = CGRect(
-                    x: accessoryViewFrame!.origin.x,
+                    x: horizontalOrigin,
                     y: 0,
-                    width: self.bounds.size.width - accessoryViewFrame!.origin.x,
+                    width: self.bounds.size.width - horizontalOrigin,
                     height: self.bounds.size.height
                 )
 
