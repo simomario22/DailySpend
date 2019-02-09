@@ -19,10 +19,9 @@ class ImportController {
     func promptToImport(url: URL) {
         let importHandler: (UIAlertAction) -> Void = { _ in
             // Initialize import feedback message.
-            var title = "Success"
-            var message = "The import has succeeded. Your data file has been " +
-            "loaded into the app."
-
+            var title = LocalizedString("import.success.title")
+            var message = LocalizedString("import.success.message")
+            
             do {
                 // Attempt to import.
                 try Importer.importURL(url)
@@ -34,28 +33,17 @@ class ImportController {
             } catch ExportError.recoveredFromPersistentStoreProblem {
                 // Recovered from failure due to an error moving or accessing the
                 // persistent store.
-                title = "Failed"
-                message = "Import failed. Please check that your device isn't " +
-                    "running low on space. Your data has been restored " +
-                "to the state before the import."
+                title = LocalizedString("import.failed.title")
+                message = LocalizedString("import.failed.message.recoveredFromPersistentStoreProblem")
             } catch ExportError.recoveredFromBadFormat {
                 // Recovered from failure due to an error parsing the import file.
-                title = "Failed"
-                message = "Import failed. Please check that the file you " +
-                    "are trying to import is valid. Your data has been " +
-                "restored to the state before the import."
+                title = LocalizedString("import.failed.title")
+                message = LocalizedString("import.failed.message.recoveredFromBadFormat")
             } catch ExportError.unrecoverableDatabaseInBadState {
                 // Could not recover due to being unable to promote the backup
                 // persistent store to the primary persistent store.
-                title = "Failed"
-                message = "Import failed. Unfortunately, we were not able " +
-                    "to recover to the state before import, possibly " +
-                    "due to a number of factors, one of which could be " +
-                    "low space on your device. Check that the imported " +
-                    "file is in a correct format and that your device " +
-                    "has sufficient space and try again. Sorry for " +
-                    "this inconvenience. If you need help, please " +
-                "contact support."
+                title = LocalizedString("import.failed.title")
+                message = LocalizedString("import.failed.message.unrecoverableDatabaseInBadState")
             } catch ExportError.recoveredFromBadFormatWithContextChange {
                 // The context has changed. Any ManagedObjects stored in memory
                 // will be invalidated and cause errors if used.
@@ -66,31 +54,21 @@ class ImportController {
                 self.window?.rootViewController = initialVC
                 self.visibleVC = initialVC
 
-                title = "Failed"
-                message = "Import failed. Please check that the file you " +
-                    "are trying to import is valid. Your data has been restored " +
-                "to the state before the import."
+                title = LocalizedString("import.failed.title")
+                message = LocalizedString("import.failed.message.recoveredFromBadFormatWithContextChange")
+
             } catch ExportError.recoveredFromFilesystemError {
                 // Recovered from failure due to filesystem operations.
-                title = "Failed"
-                message = "Import failed. Please check that your device isn't " +
-                    "running low on space. Your data has been restored " +
-                "to the state before the import."
+                title = LocalizedString("import.failed.title")
+                message = LocalizedString("import.failed.message.recoveredFromFilesystemError")
             } catch ExportError.unrecoverableFilesystemError {
                 // Could not recover from a failure due to filesystem operations.
-                title = "Failed"
-                message = "Import failed. Unfortunately, we were not able " +
-                    "to recover to the state before import, possibly " +
-                    "due to a number of factors, one of which could be " +
-                    "low space on your device. Check that the imported " +
-                    "file is in a correct format and that your device " +
-                    "has sufficient space and try again. Sorry for " +
-                    "this inconvenience. If you need help, please " +
-                "contact support."
+                title = LocalizedString("import.failed.title")
+                message = LocalizedString("import.failed.message.unrecoverableFilesystemError")
             } catch {
                 // Catch-all to satisfy function type requirements.
-                title = "Failed"
-                message = "There was an unknown error."
+                title = LocalizedString("import.failed.title")
+                message = LocalizedString("import.failed.message.unknownError")
                 Logger.debug("\(error)")
             }
 
@@ -98,27 +76,23 @@ class ImportController {
             let alert = UIAlertController(title: title,
                                           message: message,
                                           preferredStyle: .alert)
-            let okay = UIAlertAction(title: "Okay", style: .default, handler: nil)
+            let okay = UIAlertAction(title: LocalizedString("global.acknowledge"), style: .default, handler: nil)
             alert.addAction(okay)
             self.visibleVC?.present(alert, animated: true, completion: nil)
         }
 
 
         // Prompt user as to whether they would like to import.
-        let title = "Import"
-        let message = "Would you like to import this data file to your app? " +
-            "This will overwrite any existing data. If you haven't " +
-            "made a backup of your existing data, tap cancel, go to " +
-            "the Settings menu, export your data, and make a copy " +
-            "somewhere safe."
+        let title = LocalizedString("import.prompt.title")
+        let message = LocalizedString("import.prompt.message")
 
         let alert = UIAlertController(title: title,
                                       message: message,
                                       preferredStyle: .alert)
-        let cancel = UIAlertAction(title: "Cancel",
+        let cancel = UIAlertAction(title: LocalizedString("global.cancel"),
                                    style: .cancel,
                                    handler: nil)
-        let delete = UIAlertAction(title: "Overwrite and Import",
+        let delete = UIAlertAction(title: LocalizedString("import.confirm.overwriteAndImport"),
                                    style: .destructive,
                                    handler: importHandler)
         alert.addAction(cancel)

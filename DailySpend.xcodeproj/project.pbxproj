@@ -12,6 +12,12 @@
 		C507D7CA21B3BE83000EB300 /* BorderedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C507D7C821B3BE77000EB300 /* BorderedView.swift */; };
 		C507D7CC21B3BE97000EB300 /* BorderedToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C507D7CB21B3BE97000EB300 /* BorderedToolbar.swift */; };
 		C507D7CD21B3BEAD000EB300 /* BorderedToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C507D7CB21B3BE97000EB300 /* BorderedToolbar.swift */; };
+		C50B5B0E220AA4BC001854A7 /* ImportController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C50B5B0D220AA4BC001854A7 /* ImportController.swift */; };
+		C50B5B0F220AA4F0001854A7 /* ImportController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C50B5B0D220AA4BC001854A7 /* ImportController.swift */; };
+		C50B5B13220AAB1D001854A7 /* Localizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C50B5B12220AAB1D001854A7 /* Localizer.swift */; };
+		C50B5B14220AAB81001854A7 /* Localizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C50B5B12220AAB1D001854A7 /* Localizer.swift */; };
+		C50B5B15220AB93A001854A7 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = C50B5B17220AB93A001854A7 /* Localizable.strings */; };
+		C50B5B1C220AC116001854A7 /* Localizable.plist in Resources */ = {isa = PBXBuildFile; fileRef = C50B5B1B220AC116001854A7 /* Localizable.plist */; };
 		C517B1FE1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = C517B1EA1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt */; };
 		C517B1FF1EBC134200CDAA17 /* UICountingLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = C517B1EC1EBC134200CDAA17 /* UICountingLabel.m */; };
 		C518791A1F00416F00881FB6 /* ZipArchive.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C5A81A7A1F0040540032D9F1 /* ZipArchive.framework */; };
@@ -270,6 +276,10 @@
 		C503F1391EA1A8A100FA95A7 /* Export.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Export.swift; sourceTree = "<group>"; };
 		C507D7C821B3BE77000EB300 /* BorderedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderedView.swift; sourceTree = "<group>"; };
 		C507D7CB21B3BE97000EB300 /* BorderedToolbar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BorderedToolbar.swift; sourceTree = "<group>"; };
+		C50B5B0D220AA4BC001854A7 /* ImportController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportController.swift; sourceTree = "<group>"; };
+		C50B5B12220AAB1D001854A7 /* Localizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localizer.swift; sourceTree = "<group>"; };
+		C50B5B16220AB93A001854A7 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		C50B5B1B220AC116001854A7 /* Localizable.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Localizable.plist; sourceTree = "<group>"; };
 		C5108977201BE8A1005AA672 /* DailySpend 6.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "DailySpend 6.xcdatamodel"; sourceTree = "<group>"; };
 		C5117DB01FB94A410032F854 /* ExpenseTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseTableViewCell.swift; sourceTree = "<group>"; };
 		C517B1EA1EBC134200CDAA17 /* UICountingLabel-LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "UICountingLabel-LICENSE.txt"; sourceTree = "<group>"; };
@@ -465,6 +475,7 @@
 		C507D7C721B3BE3F000EB300 /* Convenience Classes */ = {
 			isa = PBXGroup;
 			children = (
+				C50B5B12220AAB1D001854A7 /* Localizer.swift */,
 				C5631E8A21D0B21E00561CE3 /* ExpenseSuggestionDataProvider.swift */,
 				C59AA77321B3483400F40762 /* GoalBalanceCache.swift */,
 			);
@@ -593,6 +604,8 @@
 			children = (
 				C538FAB71E85696200295062 /* Main.storyboard */,
 				C5781D9A1E6E2060006BBC03 /* AppDelegate.swift */,
+				C50B5B17220AB93A001854A7 /* Localizable.strings */,
+				C50B5B1B220AC116001854A7 /* Localizable.plist */,
 				C5E51E51209EC44B005C674B /* Today View */,
 				C53DFD13210C1991001F070A /* Expense View */,
 				C5E51E54209EC481005C674B /* Adjustment View */,
@@ -767,6 +780,7 @@
 			children = (
 				C5C65A211EBBFBC6002D1B12 /* ExportViewController.swift */,
 				C503F1391EA1A8A100FA95A7 /* Export.swift */,
+				C50B5B0D220AA4BC001854A7 /* ImportController.swift */,
 			);
 			name = "Export View and Logic";
 			sourceTree = "<group>";
@@ -1001,6 +1015,7 @@
 			files = (
 				C5BD28232198E80D000C85F8 /* UICountingLabel-LICENSE.txt in Resources */,
 				C5BD28242198E80D000C85F8 /* cog@2x.png in Resources */,
+				C50B5B1C220AC116001854A7 /* Localizable.plist in Resources */,
 				C5BD28252198E80D000C85F8 /* cog@3x.png in Resources */,
 				C5BD28262198E80D000C85F8 /* LaunchScreen.storyboard in Resources */,
 				C5BD28272198E80D000C85F8 /* cal_recur@3x.png in Resources */,
@@ -1008,6 +1023,7 @@
 				C5BD28292198E80D000C85F8 /* VENCalculatorIconBackspace.png in Resources */,
 				C5631E9521D1685500561CE3 /* calendar@2x.png in Resources */,
 				C5BD282A2198E80D000C85F8 /* today@2x.png in Resources */,
+				C50B5B15220AB93A001854A7 /* Localizable.strings in Resources */,
 				C5BD282B2198E80D000C85F8 /* Assets.xcassets in Resources */,
 				C5BD282C2198E80D000C85F8 /* cal_recur@2x.png in Resources */,
 				C5BD282D2198E80D000C85F8 /* cal@3x.png in Resources */,
@@ -1069,6 +1085,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C50B5B14220AAB81001854A7 /* Localizer.swift in Sources */,
+				C50B5B0F220AA4F0001854A7 /* ImportController.swift in Sources */,
 				C55A27972208208E006CDEF4 /* ScheduleUpdateIntentManager.swift in Sources */,
 				C55A279422081E94006CDEF4 /* DateFormatter+Defaults.swift in Sources */,
 				C5956C2421FE9909009167A2 /* LongFormEntryTableViewCell.swift in Sources */,
@@ -1200,11 +1218,13 @@
 				C5BD27E32198E80D000C85F8 /* UITextField+Size.swift in Sources */,
 				C5BD27E42198E80D000C85F8 /* Expense+CoreDataClass.swift in Sources */,
 				C5631E8B21D0B21E00561CE3 /* ExpenseSuggestionDataProvider.swift in Sources */,
+				C50B5B0E220AA4BC001854A7 /* ImportController.swift in Sources */,
 				C5631E9A21D16B7300561CE3 /* RelativeDatePicker.swift in Sources */,
 				C5BD27E52198E80D000C85F8 /* Adjustment+CoreDataClass.swift in Sources */,
 				C5BD27E62198E80D000C85F8 /* TextFieldTableViewCell.swift in Sources */,
 				C507D7C921B3BE77000EB300 /* BorderedView.swift in Sources */,
 				C5BD27E72198E80D000C85F8 /* PauseViewController.swift in Sources */,
+				C50B5B13220AAB1D001854A7 /* Localizer.swift in Sources */,
 				C5BD27E82198E80D000C85F8 /* BorderedTextField.swift in Sources */,
 				C5B60A4F21F3CB7300BE6F4C /* PaySchedule+CoreDataClass.swift in Sources */,
 				C5631E9D21D1F2FC00561CE3 /* ManageQuickEntryViewController.swift in Sources */,
@@ -1299,6 +1319,14 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		C50B5B17220AB93A001854A7 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C50B5B16220AB93A001854A7 /* en */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
 		C538FAB71E85696200295062 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (

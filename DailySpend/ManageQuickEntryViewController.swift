@@ -9,7 +9,7 @@
 import UIKit
 
 class ManageQuickEntryViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
-
+    
     private var tableView: UITableView!
     private var toolbar: UIToolbar!
     private var values = [String]() {

@@ -1,0 +1,44 @@
+/* Label for a button acknowledging of a message */
+"global.acknowledge" = "Okay";
+
+/* Label for a button cancelling an action */
+"global.cancel" = "Cancel";
+
+/* Title for a dialog */
+"import.prompt.title" = "Import";
+
+/* Message presented to the user in a dialog */
+"import.prompt.message" = "Would you like to import this data file to your app? This will overwrite any existing data. If you haven't made a backup of your existing data, tap cancel, go to the Settings menu, export your data, and make a copy somewhere safe.";
+
+/* Label for a destructive button */
+"import.confirm.overwriteAndImport" = "Overwrite and Import";
+
+/* Label for the title of a dialog */
+"import.success.title" = "Success";
+
+/* Message presented to the user in a dialog */
+"import.success.message" = "The import has succeeded. Your data file has been loaded into the app.";
+
+/* Label for the title of a dialog */
+"import.failure.title" = "Failure";
+
+/* Message presented to the user in a dialog */
+"import.failed.message.recoveredFromPersistentStoreProblem" = "Import failed. Please check that your device isn't running low on space. Your data has been restored to the state before the import.";
+
+/* Message presented to the user in a dialog */
+"import.failed.message.recoveredFromBadFormat" = "Import failed. Please check that the file you are trying to import is valid. Your data has been restored to the state before the import.";
+
+/* Message presented to the user in a dialog */
+"import.failed.message.unrecoverableDatabaseInBadState" = "Import failed. Unfortunately, we were not able to recover to the state before import, possibly due to a number of factors, one of which could be low space on your device. Check that the imported file is in a correct format and that your device has sufficient space and try again. Sorry for this inconvenience. If you need help, please contact support.";
+
+/* Message presented to the user in a dialog */
+"import.failed.message.recoveredFromBadFormatWithContextChange" = "Import failed. Please check that the file you are trying to import is valid. Your data has been restored to the state before the import.";
+
+/* Message presented to the user in a dialog */
+"import.failed.message.recoveredFromFilesystemError" = "Import failed. Please check that your device isn't running low on space. Your data has been restored to the state before the import.";
+
+/* Message presented to the user in a dialog */
+"import.failed.message.unrecoverableFilesystemError" = "Import failed. Unfortunately, we were not able to recover to the state before import, possibly due to a number of factors, one of which could be low space on your device. Check that the imported file is in a correct format and that your device has sufficient space and try again. Sorry for this inconvenience. If you need help, please contact support.";
+
+/* Message presented to the user in a dialog */
+"import.failed.message.unknownError" = "There was an unknown error.";
