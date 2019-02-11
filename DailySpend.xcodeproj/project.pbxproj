@@ -36,6 +36,10 @@
 		C53DFD12210C1989001F070A /* ImageSelectorController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C53DFD11210C1989001F070A /* ImageSelectorController.swift */; };
 		C544E5E9217D2C700098AB17 /* ReverseNavigationAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C544E5E8217D2C700098AB17 /* ReverseNavigationAnimator.swift */; };
 		C546170D204A4AFF00689DED /* GoalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C546170C204A4AFF00689DED /* GoalViewController.swift */; };
+		C54781A32211280D00FEED6B /* PaySchedule+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54781A12211280C00FEED6B /* PaySchedule+CoreDataProperties.swift */; };
+		C54781A42211280D00FEED6B /* PaySchedule+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54781A22211280C00FEED6B /* PaySchedule+CoreDataClass.swift */; };
+		C54781A52211282D00FEED6B /* PaySchedule+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54781A22211280C00FEED6B /* PaySchedule+CoreDataClass.swift */; };
+		C54781A62211282D00FEED6B /* PaySchedule+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54781A12211280C00FEED6B /* PaySchedule+CoreDataProperties.swift */; };
 		C54ABD9520561DB100334293 /* LICENCE_VENMO.txt in Resources */ = {isa = PBXBuildFile; fileRef = C54ABD9420561DB100334293 /* LICENCE_VENMO.txt */; };
 		C54ABD9720562A9900334293 /* ExplanatoryTextTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54ABD9620562A9900334293 /* ExplanatoryTextTableViewCell.swift */; };
 		C54E324521AB69560014160A /* ReviewViewAdjustmentsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54E324421AB69560014160A /* ReviewViewAdjustmentsController.swift */; };
@@ -121,10 +125,6 @@
 		C5B367D01EBBD65E006B5ADC /* cog@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5B367CD1EBBD65E006B5ADC /* cog@2x.png */; };
 		C5B367D11EBBD65E006B5ADC /* cog@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5B367CE1EBBD65E006B5ADC /* cog@3x.png */; };
 		C5B60A4721F3C93600BE6F4C /* PayScheduleTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5B60A4621F3C93600BE6F4C /* PayScheduleTableViewController.swift */; };
-		C5B60A4F21F3CB7300BE6F4C /* PaySchedule+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5B60A4D21F3CB7300BE6F4C /* PaySchedule+CoreDataClass.swift */; };
-		C5B60A5021F3CB7300BE6F4C /* PaySchedule+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5B60A4E21F3CB7300BE6F4C /* PaySchedule+CoreDataProperties.swift */; };
-		C5B60A5121F3D8B500BE6F4C /* PaySchedule+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5B60A4D21F3CB7300BE6F4C /* PaySchedule+CoreDataClass.swift */; };
-		C5B60A5221F3D8B500BE6F4C /* PaySchedule+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5B60A4E21F3CB7300BE6F4C /* PaySchedule+CoreDataProperties.swift */; };
 		C5B60A5321F3D8BA00BE6F4C /* PayScheduleTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5B60A4621F3C93600BE6F4C /* PayScheduleTableViewController.swift */; };
 		C5B6CBC22079886B00B78069 /* CalendarPeriodPickerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5B6CBC12079886B00B78069 /* CalendarPeriodPickerTableViewCell.swift */; };
 		C5BB61E52071C30800EC97C2 /* CalendarPeriod.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5BB61E42071C30800EC97C2 /* CalendarPeriod.swift */; };
@@ -301,6 +301,8 @@
 		C53DFD11210C1989001F070A /* ImageSelectorController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSelectorController.swift; sourceTree = "<group>"; };
 		C544E5E8217D2C700098AB17 /* ReverseNavigationAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReverseNavigationAnimator.swift; sourceTree = "<group>"; };
 		C546170C204A4AFF00689DED /* GoalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalViewController.swift; sourceTree = "<group>"; };
+		C54781A12211280C00FEED6B /* PaySchedule+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "PaySchedule+CoreDataProperties.swift"; path = "DailySpend/PaySchedule+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		C54781A22211280C00FEED6B /* PaySchedule+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "PaySchedule+CoreDataClass.swift"; path = "DailySpend/PaySchedule+CoreDataClass.swift"; sourceTree = "<group>"; };
 		C54ABD9420561DB100334293 /* LICENCE_VENMO.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENCE_VENMO.txt; sourceTree = "<group>"; };
 		C54ABD9620562A9900334293 /* ExplanatoryTextTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExplanatoryTextTableViewCell.swift; sourceTree = "<group>"; };
 		C54BF5B41FF1911A007F628D /* ExpenseCellsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseCellsController.swift; sourceTree = "<group>"; };
@@ -378,8 +380,6 @@
 		C5B367CE1EBBD65E006B5ADC /* cog@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cog@3x.png"; sourceTree = "<group>"; };
 		C5B60A4621F3C93600BE6F4C /* PayScheduleTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayScheduleTableViewController.swift; sourceTree = "<group>"; };
 		C5B60A4821F3C9C400BE6F4C /* DailySpend 7.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "DailySpend 7.xcdatamodel"; sourceTree = "<group>"; };
-		C5B60A4D21F3CB7300BE6F4C /* PaySchedule+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PaySchedule+CoreDataClass.swift"; sourceTree = "<group>"; };
-		C5B60A4E21F3CB7300BE6F4C /* PaySchedule+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PaySchedule+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		C5B6CBC12079886B00B78069 /* CalendarPeriodPickerTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalendarPeriodPickerTableViewCell.swift; sourceTree = "<group>"; };
 		C5BA55B21E8D92C800256E7A /* InitialAdjustmentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InitialAdjustmentViewController.swift; sourceTree = "<group>"; };
 		C5BA55B41E8DAB0E00256E7A /* ReviewTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReviewTableViewCell.swift; sourceTree = "<group>"; };
@@ -543,8 +543,8 @@
 		C56500201E837F3A009D64F0 /* Managed Object Classes */ = {
 			isa = PBXGroup;
 			children = (
-				C5B60A4D21F3CB7300BE6F4C /* PaySchedule+CoreDataClass.swift */,
-				C5B60A4E21F3CB7300BE6F4C /* PaySchedule+CoreDataProperties.swift */,
+				C54781A22211280C00FEED6B /* PaySchedule+CoreDataClass.swift */,
+				C54781A12211280C00FEED6B /* PaySchedule+CoreDataProperties.swift */,
 				C573B9F220324C410025A5A2 /* Goal+CoreDataClass.swift */,
 				C573B9F320324C410025A5A2 /* Goal+CoreDataProperties.swift */,
 				C573B9FA20324CDA0025A5A2 /* Adjustment+CoreDataClass.swift */,
@@ -1069,13 +1069,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C54781A52211282D00FEED6B /* PaySchedule+CoreDataClass.swift in Sources */,
+				C54781A62211282D00FEED6B /* PaySchedule+CoreDataProperties.swift in Sources */,
 				C55A27972208208E006CDEF4 /* ScheduleUpdateIntentManager.swift in Sources */,
 				C55A279422081E94006CDEF4 /* DateFormatter+Defaults.swift in Sources */,
 				C5956C2421FE9909009167A2 /* LongFormEntryTableViewCell.swift in Sources */,
 				C55BA95A21FE6C2A00C768C2 /* ManagePaySchedulesController.swift in Sources */,
 				C5B60A5321F3D8BA00BE6F4C /* PayScheduleTableViewController.swift in Sources */,
-				C5B60A5121F3D8B500BE6F4C /* PaySchedule+CoreDataClass.swift in Sources */,
-				C5B60A5221F3D8B500BE6F4C /* PaySchedule+CoreDataProperties.swift in Sources */,
 				C5D3125021DD639500BD0995 /* NSManagedObject+Context.swift in Sources */,
 				C5D3124D21DACF9500BD0995 /* BalanceBarView.swift in Sources */,
 				C5A416F821BA2A1C0057DB47 /* BalanceBarController.swift in Sources */,
@@ -1206,7 +1206,6 @@
 				C507D7C921B3BE77000EB300 /* BorderedView.swift in Sources */,
 				C5BD27E72198E80D000C85F8 /* PauseViewController.swift in Sources */,
 				C5BD27E82198E80D000C85F8 /* BorderedTextField.swift in Sources */,
-				C5B60A4F21F3CB7300BE6F4C /* PaySchedule+CoreDataClass.swift in Sources */,
 				C5631E9D21D1F2FC00561CE3 /* ManageQuickEntryViewController.swift in Sources */,
 				C5BD27E92198E80D000C85F8 /* UIView+MultipleSubviews.swift in Sources */,
 				C5BD27EA2198E80D000C85F8 /* ImageSelectorView.swift in Sources */,
@@ -1218,11 +1217,11 @@
 				C5BD27EF2198E80D000C85F8 /* Logger.swift in Sources */,
 				C5631E8821CF683400561CE3 /* DescriptionTextView.swift in Sources */,
 				C5BD27F02198E80D000C85F8 /* SegmentedControlTableViewCell.swift in Sources */,
+				C54781A32211280D00FEED6B /* PaySchedule+CoreDataProperties.swift in Sources */,
 				C5BD27F12198E80D000C85F8 /* PickerTableViewCell.swift in Sources */,
 				C5BD27F22198E80D000C85F8 /* DatePickerTableViewCell.swift in Sources */,
 				C5BD27F32198E80D000C85F8 /* Adjustment+CoreDataProperties.swift in Sources */,
 				C5BD27F42198E80D000C85F8 /* CalendarDay.swift in Sources */,
-				C5B60A5021F3CB7300BE6F4C /* PaySchedule+CoreDataProperties.swift in Sources */,
 				C5BD27F52198E80D000C85F8 /* AddPauseViewController.swift in Sources */,
 				C5BD27F62198E80D000C85F8 /* CalendarWeek.swift in Sources */,
 				C5BD27F72198E80D000C85F8 /* Pause+CoreDataProperties.swift in Sources */,
@@ -1244,6 +1243,7 @@
 				C5D3124F21DD637A00BD0995 /* NSManagedObject+Context.swift in Sources */,
 				C5631E8521CF64B800561CE3 /* DSButton.swift in Sources */,
 				C5BD28022198E80D000C85F8 /* UITextView+Margins.swift in Sources */,
+				C54781A42211280D00FEED6B /* PaySchedule+CoreDataClass.swift in Sources */,
 				C5BD28032198E80D000C85F8 /* ExplanatoryTextTableViewCell.swift in Sources */,
 				C5BD28042198E80D000C85F8 /* AddGoalViewController.swift in Sources */,
 				C5BD28052198E80D000C85F8 /* ChoiceTableViewCell.swift in Sources */,
