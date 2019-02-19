@@ -40,6 +40,8 @@
 		C54781A42211280D00FEED6B /* PaySchedule+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54781A22211280C00FEED6B /* PaySchedule+CoreDataClass.swift */; };
 		C54781A52211282D00FEED6B /* PaySchedule+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54781A22211280C00FEED6B /* PaySchedule+CoreDataClass.swift */; };
 		C54781A62211282D00FEED6B /* PaySchedule+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54781A12211280C00FEED6B /* PaySchedule+CoreDataProperties.swift */; };
+		C54781A822112D2E00FEED6B /* GoalNavigationTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54781A722112D2E00FEED6B /* GoalNavigationTitleView.swift */; };
+		C54781A9221249E100FEED6B /* GoalNavigationTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54781A722112D2E00FEED6B /* GoalNavigationTitleView.swift */; };
 		C54ABD9520561DB100334293 /* LICENCE_VENMO.txt in Resources */ = {isa = PBXBuildFile; fileRef = C54ABD9420561DB100334293 /* LICENCE_VENMO.txt */; };
 		C54ABD9720562A9900334293 /* ExplanatoryTextTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54ABD9620562A9900334293 /* ExplanatoryTextTableViewCell.swift */; };
 		C54E324521AB69560014160A /* ReviewViewAdjustmentsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54E324421AB69560014160A /* ReviewViewAdjustmentsController.swift */; };
@@ -303,6 +305,7 @@
 		C546170C204A4AFF00689DED /* GoalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalViewController.swift; sourceTree = "<group>"; };
 		C54781A12211280C00FEED6B /* PaySchedule+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "PaySchedule+CoreDataProperties.swift"; path = "DailySpend/PaySchedule+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		C54781A22211280C00FEED6B /* PaySchedule+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "PaySchedule+CoreDataClass.swift"; path = "DailySpend/PaySchedule+CoreDataClass.swift"; sourceTree = "<group>"; };
+		C54781A722112D2E00FEED6B /* GoalNavigationTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalNavigationTitleView.swift; sourceTree = "<group>"; };
 		C54ABD9420561DB100334293 /* LICENCE_VENMO.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENCE_VENMO.txt; sourceTree = "<group>"; };
 		C54ABD9620562A9900334293 /* ExplanatoryTextTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExplanatoryTextTableViewCell.swift; sourceTree = "<group>"; };
 		C54BF5B41FF1911A007F628D /* ExpenseCellsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseCellsController.swift; sourceTree = "<group>"; };
@@ -516,6 +519,7 @@
 		C535275F204CF5B50038E747 /* Custom UI Elements */ = {
 			isa = PBXGroup;
 			children = (
+				C54781A722112D2E00FEED6B /* GoalNavigationTitleView.swift */,
 				C5631E9921D16B7300561CE3 /* RelativeDatePicker.swift */,
 				C5631E8721CF683400561CE3 /* DescriptionTextView.swift */,
 				C5631E8421CF64B800561CE3 /* DSButton.swift */,
@@ -524,7 +528,6 @@
 				C586813B1F2E85D5008D3AEE /* BorderedTextField.swift */,
 				C54E4F481EFD3984006A1CA3 /* ImageSelectorView.swift */,
 				C59B004721BE0FBB00C9316A /* ButtonPickerView.swift */,
-				C5631E8D21D15A0B00561CE3 /* Collection+SafeIndex.swift */,
 				C518791E1F00461000881FB6 /* PhotoBox.swift */,
 				C5BB61E62071ECF400EC97C2 /* CalendarPeriodPickerView.swift */,
 			);
@@ -774,6 +777,7 @@
 		C5E51E56209EC4C8005C674B /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				C5631E8D21D15A0B00561CE3 /* Collection+SafeIndex.swift */,
 				C5D3124E21DD637A00BD0995 /* NSManagedObject+Context.swift */,
 				C55A279222081E24006CDEF4 /* DateFormatter+Defaults.swift */,
 				C5270BF2219690D50080878A /* UIAlertController+Actions.swift */,
@@ -1069,6 +1073,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C54781A9221249E100FEED6B /* GoalNavigationTitleView.swift in Sources */,
 				C54781A52211282D00FEED6B /* PaySchedule+CoreDataClass.swift in Sources */,
 				C54781A62211282D00FEED6B /* PaySchedule+CoreDataProperties.swift in Sources */,
 				C55A27972208208E006CDEF4 /* ScheduleUpdateIntentManager.swift in Sources */,
@@ -1193,6 +1198,7 @@
 				C5BD27DC2198E80D000C85F8 /* AddAdjustmentViewController.swift in Sources */,
 				C5BD27DD2198E80D000C85F8 /* ExportViewController.swift in Sources */,
 				C5BD27DE2198E80D000C85F8 /* String+CharacterSet.swift in Sources */,
+				C54781A822112D2E00FEED6B /* GoalNavigationTitleView.swift in Sources */,
 				C5BD27DF2198E80D000C85F8 /* CalculatorInputView.swift in Sources */,
 				C5BD27E02198E80D000C85F8 /* IndentedLabelTableViewCell.swift in Sources */,
 				C5BD27E12198E80D000C85F8 /* AddExpenseViewController.swift in Sources */,

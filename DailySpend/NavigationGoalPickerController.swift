@@ -17,10 +17,8 @@ class NavigationGoalPickerController: NSObject, UITableViewDataSource, UITableVi
     private let lastViewedGoalKey = "lastUsedGoal"
     private var titleViewWidth: CGFloat = 0
     private var detailViewLanguage: Bool = false
+    private var titleView: GoalNavigationTitleView!
     
-    private var view: UIView!
-    private var navigationItem: UINavigationItem!
-    private var navigationBar: UINavigationBar!
     private var present: ((UIViewController, Bool, (() -> Void)?) -> ())!
     
     private(set) var currentGoal: Goal? {
@@ -31,28 +29,18 @@ class NavigationGoalPickerController: NSObject, UITableViewDataSource, UITableVi
             if detailViewLanguage {
                 title += " Detail"
             }
-            let navHeight = self.navigationBar.frame.size.height
-            self.navigationItem.titleView = makeTitleView(height: navHeight, width: titleViewWidth, title: title)
-            setExplainer(!tableShown)
+
+            titleView.title = title
+            titleView.isCollapsed = false
         }
     }
     private var goals: [Goal.IndentedGoal]
-    private var tableShown: Bool
-    private var setExplainer: ((Bool) -> ())!
+    private var isTableVisible: Bool
 
-    private var maxTableHeight: CGFloat {
-        let navHeight = self.navigationBar.frame.size.height
-        let statusBarSize = UIApplication.shared.statusBarFrame.size
-        let statusBarHeight = min(statusBarSize.width, statusBarSize.height)
-        
-        return view.frame.height - navHeight - statusBarHeight
-    }
-    private var trueTableHeight: CGFloat {
-        return cellHeight * CGFloat(goals.count + 1)
-    }
-    private var tableHeight: CGFloat {
-        return min(cellHeight * CGFloat(goals.count + 1), maxTableHeight)
-    }
+
+    private var hiddenTableFrame: CGRect = .zero
+    private var visibleTableFrame: CGRect = .zero
+    private var maxTableHeight: CGFloat = 0
     
     private var goalTable: UITableView!
     private var dimmingView: UIButton!
@@ -60,40 +48,87 @@ class NavigationGoalPickerController: NSObject, UITableViewDataSource, UITableVi
     var delegate: GoalPickerDelegate?
 
     override init() {
-        self.tableShown = false
+        self.isTableVisible = false
         self.goals = []
-        self.currentGoal = nil
         super.init()
-        
+
+        self.goalTable = UITableView()
+        goalTable.dataSource = self
+        goalTable.delegate = self
+        goalTable.backgroundColor = .groupTableViewBackground
+
+        self.dimmingView = UIButton()
+        dimmingView.backgroundColor = .black
+        dimmingView.alpha = 0
+        dimmingView.isHidden = true
+        dimmingView.add(for: .touchUpInside) {
+            self.hideTable()
+            self.titleView.isCollapsed = true
+            self.isTableVisible = false
+        }
+
         self.goals = getAllGoals()
         self.currentGoal = getLastUsedGoal()
         delegate?.goalChanged(newGoal: self.currentGoal)
     }
-    public func makeTitleView(
+
+    public func makeTitleView(width: CGFloat, height: CGFloat) -> UIView {
+        let frame = CGRect(x: 0, y: 0, width: width, height: height)
+        let titleView = GoalNavigationTitleView(frame: frame)
+        titleView.didTap = {
+            if self.isTableVisible {
+                self.hideTable()
+                titleView.isCollapsed = true
+            } else {
+                self.showTable()
+                titleView.isCollapsed = false
+            }
+            self.isTableVisible = !self.isTableVisible
+        }
+        return titleView
+    }
+
+    public func changedViewController(
         view: UIView,
-        item: UINavigationItem,
         bar: UINavigationBar,
+        goalNavigationTitleView: UIView,
         present: @escaping (UIViewController, Bool, (() -> Void)?) -> (),
-        detailViewLanguage: Bool,
-        buttonWidth: CGFloat? = nil
+        detailViewLanguage: Bool
     ) {
-        self.view = view
-        self.navigationItem = item
-        self.navigationBar = bar
         self.present = present
         self.detailViewLanguage = detailViewLanguage
+        self.titleView = (goalNavigationTitleView as! GoalNavigationTitleView)
         
         var title = self.currentGoal?.shortDescription ?? "DailySpend"
         if detailViewLanguage {
             title += " Detail"
         }
-        let margin: CGFloat = 5
-        let navHeight = self.navigationBar.frame.size.height
-        
-        let buttonWidth = (buttonWidth == nil) ? navHeight : buttonWidth
-        titleViewWidth = self.navigationBar.frame.size.width - ((buttonWidth! + margin) * 2)
-        self.navigationItem.titleView = makeTitleView(height: navHeight, width: titleViewWidth, title: title)
-        setExplainer(!tableShown)
+        self.titleView.title = title
+
+        goalTable.removeFromSuperview()
+        dimmingView.removeFromSuperview()
+
+        let viewWidth = view.bounds.size.width
+        let viewHeight = view.bounds.size.height
+        let navHeight = bar.frame.size.height
+        let statusBarSize = UIApplication.shared.statusBarFrame.size
+        let statusBarHeight = min(statusBarSize.width, statusBarSize.height)
+
+        maxTableHeight = viewHeight - navHeight - statusBarHeight
+
+        let tableHeight = min(cellHeight * CGFloat(goals.count + 1), maxTableHeight)
+
+        hiddenTableFrame = CGRect(x: 0, y: -tableHeight, width: viewWidth, height: tableHeight)
+        visibleTableFrame = CGRect(x: 0, y: bar.frame.bottomEdge, width: viewWidth, height: tableHeight)
+
+        goalTable.frame = isTableVisible ? visibleTableFrame : hiddenTableFrame
+        view.insertSubview(goalTable, belowSubview: bar)
+        setTableScrollEnabled()
+
+        dimmingView.frame = CGRect(x: 0, y: 64, width: viewWidth, height: viewHeight)
+        view.insertSubview(dimmingView, belowSubview: goalTable)
+
+        titleView.setNeedsLayout()
     }
     
     func setGoal(newGoal: Goal) {
@@ -137,122 +172,11 @@ class NavigationGoalPickerController: NSObject, UITableViewDataSource, UITableVi
         }
     }
 
-    private func caretAttr(_ highlighted: Bool) -> [NSAttributedString.Key: Any] {
-        return [
-            .font: UIFont.systemFont(ofSize: 8),
-            .foregroundColor: highlighted ? view.tintColor.withAlphaComponent(0.2) : view.tintColor
-        ]
-    }
-    
-    private func explainerAttr(_ highlighted: Bool) ->  [NSAttributedString.Key: Any] {
-        return [
-            .font: UIFont.systemFont(ofSize: 12),
-            .foregroundColor: highlighted ? view.tintColor.withAlphaComponent(0.2) : view.tintColor
-        ]
-    }
-    
-    private func downExplainer(_ highlighted: Bool) -> NSMutableAttributedString {
-        let attributedExplainer = NSMutableAttributedString(string: "▼ Change Goal ▼")
-        attributedExplainer.addAttributes(caretAttr(highlighted), range: NSMakeRange(0, 1))
-        attributedExplainer.addAttributes(explainerAttr(highlighted), range: NSMakeRange(1, 13))
-        attributedExplainer.addAttributes(caretAttr(highlighted), range: NSMakeRange(14, 1))
-        return attributedExplainer
-    }
-    
-    private func upExplainer(_ highlighted: Bool) -> NSMutableAttributedString {
-        let attributedExplainer = NSMutableAttributedString(string: "▲ Collapse ▲")
-        attributedExplainer.addAttributes(caretAttr(highlighted), range: NSMakeRange(0, 1))
-        attributedExplainer.addAttributes(explainerAttr(highlighted), range: NSMakeRange(1, 10))
-        attributedExplainer.addAttributes(caretAttr(highlighted), range: NSMakeRange(11, 1))
-        return attributedExplainer
-    }
-    
-    private func makeTitleView(height: CGFloat, width: CGFloat, title: String) -> UIView {
-        let titleFont = UIFont.preferredFont(forTextStyle: .headline)
-        let explainerHeight: CGFloat = 15
-        let titleHeight = height - explainerHeight
-        
-        let titleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: width, height: titleHeight))
-        titleLabel.text = title
-        titleLabel.font = titleFont
-        titleLabel.textAlignment = .center
-        
-        let explainerLabel = UILabel(frame: CGRect(x: 0, y: titleHeight - 5, width: width, height: explainerHeight))
-        explainerLabel.attributedText = downExplainer(false)
-        explainerLabel.textAlignment = .center
-        
-        let titleViewFrame = CGRect(x: 0, y: 0, width: width, height: height)
-        
-        var highlighted = false
-        setExplainer = { caretDown in
-            if caretDown {
-                explainerLabel.attributedText = self.downExplainer(highlighted)
-            } else {
-                explainerLabel.attributedText = self.upExplainer(highlighted)
-            }
-        }
-        
-        let button = UIButton(type: .custom)
-        button.backgroundColor = UIColor.clear
-        button.frame = titleViewFrame
-        button.add(for: [.touchDown, .touchDragEnter]) {
-            highlighted = true
-            self.setExplainer(!self.tableShown)
-        }
-        button.add(for: .touchDragExit) {
-            highlighted = false
-            self.setExplainer(!self.tableShown)
-        }
-        button.add(for: .touchUpInside, {
-            highlighted = false
-            self.tappedTitleView()
-        })
-        
-        let titleView = UIView(frame: titleViewFrame)
-        titleView.addSubviews([titleLabel, explainerLabel, button])
-        
-        return titleView
-    }
-    
-    
     private func showTable() {
-        let height = tableHeight
-        let width = view.bounds.size.width
-
-        if goalTable == nil {
-            goalTable = UITableView()
-            goalTable.dataSource = self
-            goalTable.delegate = self
-            goalTable.frame = CGRect(x: 0, y: -height, width: width, height: height)
-            goalTable.backgroundColor = .groupTableViewBackground
-            view.insertSubview(goalTable, belowSubview: navigationBar)
-        }
-        
-        if trueTableHeight <= maxTableHeight {
-            goalTable.isScrollEnabled = false
-        } else {
-            goalTable.isScrollEnabled = true
-        }
-        
-        if dimmingView == nil {
-            let dimmingViewFrame = CGRect(x: 0, y: 64, width: view.frame.size.width, height: view.frame.size.height)
-            dimmingView = UIButton(frame: dimmingViewFrame)
-            dimmingView.backgroundColor = UIColor.black
-            dimmingView.alpha = 0
-            dimmingView.isHidden = true
-            dimmingView.add(for: .touchUpInside) {
-                self.hideTable()
-                self.setExplainer(true)
-                self.tableShown = false
-            }
-            view.insertSubview(dimmingView, belowSubview: goalTable)
-        }
-        
         UIView.animate(
             withDuration: 0.2,
             animations: {
-                let y = self.navigationBar.frame.bottomEdge
-                self.goalTable.frame = CGRect(x: 0, y: y, width: width, height: height)
+                self.goalTable.frame = self.visibleTableFrame
                 self.dimmingView.isHidden = false
                 self.dimmingView.alpha = 0.3
             }
@@ -260,37 +184,19 @@ class NavigationGoalPickerController: NSObject, UITableViewDataSource, UITableVi
     }
     
     private func hideTable() {
-        if goalTable == nil {
-            return
-        }
-        
-        let height = tableHeight
-        let width = view.bounds.size.width
-
         UIView.animate(
             withDuration: 0.2,
             animations: {
-                self.goalTable.frame = CGRect(x: 0, y: -height, width: width, height: height)
+                self.goalTable.frame = self.hiddenTableFrame
                 self.dimmingView.alpha = 0
             }, completion: { _ in
                 // Need to check if the table is still shown in case the
                 // animation was cancelled.
-                if !self.tableShown {
+                if !self.isTableVisible {
                     self.dimmingView.isHidden = true
                 }
             }
         )
-    }
-    
-    private func tappedTitleView() {
-        if tableShown {
-            hideTable()
-            setExplainer(true)
-        } else {
-            showTable()
-            setExplainer(false)
-        }
-        tableShown = !tableShown
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -350,29 +256,40 @@ class NavigationGoalPickerController: NSObject, UITableViewDataSource, UITableVi
                 
                 // Hide goal selector table
                 self.hideTable()
-                setExplainer(true)
-                tableShown = false
+                self.titleView.isCollapsed = true
+                self.isTableVisible = false
             }
         }
         
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+
+    /**
+     * Sets `isScrollEnabled` on the table based on goals, cell height, and the
+     * current table's height.
+     */
+    private func setTableScrollEnabled() {
+        let trueTableHeight = cellHeight * CGFloat(goals.count + 1)
+        if trueTableHeight <= self.goalTable.frame.size.height {
+            goalTable.isScrollEnabled = false
+        } else {
+            goalTable.isScrollEnabled = true
+        }
     }
     
     func goalControllerWillDismissWithChangedGoals() {
         self.goals = getAllGoals()
         self.currentGoal = getLastUsedGoal()
         delegate?.goalChanged(newGoal: self.currentGoal)
-        
+
+        setTableScrollEnabled()
+
+        let tableHeight = min(cellHeight * CGFloat(goals.count + 1), maxTableHeight)
         var frame = self.goalTable.frame
         frame.size.height = tableHeight
+
         self.goalTable.frame = frame
         self.goalTable.reloadData()
-        if self.trueTableHeight <= self.maxTableHeight {
-            self.goalTable.isScrollEnabled = false
-            self.goalTable.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: false)
-        } else {
-            self.goalTable.isScrollEnabled = true
-        }
     }
 }
 

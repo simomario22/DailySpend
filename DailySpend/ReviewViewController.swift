@@ -84,16 +84,22 @@ class ReviewViewController: UIViewController {
         })
 
         cellCreator = TableViewCellHelper(tableView: tableView)
+
+        let navBar = navigationController!.navigationBar
+        let margin: CGFloat = 5
+        let titleViewWidth = navBar.frame.size.width - ((70 + margin) * 2)
+        let titleViewHeight = navBar.frame.size.height
+        let titleView = goalPicker.makeTitleView(width: titleViewWidth, height: titleViewHeight)
+        self.navigationItem.titleView = titleView
         goalPicker.delegate = self
-        goalPicker.makeTitleView(
+        goalPicker.changedViewController(
             view: navigationController!.view,
-            item: navigationItem,
             bar: navigationController!.navigationBar,
+            goalNavigationTitleView: titleView,
             present: present,
-            detailViewLanguage: true,
-            buttonWidth: 70 // TODO: Make this a real number based on the done button width
+            detailViewLanguage: true
         )
-        
+
         entityProviders = [
             ReviewViewExpensesController(
                 section: 0,

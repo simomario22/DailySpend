@@ -348,6 +348,7 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
             self.currentInterval = currentInterval
             
             expenseCellData = []
+            updatingRows = []
             for e in expenses {
                 let d = ExpenseCellDatum(e.shortDescription, e.amount, e.transactionDay, true)
                 expenseCellData.append(d)
@@ -357,6 +358,7 @@ class TodayViewExpensesController : NSObject, UITableViewDataSource, UITableView
         } else {
             expenses = []
             expenseCellData = []
+            updatingRows = []
         }
         tableView.reloadData()
     }

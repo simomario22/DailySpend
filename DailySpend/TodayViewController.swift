@@ -84,6 +84,12 @@ class TodayViewController: UIViewController, GoalPickerDelegate, TodayViewExpens
         tableView.dataSource = expensesController
         
         goalPicker = goalPicker ?? NavigationGoalPickerController()
+        let navBar = navigationController!.navigationBar
+        let margin: CGFloat = 5
+        let titleViewWidth = navBar.frame.size.width - ((70 + margin) * 2)
+        let titleViewHeight = navBar.frame.size.height
+        let titleView = goalPicker.makeTitleView(width: titleViewWidth, height: titleViewHeight)
+        self.navigationItem.titleView = titleView
         
         let infoButton = UIButton(type: .infoLight)
         infoButton.isEnabled = false
@@ -98,7 +104,6 @@ class TodayViewController: UIViewController, GoalPickerDelegate, TodayViewExpens
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        
         updateSummaryViewForGoal(self.goal)
 
          // Settings can change suggested options in add cell.
@@ -273,7 +278,7 @@ extension TodayViewController : UINavigationControllerDelegate {
         transition.forward = (operation == .push)
         return transition
     }
-    
+
     func navigationController(
         _ navigationController: UINavigationController,
         willShow viewController: UIViewController,
@@ -281,14 +286,14 @@ extension TodayViewController : UINavigationControllerDelegate {
     ) {
         if viewController == self {
             goalPicker.delegate = self
-            goalPicker.makeTitleView(
+            goalPicker.changedViewController(
                 view: navigationController.view,
-                item: navigationItem,
                 bar: navigationController.navigationBar,
+                goalNavigationTitleView: self.navigationItem.titleView!,
                 present: present,
-                detailViewLanguage: false,
-                buttonWidth: 50 // TODO: Make this a real number based on the button width
+                detailViewLanguage: false
             )
+
             self.goalChanged(newGoal: goalPicker.currentGoal)
         }
     }
