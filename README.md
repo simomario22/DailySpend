@@ -13,12 +13,12 @@ Coming to the App Store soon with several new features!
 
 Adding An Expense:
 
-![Adding an Expense](http://sherick.me/dailyspend-demo.gif)
+![Adding an Expense](http://sherick.me/dailyspend-demo.gif?)
 
 Multiple Pay Schedules:
 
-![Multiple Pay Schedules](http://sherick.me/dailyspend-payschedules.png)
+![Multiple Pay Schedules](http://sherick.me/dailyspend-payschedules.png?)
 
 Review Past Expenses (major updates coming soon):
 
-![Review Past Expenses](http://sherick.me/dailyspend-review.png)
+![Review Past Expenses](http://sherick.me/dailyspend-review.png?)
